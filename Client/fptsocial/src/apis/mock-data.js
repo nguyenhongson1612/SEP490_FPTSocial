@@ -1,0 +1,43 @@
+export const mockSearchData = {
+  data: [{
+    'id': 1,
+    'text': 'Devpulse',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 2,
+    'text': 'Linklinks',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 3,
+    'text': 'Centizu',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 4,
+    'text': 'Dynabox',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 5,
+    'text': 'Avaveo',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 6,
+    'text': 'Demivee',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 7,
+    'text': 'Jayo',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 8,
+    'text': 'Blognation',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 9,
+    'text': 'Podcat',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }, {
+    'id': 10,
+    'text': 'Layo',
+    'avatar': 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg'
+  }]
+}

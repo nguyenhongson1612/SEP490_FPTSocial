@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans text-base font-normal text-black bg-fbWhite
+}
+
+@layer utilities {
+  
+  .icon-side-bar {
+    @apply text-[rgb(242,113,36)] p-2 bg-fbWhite font-bold rounded-full hover:bg-[rgb(249,216,138)] cursor-pointer
+  }
+  .icon-text-side-bar {
+    @apply text-xs hidden lg:block sp
+  }
+  .cs-badge-circle {
+    @apply text-xs text-center rounded-full px-1;
+  }
+
+  .scrollbar-none-track::-webkit-scrollbar {
+    width: 10px;
+    height: 15px;
+  }
+  .scrollbar-none-track{
+    scrollbar-gutter: auto | stable && both-edges?
+  }
+  .scrollbar-none-track::-webkit-scrollbar-thumb {
+    background: #transparent;
+    border-radius: 100vh;
+    border: 1px solid #f6f7ed;
+  }
+  .scrollbar-none-track:hover::-webkit-scrollbar-thumb{
+    background: rgb(242,113,36);
+  }
+
+  .img-bg {
+    background-image: url('https://daihoc.fpt.edu.vn/wp-content/uploads/2019/10/nha-alpha.jpg'),
+      linear-gradient(to right,rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),
+      url('https://daihoc.fpt.edu.vn/wp-content/uploads/2019/10/nha-alpha.jpg');
+    background-size: contain, cover, cover;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-position: center, center, center;
+    border-top-left-radius: 1rem; 
+    border-bottom-left-radius: 1rem; 
+  }
+  
+}
+
