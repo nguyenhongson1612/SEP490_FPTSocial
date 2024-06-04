@@ -16,4 +16,5 @@ namespace Core.CQRS.Command
         where TCommand : ICommand<TResponse>
     {
     }
+
 }

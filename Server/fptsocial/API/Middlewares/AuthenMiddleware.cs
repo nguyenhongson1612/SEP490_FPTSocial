@@ -1,4 +1,6 @@
-﻿namespace API.Middlewares
+﻿using Domain.Models;
+
+namespace API.Middlewares
 {
     public class AuthenMiddleware
     {
@@ -8,9 +10,9 @@
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext httpContext, fptforumContext context)
         {
-            //Todo
+            
             await _next(httpContext);
         }
     }
