@@ -8,8 +8,8 @@ using System.Windows.Input;
 
 namespace Application.Commands.UserProfile
 {
-    public class UserProfileCommand :ICommand<List<UserProfileCommandResult>>
+    public class UserProfileCommand :ICommand<UserProfileCommandResult>
     {
-        public Guid UserId { get; set; }
+        public string UserNumber { get; set; }
     }
 }

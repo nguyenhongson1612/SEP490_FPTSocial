@@ -10,7 +10,7 @@ namespace Domain.Exceptions
 {
     public class ErrorException :Exception
     {
-        private StatusCodeEnum StatusCode { get; set; }
+        public StatusCodeEnum StatusCode { get; set; }
         public object? Data { get; set; }
 
         public ErrorException(StatusCodeEnum statusCode) : base(statusCode.GetDescription())
