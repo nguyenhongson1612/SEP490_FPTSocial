@@ -1,4 +1,5 @@
 ﻿using Application.Commands.UserProfile;
+using Application.Queries.UserProfile;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("/getuserbynumber")]
-        public async Task<IActionResult> GetUserProfleByNumber([FromQuery]UserProfileCommand input)
+        public async Task<IActionResult> GetUserProfleByNumber([FromQuery]GetUserQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);

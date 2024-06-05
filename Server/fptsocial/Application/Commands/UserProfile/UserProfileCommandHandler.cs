@@ -23,13 +23,8 @@ namespace Application.Commands.UserProfile
 
         public async Task<Result<UserProfileCommandResult>> Handle(UserProfileCommand request, CancellationToken cancellationToken)
         {
-            var user = _context.UserProfiles.FirstOrDefault(x => x.UserNumber == request.UserNumber);
-            if(user == null)
-            {
-                throw new Exception("can not find user");
-            }
-            var result = _mapper.Map<UserProfileCommandResult>(user);
-            return Result<UserProfileCommandResult>.Success(result);
+            
+            return null;
         }
     }
 }
