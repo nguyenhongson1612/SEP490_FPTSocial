@@ -30,7 +30,32 @@ namespace API.Middlewares
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(new ApiResponseModel(ex.StatusCode, ex.Data), serializerSettings));
-            } 
+            }
+            catch (UnauthorizedException ex)
+            {
+
+                var serializerSettings = new JsonSerializerSettings();
+                serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(new ApiResponseModel(ex.StatusCode, ex.Data), serializerSettings));
+            }
+            catch (ForbiddenException ex)
+            {
+
+                var serializerSettings = new JsonSerializerSettings();
+                serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(new ApiResponseModel(ex.StatusCode, ex.Data), serializerSettings));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                await httpContext.Response.WriteAsync(ex.Message);
+            }
             catch (Exception ex)
             {
                 await HandleExcetionAsync(httpContext, ex);

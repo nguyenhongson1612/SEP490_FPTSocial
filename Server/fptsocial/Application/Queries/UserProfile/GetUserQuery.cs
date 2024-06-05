@@ -9,6 +9,6 @@ namespace Application.Queries.UserProfile
 {
     public class GetUserQuery : IQuery<GetUserQueryResult>
     {
-        public string UserId { get; set; }
+        public string UserNumber { get; set; }
     }
 }
