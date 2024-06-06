@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class UserChatWithUser
     {
-        public string UserChatWithUserId { get; set; } = null!;
-        public string UserChatId { get; set; } = null!;
-        public string WithUserId { get; set; } = null!;
+        public Guid UserChatWithUserId { get; set; }
+        public Guid UserChatId { get; set; }
+        public Guid WithUserId { get; set; }
         public DateTime? CreateAt { get; set; }
 
         public virtual UserChat UserChat { get; set; } = null!;

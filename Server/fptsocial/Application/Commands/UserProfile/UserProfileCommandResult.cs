@@ -28,13 +28,6 @@ namespace Application.Commands.UserProfile
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual Role Role { get; set; } = null!;
-        public virtual UserStatus UserStatus { get; set; } = null!;
-        public virtual ContactInfo? ContactInfo { get; set; }
-        public virtual UserGender? UserGender { get; set; }
-        public virtual UserLookingFor? UserLookingFor { get; set; }
-        public virtual UserRelationship? UserRelationship { get; set; }
-        public virtual WebAffiliation? WebAffiliation { get; set; }
-        public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
+       
     }
 }

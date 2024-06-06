@@ -5,7 +5,7 @@ namespace Domain.Models
 {
     public partial class Interest
     {
-        public string InterestId { get; set; } = null!;
+        public Guid InterestId { get; set; }
         public string InterestName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -14,7 +14,7 @@ namespace Domain.Models
             ReportUserChats = new HashSet<ReportUserChat>();
         }
 
-        public string ReportTypeId { get; set; } = null!;
+        public Guid ReportTypeId { get; set; }
         public string ReportTypeName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

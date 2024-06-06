@@ -31,7 +31,7 @@ namespace Domain.Models
             WebAffiliations = new HashSet<WebAffiliation>();
         }
 
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public string StatusName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

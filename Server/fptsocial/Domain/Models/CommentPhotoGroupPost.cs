@@ -11,13 +11,13 @@ namespace Domain.Models
             ReportComments = new HashSet<ReportComment>();
         }
 
-        public string CommentPhotoGroupPostId { get; set; } = null!;
-        public string GroupPostPhotoId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid CommentPhotoGroupPostId { get; set; }
+        public Guid GroupPostPhotoId { get; set; }
+        public Guid UserId { get; set; }
         public string? Content { get; set; }
-        public string? ParentCommentId { get; set; }
+        public Guid? ParentCommentId { get; set; }
         public bool? IsHide { get; set; }
-        public string GroupStatusId { get; set; } = null!;
+        public Guid GroupStatusId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual GroupPostPhoto GroupPostPhoto { get; set; } = null!;

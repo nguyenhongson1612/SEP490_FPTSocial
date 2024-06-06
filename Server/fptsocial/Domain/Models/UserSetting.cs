@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class UserSetting
     {
-        public string SettingId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid SettingId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
 
         public virtual Setting Setting { get; set; } = null!;
         public virtual UserProfile User { get; set; } = null!;

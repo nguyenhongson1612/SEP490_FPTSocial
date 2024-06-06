@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Application.DTO.GetUserProfileDTO;
+using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,11 @@ namespace Application.Queries.UserProfile
 
         public string RoleName { get; set; } 
         public string UserStatusName { get; set; } 
-        public string ContactInfo { get; set; }
+        public GetUserContactInfo ContactInfo { get; set; }
         public string Gender { get; set; }
         public string LookingFor { get; set; }
         public string Relationship { get; set; }
-        public string WebAffiliationUrl { get; set; }
-        public string AvataPhotosUrl { get; set; }
+        public List<GetUserWebAfflication> WebAffiliationUrl { get; set; }
+        public List<GetUserAvatar> AvataPhotosUrl { get; set; }
     }
 }

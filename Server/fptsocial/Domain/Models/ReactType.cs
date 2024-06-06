@@ -23,7 +23,7 @@ namespace Domain.Models
             ReactVideoPosts = new HashSet<ReactVideoPost>();
         }
 
-        public string ReactTypeId { get; set; } = null!;
+        public Guid ReactTypeId { get; set; }
         public string ReactTypeName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

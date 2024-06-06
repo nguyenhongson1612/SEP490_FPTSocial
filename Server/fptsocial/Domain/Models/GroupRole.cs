@@ -10,7 +10,7 @@ namespace Domain.Models
             GroupMembers = new HashSet<GroupMember>();
         }
 
-        public string GroupRoleId { get; set; } = null!;
+        public Guid GroupRoleId { get; set; }
         public string GroupRoleName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

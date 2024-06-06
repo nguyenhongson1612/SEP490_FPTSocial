@@ -17,11 +17,11 @@ namespace Domain.Models
             SharePosts = new HashSet<SharePost>();
         }
 
-        public string GroupPostId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid GroupPostId { get; set; }
+        public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? GroupPostNumber { get; set; }
-        public string GroupStatusId { get; set; } = null!;
+        public Guid GroupStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? UpdatedAt { get; set; }

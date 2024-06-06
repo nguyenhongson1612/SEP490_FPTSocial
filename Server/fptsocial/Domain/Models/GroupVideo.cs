@@ -10,11 +10,11 @@ namespace Domain.Models
             GroupPostVideos = new HashSet<GroupPostVideo>();
         }
 
-        public string GroupVideoId { get; set; } = null!;
+        public Guid GroupVideoId { get; set; }
         public string VideoUrl { get; set; } = null!;
-        public string GroupId { get; set; } = null!;
+        public Guid GroupId { get; set; }
         public string? GroupVideoNumber { get; set; }
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

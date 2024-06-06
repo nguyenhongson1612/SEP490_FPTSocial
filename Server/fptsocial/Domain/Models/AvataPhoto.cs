@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class AvataPhoto
     {
-        public string AvataPhotosId { get; set; } = null!;
+        public Guid AvataPhotosId { get; set; }
         public string AvataPhotosUrl { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public bool IsUsed { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

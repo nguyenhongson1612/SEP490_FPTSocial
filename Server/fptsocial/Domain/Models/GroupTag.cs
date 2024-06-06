@@ -10,7 +10,7 @@ namespace Domain.Models
             GroupTagUseds = new HashSet<GroupTagUsed>();
         }
 
-        public string TagId { get; set; } = null!;
+        public Guid TagId { get; set; }
         public string TagName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }

@@ -12,8 +12,8 @@ namespace Domain.Models
             ReportGroupChats = new HashSet<ReportGroupChat>();
         }
 
-        public string GroupChatId { get; set; } = null!;
-        public string CreateByUserId { get; set; } = null!;
+        public Guid GroupChatId { get; set; }
+        public Guid CreateByUserId { get; set; }
         public string NameChat { get; set; } = null!;
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }

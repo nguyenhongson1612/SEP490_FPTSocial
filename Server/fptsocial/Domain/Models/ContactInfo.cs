@@ -5,12 +5,12 @@ namespace Domain.Models
 {
     public partial class ContactInfo
     {
-        public string ContactInfoId { get; set; } = null!;
+        public Guid ContactInfoId { get; set; }
         public string? SecondEmail { get; set; }
         public string PrimaryNumber { get; set; } = null!;
         public string? SecondNumber { get; set; }
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

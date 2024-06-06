@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class UserLookingFor
     {
-        public string LookingForId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid LookingForId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

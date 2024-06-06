@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class ReportGroupChat
     {
-        public string ReportGroupChatId { get; set; } = null!;
-        public string ReportTypeId { get; set; } = null!;
-        public string GroupChatId { get; set; } = null!;
-        public string ReportById { get; set; } = null!;
+        public Guid ReportGroupChatId { get; set; }
+        public Guid ReportTypeId { get; set; }
+        public Guid GroupChatId { get; set; }
+        public Guid ReportById { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedAt { get; set; }
 

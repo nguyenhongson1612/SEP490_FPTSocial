@@ -17,11 +17,11 @@ namespace Domain.Models
             UserPostVideos = new HashSet<UserPostVideo>();
         }
 
-        public string UserPostId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid UserPostId { get; set; }
+        public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? UserPostNumber { get; set; }
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public bool? IsAvataPost { get; set; }
         public bool? IsCoverPhotoPost { get; set; }
         public bool? IsHide { get; set; }

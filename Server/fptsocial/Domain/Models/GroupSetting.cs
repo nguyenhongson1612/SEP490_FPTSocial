@@ -10,7 +10,7 @@ namespace Domain.Models
             GroupSettingUses = new HashSet<GroupSettingUse>();
         }
 
-        public string GroupSettingId { get; set; } = null!;
+        public Guid GroupSettingId { get; set; }
         public string GroupSettingName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

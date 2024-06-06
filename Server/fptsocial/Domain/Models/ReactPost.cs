@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class ReactPost
     {
-        public string ReactPostId { get; set; } = null!;
-        public string UserPostId { get; set; } = null!;
-        public string ReactTypeId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid ReactPostId { get; set; }
+        public Guid UserPostId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual ReactType ReactType { get; set; } = null!;

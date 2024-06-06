@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class GroupMember
     {
-        public string GroupId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string GroupRoleId { get; set; } = null!;
+        public Guid GroupId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid GroupRoleId { get; set; }
         public bool IsJoined { get; set; }
         public DateTime? JoinedDate { get; set; }
 

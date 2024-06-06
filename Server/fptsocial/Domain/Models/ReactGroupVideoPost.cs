@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class ReactGroupVideoPost
     {
-        public string ReactGroupVideoPostId { get; set; } = null!;
-        public string GroupPostVideoId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string ReactTypeId { get; set; } = null!;
+        public Guid ReactGroupVideoPostId { get; set; }
+        public Guid GroupPostVideoId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ReactTypeId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual GroupPostVideo GroupPostVideo { get; set; } = null!;

@@ -10,9 +10,9 @@ namespace Domain.Models
             ReactUserChatMessages = new HashSet<ReactUserChatMessage>();
         }
 
-        public string UserChatMessageId { get; set; } = null!;
-        public string UserChatId { get; set; } = null!;
-        public string FromUserId { get; set; } = null!;
+        public Guid UserChatMessageId { get; set; }
+        public Guid UserChatId { get; set; }
+        public Guid FromUserId { get; set; }
         public bool? IsPin { get; set; }
         public bool? IsHide { get; set; }
         public string MessageChat { get; set; } = null!;

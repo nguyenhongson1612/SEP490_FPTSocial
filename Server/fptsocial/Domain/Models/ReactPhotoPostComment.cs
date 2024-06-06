@@ -5,11 +5,11 @@ namespace Domain.Models
 {
     public partial class ReactPhotoPostComment
     {
-        public string ReactPhotoPostCommentId { get; set; } = null!;
-        public string UserPostPhotoId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string ReactTypeId { get; set; } = null!;
-        public string CommentPhotoPostId { get; set; } = null!;
+        public Guid ReactPhotoPostCommentId { get; set; }
+        public Guid UserPostPhotoId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public Guid CommentPhotoPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual CommentPhotoPost CommentPhotoPost { get; set; } = null!;

@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class ReactUserChatMessage
     {
-        public string ReactUserChatMessageId { get; set; } = null!;
-        public string UserChatMessageId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string ReactTypeId { get; set; } = null!;
+        public Guid ReactUserChatMessageId { get; set; }
+        public Guid UserChatMessageId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ReactTypeId { get; set; }
         public DateTime? CreateAt { get; set; }
 
         public virtual ReactType ReactType { get; set; } = null!;

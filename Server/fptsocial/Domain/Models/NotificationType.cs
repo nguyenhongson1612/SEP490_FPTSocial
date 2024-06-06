@@ -10,7 +10,7 @@ namespace Domain.Models
             Notifications = new HashSet<Notification>();
         }
 
-        public string NotificationTypeId { get; set; } = null!;
+        public Guid NotificationTypeId { get; set; }
         public string NotificationTypeName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

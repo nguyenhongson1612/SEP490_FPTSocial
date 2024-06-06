@@ -5,11 +5,11 @@ namespace Domain.Models
 {
     public partial class ReportPost
     {
-        public string ReportPostId { get; set; } = null!;
-        public string ReportTypeId { get; set; } = null!;
-        public string GroupPostId { get; set; } = null!;
-        public string UserPostId { get; set; } = null!;
-        public string ReportById { get; set; } = null!;
+        public Guid ReportPostId { get; set; }
+        public Guid ReportTypeId { get; set; }
+        public Guid GroupPostId { get; set; }
+        public Guid UserPostId { get; set; }
+        public Guid ReportById { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
 

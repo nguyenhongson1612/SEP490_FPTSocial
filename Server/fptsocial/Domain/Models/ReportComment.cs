@@ -5,15 +5,15 @@ namespace Domain.Models
 {
     public partial class ReportComment
     {
-        public string ReportCommentId { get; set; } = null!;
-        public string ReportTypeId { get; set; } = null!;
-        public string CommentId { get; set; } = null!;
-        public string CommentPhotoPostId { get; set; } = null!;
-        public string CommentVideoPostId { get; set; } = null!;
-        public string CommentGroupPostId { get; set; } = null!;
-        public string CommentPhotoGroupPostId { get; set; } = null!;
-        public string CommentGroupVideoPostId { get; set; } = null!;
-        public string ReportById { get; set; } = null!;
+        public Guid ReportCommentId { get; set; }
+        public Guid ReportTypeId { get; set; }
+        public Guid CommentId { get; set; }
+        public Guid CommentPhotoPostId { get; set; }
+        public Guid CommentVideoPostId { get; set; }
+        public Guid CommentGroupPostId { get; set; }
+        public Guid CommentPhotoGroupPostId { get; set; }
+        public Guid CommentGroupVideoPostId { get; set; }
+        public Guid ReportById { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
 

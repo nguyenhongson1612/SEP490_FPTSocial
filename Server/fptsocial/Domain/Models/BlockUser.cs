@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class BlockUser
     {
-        public string BlockUserId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserIsBlockedId { get; set; } = null!;
-        public string? BlockTypeId { get; set; }
+        public Guid BlockUserId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid UserIsBlockedId { get; set; }
+        public Guid? BlockTypeId { get; set; }
         public bool? IsBolck { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

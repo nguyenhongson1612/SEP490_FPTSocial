@@ -10,13 +10,13 @@ namespace Domain.Models
             UserPostPhotos = new HashSet<UserPostPhoto>();
         }
 
-        public string PhotoId { get; set; } = null!;
+        public Guid PhotoId { get; set; }
         public string PhotoUrl { get; set; } = null!;
         public string? PhotoBigUrl { get; set; }
         public string? PhotoSmallUrl { get; set; }
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
         public string? PhotoNumber { get; set; }
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

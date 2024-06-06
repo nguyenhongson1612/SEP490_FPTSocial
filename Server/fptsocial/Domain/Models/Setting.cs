@@ -5,7 +5,7 @@ namespace Domain.Models
 {
     public partial class Setting
     {
-        public string SettingId { get; set; } = null!;
+        public Guid SettingId { get; set; }
         public string SettingName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

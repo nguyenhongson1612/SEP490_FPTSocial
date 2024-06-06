@@ -10,7 +10,7 @@ namespace Domain.Models
             BlockUsers = new HashSet<BlockUser>();
         }
 
-        public string BlockTypeId { get; set; } = null!;
+        public Guid BlockTypeId { get; set; }
         public string BlockTypeName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

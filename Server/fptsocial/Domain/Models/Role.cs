@@ -10,7 +10,7 @@ namespace Domain.Models
             UserProfiles = new HashSet<UserProfile>();
         }
 
-        public string RoleId { get; set; } = null!;
+        public Guid RoleId { get; set; }
         public string NameRole { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

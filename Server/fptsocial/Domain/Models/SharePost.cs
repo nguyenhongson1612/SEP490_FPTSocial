@@ -5,16 +5,16 @@ namespace Domain.Models
 {
     public partial class SharePost
     {
-        public string SharePostId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid SharePostId { get; set; }
+        public Guid UserId { get; set; }
         public string? Content { get; set; }
-        public string? UserPostId { get; set; }
-        public string? UserPostVideoId { get; set; }
-        public string? UserPostPhotoId { get; set; }
-        public string? GroupPostId { get; set; }
-        public string? GroupPostPhotoId { get; set; }
-        public string? GroupPostVideoId { get; set; }
-        public string? SharedToUserId { get; set; }
+        public Guid? UserPostId { get; set; }
+        public Guid? UserPostVideoId { get; set; }
+        public Guid? UserPostPhotoId { get; set; }
+        public Guid? GroupPostId { get; set; }
+        public Guid? GroupPostPhotoId { get; set; }
+        public Guid? GroupPostVideoId { get; set; }
+        public Guid? SharedToUserId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }

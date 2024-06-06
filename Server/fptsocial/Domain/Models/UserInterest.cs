@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class UserInterest
     {
-        public string UserInterestId { get; set; } = null!;
-        public string InterestId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserInterestId { get; set; }
+        public Guid InterestId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

@@ -5,11 +5,16 @@ namespace Domain.Models
 {
     public partial class Gender
     {
-        public string GenderId { get; set; } = null!;
+        public Gender()
+        {
+            UserGenders = new HashSet<UserGender>();
+        }
+
+        public Guid GenderId { get; set; }
         public string GenderName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual UserGender? UserGender { get; set; }
+        public virtual ICollection<UserGender> UserGenders { get; set; }
     }
 }

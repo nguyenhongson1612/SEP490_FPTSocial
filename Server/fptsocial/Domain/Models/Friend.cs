@@ -5,8 +5,8 @@ namespace Domain.Models
 {
     public partial class Friend
     {
-        public string UserId { get; set; } = null!;
-        public string FriendId { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public Guid FriendId { get; set; }
         public bool Confirm { get; set; }
 
         public virtual UserProfile FriendNavigation { get; set; } = null!;

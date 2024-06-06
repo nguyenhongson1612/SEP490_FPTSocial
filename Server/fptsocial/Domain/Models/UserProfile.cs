@@ -60,12 +60,13 @@ namespace Domain.Models
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
             Videos = new HashSet<Video>();
+            WebAffiliations = new HashSet<WebAffiliation>();
             Followeds = new HashSet<UserProfile>();
             Followers = new HashSet<UserProfile>();
         }
 
-        public string UserId { get; set; } = null!;
-        public string RoleId { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public Guid RoleId { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string? Email { get; set; }
@@ -76,7 +77,7 @@ namespace Domain.Models
         public string? CoverImage { get; set; }
         public string? UserNumber { get; set; }
         public bool IsFirstTimeLogin { get; set; }
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
@@ -87,7 +88,6 @@ namespace Domain.Models
         public virtual UserGender? UserGender { get; set; }
         public virtual UserLookingFor? UserLookingFor { get; set; }
         public virtual UserRelationship? UserRelationship { get; set; }
-        public virtual WebAffiliation? WebAffiliation { get; set; }
         public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
         public virtual ICollection<BlockUser> BlockUserUserIsBlockeds { get; set; }
         public virtual ICollection<BlockUser> BlockUserUsers { get; set; }
@@ -141,6 +141,7 @@ namespace Domain.Models
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
         public virtual ICollection<Video> Videos { get; set; }
+        public virtual ICollection<WebAffiliation> WebAffiliations { get; set; }
 
         public virtual ICollection<UserProfile> Followeds { get; set; }
         public virtual ICollection<UserProfile> Followers { get; set; }

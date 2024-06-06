@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class GroupTagUsed
     {
-        public string TagId { get; set; } = null!;
-        public string GroupId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid TagId { get; set; }
+        public Guid GroupId { get; set; }
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 

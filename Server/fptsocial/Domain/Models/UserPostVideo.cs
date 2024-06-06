@@ -14,12 +14,12 @@ namespace Domain.Models
             SharePosts = new HashSet<SharePost>();
         }
 
-        public string UserPostVideoId { get; set; } = null!;
-        public string UserPostId { get; set; } = null!;
-        public string VideoId { get; set; } = null!;
+        public Guid UserPostVideoId { get; set; }
+        public Guid UserPostId { get; set; }
+        public Guid VideoId { get; set; }
         public string? Content { get; set; }
         public string? UserPostVideoNumber { get; set; }
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserStatusId { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

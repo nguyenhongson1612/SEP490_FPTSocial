@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class ReactGroupPhotoPost
     {
-        public string ReactGroupPhotoPostId { get; set; } = null!;
-        public string GroupPostPhotoId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string ReactTypeId { get; set; } = null!;
+        public Guid ReactGroupPhotoPostId { get; set; }
+        public Guid GroupPostPhotoId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ReactTypeId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual GroupPostPhoto GroupPostPhoto { get; set; } = null!;

@@ -5,7 +5,7 @@ namespace Domain.Models
 {
     public partial class Relationship
     {
-        public string RelationshipId { get; set; } = null!;
+        public Guid RelationshipId { get; set; }
         public string RelationshipName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -17,7 +17,6 @@ namespace Domain.Models
         {
         }
 
-        public virtual DbSet<Affiliation> Affiliations { get; set; } = null!;
         public virtual DbSet<AvataPhoto> AvataPhotos { get; set; } = null!;
         public virtual DbSet<BlockType> BlockTypes { get; set; } = null!;
         public virtual DbSet<BlockUser> BlockUsers { get; set; } = null!;
@@ -79,7 +78,6 @@ namespace Domain.Models
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<SharePost> SharePosts { get; set; } = null!;
-        public virtual DbSet<UserAffiliation> UserAffiliations { get; set; } = null!;
         public virtual DbSet<UserChat> UserChats { get; set; } = null!;
         public virtual DbSet<UserChatMessage> UserChatMessages { get; set; } = null!;
         public virtual DbSet<UserChatWithUser> UserChatWithUsers { get; set; } = null!;
@@ -107,35 +105,17 @@ namespace Domain.Models
 
         }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Affiliation>(entity =>
-            {
-                entity.ToTable("Affiliation");
-
-                entity.Property(e => e.AffiliationId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.AffiliationName)
-                    .HasMaxLength(1000)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A408A98F03");
+                    .HasName("PK__AvataPho__BF0395A4DEE62D06");
 
                 entity.ToTable("AvataPhoto");
 
-                entity.Property(e => e.AvataPhotosId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.AvataPhotosId).ValueGeneratedNever();
 
                 entity.Property(e => e.AvataPhotosUrl)
                     .HasMaxLength(2000)
@@ -144,14 +124,6 @@ namespace Domain.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AvataPhotos)
@@ -170,9 +142,7 @@ namespace Domain.Models
             {
                 entity.ToTable("BlockType");
 
-                entity.Property(e => e.BlockTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.BlockTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.BlockTypeName).HasMaxLength(100);
 
@@ -187,22 +157,6 @@ namespace Domain.Models
                     .HasName("PK_Block_UserId");
 
                 entity.ToTable("BlockUser");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserIsBlockedId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.BlockTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.BlockUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -230,29 +184,11 @@ namespace Domain.Models
             {
                 entity.ToTable("CommentGroupPost");
 
-                entity.Property(e => e.CommentGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentGroupPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.CommentGroupPosts)
@@ -277,29 +213,11 @@ namespace Domain.Models
             {
                 entity.ToTable("CommentGroupVideoPost");
 
-                entity.Property(e => e.CommentGroupVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentGroupVideoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPostVideo)
                     .WithMany(p => p.CommentGroupVideoPosts)
@@ -324,29 +242,11 @@ namespace Domain.Models
             {
                 entity.ToTable("CommentPhotoGroupPost");
 
-                entity.Property(e => e.CommentPhotoGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentPhotoGroupPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPostPhoto)
                     .WithMany(p => p.CommentPhotoGroupPosts)
@@ -371,29 +271,11 @@ namespace Domain.Models
             {
                 entity.ToTable("CommentPhotoPost");
 
-                entity.Property(e => e.CommentPhotoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentPhotoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentPhotoPosts)
@@ -417,33 +299,15 @@ namespace Domain.Models
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCAB48393A5");
+                    .HasName("PK__CommentP__C3B4DFCA600678BE");
 
                 entity.ToTable("CommentPost");
 
-                entity.Property(e => e.CommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentPosts)
@@ -468,29 +332,11 @@ namespace Domain.Models
             {
                 entity.ToTable("CommentVideoPost");
 
-                entity.Property(e => e.CommentVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.CommentVideoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ParentCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentVideoPosts)
@@ -518,9 +364,7 @@ namespace Domain.Models
                 entity.HasIndex(e => e.UserId, "only_contact")
                     .IsUnique();
 
-                entity.Property(e => e.ContactInfoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ContactInfoId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -537,14 +381,6 @@ namespace Domain.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.ContactInfo)
@@ -569,14 +405,6 @@ namespace Domain.Models
                 entity.HasIndex(e => new { e.UserId, e.FriendId }, "UQ_Friends_UserId")
                     .IsUnique();
 
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.FriendId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.HasOne(d => d.FriendNavigation)
                     .WithMany(p => p.FriendFriendNavigations)
                     .HasForeignKey(d => d.FriendId)
@@ -594,9 +422,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Gender");
 
-                entity.Property(e => e.GenderId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GenderId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -611,15 +437,9 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupChat");
 
-                entity.Property(e => e.GroupChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupChatId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.CreateByUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.NameChat)
                     .HasMaxLength(300)
@@ -637,23 +457,13 @@ namespace Domain.Models
             modelBuilder.Entity<GroupChatMemeber>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B6768B0EDC5");
+                    .HasName("PK__GroupCha__1ED28B67A7D2B4A4");
 
                 entity.ToTable("GroupChatMemeber");
 
-                entity.Property(e => e.UserChatWithUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserChatWithUserId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.MemberId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupChat)
                     .WithMany(p => p.GroupChatMemebers)
@@ -672,21 +482,11 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupChatMessage");
 
-                entity.Property(e => e.GroupChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupChatMessageId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.GroupChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.MessageChat).HasColumnType("text");
-
-                entity.Property(e => e.SendByUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupChat)
                     .WithMany(p => p.GroupChatMessages)
@@ -704,17 +504,11 @@ namespace Domain.Models
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36A07A13A1F");
+                    .HasName("PK__GroupFPT__149AF36AC265C094");
 
                 entity.ToTable("GroupFPT");
 
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CreatedById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -726,15 +520,7 @@ namespace Domain.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.GroupTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CreatedBy)
                     .WithMany(p => p.GroupFpts)
@@ -758,27 +544,13 @@ namespace Domain.Models
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCF95429FE5");
+                    .HasName("PK__GroupInv__033C8DCFD759CE39");
 
                 entity.ToTable("GroupInvitation");
 
-                entity.Property(e => e.InvitationId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.InvitationId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.InvitedId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.InviterId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
@@ -791,11 +563,13 @@ namespace Domain.Models
                 entity.HasOne(d => d.Invited)
                     .WithMany(p => p.GroupInvitationInviteds)
                     .HasForeignKey(d => d.InvitedId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_touser_invated_FK");
 
                 entity.HasOne(d => d.Inviter)
                     .WithMany(p => p.GroupInvitationInviters)
                     .HasForeignKey(d => d.InviterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_user_invate_FK");
             });
 
@@ -805,18 +579,6 @@ namespace Domain.Models
                     .HasName("PK_GroupId_UserId");
 
                 entity.ToTable("GroupMember");
-
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupRoleId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.JoinedDate).HasColumnType("datetime");
 
@@ -843,15 +605,9 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupPhoto");
 
-                entity.Property(e => e.GroupPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupPhotoId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.GroupPhotoNumber)
                     .HasMaxLength(50)
@@ -871,10 +627,6 @@ namespace Domain.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.GroupPhotos)
                     .HasForeignKey(d => d.GroupId)
@@ -892,9 +644,7 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupPost");
 
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
@@ -904,15 +654,7 @@ namespace Domain.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupStatus)
                     .WithMany(p => p.GroupPosts)
@@ -931,28 +673,14 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupPostPhoto");
 
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupPostPhotoId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.GroupPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.GroupPostPhotoNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -980,28 +708,14 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupPostVideo");
 
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupPostVideoId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.GroupPostVideoNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupVideoId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -1029,9 +743,7 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupRole");
 
-                entity.Property(e => e.GroupRoleId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupRoleId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1046,9 +758,7 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupSetting");
 
-                entity.Property(e => e.GroupSettingId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupSettingId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1064,19 +774,7 @@ namespace Domain.Models
 
                 entity.ToTable("GroupSettingUse");
 
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupSettingId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -1103,45 +801,11 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupSharePost");
 
-                entity.Property(e => e.GroupSharePostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupSharePostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.SharedToUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.GroupSharePosts)
@@ -1189,9 +853,7 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupStatus");
 
-                entity.Property(e => e.GroupStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupStatusId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1205,13 +867,11 @@ namespace Domain.Models
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC29B12EE9");
+                    .HasName("PK__GroupTag__657CF9AC4DC05A84");
 
                 entity.ToTable("GroupTag");
 
-                entity.Property(e => e.TagId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.TagId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1229,21 +889,9 @@ namespace Domain.Models
 
                 entity.ToTable("GroupTagUsed");
 
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.TagId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.GroupTagUseds)
@@ -1268,9 +916,7 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupType");
 
-                entity.Property(e => e.GroupTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1285,25 +931,15 @@ namespace Domain.Models
             {
                 entity.ToTable("GroupVideo");
 
-                entity.Property(e => e.GroupVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.GroupVideoId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.GroupVideoNumber)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.VideoUrl)
                     .HasMaxLength(1000)
@@ -1326,9 +962,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Interest");
 
-                entity.Property(e => e.InterestId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.InterestId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1341,9 +975,7 @@ namespace Domain.Models
             {
                 entity.ToTable("LookingFor");
 
-                entity.Property(e => e.LookingForId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.LookingForId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1356,31 +988,13 @@ namespace Domain.Models
 
             modelBuilder.Entity<Notification>(entity =>
             {
-                entity.Property(e => e.NotificationId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.NotificationId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.IsRead).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.NotiMessage).HasMaxLength(255);
-
-                entity.Property(e => e.NotificationTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.SenderId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.NotificationType)
                     .WithMany(p => p.Notifications)
@@ -1391,6 +1005,7 @@ namespace Domain.Models
                 entity.HasOne(d => d.Sender)
                     .WithMany(p => p.NotificationSenders)
                     .HasForeignKey(d => d.SenderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("noti_senduser_FK");
 
                 entity.HasOne(d => d.User)
@@ -1410,9 +1025,7 @@ namespace Domain.Models
             {
                 entity.ToTable("NotificationType");
 
-                entity.Property(e => e.NotificationTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.NotificationTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1427,9 +1040,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Photo");
 
-                entity.Property(e => e.PhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.PhotoId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1451,14 +1062,6 @@ namespace Domain.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Photos)
                     .HasForeignKey(d => d.UserId)
@@ -1476,27 +1079,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactComment");
 
-                entity.Property(e => e.ReactCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Comment)
                     .WithMany(p => p.ReactComments)
@@ -1527,23 +1112,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactGroupChatMessage");
 
-                entity.Property(e => e.ReactGroupChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupChatMessageId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupChatMessage)
                     .WithMany(p => p.ReactGroupChatMessages)
@@ -1568,27 +1139,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactGroupCommentPost");
 
-                entity.Property(e => e.ReactGroupCommentPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupCommentPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentGroupPost)
                     .WithMany(p => p.ReactGroupCommentPosts)
@@ -1619,23 +1172,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactGroupPhotoPost");
 
-                entity.Property(e => e.ReactGroupPhotoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupPhotoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPostPhoto)
                     .WithMany(p => p.ReactGroupPhotoPosts)
@@ -1659,31 +1198,13 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B52528B894AD10");
+                    .HasName("PK__ReactGro__E6B5252893D76F0A");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
-                entity.Property(e => e.ReactPhotoPostCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentPhotoGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactPhotoPostCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentPhotoGroupPost)
                     .WithMany(p => p.ReactGroupPhotoPostComments)
@@ -1714,23 +1235,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactGroupPost");
 
-                entity.Property(e => e.ReactGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.ReactGroupPosts)
@@ -1755,23 +1262,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactGroupVideoPost");
 
-                entity.Property(e => e.ReactGroupVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupVideoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPostVideo)
                     .WithMany(p => p.ReactGroupVideoPosts)
@@ -1795,31 +1288,13 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E4FE8ABBE7");
+                    .HasName("PK__ReactGro__B37F79E475E9D738");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
-                entity.Property(e => e.ReactGroupVideoCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentGroupVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactGroupVideoCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentGroupVideoPost)
                     .WithMany(p => p.ReactGroupVideoPostComments)
@@ -1850,23 +1325,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactPhotoPost");
 
-                entity.Property(e => e.ReactPhotoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactPhotoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.ReactType)
                     .WithMany(p => p.ReactPhotoPosts)
@@ -1891,27 +1352,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactPhotoPostComment");
 
-                entity.Property(e => e.ReactPhotoPostCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentPhotoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactPhotoPostCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentPhotoPost)
                     .WithMany(p => p.ReactPhotoPostComments)
@@ -1942,23 +1385,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactPost");
 
-                entity.Property(e => e.ReactPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.ReactType)
                     .WithMany(p => p.ReactPosts)
@@ -1983,9 +1412,7 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactType");
 
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1998,23 +1425,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactUserChatMessage");
 
-                entity.Property(e => e.ReactUserChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactUserChatMessageId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.ReactType)
                     .WithMany(p => p.ReactUserChatMessages)
@@ -2039,23 +1452,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactVideoPost");
 
-                entity.Property(e => e.ReactVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactVideoPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.ReactType)
                     .WithMany(p => p.ReactVideoPosts)
@@ -2080,27 +1479,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReactVideoPostComment");
 
-                entity.Property(e => e.ReactVideoPostCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReactVideoPostCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReactTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentVideoPost)
                     .WithMany(p => p.ReactVideoPostComments)
@@ -2131,9 +1512,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Relationship");
 
-                entity.Property(e => e.RelationshipId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.RelationshipId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2148,43 +1527,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportComment");
 
-                entity.Property(e => e.ReportCommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentGroupVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentPhotoGroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentPhotoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CommentVideoPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportCommentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReportById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.CommentGroupPost)
                     .WithMany(p => p.ReportComments)
@@ -2239,23 +1584,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportGroupChat");
 
-                entity.Property(e => e.ReportGroupChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportGroupChatId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupChat)
                     .WithMany(p => p.ReportGroupChats)
@@ -2280,27 +1611,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportPost");
 
-                entity.Property(e => e.ReportPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.ReportPosts)
@@ -2331,27 +1644,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportProfile");
 
-                entity.Property(e => e.ReportProfileId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportProfileId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.ReportProfiles)
@@ -2382,9 +1677,7 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportType");
 
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportTypeId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2397,23 +1690,9 @@ namespace Domain.Models
             {
                 entity.ToTable("ReportUserChat");
 
-                entity.Property(e => e.ReportUserChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.ReportUserChatId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.ReportById)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ReportTypeId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.ReportBy)
                     .WithMany(p => p.ReportUserChats)
@@ -2438,9 +1717,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Role");
 
-                entity.Property(e => e.RoleId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.RoleId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2455,9 +1732,7 @@ namespace Domain.Models
             {
                 entity.ToTable("Setting");
 
-                entity.Property(e => e.SettingId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.SettingId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2470,45 +1745,11 @@ namespace Domain.Models
             {
                 entity.ToTable("SharePost");
 
-                entity.Property(e => e.SharePostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.SharePostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.GroupPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.GroupPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.SharedToUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.SharePosts)
@@ -2552,54 +1793,11 @@ namespace Domain.Models
                     .HasConstraintName("share_post_postvideo_FK");
             });
 
-            modelBuilder.Entity<UserAffiliation>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("UserAffiliation");
-
-                entity.Property(e => e.AffiliationId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Affiliation)
-                    .WithMany()
-                    .HasForeignKey(d => d.AffiliationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("affliation_user_FK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("userprofile_user_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany()
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("aff_status_FK");
-            });
-
             modelBuilder.Entity<UserChat>(entity =>
             {
                 entity.ToTable("UserChat");
 
-                entity.Property(e => e.UserChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserChatId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
@@ -2608,10 +1806,6 @@ namespace Domain.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserChats)
@@ -2624,21 +1818,11 @@ namespace Domain.Models
             {
                 entity.ToTable("UserChatMessage");
 
-                entity.Property(e => e.UserChatMessageId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserChatMessageId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.FromUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.MessageChat).HasColumnType("text");
-
-                entity.Property(e => e.UserChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.FromUser)
                     .WithMany(p => p.UserChatMessages)
@@ -2657,19 +1841,9 @@ namespace Domain.Models
             {
                 entity.ToTable("UserChatWithUser");
 
-                entity.Property(e => e.UserChatWithUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserChatWithUserId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserChatId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.WithUserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.UserChat)
                     .WithMany(p => p.UserChatWithUsers)
@@ -2686,33 +1860,20 @@ namespace Domain.Models
 
             modelBuilder.Entity<UserGender>(entity =>
             {
-                entity.HasKey(e => e.GenderId)
-                    .HasName("PK__UserGend__4E24E9F7C4235C09");
-
                 entity.ToTable("UserGender");
 
                 entity.HasIndex(e => e.UserId, "only_gender")
                     .IsUnique();
 
-                entity.Property(e => e.GenderId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserGenderId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.HasOne(d => d.Gender)
-                    .WithOne(p => p.UserGender)
-                    .HasForeignKey<UserGender>(d => d.GenderId)
+                    .WithMany(p => p.UserGenders)
+                    .HasForeignKey(d => d.GenderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Gender_rlf_FK");
 
@@ -2736,25 +1897,11 @@ namespace Domain.Models
                 entity.HasIndex(e => e.InterestId, "only_interest")
                     .IsUnique();
 
-                entity.Property(e => e.UserInterestId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserInterestId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.InterestId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Interest)
                     .WithOne(p => p.UserInterest)
@@ -2778,28 +1925,18 @@ namespace Domain.Models
             modelBuilder.Entity<UserLookingFor>(entity =>
             {
                 entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E9BBDE7142");
+                    .HasName("PK__UserLook__DF7500E999F18C8D");
 
                 entity.ToTable("UserLookingFor");
 
                 entity.HasIndex(e => e.UserId, "only_lookingfor")
                     .IsUnique();
 
-                entity.Property(e => e.LookingForId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.LookingForId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.LookingFor)
                     .WithOne(p => p.UserLookingFor)
@@ -2824,9 +1961,7 @@ namespace Domain.Models
             {
                 entity.ToTable("UserPost");
 
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserPostId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
@@ -2834,16 +1969,8 @@ namespace Domain.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UserPostNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
@@ -2863,30 +1990,16 @@ namespace Domain.Models
             {
                 entity.ToTable("UserPostPhoto");
 
-                entity.Property(e => e.UserPostPhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserPostPhotoId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PhotoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.UserPostPhotoNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Photo)
@@ -2912,9 +2025,7 @@ namespace Domain.Models
             {
                 entity.ToTable("UserPostVideo");
 
-                entity.Property(e => e.UserPostVideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserPostVideoId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).HasColumnType("text");
 
@@ -2922,20 +2033,8 @@ namespace Domain.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserPostId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UserPostVideoNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.VideoId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.UserPost)
@@ -2960,13 +2059,11 @@ namespace Domain.Models
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4C370710AD");
+                    .HasName("PK__UserProf__1788CC4CD4B99C72");
 
                 entity.ToTable("UserProfile");
 
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.Property(e => e.AboutMe).HasMaxLength(1000);
 
@@ -2992,18 +2089,10 @@ namespace Domain.Models
 
                 entity.Property(e => e.LastName).HasMaxLength(100);
 
-                entity.Property(e => e.RoleId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UserNumber)
                     .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.Role)
@@ -3029,10 +2118,6 @@ namespace Domain.Models
                             j.HasKey("FollowerId", "FollowedId").HasName("PK_Followers");
 
                             j.ToTable("Follower");
-
-                            j.IndexerProperty<string>("FollowerId").HasMaxLength(100).IsUnicode(false);
-
-                            j.IndexerProperty<string>("FollowedId").HasMaxLength(100).IsUnicode(false);
                         });
 
                 entity.HasMany(d => d.Followers)
@@ -3046,38 +2131,24 @@ namespace Domain.Models
                             j.HasKey("FollowerId", "FollowedId").HasName("PK_Followers");
 
                             j.ToTable("Follower");
-
-                            j.IndexerProperty<string>("FollowerId").HasMaxLength(100).IsUnicode(false);
-
-                            j.IndexerProperty<string>("FollowedId").HasMaxLength(100).IsUnicode(false);
                         });
             });
 
             modelBuilder.Entity<UserRelationship>(entity =>
             {
                 entity.HasKey(e => e.RelationshipId)
-                    .HasName("PK__UserRela__31FEB8812787F9AB");
+                    .HasName("PK__UserRela__31FEB8811A6E669E");
 
                 entity.ToTable("UserRelationship");
 
                 entity.HasIndex(e => e.UserId, "only_relationship")
                     .IsUnique();
 
-                entity.Property(e => e.RelationshipId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.RelationshipId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Relationship)
                     .WithOne(p => p.UserRelationship)
@@ -3101,24 +2172,14 @@ namespace Domain.Models
             modelBuilder.Entity<UserSetting>(entity =>
             {
                 entity.HasKey(e => e.SettingId)
-                    .HasName("PK__UserSett__54372B1D04BF3BDD");
+                    .HasName("PK__UserSett__54372B1D79A9E825");
 
                 entity.ToTable("UserSetting");
 
                 entity.HasIndex(e => e.SettingId, "only_setting")
                     .IsUnique();
 
-                entity.Property(e => e.SettingId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.SettingId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.Setting)
                     .WithOne(p => p.UserSetting)
@@ -3130,7 +2191,7 @@ namespace Domain.Models
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__619B8048");
+                    .HasConstraintName("FK__UserSetti__UserI__5FB337D6");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)
@@ -3143,9 +2204,7 @@ namespace Domain.Models
             {
                 entity.ToTable("UserStatus");
 
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserStatusId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -3160,21 +2219,11 @@ namespace Domain.Models
             {
                 entity.ToTable("Video");
 
-                entity.Property(e => e.VideoId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.VideoId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.VideoNumber)
                     .HasMaxLength(50)
@@ -3201,32 +2250,19 @@ namespace Domain.Models
             {
                 entity.ToTable("WebAffiliation");
 
-                entity.HasIndex(e => e.UserId, "only_web")
-                    .IsUnique();
-
-                entity.Property(e => e.WebAffiliationId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.WebAffiliationId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.WebAffiliationUrl)
                     .HasMaxLength(2000)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.WebAffiliation)
-                    .HasForeignKey<WebAffiliation>(d => d.UserId)
+                    .WithMany(p => p.WebAffiliations)
+                    .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("web_user_FK");
 
@@ -3249,18 +2285,6 @@ namespace Domain.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserStatusId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.WorkPlaceId)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.WorkPlaceName)
                     .HasMaxLength(200)

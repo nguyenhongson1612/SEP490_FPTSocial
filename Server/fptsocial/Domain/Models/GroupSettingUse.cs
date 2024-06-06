@@ -5,9 +5,9 @@ namespace Domain.Models
 {
     public partial class GroupSettingUse
     {
-        public string GroupId { get; set; } = null!;
-        public string GroupSettingId { get; set; } = null!;
-        public string GroupStatusId { get; set; } = null!;
+        public Guid GroupId { get; set; }
+        public Guid GroupSettingId { get; set; }
+        public Guid GroupStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

@@ -10,9 +10,9 @@ namespace Domain.Models
             ReactGroupChatMessages = new HashSet<ReactGroupChatMessage>();
         }
 
-        public string GroupChatMessageId { get; set; } = null!;
-        public string GroupChatId { get; set; } = null!;
-        public string SendByUserId { get; set; } = null!;
+        public Guid GroupChatMessageId { get; set; }
+        public Guid GroupChatId { get; set; }
+        public Guid SendByUserId { get; set; }
         public bool? IsPin { get; set; }
         public bool? IsHide { get; set; }
         public string MessageChat { get; set; } = null!;

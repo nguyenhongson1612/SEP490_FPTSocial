@@ -12,8 +12,8 @@ namespace Domain.Models
             UserChatWithUsers = new HashSet<UserChatWithUser>();
         }
 
-        public string UserChatId { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        public Guid UserChatId { get; set; }
+        public Guid UserId { get; set; }
         public string NameChat { get; set; } = null!;
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }

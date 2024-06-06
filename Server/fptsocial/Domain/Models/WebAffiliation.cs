@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public partial class WebAffiliation
     {
-        public string WebAffiliationId { get; set; } = null!;
+        public Guid WebAffiliationId { get; set; }
         public string WebAffiliationUrl { get; set; } = null!;
-        public string UserId { get; set; } = null!;
-        public string UserStatusId { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
