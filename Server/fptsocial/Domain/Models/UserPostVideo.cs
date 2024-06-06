@@ -8,13 +8,16 @@ namespace Domain.Models
         public UserPostVideo()
         {
             CommentVideoPosts = new HashSet<CommentVideoPost>();
+            GroupSharePosts = new HashSet<GroupSharePost>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
+            SharePosts = new HashSet<SharePost>();
         }
 
         public string UserPostVideoId { get; set; } = null!;
         public string UserPostId { get; set; } = null!;
         public string VideoId { get; set; } = null!;
+        public string? Content { get; set; }
         public string? UserPostVideoNumber { get; set; }
         public string UserStatusId { get; set; } = null!;
         public bool? IsHide { get; set; }
@@ -25,7 +28,9 @@ namespace Domain.Models
         public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual Video Video { get; set; } = null!;
         public virtual ICollection<CommentVideoPost> CommentVideoPosts { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }
+        public virtual ICollection<SharePost> SharePosts { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace Domain.Models
             ReactGroupCommentPosts = new HashSet<ReactGroupCommentPost>();
             ReactGroupPosts = new HashSet<ReactGroupPost>();
             ReportPosts = new HashSet<ReportPost>();
+            SharePosts = new HashSet<SharePost>();
         }
 
         public string GroupPostId { get; set; } = null!;
@@ -34,5 +35,6 @@ namespace Domain.Models
         public virtual ICollection<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; }
         public virtual ICollection<ReactGroupPost> ReactGroupPosts { get; set; }
         public virtual ICollection<ReportPost> ReportPosts { get; set; }
+        public virtual ICollection<SharePost> SharePosts { get; set; }
     }
 }
