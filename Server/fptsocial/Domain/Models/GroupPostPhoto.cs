@@ -8,12 +8,15 @@ namespace Domain.Models
         public GroupPostPhoto()
         {
             CommentPhotoGroupPosts = new HashSet<CommentPhotoGroupPost>();
+            GroupSharePosts = new HashSet<GroupSharePost>();
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
+            SharePosts = new HashSet<SharePost>();
         }
 
         public string GroupPostPhotoId { get; set; } = null!;
         public string GroupPostId { get; set; } = null!;
+        public string? Content { get; set; }
         public string GroupPhotoId { get; set; } = null!;
         public string GroupStatusId { get; set; } = null!;
         public string? GroupPostPhotoNumber { get; set; }
@@ -25,7 +28,9 @@ namespace Domain.Models
         public virtual GroupPost GroupPost { get; set; } = null!;
         public virtual GroupStatus GroupStatus { get; set; } = null!;
         public virtual ICollection<CommentPhotoGroupPost> CommentPhotoGroupPosts { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
+        public virtual ICollection<SharePost> SharePosts { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace Domain.Models
         public UserPost()
         {
             CommentPosts = new HashSet<CommentPost>();
+            GroupSharePosts = new HashSet<GroupSharePost>();
             ReactComments = new HashSet<ReactComment>();
             ReactPosts = new HashSet<ReactPost>();
             ReportPosts = new HashSet<ReportPost>();
@@ -30,6 +31,7 @@ namespace Domain.Models
         public virtual UserProfile User { get; set; } = null!;
         public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ICollection<CommentPost> CommentPosts { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<ReactComment> ReactComments { get; set; }
         public virtual ICollection<ReactPost> ReactPosts { get; set; }
         public virtual ICollection<ReportPost> ReportPosts { get; set; }

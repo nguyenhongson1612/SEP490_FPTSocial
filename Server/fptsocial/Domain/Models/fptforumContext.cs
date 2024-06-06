@@ -107,7 +107,6 @@ namespace Domain.Models
 
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Affiliation>(entity =>
@@ -130,7 +129,7 @@ namespace Domain.Models
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A4D2B88F41");
+                    .HasName("PK__AvataPho__BF0395A408A98F03");
 
                 entity.ToTable("AvataPhoto");
 
@@ -418,7 +417,7 @@ namespace Domain.Models
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA8FEF7CE6");
+                    .HasName("PK__CommentP__C3B4DFCAB48393A5");
 
                 entity.ToTable("CommentPost");
 
@@ -638,7 +637,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupChatMemeber>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B67140472C0");
+                    .HasName("PK__GroupCha__1ED28B6768B0EDC5");
 
                 entity.ToTable("GroupChatMemeber");
 
@@ -705,7 +704,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36ADD559E8B");
+                    .HasName("PK__GroupFPT__149AF36A07A13A1F");
 
                 entity.ToTable("GroupFPT");
 
@@ -759,7 +758,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCFF1694AF8");
+                    .HasName("PK__GroupInv__033C8DCF95429FE5");
 
                 entity.ToTable("GroupInvitation");
 
@@ -936,6 +935,8 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Content).HasColumnType("text");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.GroupPhotoId)
@@ -982,6 +983,8 @@ namespace Domain.Models
                 entity.Property(e => e.GroupPostVideoId)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Content).HasColumnType("text");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1104,11 +1107,19 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.Content).HasColumnType("text");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.GroupPostId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GroupPostPhotoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GroupPostVideoId)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
@@ -1120,22 +1131,58 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.UserPostId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserPostPhotoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserPostVideoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.GroupSharePosts)
                     .HasForeignKey(d => d.GroupPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("share_post_group_FK");
+                    .HasConstraintName("group_share_post_grouppostId_FK");
+
+                entity.HasOne(d => d.GroupPostPhoto)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.GroupPostPhotoId)
+                    .HasConstraintName("group_share_post_groupphotopost_FK");
+
+                entity.HasOne(d => d.GroupPostVideo)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.GroupPostVideoId)
+                    .HasConstraintName("group_share_post_groupvideopost_FK");
 
                 entity.HasOne(d => d.SharedToUser)
                     .WithMany(p => p.GroupSharePostSharedToUsers)
                     .HasForeignKey(d => d.SharedToUserId)
-                    .HasConstraintName("shareto_user_group_FK");
+                    .HasConstraintName("group_share_post_to_user_FK");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.GroupSharePostUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("share_user_group_FK");
+                    .HasConstraintName("group_share_post_by_user_FK");
+
+                entity.HasOne(d => d.UserPost)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.UserPostId)
+                    .HasConstraintName("group_share_post_FK");
+
+                entity.HasOne(d => d.UserPostPhoto)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.UserPostPhotoId)
+                    .HasConstraintName("group_share_post_postphoto_FK");
+
+                entity.HasOne(d => d.UserPostVideo)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.UserPostVideoId)
+                    .HasConstraintName("group_share_post_postvideo_FK");
             });
 
             modelBuilder.Entity<GroupStatus>(entity =>
@@ -1158,7 +1205,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC6DD0EDF3");
+                    .HasName("PK__GroupTag__657CF9AC29B12EE9");
 
                 entity.ToTable("GroupTag");
 
@@ -1612,7 +1659,7 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B52528F2274F10");
+                    .HasName("PK__ReactGro__E6B52528B894AD10");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1748,7 +1795,7 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E4B1A38CD6");
+                    .HasName("PK__ReactGro__B37F79E4FE8ABBE7");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -2427,7 +2474,21 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Content).HasColumnType("text");
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.GroupPostId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GroupPostPhotoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GroupPostVideoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.SharedToUserId)
                     .HasMaxLength(100)
@@ -2440,6 +2501,29 @@ namespace Domain.Models
                 entity.Property(e => e.UserPostId)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.UserPostPhotoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserPostVideoId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.GroupPost)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.GroupPostId)
+                    .HasConstraintName("share_post_grouppostId_FK");
+
+                entity.HasOne(d => d.GroupPostPhoto)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.GroupPostPhotoId)
+                    .HasConstraintName("share_post_groupphotopost_FK");
+
+                entity.HasOne(d => d.GroupPostVideo)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.GroupPostVideoId)
+                    .HasConstraintName("share_post_groupvideopost_FK");
 
                 entity.HasOne(d => d.SharedToUser)
                     .WithMany(p => p.SharePostSharedToUsers)
@@ -2455,8 +2539,17 @@ namespace Domain.Models
                 entity.HasOne(d => d.UserPost)
                     .WithMany(p => p.SharePosts)
                     .HasForeignKey(d => d.UserPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("share_post_FK");
+
+                entity.HasOne(d => d.UserPostPhoto)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.UserPostPhotoId)
+                    .HasConstraintName("share_post_postphoto_FK");
+
+                entity.HasOne(d => d.UserPostVideo)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.UserPostVideoId)
+                    .HasConstraintName("share_post_postvideo_FK");
             });
 
             modelBuilder.Entity<UserAffiliation>(entity =>
@@ -2594,7 +2687,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserGender>(entity =>
             {
                 entity.HasKey(e => e.GenderId)
-                    .HasName("PK__UserGend__4E24E9F79168AAF8");
+                    .HasName("PK__UserGend__4E24E9F7C4235C09");
 
                 entity.ToTable("UserGender");
 
@@ -2685,7 +2778,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserLookingFor>(entity =>
             {
                 entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E9E3CA957A");
+                    .HasName("PK__UserLook__DF7500E9BBDE7142");
 
                 entity.ToTable("UserLookingFor");
 
@@ -2774,6 +2867,8 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Content).HasColumnType("text");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.PhotoId)
@@ -2821,6 +2916,8 @@ namespace Domain.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Content).HasColumnType("text");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
@@ -2863,7 +2960,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4C67E3A700");
+                    .HasName("PK__UserProf__1788CC4C370710AD");
 
                 entity.ToTable("UserProfile");
 
@@ -2959,7 +3056,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserRelationship>(entity =>
             {
                 entity.HasKey(e => e.RelationshipId)
-                    .HasName("PK__UserRela__31FEB8812956630A");
+                    .HasName("PK__UserRela__31FEB8812787F9AB");
 
                 entity.ToTable("UserRelationship");
 
@@ -3004,7 +3101,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserSetting>(entity =>
             {
                 entity.HasKey(e => e.SettingId)
-                    .HasName("PK__UserSett__54372B1DE3443E16");
+                    .HasName("PK__UserSett__54372B1D04BF3BDD");
 
                 entity.ToTable("UserSetting");
 
