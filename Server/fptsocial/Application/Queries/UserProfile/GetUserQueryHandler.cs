@@ -1,8 +1,11 @@
-﻿using Application.Commands.UserProfile;
+﻿
+using Application.Commands.UserProfile;
 using Application.DTO.GetUserProfileDTO;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,6 +29,10 @@ namespace Application.Queries.UserProfile
 
         public async Task<Result<GetUserQueryResult>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
+            if(_context == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
             var user = await _context.UserProfiles
                 .Include(x=>x.ContactInfo)
                 .Include(x=>x.UserStatus)
@@ -38,7 +45,11 @@ namespace Application.Queries.UserProfile
                 .FirstOrDefaultAsync(x => x.UserNumber == request.UserNumber);
             if (user == null)
             {
-                throw new Exception("can not find user");
+                throw new ErrorException(StatusCodeEnum.U01_Not_Found);
+            }
+            if(user.IsActive == false)
+            {
+                throw new ErrorException(StatusCodeEnum.U02_Lock_user);
             }
             var result = _mapper.Map<GetUserQueryResult>(user);
             result.ContactInfo = _mapper.Map<GetUserContactInfo>(user.ContactInfo);

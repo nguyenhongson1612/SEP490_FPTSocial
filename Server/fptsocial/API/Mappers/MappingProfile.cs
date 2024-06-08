@@ -1,5 +1,7 @@
 ﻿using API.Controllers;
 using Application.Commands.UserProfile;
+using Application.DTO.GetUserProfileDTO;
+using Application.Queries.GetGender;
 using Application.Queries.UserProfile;
 using AutoMapper;
 using Domain.Models;
@@ -24,6 +26,7 @@ namespace Application.Mappers
             ;
 
             CreateMap<ContactInfo, GetUserContactInfo>().ForMember(dist => dist.StatusName, opt => opt.MapFrom(src => src.UserStatus.StatusName));
+            CreateMap<Gender, GetGenderReuslt>().ReverseMap();
         }
     }
 }
