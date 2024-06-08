@@ -1,6 +1,6 @@
 ﻿
-using Application.Commands.UserProfile;
 using Application.DTO.GetUserProfileDTO;
+using Application.Queries.GetUserProfile;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
@@ -49,7 +49,7 @@ namespace Application.Queries.UserProfile
             }
             if(user.IsActive == false)
             {
-                throw new ErrorException(StatusCodeEnum.U02_Lock_user);
+                throw new ErrorException(StatusCodeEnum.U02_Lock_User);
             }
             var result = _mapper.Map<GetUserQueryResult>(user);
             result.ContactInfo = _mapper.Map<GetUserContactInfo>(user.ContactInfo);

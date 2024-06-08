@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.UserProfile
+namespace Application.Queries.GetUserProfile
 {
     public class GetUserQueryResult
     {

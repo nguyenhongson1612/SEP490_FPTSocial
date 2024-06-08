@@ -17,7 +17,10 @@ namespace Domain.Enums
         [Description("")]
         Context_Not_Found,
         [Description("User is locked")]
-        U02_Lock_user
-        
+        U02_Lock_User,
+        [Description("User is Existed")]
+        U03_User_Exist,
+        [Description("Can not create user with Email and FeId is null")]
+        U04_Can_Not_Create,
     }
 }
