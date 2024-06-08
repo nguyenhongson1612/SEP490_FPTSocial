@@ -19,7 +19,7 @@ namespace Application.Services
             {
                 Name = "X-XSRF-TOKEN",
                 In = ParameterLocation.Header,
-                Required = true,
+                Required = false,
                 Schema = new OpenApiSchema
                 {
                     Type = "string"

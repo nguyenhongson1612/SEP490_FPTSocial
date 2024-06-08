@@ -24,24 +24,13 @@ builder.Services.AddCors();
 builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
-builder.Services.AddAntiforgery(options =>
-{
-    options.HeaderName = "X-CSRF-TOKEN";
-});
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API Name", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    
-    c.AddSecurityDefinition("X-XSRF-TOKEN", new OpenApiSecurityScheme
-    {
-        Name = "X-XSRF-TOKEN",
-        Type = SecuritySchemeType.ApiKey,
-        In = ParameterLocation.Header,
-        Description = "CSRF Token"
-    });
-
-    c.OperationFilter<AddXsrfTokenHeaderParameter>();
+   c.OperationFilter<AddXsrfTokenHeaderParameter>();
 });
 var app = builder.Build();
 
@@ -60,15 +49,22 @@ else
 }
 var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
 
-app.Use((context, next) =>
+app.Use(async (context, next) =>
 {
-    var requestPath = context.Request.Path.Value; 
+    var path = context.Request.Path.Value;
+    string[] urlPaths = { "/api", "/swagger" };
 
-        var tokenSet = antiforgery.GetAndStoreTokens(context);
-        context.Response.Cookies.Append("XSRF-TOKEN", tokenSet.RequestToken!,
-            new CookieOptions { HttpOnly = false, Secure = false, IsEssential = true, SameSite = SameSiteMode.Strict });
-    return next(context);
+    if (urlPaths.Any(urlPath => path.StartsWith(urlPath)))
+    {
+        var tokens = antiforgery.GetAndStoreTokens(context);
+        context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
+            new CookieOptions() { HttpOnly = false, Secure = false, IsEssential = true, SameSite = SameSiteMode.Strict });
+    }
+
+    await next(); 
 });
+
+
 app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
@@ -79,6 +75,12 @@ app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<AuthenMiddleware>();
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+});
 app.UseEndpoints(
     endpoints => 
     { 
