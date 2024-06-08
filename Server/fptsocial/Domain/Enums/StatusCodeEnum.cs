@@ -11,6 +11,13 @@ namespace Domain.Enums
     {
         Success = 0,
         [Description("System Error")]
-        Error
+        Error,
+        [Description("User not found")]
+        U01_Not_Found,
+        [Description("")]
+        Context_Not_Found,
+        [Description("User is locked")]
+        U02_Lock_user
+        
     }
 }
