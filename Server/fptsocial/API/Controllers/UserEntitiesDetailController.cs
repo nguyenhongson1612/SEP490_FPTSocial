@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
-    public class GetUserEntitiesDetail :BaseController
+    [Route("api/[controller]")]
+    public class UserEntitiesDetailController :BaseController
     {
         private readonly ISender _sender;
-        public GetUserEntitiesDetail(ISender sender)
+        public UserEntitiesDetailController(ISender sender)
         {
             _sender = sender;
         }
 
         [HttpGet]
-        [Route("/getgender")]
+        [Route("getgender")]
         public async Task<IActionResult> GetUserGender()
         {
             var input = new GetGenderQuery();

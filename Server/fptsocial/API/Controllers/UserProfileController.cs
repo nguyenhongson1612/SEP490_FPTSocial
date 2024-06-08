@@ -16,15 +16,16 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("/getuserbynumber")]
+        [Route("getuserbynumber")]
         public async Task<IActionResult> GetUserProfleByNumber([FromQuery]GetUserQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
-        [Route("/createbylogin")]
+        [Route("createbylogin")]     
         public async Task<IActionResult> CreateUser(UserProfileCommand input)
         {
             var res = await _sender.Send(input);
