@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTO.GetUserProfileDTO
+namespace Application.Commands.CreateSettings
 {
-    public class GetUserWebAfflication
+    public class CreateSettingsCommandResult
     {
-        public string? WebAffiliationUrl { get; set; }
-        public Guid UserStatusId { get; set; }
-        public string StatusName { get; set; }
+        public Guid SettingId { get; set; }
+        public string SettingName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
     }
 }

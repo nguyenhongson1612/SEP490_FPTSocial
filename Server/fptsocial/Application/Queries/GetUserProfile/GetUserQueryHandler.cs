@@ -34,15 +34,16 @@ namespace Application.Queries.UserProfile
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
             var user = await _context.UserProfiles
-                .Include(x=>x.ContactInfo)
-                .Include(x=>x.UserStatus)
-                .Include(x=>x.AvataPhotos)
-                .Include(x=>x.UserGender)
-                .Include(x=>x.WebAffiliations)
-                .Include(x=>x.UserSettings)
-                .Include(x=>x.Role)
-
-                .FirstOrDefaultAsync(x => x.UserNumber == request.UserNumber);
+                                    .Include(x => x.ContactInfo)
+                                    .Include(x => x.UserStatus)
+                                    .Include(x => x.AvataPhotos)
+                                    .Include(x => x.UserGender)
+                                    .Include(x => x.WebAffiliations)
+                                    .Include(x => x.UserSettings)
+                                    .Include(x => x.Role)
+                                    .Include(x => x.UserGender.Gender)
+                                    .Include(x => x.UserRelationship)
+                                    .FirstOrDefaultAsync(x => x.UserNumber == request.UserNumber);
             if (user == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -52,8 +53,18 @@ namespace Application.Queries.UserProfile
                 throw new ErrorException(StatusCodeEnum.U02_Lock_User);
             }
             var result = _mapper.Map<GetUserQueryResult>(user);
+            foreach (var webaff in user.WebAffiliations)
+            {
+                var mapweb = _mapper.Map<GetUserWebAfflication>(webaff);
+                result.WebAffiliationUrl.Add(mapweb);
+            }
+
+            foreach (var avata in user.AvataPhotos)
+            {
+                var mapavata = _mapper.Map<GetUserWebAfflication>(avata);
+                result.WebAffiliationUrl.Add(mapavata);
+            }
             result.ContactInfo = _mapper.Map<GetUserContactInfo>(user.ContactInfo);
-            result.Gender = _context.Genders.FirstOrDefault(x=>x.GenderId == user.UserGender.GenderId).GenderName;
             return Result<GetUserQueryResult>.Success(result);
         }
     }

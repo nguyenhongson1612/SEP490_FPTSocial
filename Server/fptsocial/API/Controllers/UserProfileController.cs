@@ -1,4 +1,5 @@
 ﻿using Application.Commands.GetUserProfile;
+using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserProfile;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,14 @@ namespace API.Controllers
         public UserProfileController(ISender sender)
         {
             _sender = sender;
+        }
+
+        [HttpGet]
+        [Route("getuserbyuserid")]
+        public async Task<IActionResult> GetUserProfleByUserId([FromQuery] GetUserByUserIdQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
 
         [HttpGet]
