@@ -4,6 +4,7 @@ using Application.Commands.CreateGender;
 using Application.Commands.CreateRelationships;
 using Application.Commands.CreateSettings;
 using Application.Commands.CreateStatus;
+using Application.Commands.CreateUserInterest;
 using Application.Commands.GetUserProfile;
 using Application.DTO.CreateUserDTO;
 using Application.DTO.GetUserProfileDTO;
@@ -42,7 +43,6 @@ namespace Application.Mappers
             .ForMember(dest => dest.UserStatusName, opt => opt.MapFrom(src => src.UserStatus.StatusName))
             .ForMember(dest => dest.GenderId, opt => opt.MapFrom(src => src.UserGender.Gender.GenderId))
             .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.UserGender.Gender.GenderName))
-            .ForMember(dest => dest.LookingFor, opt => opt.MapFrom(src => src.UserLookingFor.LookingFor.LookingForName))
             .ForMember(dest => dest.Relationship, opt => opt.MapFrom(src => src.UserRelationship.Relationship.RelationshipName))
             .ForMember(dest => dest.WebAffiliationUrl, opt => opt.MapFrom(src => src.WebAffiliations))
             .ForMember(dest => dest.AvataPhotosUrl, opt => opt.MapFrom(src => src.AvataPhotos));
@@ -58,7 +58,7 @@ namespace Application.Mappers
            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
             CreateMap<Interest, GetInterestResult>();
-
+            CreateMap<UserInterest, UserInterestCommandResult>();
             CreateMap<WebAffiliation, GetWebAffilicationResult>()
                 .ForMember(dist => dist.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
 
@@ -68,7 +68,6 @@ namespace Application.Mappers
             .ForMember(dest => dest.UserStatusName, opt => opt.MapFrom(src => src.UserStatus.StatusName))
             .ForMember(dest => dest.GenderId, opt => opt.MapFrom(src => src.UserGender.Gender.GenderId))
             .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.UserGender.Gender.GenderName))
-            .ForMember(dest => dest.LookingFor, opt => opt.MapFrom(src => src.UserLookingFor.LookingFor.LookingForName))
             .ForMember(dest => dest.Relationship, opt => opt.MapFrom(src => src.UserRelationship.Relationship.RelationshipName))
             .ForMember(dest => dest.WebAffiliationUrl, opt => opt.MapFrom(src => src.WebAffiliations))
             .ForMember(dest => dest.AvataPhotosUrl, opt => opt.MapFrom(src => src.AvataPhotos));

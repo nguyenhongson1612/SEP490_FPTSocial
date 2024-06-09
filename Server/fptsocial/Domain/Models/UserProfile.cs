@@ -57,6 +57,7 @@ namespace Domain.Models
             UserChatWithUsers = new HashSet<UserChatWithUser>();
             UserChats = new HashSet<UserChat>();
             UserInterests = new HashSet<UserInterest>();
+            UserLookingFors = new HashSet<UserLookingFor>();
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
             Videos = new HashSet<Video>();
@@ -86,7 +87,6 @@ namespace Domain.Models
         public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ContactInfo? ContactInfo { get; set; }
         public virtual UserGender? UserGender { get; set; }
-        public virtual UserLookingFor? UserLookingFor { get; set; }
         public virtual UserRelationship? UserRelationship { get; set; }
         public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
         public virtual ICollection<BlockUser> BlockUserUserIsBlockeds { get; set; }
@@ -138,6 +138,7 @@ namespace Domain.Models
         public virtual ICollection<UserChatWithUser> UserChatWithUsers { get; set; }
         public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
+        public virtual ICollection<UserLookingFor> UserLookingFors { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
         public virtual ICollection<Video> Videos { get; set; }
