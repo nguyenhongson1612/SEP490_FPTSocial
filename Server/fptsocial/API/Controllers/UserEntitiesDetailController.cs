@@ -1,4 +1,5 @@
-﻿using Application.Queries.GetGender;
+﻿using Application.Queries.GenInterest;
+using Application.Queries.GetGender;
 using Application.Queries.UserProfile;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,15 @@ namespace API.Controllers
         public async Task<IActionResult> GetUserGender()
         {
             var input = new GetGenderQuery();
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getinterest")]
+        public async Task<IActionResult> GetInterest()
+        {
+            var input = new GetInterestQuery();
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
