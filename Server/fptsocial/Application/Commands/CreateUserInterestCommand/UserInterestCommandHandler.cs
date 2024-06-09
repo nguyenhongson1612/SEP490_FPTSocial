@@ -41,10 +41,16 @@ namespace Application.Commands.CreateUserInterest
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
             }
-            var UserInterest = _mapper.Map<UserInterest>(request);
-            UserInterest.UserInterestId = _helper.GenerateNewGuid();
-            UserInterest.CreatedAt = DateTime.Now;
-            UserInterest.UpdatedAt = DateTime.Now;
+            var UserInterest = new UserInterest
+            {
+                UserInterestId = _helper.GenerateNewGuid(),
+                InterestId = request.InterestId,
+                UserId = request.UserId,
+                UserStatusId =request.UserStatusId,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            
 
             await _context.UserInterests.AddAsync(UserInterest);
             await _context.SaveChangesAsync();

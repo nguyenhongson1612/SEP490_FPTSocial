@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace Domain.Models
 {
@@ -99,19 +98,17 @@ namespace Domain.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var ConnectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetConnectionString("DefaultConnection");
-                optionsBuilder.UseSqlServer(ConnectionString);
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=(local);Database=fptforum;Trusted_Connection=True;");
             }
-
         }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A4DEE62D06");
+                    .HasName("PK__AvataPho__BF0395A4C9BBF90B");
 
                 entity.ToTable("AvataPhoto");
 
@@ -299,7 +296,7 @@ namespace Domain.Models
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA600678BE");
+                    .HasName("PK__CommentP__C3B4DFCA3D02BB25");
 
                 entity.ToTable("CommentPost");
 
@@ -457,7 +454,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupChatMemeber>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B67A7D2B4A4");
+                    .HasName("PK__GroupCha__1ED28B6742978897");
 
                 entity.ToTable("GroupChatMemeber");
 
@@ -504,7 +501,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36AC265C094");
+                    .HasName("PK__GroupFPT__149AF36A0CF51AB1");
 
                 entity.ToTable("GroupFPT");
 
@@ -544,7 +541,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCFD759CE39");
+                    .HasName("PK__GroupInv__033C8DCF9BC7AEE5");
 
                 entity.ToTable("GroupInvitation");
 
@@ -867,7 +864,7 @@ namespace Domain.Models
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC4DC05A84");
+                    .HasName("PK__GroupTag__657CF9AC189300D6");
 
                 entity.ToTable("GroupTag");
 
@@ -1198,7 +1195,7 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B5252893D76F0A");
+                    .HasName("PK__ReactGro__E6B52528565F604F");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1288,7 +1285,7 @@ namespace Domain.Models
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E475E9D738");
+                    .HasName("PK__ReactGro__B37F79E498949EBB");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -1894,9 +1891,6 @@ namespace Domain.Models
             {
                 entity.ToTable("UserInterest");
 
-                entity.HasIndex(e => e.InterestId, "only_interest")
-                    .IsUnique();
-
                 entity.Property(e => e.UserInterestId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -1904,8 +1898,8 @@ namespace Domain.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Interest)
-                    .WithOne(p => p.UserInterest)
-                    .HasForeignKey<UserInterest>(d => d.InterestId)
+                    .WithMany(p => p.UserInterests)
+                    .HasForeignKey(d => d.InterestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Interest_interest_FK");
 
@@ -1925,12 +1919,9 @@ namespace Domain.Models
             modelBuilder.Entity<UserLookingFor>(entity =>
             {
                 entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E999F18C8D");
+                    .HasName("PK__UserLook__DF7500E9C919BFE9");
 
                 entity.ToTable("UserLookingFor");
-
-                entity.HasIndex(e => e.UserId, "only_lookingfor")
-                    .IsUnique();
 
                 entity.Property(e => e.LookingForId).ValueGeneratedNever();
 
@@ -1945,8 +1936,8 @@ namespace Domain.Models
                     .HasConstraintName("lf_rlf_FK");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.UserLookingFor)
-                    .HasForeignKey<UserLookingFor>(d => d.UserId)
+                    .WithMany(p => p.UserLookingFors)
+                    .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("lf_user_FK");
 
@@ -2059,7 +2050,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4CD4B99C72");
+                    .HasName("PK__UserProf__1788CC4CD1B10750");
 
                 entity.ToTable("UserProfile");
 
@@ -2137,7 +2128,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserRelationship>(entity =>
             {
                 entity.HasKey(e => e.RelationshipId)
-                    .HasName("PK__UserRela__31FEB8811A6E669E");
+                    .HasName("PK__UserRela__31FEB88194624A8C");
 
                 entity.ToTable("UserRelationship");
 
@@ -2172,7 +2163,7 @@ namespace Domain.Models
             modelBuilder.Entity<UserSetting>(entity =>
             {
                 entity.HasKey(e => e.SettingId)
-                    .HasName("PK__UserSett__54372B1D79A9E825");
+                    .HasName("PK__UserSett__54372B1DA98701D5");
 
                 entity.ToTable("UserSetting");
 
@@ -2191,7 +2182,7 @@ namespace Domain.Models
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__5FB337D6");
+                    .HasConstraintName("FK__UserSetti__UserI__7BE56230");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)
