@@ -1,6 +1,11 @@
-﻿using Application.Queries.GenInterest;
+using Application.Commands.CreateContactInfor;
+using Application.Commands.CreateGender;
+using Application.Commands.CreateRelationships;
+using Application.Commands.CreateSettings;
+using Application.Commands.CreateStatus;
+using Application.Queries.GenInterest;
 using Application.Queries.GetGender;
-using Application.Queries.UserProfile;
+using Application.Queries.GetWebAffilication;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +35,61 @@ namespace API.Controllers
         public async Task<IActionResult> GetInterest()
         {
             var input = new GetInterestQuery();
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getuserwebaffilication")]
+        public async Task<IActionResult> GetUserWebAffilication([FromQuery] GetWebAffilicationQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("creategender")]
+        public async Task<IActionResult> CreateGender(CreateGenderCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createcontactinfor")]
+        public async Task<IActionResult> CreateContactInfor(CreateContactInforCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createstatus")]
+        public async Task<IActionResult> CreateStatus(CreateStatusCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createrelaionship")]
+        public async Task<IActionResult> CreateRelationship(CreateRelationShipCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createsetting")]
+        public async Task<IActionResult> CreateSetting(CreateSettingsCommand input)
+        {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
