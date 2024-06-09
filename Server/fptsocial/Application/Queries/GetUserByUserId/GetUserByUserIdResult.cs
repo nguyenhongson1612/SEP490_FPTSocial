@@ -1,15 +1,13 @@
-﻿
-using Application.DTO.GetUserProfileDTO;
-using Domain.Models;
+﻿using Application.DTO.GetUserProfileDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetUserProfile
+namespace Application.Queries.GetUserByUserId
 {
-    public class GetUserQueryResult
+    public class GetUserByUserIdResult
     {
         public Guid UserId { get; set; }
         public string FirstName { get; set; }
@@ -27,10 +25,10 @@ namespace Application.Queries.GetUserProfile
         public DateTime? UpdatedAt { get; set; }
         public Guid RoleId { get; set; }
         public string RoleName { get; set; }
-        public Guid? StatusId { get; set; }
+        public Guid StatusId { get; set; }
         public string UserStatusName { get; set; }
         public GetUserContactInfo ContactInfo { get; set; }
-        public Guid? GenderId { get; set; }
+        public Guid GenderId { get; set; }
         public string GenderName { get; set; }
         public string LookingFor { get; set; }
         public string Relationship { get; set; }
