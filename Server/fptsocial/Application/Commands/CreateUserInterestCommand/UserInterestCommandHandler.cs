@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Application.DTO.CreateUserDTO;
-using Application.Commands.GetUserInterest;
+using Application.Commands.CreateUserInterest;
 using Core.Helper;
 
 namespace Application.Commands.CreateUserInterest

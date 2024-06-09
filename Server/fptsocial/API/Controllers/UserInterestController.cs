@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Commands.GetUserInterest;
+using Application.Commands.CreateUserInterest;
 using Application.Queries.GenInterest;
 using Application.Queries.GetGender;
 using MediatR;
