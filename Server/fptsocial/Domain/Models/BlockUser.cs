@@ -9,7 +9,7 @@ namespace Domain.Models
         public Guid UserId { get; set; }
         public Guid UserIsBlockedId { get; set; }
         public Guid? BlockTypeId { get; set; }
-        public bool? IsBolck { get; set; }
+        public bool? IsBlock { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
