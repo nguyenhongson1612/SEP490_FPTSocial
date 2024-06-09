@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-function HomeLeftSideBar() {
+function HomeLeftSideBar({ user }) {
   const [isMore, setIsMore] = useState(false)
   return (
     <div className="max-h-[calc(100vh_-_55px)] hidden lg:!flex w-[380px] flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
@@ -18,7 +18,7 @@ function HomeLeftSideBar() {
               alt="group-img"
               className="rounded-[50%] aspect-square object-cover w-8"
             />
-            <span className="font-semibold">Hoan Le</span>
+            <span className="font-semibold">{user?.firstName + ' ' + user?.lastName}</span>
           </Link>
           <Link className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer ">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

@@ -11,22 +11,22 @@ function HomeRightSideBar() {
           className="flex flex-col items-start "
         >
           <p className=" text-gray-500">Contacts</p>
-          <a className="w-full px-2 py-3 hover:bg-fbWhite-500 flex items-center gap-3 cursor-pointer rounded-md">
+          <a className="w-full px-2 py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer rounded-md">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
               alt="group-img"
               className=" aspect-square rounded-[50%] object-cover w-8"
             />
 
-            <span className="font-semibold text-gray-900">New Feeds</span>
+            <span className="font-semibold">New Feeds</span>
           </a>
-          <a className="w-full px-2 py-3 hover:bg-fbWhite-500 flex items-center gap-3 cursor-pointer rounded-md">
+          <a className="w-full px-2 py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer rounded-md">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
               alt="group-img"
               className=" aspect-square rounded-[50%] object-cover w-8"
             />
-            <span className="font-semibold text-gray-900">New Feeds</span>
+            <span className="font-semibold">New Feeds</span>
           </a>
 
         </div>

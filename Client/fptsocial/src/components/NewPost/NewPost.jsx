@@ -7,13 +7,15 @@ import { IoMdArrowDropdown } from 'react-icons/io'
 import Tiptap from '../TitTap/TitTap'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
 
 function NewPost() {
   const [isCreate, setIsCreate] = useState(false)
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [content, setContent] = useState('')
-
+  const user = useSelector(selectCurrentUser)
   const createPost = () => {
     console.log(content)
     toast.success('Create post successfully')
@@ -36,7 +38,7 @@ function NewPost() {
         <div className="w-[90%] bg-fbWhite rounded-3xl hover:bg-fbWhite-500 cursor-pointer"
           onClick={() => setIsCreate(!isCreate)}
         >
-          <p className="px-3 py-3 max-sm:text-sm font-medium text-gray-500">What&apos;s on your mind, Admin?</p>
+          <p className="px-3 py-3 max-sm:text-sm font-medium text-gray-500">What&apos;s on your mind, {user?.firstName + ' ' + user?.lastName}?</p>
         </div>
       </div>
 
@@ -59,7 +61,7 @@ function NewPost() {
                         className="rounded-[50%] aspect-square object-cover w-10"
                       />
                       <div className='flex flex-col w-full cursor-pointer'>
-                        <span className='font-bold'>Hoan le</span>
+                        <span className='font-bold'>{user?.firstName + ' ' + user?.lastName}</span>
                         <div className='flex items-center gap-1 text-xs text-white font-bold py-1 px-2 bg-orangeFpt w-fit rounded-lg'>
                           <FaLock />
                           <span className=''>Only me</span>

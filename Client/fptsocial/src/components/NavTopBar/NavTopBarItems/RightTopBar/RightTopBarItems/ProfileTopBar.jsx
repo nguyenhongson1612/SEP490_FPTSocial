@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { selectCurrentUser } from '~/redux/user/userSlice';
 
 function ProfileTopBar() {
 
   const [isOpenProfile, setIsOpenProfile] = useState(false)
-
+  const user = useSelector(selectCurrentUser)
   const handleClickProfile = () => {
     setIsOpenProfile(!isOpenProfile)
   }
@@ -30,7 +32,7 @@ function ProfileTopBar() {
                   alt="group-img"
                   className="rounded-[50%] aspect-square object-cover w-10"
                 />
-                <span>Hoan Le</span>
+                <span>{user?.firstName + ' ' + user?.lastName}</span>
               </div>
             </Link>
             <ul className='flex flex-col gap-3'>
