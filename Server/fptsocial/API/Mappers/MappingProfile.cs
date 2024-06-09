@@ -2,6 +2,7 @@
 using Application.Commands.GetUserProfile;
 using Application.DTO.CreateUserDTO;
 using Application.DTO.GetUserProfileDTO;
+using Application.Queries.GenInterest;
 using Application.Queries.GetGender;
 using Application.Queries.GetUserProfile;
 using AutoMapper;
@@ -46,6 +47,7 @@ namespace Application.Mappers
            .ForMember(dest => dest.IsActive, opt => opt.Ignore())
            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<Interest, GetInterestResult>();
         }
     }
 }
