@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FPTUen from '~/assets/img/FPTUen.png'
 import { mockSearchData } from '~/apis/mock-data'
-
+import { ImSearch } from 'react-icons/im'
+import { BiArrowBack } from 'react-icons/bi'
 function LeftTopBar() {
   const [isSearch, setIsSearch] = useState(false)
   const [searchHistoryData, setSearchHistoryData] = useState(mockSearchData.data)
@@ -38,7 +39,7 @@ function LeftTopBar() {
         <img
           src={FPTUen}
           alt="home-img"
-          className=" h-[55px]"
+          className="w-[85px]"
         />
       </Link>
     }
@@ -96,30 +97,26 @@ function LeftTopBar() {
     <div className='relative z-20 flex items-center justify-start sm:justify-between'>
       {isSearch &&
         <div id='back-icon'
-          className='h-[55px] w-fit xs:w-[120px] flex justify-start items-center'>
-          <div className='p-2 bg-fbWhite hover:bg-[rgb(249,216,138)] rounded-[50%] cursor-pointer'
+          className='h-[55px] w-fit xs:w-[120px] flex justify-start items-center xs:translate-x-10'>
+          <div className='p-2 bg-orangeFpt text-white rounded-full cursor-pointer'
             onClick={() => setIsSearch(!isSearch)}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgb(242,113,36)" className="size-6 ">
-              <path fillRule="evenodd" d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-            </svg>
+            <BiArrowBack className='size-6' />
           </div>
         </div>
       }
 
       <div id="search-box"
-        className={`relative p-2 h-fit w-fit lg:h-9 lg:w-[240px] ${isSearch ? 'justify-start' : 'justify-center'} flex ${isSearch ? 'justify-start' : 'justify-center'} items-center bg-fbWhite text-xs text-gray-600 rounded-3xl z-20`}
+        className={`relative p-2 h-fit w-fit lg:h-9 lg:w-[240px] ${isSearch ? '' : ''} flex items-center bg-fbWhite text-xs text-gray-600 rounded-3xl z-20`}
         onClick={handleClickSearch}
       >
-        <div className={`p-1 left-6 ${isSearch && 'invisible w-0'}`}
+        <div className={`p-1 left-6 ${isSearch && 'hidden w-0'}`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg>
+          <ImSearch className='size-5 text-orangeFpt' />
         </div>
 
         <input
           type="text"
-          className={`hidden ${isSearch && '!block'} lg:!block w-[196px] h-[24px] bg-fbWhite p-2 text-base focus:outline-none ${isSearch ? 'ml-3' : ''}`}
+          className={`hidden md:!block ${isSearch && '!block '} w-[196px] h-[24px] bg-fbWhite p-2 text-base focus:outline-none `}
           placeholder="Search..."
           onChange={handleSearch}
         />

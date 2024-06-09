@@ -5,7 +5,7 @@ function ListPost({ listPost }) {
 
   return (
     <div id="content"
-      className="flex flex-col gap-3 items-center overflow-y-auto scrollbar-none-track"
+      className="flex flex-col gap-3 items-center"
     >
       <NewPost />
       <div id="post-list"

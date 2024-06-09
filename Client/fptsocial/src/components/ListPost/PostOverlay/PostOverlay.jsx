@@ -21,7 +21,7 @@ function PostOverLay({ postData }) {
   return <>
     {isOpen ?
       <div id="post-overlay"
-        className=" fixed top-0 left-0 right-0 bottom-0 bg-[rgba(252,252,252,0.8)] flex justify-center items-center z-20  "
+        className=" fixed top-0 left-0 right-0 bottom-0 bg-[rgba(252,252,252,0.5)] flex justify-center items-center z-20  "
       >
         <div
           ref={refModal}

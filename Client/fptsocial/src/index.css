@@ -8,8 +8,16 @@ body {
 
 @layer utilities {
   
+  .tiptap p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  
   .icon-side-bar {
-    @apply text-[rgb(242,113,36)] p-2 bg-fbWhite font-bold rounded-full hover:bg-[rgb(249,216,138)] cursor-pointer
+    @apply text-white p-2 bg-[#F27125] font-bold rounded-full hover:bg-[rgb(249,216,138)] cursor-pointer
   }
   .icon-text-side-bar {
     @apply text-xs hidden lg:block sp

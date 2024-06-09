@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import typography from '@tailwindcss/typography'
+import autoprefixer from 'autoprefixer'
 export default {
   content: [
     './index.html',
@@ -6,7 +8,7 @@ export default {
   ],
   theme: {
     screens: {
-      'xs': '400px',
+      'xs': '480px',
       'sm': '640px',
       'md': '768px',
       'lg': '1024px',
@@ -18,10 +20,11 @@ export default {
       //   Karla: ['Karla', 'sans-serif']
       // },
       boxShadow: {
-        '4edges': '3px 3px 5px rgb(0 0 0 / 0.2), -3px -3px 5px rgb(0 0 0 / 0.2)',
+        '4edges': '3px 3px 5px rgb(0 0 0 / 0.2), -3px -3px 5px rgb(0 0 0 / 0.2)'
 
       },
       colors: {
+        'orangeFpt': '#F27125',
         'fbWhite': '#E9EBEE',
         'fbWhite-500': '#dfe3ee',
         'fbWhite-700': '#8b9dc3',
@@ -46,6 +49,8 @@ export default {
   corePlugins: {
   },
   plugins: [
+    typography,
+    autoprefixer
   ],
 }
 
