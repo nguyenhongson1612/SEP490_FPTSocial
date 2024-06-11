@@ -35,7 +35,7 @@ function LeftTopBar() {
     className="flex gap-1 md:gap-5 justify-around items-center"
   >
     {!isSearch &&
-      <Link to={'/'} className="flex items-center">
+      <Link to={'/home'} className="flex items-center">
         <img
           src={FPTUen}
           alt="home-img"

@@ -14,7 +14,7 @@ function RightTopBar() {
         </li>
         <li id='message-top-bar'
           className="">
-          <Link to={'/'} className="flex items-center">
+          <Link to={'/home'} className="flex items-center">
             <AiOutlineMessage className='size-10 p-2 text-white bg-[#F27125] rounded-full' />
           </Link>
         </li>

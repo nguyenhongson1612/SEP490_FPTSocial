@@ -1,15 +1,20 @@
 // 'use client'
 import { FaBold, FaItalic, FaRedo, FaQuoteRight, FaUndo, FaUnderline, FaImage } from 'react-icons/fa'
 import { AiOutlineEnter } from 'react-icons/ai'
-import { MdFormatListBulleted, MdOutlineStrikethroughS } from 'react-icons/md'
+import { MdFormatListBulleted, MdOutlineStrikethroughS, MdEmojiEmotions } from 'react-icons/md'
 import { VscListOrdered } from 'react-icons/vsc'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import EmojiPicker from 'emoji-picker-react'
 
 
 const Toolbar = ({ editor }) => {
   const fileInputRef = useRef(null)
+  const [isOpenEmoji, setIsOpenEmoji] = useState(false)
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0]
+    // console.log('🚀 ~ handleImageUpload ~ e.target.files[0]:', e.target.files[0])
+    // console.log(file);
     if (file) {
       const reader = new FileReader()
       reader.onload = () => {
@@ -24,9 +29,9 @@ const Toolbar = ({ editor }) => {
   }
   return (
     <div
-      className="px-4 py-2 rounded-md flex  w-ful bg-fbWhite"
+      className="px-4 py-2 rounded-md flex w-full bg-fbWhite relative"
     >
-      <div className='flex justify-start items-center gap-3 w-full lg:w-10/12 flex-wrap '>
+      <div className='flex justify-start items-center gap-3 w-full flex-wrap '>
         <button
           type="button"
           onClick={() => {
@@ -117,6 +122,36 @@ const Toolbar = ({ editor }) => {
         >
           <FaImage className='w-5 h-5' />
         </button>
+        <div
+          className={
+            isOpenEmoji
+              ? 'text-orangeFpt cursor-pointer'
+              : 'text-orange-300 hover:text-orangeFpt cursor-pointer'
+          }
+        >
+          <MdEmojiEmotions className='w-5 h-5' onClick={() => setIsOpenEmoji(!isOpenEmoji)} />
+          <EmojiPicker
+            open={isOpenEmoji}
+            lazyLoadEmojis={true}
+            onEmojiClick={(emoji) => {
+              // console.log(emoji)
+              editor?.commands.insertContent(emoji?.emoji)
+            }}
+            emojiStyle={'facebook'}
+            searchDisabled={true}
+            height={300}
+            width={320}
+            suggestedEmojisMode={'recent'}
+            skinTonesDisabled={true}
+            previewConfig={{
+              showPreview: false
+            }}
+            // autoFocusSearch={false}
+            // allowExpandReactions={false}
+            // reactionsDefaultOpen={true}
+            className='!absolute !bottom-20 md:!bottom-10 !-right-8 md:!-right-40 lg:!-right-56 shadow-4edges'
+          />
+        </div>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
