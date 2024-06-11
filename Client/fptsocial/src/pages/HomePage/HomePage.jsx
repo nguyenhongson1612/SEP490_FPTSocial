@@ -11,8 +11,10 @@ function HomePage() {
   const user = useSelector(selectCurrentUser)
   const [listPost, setListPost] = useState(null)
   const dispatch = useDispatch()
+  console.log('outside');
   useEffect(() => {
     // Call API
+    console.log('2');
     getAllPost().then(data => {
       // console.log('🚀 ~ getAllPost ~ data:', data)
       setListPost(data)
@@ -20,6 +22,7 @@ function HomePage() {
   }, [])
 
   useEffect(() => {
+    console.log('3');
     dispatch(getUserByNumberAPI())
   }, [dispatch])
   useEffect(() => {
@@ -30,6 +33,7 @@ function HomePage() {
   return (
     <>
       <NavTopBar />
+      {console.log('listpost', typeof listPost, listPost && listPost)}
       <div className='flex bg-fbWhite justify-center lg:justify-around'>
         <HomeLeftSideBar user={user} />
         <div className='max-h-[calc(100vh_-_55px)]  basis-11/12 md:basis-8/12 lg:basis-6/12 overflow-y-auto scrollbar-none-track'>

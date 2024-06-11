@@ -15,7 +15,10 @@ const Tiptap = ({ setContent, content }) => {
         placeholder: 'What\'s on your mind, Hoan?',
       }),
       Image.configure({
-        allowBase64: true
+        allowBase64: true,
+        HTMLAttributes: {
+          class: 'w-full'
+        }
       })],
     editorProps: {
       attributes: {
