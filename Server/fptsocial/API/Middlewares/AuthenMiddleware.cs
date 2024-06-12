@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.CommandModels;
+using Domain.QueryModels;
 
 namespace API.Middlewares
 {
@@ -10,10 +11,11 @@ namespace API.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, fptforumContext context)
+        public async Task InvokeAsync(HttpContext httpContext, fptforumCommandContext context)
         {
             
             await _next(httpContext);
         }
+        
     }
 }

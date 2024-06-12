@@ -6,7 +6,7 @@ using Core.CQRS;
 using Core.CQRS.Query;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.Models;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,10 +18,10 @@ namespace Application.Queries.UserProfile
 {
     public class GetUserQueryHandler: IQueryHandler<GetUserQuery, GetUserQueryResult>
     {
-        private readonly fptforumContext _context;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetUserQueryHandler(fptforumContext context, IMapper mapper)
+        public GetUserQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

@@ -1,6 +1,8 @@
 using Application.Commands.CreateContactInfor;
 using Application.Commands.CreateGender;
+using Application.Commands.CreateInterest;
 using Application.Commands.CreateRelationships;
+using Application.Commands.CreateRole;
 using Application.Commands.CreateSettings;
 using Application.Commands.CreateStatus;
 using Application.Queries.GenInterest;
@@ -89,6 +91,25 @@ namespace API.Controllers
         [HttpPost]
         [Route("createsetting")]
         public async Task<IActionResult> CreateSetting(CreateSettingsCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createrole")]
+        public async Task<IActionResult> CreateRole(CreateRoleCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [Route("createinterest")]
+        public async Task<IActionResult> CreateInterest(CreateInterestCommand input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);

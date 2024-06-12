@@ -2,9 +2,10 @@
 using Core.CQRS;
 using Core.CQRS.Command;
 using Core.Helper;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.Models;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,15 @@ namespace Application.Commands.CreateContactInfor
 {
     public class CreateContactInforCommandHandler : ICommandHandler<CreateContactInforCommand, CreateContactInforCommandResult>
     {
-        private readonly fptforumContext _context;
+        private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public CreateContactInforCommandHandler(fptforumContext context, IMapper mapper)
+        public CreateContactInforCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -34,8 +37,8 @@ namespace Application.Commands.CreateContactInfor
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-            var status = await _context.UserStatuses.FirstOrDefaultAsync(x => x.UserStatusId == request.UserStatus);
+            var user = await _querycontext.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var status = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.UserStatusId == request.UserStatus);
             if(user == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -44,7 +47,7 @@ namespace Application.Commands.CreateContactInfor
             {
                 throw new ErrorException(StatusCodeEnum.ST01_Status_Not_Found);
             }
-            var contact = new ContactInfo { 
+            var contact = new Domain.CommandModels.ContactInfo { 
                 ContactInfoId = _helper.GenerateNewGuid(),
                 SecondEmail = request.SecondEmail,
                 PrimaryNumber = request.PrimaryNumber,

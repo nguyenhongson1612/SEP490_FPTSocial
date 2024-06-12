@@ -1,5 +1,4 @@
 ﻿using Application.DTO.CreateUserDTO;
-using Domain.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;

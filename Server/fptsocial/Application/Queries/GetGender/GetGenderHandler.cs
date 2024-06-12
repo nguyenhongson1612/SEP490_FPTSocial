@@ -3,7 +3,7 @@ using Core.CQRS;
 using Core.CQRS.Query;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.Models;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,10 +15,10 @@ namespace Application.Queries.GetGender
 {
     public class GetGenderHandler : IQueryHandler<GetGenderQuery, List<GetGenderReuslt>>
     {
-        private readonly fptforumContext _context;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetGenderHandler(fptforumContext context, IMapper mapper)
+        public GetGenderHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
