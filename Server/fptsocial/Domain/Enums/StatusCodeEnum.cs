@@ -26,6 +26,8 @@ namespace Domain.Enums
         U05_Not_Has_WebAffilication,
         [Description("Gender is existed in data")]
         G01_Gender_Existed,
+        [Description("Gender is not found")]
+        G02_Gender_Not_Found,
         [Description("Status not found")]
         ST01_Status_Not_Found,
         [Description("Status is existed")]
@@ -34,5 +36,9 @@ namespace Domain.Enums
         RL01_Relationship_Existed,
         [Description("Setting is existed")]
         S01_Settings_Existed,
+        [Description("Role is existed")]
+        R01_Role_Existed,
+        [Description("Interest is existed")]
+        IT01_Interest_Existed,
     }
 }

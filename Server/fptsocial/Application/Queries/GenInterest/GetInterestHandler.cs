@@ -5,17 +5,17 @@ using Core.CQRS;
 using Core.CQRS.Query;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.Models;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Queries.GenInterest
 {
 	public class GetInterestHandler : IQueryHandler<GetInterestQuery, List<GetInterestResult>>
     {
-		private readonly fptforumContext _context;
+		private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetInterestHandler(fptforumContext context, IMapper mapper)
+        public GetInterestHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

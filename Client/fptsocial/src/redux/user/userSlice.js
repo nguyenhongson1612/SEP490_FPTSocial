@@ -8,10 +8,10 @@ export const getUserByNumberAPI = createAsyncThunk(
     const response = await authorizedAxiosInstance.get('https://localhost:44329/api/UserProfile/getuserbynumber',
       {
         params: {
-          UserNumber: 'usernumber1'
+          UserNumber: '164026'
         },
         headers: {
-          'X-XSRF-TOKEN': 'C805657E-EDB1-4942-A22D-BE7BADFD1FE2'
+          'X-XSRF-TOKEN': 'CfDJ8PitB5EGtQxHuVCBkp5as6Ymc2JN2dnPNP3m1P9aP5FZHTQhyAkClJKzZTQACMwbP1THgexjM-41007vfOD5qaNTkq5XnVIw7BLGP8NxKcws2n-nt1KDhX-Su-DLGTovB8LTIvz2KcZXs5sLC_vlQKM'
         }
       }
     )

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
-using Domain.Models;
 using Domain.Exceptions;
 using Domain.Enums;
 using System;
@@ -13,18 +12,22 @@ using Microsoft.EntityFrameworkCore;
 using Application.DTO.CreateUserDTO;
 using Application.Commands.CreateUserInterest;
 using Core.Helper;
+using Domain.CommandModels;
+using Domain.QueryModels;
 
 namespace Application.Commands.CreateUserInterest
 {
     public class UserInterestCommandHandler : ICommandHandler<UserInterestCommand, UserInterestCommandResult>
     {
-        private readonly fptforumContext _context;
+        private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public UserInterestCommandHandler(fptforumContext context, IMapper mapper)
+        public UserInterestCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -35,13 +38,13 @@ namespace Application.Commands.CreateUserInterest
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == request.UserId);
-            var interest = _context.Interests.FirstOrDefault(x => x.InterestId == request.InterestId);
+            var user = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId == request.UserId);
+            var interest = _querycontext.Interests.FirstOrDefault(x => x.InterestId == request.InterestId);
             if(user == null || interest == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
             }
-            var UserInterest = new UserInterest
+            var UserInterest = new Domain.CommandModels.UserInterest
             {
                 UserInterestId = _helper.GenerateNewGuid(),
                 InterestId = request.InterestId,

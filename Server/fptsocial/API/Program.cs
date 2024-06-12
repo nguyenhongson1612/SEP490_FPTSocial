@@ -1,7 +1,8 @@
 ﻿using API.Middlewares;
 using Application.Mappers;
 using Application.Services;
-using Domain.Models;
+using Domain.CommandModels;
+using Domain.QueryModels;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<fptforumContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<fptforumQueryContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("QureryConnection")));
+builder.Services.AddDbContext<fptforumCommandContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CommandConnection")));
 // Config Swagger/Open API
 
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false)
@@ -25,7 +28,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
-
+builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
