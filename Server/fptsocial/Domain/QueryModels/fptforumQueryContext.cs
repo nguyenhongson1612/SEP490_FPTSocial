@@ -108,7 +108,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A474823984");
+                    .HasName("PK__AvataPho__BF0395A47E32B07E");
 
                 entity.ToTable("AvataPhoto");
 
@@ -296,7 +296,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA75EA1F0D");
+                    .HasName("PK__CommentP__C3B4DFCA57139424");
 
                 entity.ToTable("CommentPost");
 
@@ -454,7 +454,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupChatMember>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B671A92BBD0");
+                    .HasName("PK__GroupCha__1ED28B67DD1CB76E");
 
                 entity.ToTable("GroupChatMember");
 
@@ -501,7 +501,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36A05981DB4");
+                    .HasName("PK__GroupFPT__149AF36A5F3D1550");
 
                 entity.ToTable("GroupFPT");
 
@@ -541,7 +541,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCF13D191E0");
+                    .HasName("PK__GroupInv__033C8DCF2B4EB9E8");
 
                 entity.ToTable("GroupInvitation");
 
@@ -874,7 +874,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC0757F7EF");
+                    .HasName("PK__GroupTag__657CF9AC132D3CA1");
 
                 entity.ToTable("GroupTag");
 
@@ -1205,7 +1205,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B5252811CF00A6");
+                    .HasName("PK__ReactGro__E6B5252856C85991");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1295,7 +1295,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E4CF255A80");
+                    .HasName("PK__ReactGro__B37F79E48F4055CA");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -1931,7 +1931,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<UserLookingFor>(entity =>
             {
                 entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E93ECE9823");
+                    .HasName("PK__UserLook__DF7500E9A97C871A");
 
                 entity.ToTable("UserLookingFor");
 
@@ -2072,7 +2072,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4CCA8A447A");
+                    .HasName("PK__UserProf__1788CC4C2188389B");
 
                 entity.ToTable("UserProfile");
 
@@ -2149,23 +2149,20 @@ namespace Domain.QueryModels
 
             modelBuilder.Entity<UserRelationship>(entity =>
             {
-                entity.HasKey(e => e.RelationshipId)
-                    .HasName("PK__UserRela__31FEB8819C2408B9");
-
                 entity.ToTable("UserRelationship");
 
                 entity.HasIndex(e => e.UserId, "only_relationship")
                     .IsUnique();
 
-                entity.Property(e => e.RelationshipId).ValueGeneratedNever();
+                entity.Property(e => e.UserRelationshipId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Relationship)
-                    .WithOne(p => p.UserRelationship)
-                    .HasForeignKey<UserRelationship>(d => d.RelationshipId)
+                    .WithMany(p => p.UserRelationships)
+                    .HasForeignKey(d => d.RelationshipId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("rlu_rlf_FK");
 
@@ -2186,14 +2183,11 @@ namespace Domain.QueryModels
             {
                 entity.ToTable("UserSetting");
 
-                entity.HasIndex(e => e.SettingId, "only_setting")
-                    .IsUnique();
-
                 entity.Property(e => e.UserSettingId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.Setting)
-                    .WithOne(p => p.UserSetting)
-                    .HasForeignKey<UserSetting>(d => d.SettingId)
+                    .WithMany(p => p.UserSettings)
+                    .HasForeignKey(d => d.SettingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("setting_FK");
 
@@ -2201,7 +2195,7 @@ namespace Domain.QueryModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__00AA174D");
+                    .HasConstraintName("FK__UserSetti__UserI__7EC1CEDB");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)
@@ -2286,9 +2280,6 @@ namespace Domain.QueryModels
             modelBuilder.Entity<WorkPlace>(entity =>
             {
                 entity.ToTable("WorkPlace");
-
-                entity.HasIndex(e => e.WorkPlaceName, "only_workplace")
-                    .IsUnique();
 
                 entity.Property(e => e.WorkPlaceId).ValueGeneratedNever();
 

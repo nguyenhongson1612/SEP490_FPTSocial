@@ -80,7 +80,17 @@ namespace Application.Commands.CreateUserProfile
             };
             var userrelationship = new Domain.CommandModels.UserRelationship
             {
+                UserRelationshipId = _helper.GenerateNewGuid(),
                 RelationshipId = request.Relationship.RelationshipId,
+                UserId = userprofile.UserId,
+                UserStatusId = status.UserStatusId,
+                CreatedAt = DateTime.Now
+            };
+            var avata = new Domain.CommandModels.AvataPhoto { 
+                
+                AvataPhotosId = _helper.GenerateNewGuid(),
+                AvataPhotosUrl = request.Avataphoto,
+                IsUsed = true,
                 UserId = userprofile.UserId,
                 UserStatusId = status.UserStatusId,
                 CreatedAt = DateTime.Now
@@ -135,6 +145,7 @@ namespace Application.Commands.CreateUserProfile
             }
 
             await _context.UserGenders.AddAsync(usergender);
+            await _context.AvataPhotos.AddAsync(avata);
             await _context.ContactInfos.AddAsync(contactinfor);
             await _context.UserRelationships.AddAsync(userrelationship);
             await _context.SaveChangesAsync();

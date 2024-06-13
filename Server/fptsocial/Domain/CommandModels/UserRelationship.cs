@@ -5,6 +5,7 @@ namespace Domain.CommandModels
 {
     public partial class UserRelationship
     {
+        public Guid UserRelationshipId { get; set; }
         public Guid RelationshipId { get; set; }
         public Guid UserId { get; set; }
         public Guid UserStatusId { get; set; }

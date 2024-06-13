@@ -57,17 +57,6 @@ namespace Application.Queries.GetUserByUserId
                     throw new ErrorException(StatusCodeEnum.U02_Lock_User);
                 }
                 var result = _mapper.Map<GetUserByUserIdResult>(getuser);
-                foreach (var webaff in getuser.WebAffiliations)
-                {
-                    var mapweb = _mapper.Map<GetUserWebAfflication>(webaff);
-                    result.WebAffiliationUrl.Add(mapweb);
-                }
-
-                foreach (var avata in getuser.AvataPhotos)
-                {
-                    var mapavata = _mapper.Map<GetUserWebAfflication>(avata);
-                    result.WebAffiliationUrl.Add(mapavata);
-                }
                 List<GetUserByUserIdResult> resultuser = new List<GetUserByUserIdResult>();
                 result.ContactInfo = _mapper.Map<GetUserContactInfo>(getuser.ContactInfo);
                 resultuser.Add(result);
