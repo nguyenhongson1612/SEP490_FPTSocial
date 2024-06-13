@@ -29,6 +29,7 @@ namespace Domain.CommandModels
             UserSettings = new HashSet<UserSetting>();
             Videos = new HashSet<Video>();
             WebAffiliations = new HashSet<WebAffiliation>();
+            WorkPlaces = new HashSet<WorkPlace>();
         }
 
         public Guid UserStatusId { get; set; }
@@ -58,5 +59,6 @@ namespace Domain.CommandModels
         public virtual ICollection<UserSetting> UserSettings { get; set; }
         public virtual ICollection<Video> Videos { get; set; }
         public virtual ICollection<WebAffiliation> WebAffiliations { get; set; }
+        public virtual ICollection<WorkPlace> WorkPlaces { get; set; }
     }
 }

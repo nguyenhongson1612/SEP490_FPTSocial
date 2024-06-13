@@ -22,7 +22,7 @@ namespace Application.DTO.CreateUserDTO
         }
         public class CreateUserSettingDTO
         {
-            public Guid UserSettingId { get; set; }
+            public Guid SettingId { get; set; }
         }
 
         public class CreateUserWebAffilicationDTO

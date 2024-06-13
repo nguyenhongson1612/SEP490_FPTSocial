@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
+
 [assembly: ApiController]
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +36,60 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-   c.OperationFilter<AddXsrfTokenHeaderParameter>();
+    c.OperationFilter<AddXsrfTokenHeaderParameter>();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
 });
+
+string IdentityServerUrl = builder.Configuration.GetValue<string>("IdentityServer:url");
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = IdentityServerUrl;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateActor = true,
+            ValidateIssuer = true,
+            ValidateAudience = false,
+            RequireExpirationTime = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        // policy.RequireClaim("scope", Config.FeenServiceClientId);
+    });
+});
+//builder.Services.ConfigurePolicy(builder.Configuration);
+
+
+
 var app = builder.Build();
 
 
@@ -77,7 +132,6 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<AuthenMiddleware>();
 app.UseCors(builder =>
 {
     builder.AllowAnyOrigin()
