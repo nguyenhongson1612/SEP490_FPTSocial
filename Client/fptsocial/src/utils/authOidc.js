@@ -1,9 +1,10 @@
-import { AuthProvider } from 'oidc-react'
+import { checkUserExist } from '~/apis'
 
 const oidcConfig = {
   onSignIn: () => {
-    // Redirect?
-    console.log('User signed in')
+
+    window.location.href = '/home'
+
   },
   authority: 'https://feid.ptudev.net',
   clientId: 'societe-front-end',

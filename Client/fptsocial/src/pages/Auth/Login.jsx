@@ -25,20 +25,6 @@ function Login() {
             </span>
           </div>
           <div className='flex flex-col items-center justify-center gap-5 w-full h-full'>
-            <a className='w-[90%] px-2 py-1 rounded-md bg-[#dd4b39] flex gap-5  items-center min-h-14'
-              href='#'
-            >
-              <IconGoogle />
-              <span className='text-white font-semibold font-sans '>Login With Google</span>
-            </a>
-            <a className='w-[90%] px-2 py-1 rounded-md bg-[#2672ec] flex gap-5  items-center  min-h-14'
-              href='#'
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" strokeWidth={0.3} stroke="currentColor" className="w-10 h-10">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-              </svg >
-              <span className='text-white font-semibold font-sans '>Login With FeID</span>
-            </a>
           </div>
         </div>
       </div>

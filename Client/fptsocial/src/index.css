@@ -65,15 +65,26 @@ body {
   }
 
   .img-bg {
-    background-image: url('https://daihoc.fpt.edu.vn/wp-content/uploads/2019/10/nha-alpha.jpg'),
+    background-image: url('./src/assets/img/alphabuilding.jpg'),
       linear-gradient(to right,rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),
-      url('https://daihoc.fpt.edu.vn/wp-content/uploads/2019/10/nha-alpha.jpg');
+      url('./src/assets/img/alphabuilding.jpg');
     background-size: contain, cover, cover;
     background-repeat: no-repeat, no-repeat, no-repeat;
     background-position: center, center, center;
-    border-top-left-radius: 1rem; 
-    border-bottom-left-radius: 1rem; 
+  }
+
+  .img-bg2 {
+    background-image: linear-gradient(to right,rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),url('./src/assets/img/alphabuilding_long.jpg');
+    background-size: cover, cover;
+    background-repeat: no-repeat, no-repeat;
+    background-position: center, center;
   }
   
+  .circle {
+    @apply bg-fbWhite h-8 w-8 flex justify-center items-center rounded-[50%] z-[1] 
+  }
+  .active {
+    @apply border-gray-500 text-white bg-green-700 my-4 
+  }
 }
 
