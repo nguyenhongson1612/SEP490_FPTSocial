@@ -61,7 +61,85 @@ namespace Application.Commands.CreateUserProfile
             userprofile.IsFirstTimeLogin = false;
             userprofile.CreatedAt = DateTime.Now;
             await _context.UserProfiles.AddAsync(userprofile);
+            var usergender = new Domain.CommandModels.UserGender {
+                UserGenderId = _helper.GenerateNewGuid(),
+                GenderId = request.Gender.GenderId,
+                UserId = userprofile.UserId,
+                UserStatusId = status.UserStatusId,
+                CreatedAt = DateTime.Now
+            };
+            var contactinfor = new Domain.CommandModels.ContactInfo
+            {
+                ContactInfoId = _helper.GenerateNewGuid(),
+                SecondEmail = request.ContactInfor.SecondEmail,
+                PrimaryNumber = request.ContactInfor.PrimaryNumber,
+                SecondNumber = request.ContactInfor.SecondNumber,
+                UserId = userprofile.UserId,
+                UserStatusId = status.UserStatusId,
+                CreatedAt = DateTime.Now
+            };
+            var userrelationship = new Domain.CommandModels.UserRelationship
+            {
+                RelationshipId = request.Relationship.RelationshipId,
+                UserId = userprofile.UserId,
+                UserStatusId = status.UserStatusId,
+                CreatedAt = DateTime.Now
+            };
+            foreach(var us in request.UserSetting)
+            {
+                var usersetting = new Domain.CommandModels.UserSetting
+                {
+                    UserSettingId = _helper.GenerateNewGuid(),
+                    SettingId = us.SettingId,
+                    UserId = userprofile.UserId,
+                    UserStatusId = status.UserStatusId,
+                };
+                await _context.UserSettings.AddAsync(usersetting);
+            }
+
+            foreach (var us in request.Interes)
+            {
+                var userinteres = new Domain.CommandModels.UserInterest
+                {
+                    UserInterestId = _helper.GenerateNewGuid(),
+                    InterestId = us.InterestId,
+                    UserId = userprofile.UserId,
+                    UserStatusId = status.UserStatusId,
+                    CreatedAt = DateTime.Now
+                };
+                await _context.UserInterests.AddAsync(userinteres);
+            }
+            foreach (var us in request.WorkPlace)
+            {
+                var userworkplace = new Domain.CommandModels.WorkPlace
+                {
+                    WorkPlaceId = _helper.GenerateNewGuid(),
+                    WorkPlaceName = us.WorkPlaceName,
+                    UserId = userprofile.UserId,
+                    UserStatusId = status.UserStatusId,
+                    CreatedAt = DateTime.Now
+                };
+                await _context.WorkPlaces.AddAsync(userworkplace);
+            }
+            foreach (var us in request.WebAffilication)
+            {
+                var userinteres = new Domain.CommandModels.WebAffiliation
+                {
+                    WebAffiliationId = _helper.GenerateNewGuid(),
+                    WebAffiliationUrl = us.WebAffiliationUrl,
+                    UserId = userprofile.UserId,
+                    UserStatusId = status.UserStatusId,
+                    CreatedAt = DateTime.Now
+                };
+                await _context.WebAffiliations.AddAsync(userinteres);
+            }
+
+            await _context.UserGenders.AddAsync(usergender);
+            await _context.ContactInfos.AddAsync(contactinfor);
+            await _context.UserRelationships.AddAsync(userrelationship);
             await _context.SaveChangesAsync();
+
+            //mapping
             var result = _mapper.Map<UserProfileCommandResult>(request);
             result.UserId = userprofile.UserId;
             result.RoleId = userprofile.RoleId;
