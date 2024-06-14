@@ -49,6 +49,10 @@ namespace Application.Queries.CheckUserExist
             }
             result.enumcode = StatusCodeEnum.U03_User_Exist;
             result.Message = StatusCodeEnum.U03_User_Exist.GetDescription();
+            result.UserId = user.UserId;
+            result.UserNumber = user.UserNumber;
+            result.Email = user.Email;
+            result.FeId = user.FeId;
             return Result<CheckUserExistQueryResult>.Success(result);
         }
     }
