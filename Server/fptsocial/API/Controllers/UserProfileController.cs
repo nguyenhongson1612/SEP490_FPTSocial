@@ -16,6 +16,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserProfileController : BaseController
     {
         private readonly ISender _sender;
@@ -40,7 +41,6 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("checkuserexist")]
         public async Task<IActionResult> CheckUserExisted()
@@ -64,8 +64,7 @@ namespace API.Controllers
 
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateAntiForgeryToken]
+        
         [HttpPost]
         [Route("createbylogin")]     
         public async Task<IActionResult> CreateUser(UserProfileCommand input)
