@@ -3,8 +3,13 @@ using Application.Queries.CheckUserExist;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserProfile;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace API.Controllers
@@ -35,18 +40,31 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("checkuserexist")]
         public async Task<IActionResult> CheckUserExisted()
         {
-            
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""); ;
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if(jsontoken == null)
+            {
+                return BadRequest();    
+            }
             var input = new CheckUserExistQuery();
-            input.Email = "societe@gmail.com";
+            input.Email = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "email").Value;
+            //input.FeId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "feid").Value;
             var res = await _sender.Send(input);
             return Success(res.Value);
+
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createbylogin")]     
