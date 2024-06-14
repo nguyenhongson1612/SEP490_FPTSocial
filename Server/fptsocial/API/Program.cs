@@ -70,12 +70,7 @@ builder.Services.AddAuthentication("Bearer")
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateActor = true,
-            ValidateIssuer = true,
             ValidateAudience = false,
-            RequireExpirationTime = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
         };
     });
 builder.Services.AddAuthorization(options =>
