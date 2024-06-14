@@ -78,76 +78,111 @@ namespace Application.Commands.CreateUserProfile
                 UserStatusId = status.UserStatusId,
                 CreatedAt = DateTime.Now
             };
-            var userrelationship = new Domain.CommandModels.UserRelationship
+            if (request.Relationship.RelationshipId != null)
             {
-                UserRelationshipId = _helper.GenerateNewGuid(),
-                RelationshipId = (Guid)request.Relationship.RelationshipId,
-                UserId = userprofile.UserId,
-                UserStatusId = status.UserStatusId,
-                CreatedAt = DateTime.Now
-            };
-            var avata = new Domain.CommandModels.AvataPhoto { 
-                
-                AvataPhotosId = _helper.GenerateNewGuid(),
-                AvataPhotosUrl = request.Avataphoto,
-                IsUsed = true,
-                UserId = userprofile.UserId,
-                UserStatusId = status.UserStatusId,
-                CreatedAt = DateTime.Now
-            };
-            foreach(var us in request.UserSetting)
-            {
-                var usersetting = new Domain.CommandModels.UserSetting
+                var userrelationship = new Domain.CommandModels.UserRelationship
                 {
-                    UserSettingId = _helper.GenerateNewGuid(),
-                    SettingId = (Guid)us.SettingId,
+                    UserRelationshipId = _helper.GenerateNewGuid(),
+                    RelationshipId = (Guid)request.Relationship.RelationshipId,
                     UserId = userprofile.UserId,
                     UserStatusId = status.UserStatusId,
+                    CreatedAt = DateTime.Now
                 };
-                await _context.UserSettings.AddAsync(usersetting);
+                await _context.UserRelationships.AddAsync(userrelationship);
+            }
+            
+            if(request.Avataphoto != null)
+            {
+                var avata = new Domain.CommandModels.AvataPhoto
+                {
+
+                    AvataPhotosId = _helper.GenerateNewGuid(),
+                    AvataPhotosUrl = request.Avataphoto,
+                    IsUsed = true,
+                    UserId = userprofile.UserId,
+                    UserStatusId = status.UserStatusId,
+                    CreatedAt = DateTime.Now
+                };
+                await _context.AvataPhotos.AddAsync(avata);
+            }
+           
+            if(request.UserSetting.Count > 0)
+            {
+                foreach (var us in request.UserSetting)
+                {
+                    if(us.SettingId != null)
+                    {
+                        var usersetting = new Domain.CommandModels.UserSetting
+                        {
+                            UserSettingId = _helper.GenerateNewGuid(),
+                            SettingId = (Guid)us.SettingId,
+                            UserId = userprofile.UserId,
+                            UserStatusId = status.UserStatusId,
+                        };
+                        await _context.UserSettings.AddAsync(usersetting);
+                    }
+                }
+            }
+           
+            if(request.Interes.Count > 0)
+            {
+                foreach (var us in request.Interes)
+                {
+                    if(us.InterestId != null)
+                    {
+                        var userinteres = new Domain.CommandModels.UserInterest
+                        {
+                            UserInterestId = _helper.GenerateNewGuid(),
+                            InterestId = (Guid)us.InterestId,
+                            UserId = userprofile.UserId,
+                            UserStatusId = status.UserStatusId,
+                            CreatedAt = DateTime.Now
+                        };
+                        await _context.UserInterests.AddAsync(userinteres);
+                    }
+                }
+            }
+            
+            if(request.WorkPlace.Count >0)
+            {
+                foreach (var us in request.WorkPlace)
+                {
+                    if(us.WorkPlaceName != null)
+                    {
+                        var userworkplace = new Domain.CommandModels.WorkPlace
+                        {
+                            WorkPlaceId = _helper.GenerateNewGuid(),
+                            WorkPlaceName = us.WorkPlaceName,
+                            UserId = userprofile.UserId,
+                            UserStatusId = status.UserStatusId,
+                            CreatedAt = DateTime.Now
+                        };
+                        await _context.WorkPlaces.AddAsync(userworkplace);
+                    }
+                }
             }
 
-            foreach (var us in request.Interes)
+            if(request.WebAffilication.Count > 0)
             {
-                var userinteres = new Domain.CommandModels.UserInterest
+                foreach (var us in request.WebAffilication)
                 {
-                    UserInterestId = _helper.GenerateNewGuid(),
-                    InterestId = (Guid)us.InterestId,
-                    UserId = userprofile.UserId,
-                    UserStatusId = status.UserStatusId,
-                    CreatedAt = DateTime.Now
-                };
-                await _context.UserInterests.AddAsync(userinteres);
+                    if(us.WebAffiliationUrl != null)
+                    {
+                        var userinteres = new Domain.CommandModels.WebAffiliation
+                        {
+                            WebAffiliationId = _helper.GenerateNewGuid(),
+                            WebAffiliationUrl = us.WebAffiliationUrl,
+                            UserId = userprofile.UserId,
+                            UserStatusId = status.UserStatusId,
+                            CreatedAt = DateTime.Now
+                        };
+                        await _context.WebAffiliations.AddAsync(userinteres);
+                    }
+                }
             }
-            foreach (var us in request.WorkPlace)
-            {
-                var userworkplace = new Domain.CommandModels.WorkPlace
-                {
-                    WorkPlaceId = _helper.GenerateNewGuid(),
-                    WorkPlaceName = us.WorkPlaceName,
-                    UserId = userprofile.UserId,
-                    UserStatusId = status.UserStatusId,
-                    CreatedAt = DateTime.Now
-                };
-                await _context.WorkPlaces.AddAsync(userworkplace);
-            }
-            foreach (var us in request.WebAffilication)
-            {
-                var userinteres = new Domain.CommandModels.WebAffiliation
-                {
-                    WebAffiliationId = _helper.GenerateNewGuid(),
-                    WebAffiliationUrl = us.WebAffiliationUrl,
-                    UserId = userprofile.UserId,
-                    UserStatusId = status.UserStatusId,
-                    CreatedAt = DateTime.Now
-                };
-                await _context.WebAffiliations.AddAsync(userinteres);
-            }
-
-            await _context.UserGenders.AddAsync(usergender);
-            await _context.AvataPhotos.AddAsync(avata);
-            await _context.ContactInfos.AddAsync(contactinfor);
-            await _context.UserRelationships.AddAsync(userrelationship);
+           
+            await _context.UserGenders.AddAsync(usergender);     
+            await _context.ContactInfos.AddAsync(contactinfor);   
             await _context.SaveChangesAsync();
 
             //mapping
