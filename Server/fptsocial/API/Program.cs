@@ -30,7 +30,6 @@ builder.Services.AddCors();
 builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
-builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -82,7 +81,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 //builder.Services.ConfigurePolicy(builder.Configuration);
-
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
 
 var app = builder.Build();

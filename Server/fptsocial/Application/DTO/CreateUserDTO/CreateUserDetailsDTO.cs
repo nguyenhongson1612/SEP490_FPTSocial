@@ -13,29 +13,29 @@ namespace Application.DTO.CreateUserDTO
         public class CreateUserContactInforDTO
         {
             public string? SecondEmail { get; set; }
-            public string PrimaryNumber { get; set; }
+            public string? PrimaryNumber { get; set; }
             public string? SecondNumber { get; set; }
         }
         public class CreateUserInteresDTO
         {
-            public Guid InterestId { get; set; }
+            public Guid? InterestId { get; set; }
         }
         public class CreateUserSettingDTO
         {
-            public Guid SettingId { get; set; }
+            public Guid? SettingId { get; set; }
         }
 
         public class CreateUserWebAffilicationDTO
         {
-            public string WebAffiliationUrl { get; set; }
+            public string? WebAffiliationUrl { get; set; }
         }
 
         public class CreateUserWorkPlaceDTO
         {
-            public string WorkPlaceName { get; set; }
+            public string? WorkPlaceName { get; set; }
         }
         public class CreateUserRelationshipDTO
         {
-            public Guid RelationshipId{ get; set; }
+            public Guid? RelationshipId{ get; set; }
         }
 }
