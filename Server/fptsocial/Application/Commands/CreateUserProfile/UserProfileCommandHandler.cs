@@ -81,7 +81,7 @@ namespace Application.Commands.CreateUserProfile
             var userrelationship = new Domain.CommandModels.UserRelationship
             {
                 UserRelationshipId = _helper.GenerateNewGuid(),
-                RelationshipId = request.Relationship.RelationshipId,
+                RelationshipId = (Guid)request.Relationship.RelationshipId,
                 UserId = userprofile.UserId,
                 UserStatusId = status.UserStatusId,
                 CreatedAt = DateTime.Now
@@ -100,7 +100,7 @@ namespace Application.Commands.CreateUserProfile
                 var usersetting = new Domain.CommandModels.UserSetting
                 {
                     UserSettingId = _helper.GenerateNewGuid(),
-                    SettingId = us.SettingId,
+                    SettingId = (Guid)us.SettingId,
                     UserId = userprofile.UserId,
                     UserStatusId = status.UserStatusId,
                 };
@@ -112,7 +112,7 @@ namespace Application.Commands.CreateUserProfile
                 var userinteres = new Domain.CommandModels.UserInterest
                 {
                     UserInterestId = _helper.GenerateNewGuid(),
-                    InterestId = us.InterestId,
+                    InterestId = (Guid)us.InterestId,
                     UserId = userprofile.UserId,
                     UserStatusId = status.UserStatusId,
                     CreatedAt = DateTime.Now
