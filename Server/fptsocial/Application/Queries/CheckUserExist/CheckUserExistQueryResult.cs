@@ -11,5 +11,9 @@ namespace Application.Queries.CheckUserExist
     {
         public StatusCodeEnum enumcode { get;set; }
         public string Message { get; set; }
+        public Guid? UserId { get; set; }
+        public string UserNumber { get; set; }
+        public string Email { get; set; }
+        public string FeId { get; set; }
     }
 }

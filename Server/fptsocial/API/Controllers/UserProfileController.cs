@@ -45,7 +45,7 @@ namespace API.Controllers
         [Route("checkuserexist")]
         public async Task<IActionResult> CheckUserExisted()
         {
-            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", ""); ;
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
                 return BadRequest();
