@@ -24,7 +24,7 @@ function NewPost() {
 
   return (
     <div id="new-post"
-      className="w-[90%] flex flex-col mt-8 gap-2 border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
+      className="w-full sm:w-[500px] flex flex-col mt-8 gap-2 border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
     >
       <div className="flex gap-4 items-center w-full ">
         <Link

@@ -85,7 +85,6 @@ function App() {
           <Route path='/login' element={<Login />} />
         </Route>
 
-
         {/* 404 not found */}
         <Route path='*' element={<NotFound />} />
       </Routes>

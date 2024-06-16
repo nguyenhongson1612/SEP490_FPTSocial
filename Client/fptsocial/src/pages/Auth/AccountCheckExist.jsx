@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { checkUserExist } from '~/apis'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'

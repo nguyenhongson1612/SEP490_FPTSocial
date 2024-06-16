@@ -26,7 +26,7 @@ function PostOverLay({ postData }) {
         <div
           ref={refModal}
           id='post-container'
-          className="max-w-[55%] max-h-[90%] bg-white flex flex-col items-center overflow-auto scrollbar-none-track shadow-4edges rounded-lg"
+          className="w-[95%] sm:w-[600px] max-h-[90%] bg-white flex flex-col items-center overflow-auto scrollbar-none-track shadow-4edges rounded-lg"
         >
           <div id='post-detail-author'
             className='min-h-[60px] w-full flex justify-between items-center'>

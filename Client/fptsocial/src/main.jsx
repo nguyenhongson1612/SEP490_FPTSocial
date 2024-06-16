@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
@@ -21,7 +20,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <ToastContainer position="top-right" theme="colored" />
       </BrowserRouter>
     </PersistGate>
-
   </Provider>
   // </React.StrictMode>
 )
