@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
+import { API_ROOT } from '~/utils/constants'
 
 export const getUserByNumber = createAsyncThunk(
   'user/getUserByNumbe', async (userNumber) => {
-    const response = await authorizedAxiosInstance.get('https://localhost:44329/api/UserProfile/getuserbynumber', {
+    const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbynumber`, {
       params: {
         UserNumber: userNumber
       }
@@ -17,7 +18,11 @@ export const userSlice = createSlice({
   initialState: {
     currentUser: null
   },
-  reducers: {},
+  reducers: {
+    logoutCurrentUser: (state, action) => {
+      state.currentUser = null
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(getUserByNumber.fulfilled, (state, action) => {
       const user = action.payload
@@ -25,6 +30,8 @@ export const userSlice = createSlice({
     })
   }
 })
+
+export const { logoutCurrentUser } = userSlice.actions
 export const selectCurrentUser = (state) => {
   return state.user.currentUser
 }

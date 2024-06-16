@@ -1,10 +1,6 @@
-import { checkUserExist } from '~/apis'
-
 const oidcConfig = {
   onSignIn: () => {
-
     window.location.href = '/home'
-
   },
   authority: 'https://feid.ptudev.net',
   clientId: 'societe-front-end',

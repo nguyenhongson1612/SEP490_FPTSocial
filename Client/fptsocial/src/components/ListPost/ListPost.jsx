@@ -5,7 +5,7 @@ function ListPost({ listPost }) {
 
   return (
     <div id="post-list"
-      className="flex flex-col items-center gap-3 w-[90%] "
+      className="flex flex-col items-center gap-3 w-full sm:w-[500px]"
     >
       {
         listPost?.map((post) => {
