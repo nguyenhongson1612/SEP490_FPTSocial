@@ -1,5 +1,7 @@
 ﻿using Application.Commands.GetUserProfile;
+using Application.Commands.UpdateUserCommand;
 using Application.Queries.CheckUserExist;
+using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserProfile;
 using MediatR;
@@ -28,6 +30,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getuserbyuserid")]
         public async Task<IActionResult> GetUserProfleByUserId([FromQuery] GetUserByUserIdQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getotheruserbyuserid")]
+        public async Task<IActionResult> GetOtherUserProfleByUserId([FromQuery] GetOtherUserQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
@@ -68,6 +78,14 @@ namespace API.Controllers
         [HttpPost]
         [Route("createbylogin")]     
         public async Task<IActionResult> CreateUser(UserProfileCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updateprofile")]
+        public async Task<IActionResult> UpdateProfile(UpdateUserCommand input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
