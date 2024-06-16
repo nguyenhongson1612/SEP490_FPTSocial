@@ -9,6 +9,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CreateUserDetailsController : BaseController
     {
         private readonly ISender _sender;

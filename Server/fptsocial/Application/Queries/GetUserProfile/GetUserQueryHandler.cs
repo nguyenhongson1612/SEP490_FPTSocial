@@ -42,6 +42,7 @@ namespace Application.Queries.UserProfile
                                     .Include(x => x.UserSettings)
                                     .Include(x => x.Role)
                                     .Include(x => x.UserGender.Gender)
+                                    .Include(x => x.UserInterests)
                                     .Include(x => x.UserRelationship)
                                     .FirstOrDefaultAsync(x => x.UserNumber == request.UserNumber);
             if (user == null)

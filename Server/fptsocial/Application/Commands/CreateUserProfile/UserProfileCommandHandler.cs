@@ -48,6 +48,7 @@ namespace Application.Commands.CreateUserProfile
             var getuserbyfeid = await _querycontext.UserProfiles.FirstOrDefaultAsync(X => X.FeId.Equals(request.FeId));
             var role = await _querycontext.Roles.FirstOrDefaultAsync(x=>x.NameRole == "User");
             var status = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.StatusName == "Public");
+            var listsetting = await _querycontext.Settings.ToListAsync();
             if(getuserbyemail != null || getuserbyfeid != null)
             {
                 throw new ErrorException(StatusCodeEnum.U03_User_Exist);
@@ -106,23 +107,17 @@ namespace Application.Commands.CreateUserProfile
                 await _context.AvataPhotos.AddAsync(avata);
             }
            
-            if(request.UserSetting.Count > 0)
-            {
-                foreach (var us in request.UserSetting)
+                foreach (var us in listsetting)
                 {
-                    if(us.SettingId != null)
+                    var usersetting = new Domain.CommandModels.UserSetting
                     {
-                        var usersetting = new Domain.CommandModels.UserSetting
-                        {
-                            UserSettingId = _helper.GenerateNewGuid(),
-                            SettingId = (Guid)us.SettingId,
-                            UserId = userprofile.UserId,
-                            UserStatusId = status.UserStatusId,
-                        };
-                        await _context.UserSettings.AddAsync(usersetting);
-                    }
+                        UserSettingId = _helper.GenerateNewGuid(),
+                        SettingId = us.SettingId,
+                        UserId = userprofile.UserId,
+                        UserStatusId = status.UserStatusId,
+                    };
+                    await _context.UserSettings.AddAsync(usersetting);
                 }
-            }
            
             if(request.Interes.Count > 0)
             {

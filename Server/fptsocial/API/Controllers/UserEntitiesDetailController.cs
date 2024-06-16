@@ -7,14 +7,18 @@ using Application.Commands.CreateSettings;
 using Application.Commands.CreateStatus;
 using Application.Queries.GenInterest;
 using Application.Queries.GetGender;
+using Application.Queries.GetUserStatus;
 using Application.Queries.GetWebAffilication;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserEntitiesDetailController :BaseController
     {
         private readonly ISender _sender;
@@ -49,7 +53,6 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("creategender")]
         public async Task<IActionResult> CreateGender(CreateGenderCommand input)
@@ -59,7 +62,6 @@ namespace API.Controllers
         }
 
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createcontactinfor")]
         public async Task<IActionResult> CreateContactInfor(CreateContactInforCommand input)
@@ -69,7 +71,6 @@ namespace API.Controllers
         }
 
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createstatus")]
         public async Task<IActionResult> CreateStatus(CreateStatusCommand input)
@@ -78,7 +79,6 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createrelaionship")]
         public async Task<IActionResult> CreateRelationship(CreateRelationShipCommand input)
@@ -87,7 +87,6 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createsetting")]
         public async Task<IActionResult> CreateSetting(CreateSettingsCommand input)
@@ -97,7 +96,6 @@ namespace API.Controllers
         }
 
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createrole")]
         public async Task<IActionResult> CreateRole(CreateRoleCommand input)
@@ -106,11 +104,19 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createinterest")]
         public async Task<IActionResult> CreateInterest(CreateInterestCommand input)
         {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getstatus")]
+        public async Task<IActionResult> GetStatus()
+        {
+            var input = new GetUserStatusQuery();
             var res = await _sender.Send(input);
             return Success(res.Value);
         }

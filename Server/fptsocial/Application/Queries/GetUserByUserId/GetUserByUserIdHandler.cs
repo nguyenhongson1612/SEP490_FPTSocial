@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetUserByUserId
 {
-    public class GetUserByUserIdHandler : IQueryHandler<GetUserByUserIdQuery, List<GetUserByUserIdResult>>
+    public class GetUserByUserIdHandler : IQueryHandler<GetUserByUserIdQuery, GetUserByUserIdResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -26,73 +26,66 @@ namespace Application.Queries.GetUserByUserId
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<List<GetUserByUserIdResult>>> Handle(GetUserByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetUserByUserIdResult>> Handle(GetUserByUserIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-           
-            if(request.UserId != null)
+            var getuser = await _context.UserProfiles
+                                .Include(x => x.ContactInfo)
+                                .Include(x => x.UserStatus)
+                                .Include(x => x.AvataPhotos)
+                                .Include(x => x.UserGender)
+                                .Include(x => x.WebAffiliations)
+                                .Include(x => x.UserSettings)
+                                .Include(x => x.Role)
+                                .Include(x=> x.UserInterests)
+                                .Include(x => x.UserRelationship)
+                                .FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            if(getuser == null)
             {
-                var getuser = await _context.UserProfiles
-                                    .Include(x => x.ContactInfo)
-                                    .Include(x => x.UserStatus)
-                                    .Include(x => x.AvataPhotos)
-                                    .Include(x => x.UserGender)
-                                    .Include(x => x.WebAffiliations)
-                                    .Include(x => x.UserSettings)
-                                    .Include(x => x.Role)
-                                    .Include(x=>x.UserGender.Gender)
-                                    .Include(x => x.UserRelationship)
-                                    .FirstOrDefaultAsync(x => x.UserId == request.UserId);
-                if(getuser == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
-
-                if (getuser.IsActive == false)
-                {
-                    throw new ErrorException(StatusCodeEnum.U02_Lock_User);
-                }
-                var result = _mapper.Map<GetUserByUserIdResult>(getuser);
-                List<GetUserByUserIdResult> resultuser = new List<GetUserByUserIdResult>();
-                result.ContactInfo = _mapper.Map<GetUserContactInfo>(getuser.ContactInfo);
-                resultuser.Add(result);
-                return Result<List<GetUserByUserIdResult>>.Success(resultuser);
+                throw new ErrorException(StatusCodeEnum.U01_Not_Found);
             }
 
-            var user = await _context.UserProfiles
-                                    .Include(x => x.ContactInfo)
-                                    .Include(x => x.UserStatus)
-                                    .Include(x => x.AvataPhotos)
-                                    .Include(x => x.UserGender)
-                                    .Include(x => x.WebAffiliations)
-                                    .Include(x => x.UserSettings)
-                                    .Include(x => x.Role)
-                                    .Include(x => x.UserGender.Gender)
-                                    .Include(x => x.UserRelationship)
-                                    .ToListAsync();
-            List<GetUserByUserIdResult> resultlist = new List<GetUserByUserIdResult>();
-            foreach (var data in user)
+            if (getuser.IsActive == false)
             {
-              var map  = _mapper.Map<GetUserByUserIdResult>(data);
-               foreach(var webaff in data.WebAffiliations)
-                {
-                    var mapweb = _mapper.Map<GetUserWebAfflication>(webaff);
-                    map.WebAffiliationUrl.Add(mapweb);
-                }
-
-                foreach (var avata in data.AvataPhotos)
-                {
-                    var mapavata = _mapper.Map<GetUserWebAfflication>(avata);
-                    map.WebAffiliationUrl.Add(mapavata);
-                }
-                map.ContactInfo = _mapper.Map<GetUserContactInfo>(data.ContactInfo);
-                resultlist.Add(map);
+                throw new ErrorException(StatusCodeEnum.U02_Lock_User);
             }
-            return Result<List<GetUserByUserIdResult>>.Success(resultlist);
+            var result = _mapper.Map<GetUserByUserIdResult>(getuser);
+            return Result<GetUserByUserIdResult>.Success(result);
+            //var user = await _context.UserProfiles
+            //                        .Include(x => x.ContactInfo)
+            //                        .Include(x => x.UserStatus)
+            //                        .Include(x => x.AvataPhotos)
+            //                        .Include(x => x.UserGender)
+            //                        .Include(x => x.WebAffiliations)
+            //                        .Include(x => x.UserSettings)
+            //                        .Include(x => x.Role)
+            //                        .Include(x => x.UserRelationship)
+            //                        .Include(x => x.UserGender.Gender)
+            //                        .Include(x => x.UserRelationship)
+            //                        .ToListAsync();
+            //List<GetUserByUserIdResult> resultlist = new List<GetUserByUserIdResult>();
+            //foreach (var data in user)
+            //{
+            //  var map  = _mapper.Map<GetUserByUserIdResult>(data);
+            //   foreach(var webaff in data.WebAffiliations)
+            //    {
+            //        var mapweb = _mapper.Map<GetUserWebAfflication>(webaff);
+            //        map.WebAffiliationUrl.Add(mapweb);
+            //    }
+
+            //    foreach (var avata in data.AvataPhotos)
+            //    {
+            //        var mapavata = _mapper.Map<GetUserAvatar>(avata);
+            //        map.AvataPhotosUrl.Add(mapavata);
+            //    }
+            //    map.ContactInfo = _mapper.Map<GetUserContactInfo>(data.ContactInfo);
+            //    resultlist.Add(map);
+            //}
+            //return Result<List<GetUserByUserIdResult>>.Success(resultlist);
         }
     }
 }

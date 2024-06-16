@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetUserByUserId
+namespace Application.Queries.GetOtherUser
 {
-    public class GetUserByUserIdResult
+    public class GetOtherUserQueryResult
     {
-        public GetUserByUserIdResult()
+        public GetOtherUserQueryResult()
         {
             WorkPlaces = new List<GetUserWorkPlaceDTO>();
             UserInterests = new List<GetUserInterers>();
@@ -17,25 +17,15 @@ namespace Application.Queries.GetUserByUserId
             AvataPhotos = new List<GetUserAvatar>();
         }
         public Guid UserId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string? Email { get; set; }
-        public string? FeId { get; set; }
+        public string FirstName { get; set; } //h
+        public string LastName { get; set; } //h
         public DateTime BirthDay { get; set; }
-        public string? AboutMe { get; set; }
+        public string? AboutMe { get; set; }  //h
         public string? HomeTown { get; set; }
-        public string? CoverImage { get; set; }
-        public string? UserNumber { get; set; }
-        public bool IsFirstTimeLogin { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public Guid RoleId { get; set; }
-        public string RoleName { get; set; }
-        public Guid StatusId { get; set; }
-        public string UserStatusName { get; set; }
+        public string? CoverImage { get; set; }  //h
+        public string? UserNumber { get; set; }  //h
         public List<GetUserWorkPlaceDTO>? WorkPlaces { get; set; }
-        public List<GetUserInterers>? UserInterests { get; set;}
+        public List<GetUserInterers>? UserInterests { get; set; }
         public GetUserContactInfo? ContactInfo { get; set; }
         public GetUserGenderDTO? UserGender { get; set; }
         public GetUserRelationship? UserRelationship { get; set; }

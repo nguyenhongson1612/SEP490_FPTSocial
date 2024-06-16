@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Application.DTO.GetUserProfileDTO
 {
-    public class GetUserWebAfflication
+    public class GetUserGenderDTO
     {
-        public Guid WebAffiliationId { get; set; }
-        public string? WebAffiliationUrl { get; set; }
+        public Guid UserGenderId { get; set; }
+        public Guid? GenderId { get; set; }
+        public string? GenderName { get; set; }
         public Guid? UserStatusId { get; set; }
         public string? StatusName { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
 }
