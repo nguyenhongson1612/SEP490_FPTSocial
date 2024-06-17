@@ -1,5 +1,5 @@
 
-function TopProfile({ handleUpdateProfile, user }) {
+function TopProfile({ open, user }) {
   return (
     <div id='top-profile'
       className='bg-white shadow-md w-full flex flex-col items-center'
@@ -60,7 +60,7 @@ function TopProfile({ handleUpdateProfile, user }) {
           </div>
 
           <div id='update'
-            onClick={handleUpdateProfile}
+            onClick={open}
             className='flex flex-col justify-end mb-4 cursor-pointer'
           >
             <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Update Your Profile</span>
