@@ -27,6 +27,7 @@ using Application.DTO.GetUserProfileDTO;
 using Application.Queries.GetOtherUser;
 using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetUserStatus;
+using Application.Queries.GetUserPost;
 
 namespace Application.Mappers
 {
@@ -75,6 +76,7 @@ namespace Application.Mappers
 
             CreateMap<Query.UserProfile, GetOtherUserQueryResult>();
             CreateMap<UpdateUserCommand, Query.UserProfile>();
+            CreateMap<Query.UserPost, GetUserPostResult>();
 
             CreateMap<Command.Gender, CreateGenderCommandResult>();
             CreateMap<Command.ContactInfo, CreateContactInforCommandResult>();
