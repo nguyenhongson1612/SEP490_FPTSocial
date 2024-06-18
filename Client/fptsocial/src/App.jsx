@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from './redux/user/userSlice'
 import PageLoadingSpinner from './components/Loading/PageLoadingSpinner'
 import AccountCheckExist from './pages/Auth/AccountCheckExist'
+import NotAvailable from './pages/404/NotAvailable'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -86,6 +87,7 @@ function App() {
         </Route>
 
         {/* 404 not found */}
+        <Route path='/notavailable' element={<NotAvailable />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </AuthProvider>
