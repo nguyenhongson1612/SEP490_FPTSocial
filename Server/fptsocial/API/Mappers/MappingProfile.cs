@@ -28,6 +28,7 @@ using Application.Queries.GetOtherUser;
 using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetUserStatus;
 using Application.Queries.GetUserPost;
+using Application.Commands.AddFriendCommand;
 
 namespace Application.Mappers
 {
@@ -108,18 +109,23 @@ namespace Application.Mappers
             CreateMap<Query.WebAffiliation, GetUserWebAfflication>();
 
             //update user
-            CreateMap<UpdateUserCommand, Command.UserProfile>();
+
             CreateMap<UpdateUserCommand, UpdateUserCommandResult>();
             CreateMap<Query.AvataPhoto, Command.AvataPhoto>();
-            CreateMap<Query.UserGender, Command.UserGender>();
-            CreateMap<Query.ContactInfo, Command.ContactInfo>();
-            CreateMap<Query.Relationship, Command.Relationship>();
-            CreateMap<Query.WebAffiliation, Command.WebAffiliation>();
-            CreateMap<Query.Interest, Command.Interest>();
-            CreateMap<Query.WorkPlace, Command.WorkPlace>();
+            CreateMap<Query.UserGender, Command.UserGender>().ReverseMap();
+            CreateMap<Query.ContactInfo, Command.ContactInfo>().ReverseMap();
+            CreateMap<Query.Relationship, Command.Relationship>().ReverseMap();
+            CreateMap<Query.WebAffiliation, Command.WebAffiliation>().ReverseMap();
+            CreateMap<Query.Interest, Command.Interest>().ReverseMap();
+            CreateMap<Query.WorkPlace, Command.WorkPlace>().ReverseMap();
 
 
             CreateMap<Query.UserStatus, GetUserStatusQueryResult>();
+
+            //Add Friend:
+            CreateMap<Command.Friend, AddFriendCommandResult>()
+                .ForMember(dest => dest.SendBy, otp => otp.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
+                .ForMember(dest => dest.ReceiptBy, otp => otp.MapFrom(src => src.FriendNavigation.FirstName + " " + src.FriendNavigation.LastName));
         }
     }
 }

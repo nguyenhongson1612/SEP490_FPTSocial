@@ -42,6 +42,7 @@ namespace Domain.Enums
         IT01_Interest_Existed,
         [Description("Post not found")]
         P01_Not_Found,
-
+        [Description("Can not send friend")]
+        FR01_Cannot_Send,
     }
 }
