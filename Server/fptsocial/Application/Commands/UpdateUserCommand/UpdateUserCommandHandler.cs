@@ -52,37 +52,47 @@ namespace Application.Commands.UpdateUserCommand
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
             }
 
-            var userprofile = _mapper.Map<Domain.CommandModels.UserProfile>(request);
+            var userprofile = new Domain.CommandModels.UserProfile
+            {
+                UserId  = (Guid)request.UserId,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                BirthDay = request.BirthDay,
+                AboutMe = request.AboutMe,
+                HomeTown= request.HomeTown,
+                CoverImage = request.CoverImage,
+                UpdatedAt = DateTime.Now
+            };
 
             _context.UserProfiles.Update(userprofile);
 
-            if(request.Gender != null)
+            if(request.UserGender != null)
             {
-                usergender.GenderId = request.Gender.GenderId;
-                usergender.UserStatusId = request.Gender.UserStatusId;
+                usergender.GenderId = request.UserGender.GenderId;
+                usergender.UserStatusId = request.UserGender.UserStatusId;
                 usergender.UpdatedAt = DateTime.Now;
                 var updategender = _mapper.Map<Domain.CommandModels.UserGender>(usergender);
                 _context.UserGenders.Update(updategender);
             }
          
-            if(request.ContactInfor != null)
+            if(request.ContactInfo != null)
             {
                 usercontact.ContactInfoId = usercontact.ContactInfoId;
-                usercontact.SecondEmail = request.ContactInfor.SecondEmail;
-                usercontact.PrimaryNumber = request.ContactInfor.PrimaryNumber;
-                usercontact.SecondNumber = request.ContactInfor.SecondNumber;
+                usercontact.SecondEmail = request.ContactInfo.SecondEmail;
+                usercontact.PrimaryNumber = request.ContactInfo.PrimaryNumber;
+                usercontact.SecondNumber = request.ContactInfo.SecondNumber;
                 usercontact.UserId = userprofile.UserId;
-                usercontact.UserStatusId =  request.ContactInfor.UserStatusId;
+                usercontact.UserStatusId =  request.ContactInfo.UserStatusId;
                 usercontact.UpdatedAt = DateTime.Now;
                 var updatecontac = _mapper.Map<Domain.CommandModels.ContactInfo>(usercontact);
                 _context.ContactInfos.Update(updatecontac);
             } 
 
            
-            if(request.Relationship != null)
+            if(request.UserRelationship != null)
             {
-                userrelationship.RelationshipId = request.Relationship.UserStatusId;
-                userrelationship.UserStatusId = request.Relationship.UserStatusId;
+                userrelationship.RelationshipId = request.UserRelationship.UserStatusId;
+                userrelationship.UserStatusId = request.UserRelationship.UserStatusId;
                 userrelationship.UpdatedAt = DateTime.Now;
                 var updaterelationship= _mapper.Map<Domain.CommandModels.UserRelationship>(userrelationship);
                 _context.UserRelationships.Update(updaterelationship);
@@ -113,9 +123,9 @@ namespace Application.Commands.UpdateUserCommand
                 }
             }
 
-            if (request.Interes.Count > 0)
+            if (request.UserInterests.Count > 0)
             {
-                foreach (var us in request.Interes)
+                foreach (var us in request.UserInterests)
                 {
                     var existing = userinteres.FirstOrDefault(x => x.InterestId == us.InterestId);
                     if(existing == null)
@@ -139,7 +149,7 @@ namespace Application.Commands.UpdateUserCommand
                     }
                 }
 
-                var removeitem = userinteres.Where(x => !request.Interes.Any(y => y.InterestId == x.InterestId)).ToList();
+                var removeitem = userinteres.Where(x => !request.UserInterests.Any(y => y.InterestId == x.InterestId)).ToList();
                 foreach (var item in removeitem)
                 {
                     var interesrm = _mapper.Map<Domain.CommandModels.UserInterest>(item);
@@ -147,9 +157,9 @@ namespace Application.Commands.UpdateUserCommand
                 }
             }
 
-            if (request.WorkPlace.Count > 0)
+            if (request.WorkPlaces.Count > 0)
             {
-                foreach (var us in request.WorkPlace)
+                foreach (var us in request.WorkPlaces)
                 {
                     var existing = userwork.FirstOrDefault(x => x.WorkPlaceId == us.WorkPlaceId);
                     if (existing == null)
@@ -174,7 +184,7 @@ namespace Application.Commands.UpdateUserCommand
                     }
                 }
 
-                var removeitem = userwork.Where(x => !request.WorkPlace.Any(y => y.WorkPlaceId == x.WorkPlaceId)).ToList();
+                var removeitem = userwork.Where(x => !request.WorkPlaces.Any(y => y.WorkPlaceId == x.WorkPlaceId)).ToList();
                 foreach (var item in removeitem)
                 {
                     var workrm = _mapper.Map<Domain.CommandModels.WorkPlace>(item);
@@ -182,9 +192,9 @@ namespace Application.Commands.UpdateUserCommand
                 }
             }
 
-            if (request.WebAffilication.Count > 0)
+            if (request.WebAffiliations.Count > 0)
             {
-                foreach (var us in request.WebAffilication)
+                foreach (var us in request.WebAffiliations)
                 {
                     var existing = userweb.FirstOrDefault(x => x.WebAffiliationId == us.WebAffiliationId);
                     if (existing == null)
@@ -209,7 +219,7 @@ namespace Application.Commands.UpdateUserCommand
                     }
                 }
 
-                var removeitem = userwork.Where(x => !request.WebAffilication.Any(y => y.WebAffiliationId == x.WorkPlaceId)).ToList();
+                var removeitem = userwork.Where(x => !request.WebAffiliations.Any(y => y.WebAffiliationId == x.WorkPlaceId)).ToList();
                 foreach (var item in removeitem)
                 {
                     var webrm = _mapper.Map<Domain.CommandModels.WebAffiliation>(item);

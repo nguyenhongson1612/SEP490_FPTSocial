@@ -55,7 +55,7 @@ namespace Application.Commands.CreateUserProfile
             }
 
             var userprofile = _mapper.Map<Domain.CommandModels.UserProfile>(request);
-            userprofile.UserId = _helper.GenerateNewGuid();
+            userprofile.UserId = (Guid)request.UserId;
             userprofile.RoleId = role.RoleId;
             userprofile.IsActive = true;
             userprofile.UserStatusId = status.UserStatusId;

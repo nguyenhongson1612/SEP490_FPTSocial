@@ -15,15 +15,15 @@ namespace Application.Commands.UpdateUserCommand
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime BirthDay { get; set; }
-        public UpdateUserGenderDTO? Gender { get; set; }
-        public UpdateUserContactInforDTO? ContactInfor { get; set; }
-        public UpdateUserRelationshipDTO? Relationship { get; set; }
+        public UpdateUserGenderDTO? UserGender { get; set; }
+        public UpdateUserContactInforDTO? ContactInfo { get; set; }
+        public UpdateUserRelationshipDTO? UserRelationship { get; set; }
         public string? AboutMe { get; set; }
         public string? HomeTown { get; set; }
         public string? CoverImage { get; set; }
         public string? Avataphoto { get; set; }
-        public List<UpdateUserInteresDTO>? Interes { get; set; }
-        public List<UpdateUserWorkPlaceDTO>? WorkPlace { get; set; }
-        public List<UpdateUserWebAffilicationDTO>? WebAffilication { get; set; }
+        public List<UpdateUserInteresDTO>? UserInterests { get; set; }
+        public List<UpdateUserWorkPlaceDTO>? WorkPlaces { get; set; }
+        public List<UpdateUserWebAffilicationDTO>? WebAffiliations { get; set; }
     }
 }
