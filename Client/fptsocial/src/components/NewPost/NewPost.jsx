@@ -22,13 +22,15 @@ function NewPost() {
     toast.success('Create post successfully')
   }
 
+  const currentUser = useSelector(selectCurrentUser)
+
   return (
     <div id="new-post"
       className="w-full sm:w-[500px] flex flex-col mt-8 gap-2 border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
     >
       <div className="flex gap-4 items-center w-full ">
         <Link
-          to={'/profile'}
+          to={`/profile?id=${currentUser?.userId}`}
           className=" hover:text-gray-950 flex items-center justify-center gap-3">
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"

@@ -12,7 +12,6 @@ import NewPost from '~/components/NewPost/NewPost'
 function HomePage() {
   const user = useSelector(selectCurrentUser)
   const [listPost, setListPost] = useState(null)
-  const dispatch = useDispatch()
   useEffect(() => {
     // Call API
     getAllPost().then(data => {
@@ -24,8 +23,6 @@ function HomePage() {
   // useEffect(() => {
   //   checkUserExist().then(res => console.log(res))
   // }, [dispatch])
-
-
 
   return (
     <>

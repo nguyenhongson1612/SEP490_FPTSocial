@@ -46,11 +46,13 @@ export default {
       // }
     },
   },
-  corePlugins: {
-  },
+  // corePlugins: {
+  //   preflight: false,
+  // },
   plugins: [
     typography,
     autoprefixer
+
   ],
 }
 

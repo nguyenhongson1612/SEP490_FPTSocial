@@ -1,10 +1,29 @@
-import { useForm } from 'react-hook-form';
-import { IoMdClose } from 'react-icons/io';
-import { FIELD_REQUIRED_MESSAGE, WHITESPACE_RULE } from '~/utils/validators';
+import { NativeSelect, TextInput, Textarea } from '@mantine/core'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { IoMdClose } from 'react-icons/io'
+import { getGender, getStatus, updateUserProfile } from '~/apis'
+import { EMAIL_RULE, EMAIL_MESSAGE, FIELD_REQUIRED_MESSAGE, PHONE_NUMBER_MESSAGE, PHONE_NUMBER_RULE, WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators'
 
-function UpdateProfile({ handleUpdateProfile }) {
+function UpdateProfile({ onClose, user }) {
+  const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)).toISOString().split('T')[0]
+  const { control, register, setValue, handleSubmit, formState: { errors } } = useForm()
+  const [listGender, setListGender] = useState([])
+  const [listStatus, setListStatus] = useState([])
 
-  const { register, setValue, handleSubmit, formState: { errors } } = useForm()
+  useEffect(() => {
+    setValue('status', user?.userGender?.userStatusId)
+    setValue('gender', user?.userGender?.genderId)
+  }, [listGender, listStatus])
+  useEffect(() => {
+    getGender().then(data => data?.data?.map(e => ({ label: e?.genderName, value: e?.genderId }))).then(data => setListGender(data))
+    getStatus().then(data => data?.data?.map(e => ({ label: e?.statusName, value: e?.userStatusId }))).then(data => { console.log(data); setListStatus(data) })
+  }, [])
+  // useEffect(() => {
+  //   getGender().then(data => setListGender(data?.data))
+  //   getStatus().then(data => setListStatus(data?.data))
+  // }, [])
+
   const handleUpdateAvatar = (e) => {
     const file = e.target.files[0]
     setValue('fileAvatar', file)
@@ -32,121 +51,275 @@ function UpdateProfile({ handleUpdateProfile }) {
     }
   }
 
+  const validateData = (data) => {
+    return data?.trim() || null
+  }
+
   const submitUpdateProfile = (data) => {
-    console.log(data)
+    const submitData = {
+      'userId': null,
+      'firstName': validateData(data?.firstName),
+      'lastName': validateData(data?.lastName),
+      'birthDay': data?.birthDay,
+      'gender': {
+        'genderId': data?.gender,
+        'userStatusId': data?.status
+      },
+      contactInfor: {
+        'secondEmail': validateData(data?.secondEmail),
+        'primaryNumber': validateData(data?.primaryNumber),
+        'secondNumber': validateData(data?.primaryNumber),
+        'userStatusId': data?.status
+      },
+      'relationship': {
+        'relationshipId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        'userStatusId': data?.status
+      },
+      'aboutMe': data?.aboutMe,
+      'homeTown': data?.homeTown,
+      'coverImage': data?.coverImage,
+      'avataphoto': data?.avataphoto,
+      'interes': [
+        {
+          'interestId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          'userStatusId': data?.status
+        }
+      ],
+      'workPlace': [
+        {
+          'workPlaceId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          'workPlaceName': 'string',
+          'userStatusId': data?.status
+        }
+      ],
+      'webAffilication': [
+        {
+          'webAffiliationId': '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+          'webAffiliationUrl': 'string',
+          'userStatusId': data?.status
+        }
+      ]
+    }
+    updateUserProfile(submitData).then(() => console.log('log'))
   }
 
   return (
     <form onSubmit={handleSubmit(submitUpdateProfile)}
       id='update-profile'
-      className='bg-[rgba(252,252,252,0.5)] fixed top-0 left-0 bottom-0 right-0  flex justify-center z-30 overflow-auto'>
-      <div className='w-[90%] md:w-[60%] bg-white my-12 h-fit rounded-md shadow-4edges '>
-        <div className='flex flex-col px-4 py-2'>
-          <div className='flex justify-between items-center pb-2 border-b-2'>
-            <span></span>
-            <span className='text-xl font-bold'>Edit Profile</span>
-            <IoMdClose className='bg-fbWhite-500 rounded-full size-10 cursor-pointer hover:bg-fbWhite-700' onClick={handleUpdateProfile} />
-          </div>
+      className='w-full md:w-[700px] flex flex-col px-4 py-2'>
+      <div className='flex justify-between items-center pb-2 border-b-2'>
+        <span></span>
+        <span className='text-xl font-bold'>Edit Profile</span>
+        <IoMdClose className='bg-orangeFpt text-white rounded-full size-8 cursor-pointer hover:bg-orange-600' onClick={onClose} />
+      </div>
 
-          <div className='flex flex-col mt-2'>
-            <div className='flex justify-between items-center '>
-              <span className='text-xl font-bold'>Avatar</span>
-              <input type='file' id='avatarUpload' className='hidden' accept="image/*"
-                {...register('fileAvatar', {
-                  onChange: handleUpdateAvatar
-                })
-                } />
-              <label htmlFor='avatarUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
-            </div>
-            <div className='flex justify-center items-center '>
-              <div className='w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
-                <img
-                  id="imgAvatar"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                  alt="group-img"
-                  className="rounded-[50%] aspect-square object-cover w-[95%]"
-                />
-              </div>
-            </div>
+      <div className='flex flex-col mt-2'>
+        <div className='flex justify-between items-center '>
+          <span className='text-xl font-bold'>Avatar</span>
+          <input type='file' id='avatarUpload' className='hidden' accept="image/*"
+            {...register('fileAvatar', {
+              onChange: handleUpdateAvatar
+            })
+            } />
+          <label htmlFor='avatarUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
+        </div>
+        <div className='flex justify-center items-center '>
+          <div className='w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
+            <img
+              id="imgAvatar"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
+              alt="group-img"
+              className="rounded-[50%] aspect-square object-cover w-[95%]"
+            />
           </div>
+        </div>
+      </div>
 
-          <div className='flex flex-col '>
-            <div className='flex justify-between items-center '>
-              <span className='text-xl font-bold'>Cover </span>
-              <input type='file' id='coverUpload' className='hidden' accept="image/*"
-                {...register('fileCover', {
-                  onChange: handleUpdateCover
-                })
-                } />
-              <label htmlFor='coverUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
-            </div>
-            <div className='flex justify-center items-center '>
-              <div id='profile-cover'
-                className='w-full lg:w-[940px] aspect-[74/27] rounded-md
+      <div className='flex flex-col'>
+        <div className='flex justify-between items-center '>
+          <span className='text-xl font-bold'>Cover </span>
+          <input type='file' id='coverUpload' className='hidden' accept="image/*"
+            {...register('fileCover', {
+              onChange: handleUpdateCover
+            })
+            } />
+          <label htmlFor='coverUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
+        </div>
+        <div className='flex justify-center items-center '>
+          <div id='profile-cover'
+            className='w-full lg:w-[940px] aspect-[74/27] rounded-md
                            bg-[url(https://thumbs.dreamstime.com/b/incredibly-beautiful-sunset-sun-lake-sunrise-landscape-panorama-nature-sky-amazing-colorful-clouds-fantasy-design-115177001.jpg)] bg-cover bg-center bg-no-repeat'
-              >
-              </div>
-            </div>
+          >
           </div>
+        </div>
+      </div>
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 my-4'>
-            <div className='col-span-1 sm:col-span-2'>
-              <div className='flex items-center '>
-                <span className='text-xl font-bold'>Information</span>
-              </div>
-            </div>
-            <div className="relative ">
-              <input id='nickName'
-                type="text"
-                className={`${errors.nickName && ' !border-red-500 focus:outline-offset-4 focus:outline-red-500'} bg-white peer w-full px-4 pb-3 pt-6 font-medium border border-gray-300 rounded-md placeholder:text-transparent
-                          hover:border-gray-900 focus:outline-offset-4 focus:outline-blue-500`}
-                placeholder="mail"
-                // error={!!errors['password']}
-                {...register('nickName', {
-                  required: true,
-                  pattern: {
-                    value: WHITESPACE_RULE,
-                  }
-                })}
-              />
-              {errors.nickName && <span className='text-red-500 text-xs'>{FIELD_REQUIRED_MESSAGE}</span>}
-              <label htmlFor="nickName" className={`${errors.nickName && '!text-red-500'} absolute left-0 top-0 ml-3 text-gray-500  duration-100 ease-linear peer-placeholder-shown:translate-y-4
-                peer-[:not(:placeholder-shown)]:text-xs  peer-placeholder-shown:text-gray-500 peer-focus:ml-3 peer-focus:translate-y-0 px-1 peer-focus:text-xs peer-focus:text-blue-500 `}
-              >
-                Nick Name
-              </label>
-            </div>
-            <div className="relative ">
-              <input id='address'
-                type="text"
-                className={`${errors.address && ' !border-red-500 focus:outline-offset-4 focus:outline-red-500'} bg-white peer w-full px-4 pb-3 pt-6 font-medium border border-gray-300 rounded-md placeholder:text-transparent
-                          hover:border-gray-900 focus:outline-offset-4 focus:outline-blue-500`}
-                placeholder="mail"
-                // error={!!errors['password']}
-                {...register('address', {
-
-                })}
-              />
-              {errors.address && <span className='text-red-500 text-xs'>{FIELD_REQUIRED_MESSAGE}</span>}
-              <label htmlFor="address" className={`${errors.address && '!text-red-500'} absolute left-0 top-0 ml-3 text-gray-500  duration-100 ease-linear peer-placeholder-shown:translate-y-4
-                peer-[:not(:placeholder-shown)]:text-xs  peer-placeholder-shown:text-gray-500 peer-focus:ml-3 peer-focus:translate-y-0 px-1 peer-focus:text-xs peer-focus:text-blue-500 `}
-              >
-                Address
-              </label>
-            </div>
-
-          </div>
-          <div>
-            <div className="w-full">
-              <button id="button" type="submit"
-                className=" w-full p-4 font-medium bg-[#0866FF] text-white rounded-md hover:bg-opacity-85"
-              >
-                Update Profile
-              </button>
-            </div>
+      <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 my-4'>
+        <div className='col-span-1 xs:col-span-2'>
+          <div className='flex items-center '>
+            <span className='text-xl font-bold'>Information</span>
           </div>
         </div>
 
+        <TextInput
+          label="First name"
+          defaultValue={user?.firstName}
+          placeholder="First name"
+          error={!!errors['firstName'] && `${errors['firstName']?.message}`}
+          {...register('firstName', {
+            required: FIELD_REQUIRED_MESSAGE,
+            pattern: {
+              value: WHITESPACE_RULE,
+              message: WHITESPACE_MESSAGE
+            }
+          })}
+        />
+        <TextInput
+          label="Last name"
+          defaultValue={user?.lastName}
+          placeholder="Last name"
+          error={!!errors['lastName'] && `${errors['lastName']?.message}`}
+          {...register('lastName', {
+            required: FIELD_REQUIRED_MESSAGE,
+            pattern: {
+              value: WHITESPACE_RULE,
+              message: WHITESPACE_MESSAGE
+            }
+          })}
+        />
+
+        <TextInput
+          label="Hometown"
+          defaultValue={user?.homeTown}
+          placeholder="Hometown"
+          error={!!errors['homeTown'] && `${errors['homeTown']?.message}`}
+          {...register('homeTown', {
+            pattern: {
+              value: WHITESPACE_RULE,
+              message: WHITESPACE_MESSAGE
+            }
+          })}
+        />
+
+        <TextInput
+          label="Birthday"
+          type="date"
+          max={yesterday}
+          defaultValue={new Date(user?.birthDay).toISOString().split('T')[0]}
+          placeholder="Birthday"
+          error={!!errors['birthDay'] && `${errors['birthDay']?.message}`}
+          {...register('birthDay', {})}
+        />
+
+        <TextInput
+          label="Primary number"
+          defaultValue={user?.contactInfo?.primaryNumber}
+          placeholder="Primary number"
+          error={!!errors['primaryNumber'] && `${errors['primaryNumber']?.message}`}
+          {...register('primaryNumber', {
+            pattern: {
+              value: PHONE_NUMBER_RULE,
+              message: PHONE_NUMBER_MESSAGE
+            }
+          })}
+        />
+
+        <TextInput
+          label="Second number"
+          defaultValue={user?.contactInfo?.secondNumber}
+          placeholder="Second number"
+          error={!!errors['secondNumber'] && `${errors['secondNumber']?.message}`}
+          {...register('secondNumber', {
+            pattern: {
+              value: PHONE_NUMBER_RULE,
+              message: PHONE_NUMBER_MESSAGE
+            }
+          })}
+        />
+
+        <TextInput
+          label="Second email"
+          defaultValue={user?.contactInfo?.secondEmail}
+          placeholder="Second email"
+          error={!!errors['secondEmail'] && `${errors['secondEmail']?.message}`}
+          {...register('secondEmail', {
+            pattern: {
+              value: EMAIL_RULE,
+              message: EMAIL_MESSAGE
+            }
+          })}
+        />
+
+        <NativeSelect
+          label="Profile status"
+          data={listStatus}
+          {...register('status')}
+        />
+        {/* <NativeSelect
+          label="Profile status"
+          data={listStatus}
+          {...register('status')}
+        >
+          <optgroup label="Select status">
+            {
+              listStatus?.map(status => (
+                <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
+              ))
+            }
+          </optgroup>
+        </NativeSelect> */}
+
+        <NativeSelect
+          label="Gender"
+          data={listGender}
+          {...register('gender')}
+        />
+
+        {/* <Controller
+            name="gender"
+            defaultValue={user?.userGender?.genderId}
+            control={control}
+            render={({ field }) => (
+              <NativeSelect
+                {...field}
+                value={field.value}
+                label="Gender"
+                onChange={(value) => field.onChange(value)}
+              >
+                <optgroup label="Select gender">
+                  {
+                    listGender?.map(gender => (
+                      <option key={gender?.genderId} value={gender?.genderId}>{gender?.genderId}{user?.userGender?.genderId}</option>
+                    ))
+                  }
+                </optgroup>
+              </NativeSelect>
+            )}
+          /> */}
+
+        <Textarea
+          className='xs:col-span-2'
+          label="About me"
+          defaultValue={user?.aboutMe}
+          placeholder="About me"
+          error={!!errors['aboutMe'] && `${errors['aboutMe']?.message}`}
+          {...register('aboutMe', {
+            pattern: {
+              value: WHITESPACE_RULE,
+              message: WHITESPACE_MESSAGE
+            }
+          })}
+        />
+      </div>
+
+      <div>
+        <div className="w-full">
+          <button id="button" type="submit"
+            className=" w-full p-4 font-medium bg-orangeFpt  text-white rounded-md hover:bg-orange-600"
+          >
+            Update Profile
+          </button>
+        </div>
       </div>
     </form>
   )

@@ -50,6 +50,7 @@ function FirstTimeLogin() {
 
   const submitData = (data) => {
     const initialSubmitData = {
+      'useId': null,
       'firstName': data?.firstName,
       'lastName': data?.lastName,
       'email': data?.email,
