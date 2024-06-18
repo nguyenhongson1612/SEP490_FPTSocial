@@ -40,5 +40,8 @@ namespace Domain.Enums
         R01_Role_Existed,
         [Description("Interest is existed")]
         IT01_Interest_Existed,
+        [Description("Post not found")]
+        P01_Not_Found,
+
     }
 }
