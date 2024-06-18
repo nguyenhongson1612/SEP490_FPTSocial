@@ -8,7 +8,7 @@ namespace Application.DTO.UpdateUserDTO
 {
     public class UpdateUserGenderDTO
     {
-        public Guid GenderId { get; set; }
+        public Guid? GenderId { get; set; }
         public Guid? UserStatusId { get; set; }
     }
     public class UpdateUserContactInforDTO
@@ -31,14 +31,14 @@ namespace Application.DTO.UpdateUserDTO
 
     public class UpdateUserWebAffilicationDTO
     {
-        public Guid WebAffiliationId { get; set; }
+        public Guid? WebAffiliationId { get; set; }
         public string? WebAffiliationUrl { get; set; }
         public Guid? UserStatusId { get; set; }
     }
 
     public class UpdateUserWorkPlaceDTO
     {
-        public Guid WorkPlaceId { get; set; }
+        public Guid? WorkPlaceId { get; set; }
         public string? WorkPlaceName { get; set; }
         public Guid? UserStatusId { get; set; }
     }

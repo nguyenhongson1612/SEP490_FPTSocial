@@ -112,7 +112,13 @@ namespace Application.Mappers
 
             CreateMap<UpdateUserCommand, UpdateUserCommandResult>();
             CreateMap<Query.AvataPhoto, Command.AvataPhoto>();
-            CreateMap<Query.UserGender, Command.UserGender>().ReverseMap();
+            CreateMap<Query.UserGender, Command.UserGender>();
+            CreateMap<Command.UserGender, Query.UserGender>();
+            CreateMap<Command.UserProfile, Query.UserProfile>();
+            CreateMap<Query.UserProfile, Command.UserProfile>();
+            CreateMap<Command.UserStatus, Query.UserStatus>();
+            CreateMap<Query.UserStatus, Command.UserStatus>();
+            CreateMap<Query.Gender, Command.Gender>().ReverseMap();
             CreateMap<Query.ContactInfo, Command.ContactInfo>().ReverseMap();
             CreateMap<Query.Relationship, Command.Relationship>().ReverseMap();
             CreateMap<Query.WebAffiliation, Command.WebAffiliation>().ReverseMap();

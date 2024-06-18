@@ -11,6 +11,12 @@ namespace Application.Commands.UpdateUserCommand
 {
     public class UpdateUserCommand : ICommand<UpdateUserCommandResult>
     {
+        public UpdateUserCommand()
+        {
+            UserInterests = new List<UpdateUserInteresDTO>();
+            WorkPlaces = new List<UpdateUserWorkPlaceDTO>();
+            WebAffiliations = new List<UpdateUserWebAffilicationDTO>();
+        }
         public Guid? UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

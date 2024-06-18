@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,7 +37,6 @@ namespace Application.Commands.UpdateUserCommand
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-
             var getuser = await _querycontext.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var usergender = await _querycontext.UserGenders.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var usercontact = await _querycontext.ContactInfos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
@@ -61,43 +61,61 @@ namespace Application.Commands.UpdateUserCommand
                 AboutMe = request.AboutMe,
                 HomeTown= request.HomeTown,
                 CoverImage = request.CoverImage,
+                Email = getuser.Email,
+                FeId = getuser.FeId,
+                UserNumber = getuser.UserNumber,
+                RoleId = getuser.RoleId,
+                UserStatusId = getuser.UserStatusId,
+                IsFirstTimeLogin = getuser.IsFirstTimeLogin,
+                IsActive = getuser.IsActive,
+                CreatedAt  = getuser.CreatedAt,
                 UpdatedAt = DateTime.Now
             };
 
-            _context.UserProfiles.Update(userprofile);
-
+             _context.UserProfiles.Update(userprofile);
             if(request.UserGender != null)
             {
-                usergender.GenderId = request.UserGender.GenderId;
-                usergender.UserStatusId = request.UserGender.UserStatusId;
-                usergender.UpdatedAt = DateTime.Now;
-                var updategender = _mapper.Map<Domain.CommandModels.UserGender>(usergender);
+                var updategender = new Domain.CommandModels.UserGender
+                {
+                    UserGenderId = usergender.UserGenderId,
+                    GenderId = (Guid)request.UserGender.GenderId,
+                    UserId = usergender.UserId,
+                    UserStatusId = request.UserGender.UserStatusId,
+                    CreatedAt = usergender.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                };
                 _context.UserGenders.Update(updategender);
             }
-         
-            if(request.ContactInfo != null)
+            if (request.ContactInfo != null)
             {
-                usercontact.ContactInfoId = usercontact.ContactInfoId;
-                usercontact.SecondEmail = request.ContactInfo.SecondEmail;
-                usercontact.PrimaryNumber = request.ContactInfo.PrimaryNumber;
-                usercontact.SecondNumber = request.ContactInfo.SecondNumber;
-                usercontact.UserId = userprofile.UserId;
-                usercontact.UserStatusId =  request.ContactInfo.UserStatusId;
-                usercontact.UpdatedAt = DateTime.Now;
-                var updatecontac = _mapper.Map<Domain.CommandModels.ContactInfo>(usercontact);
+                var updatecontac = new Domain.CommandModels.ContactInfo
+                {
+                    ContactInfoId = usercontact.ContactInfoId,
+                    SecondEmail = request.ContactInfo.SecondEmail,
+                    PrimaryNumber = request.ContactInfo.PrimaryNumber,
+                    SecondNumber = request.ContactInfo.SecondNumber,
+                    UserId = userprofile.UserId,
+                    UserStatusId = (Guid)request.ContactInfo.UserStatusId,
+                    CreatedAt = usercontact.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+            };
                 _context.ContactInfos.Update(updatecontac);
             } 
 
            
             if(request.UserRelationship != null)
             {
-                userrelationship.RelationshipId = request.UserRelationship.UserStatusId;
-                userrelationship.UserStatusId = request.UserRelationship.UserStatusId;
-                userrelationship.UpdatedAt = DateTime.Now;
-                var updaterelationship= _mapper.Map<Domain.CommandModels.UserRelationship>(userrelationship);
+                var updaterelationship= new Domain.CommandModels.UserRelationship
+                {
+                    UserRelationshipId = userrelationship.UserRelationshipId,
+                    RelationshipId = request.UserRelationship.RelationshipId,
+                    UserId = userprofile.UserId,
+                    UserStatusId = (Guid)request.UserRelationship.UserStatusId,
+                    CreatedAt = userrelationship.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                };
                 _context.UserRelationships.Update(updaterelationship);
-            }                     
-
+            }
             if (request.Avataphoto != null)
             {
                 var avata = new Domain.CommandModels.AvataPhoto
@@ -108,7 +126,8 @@ namespace Application.Commands.UpdateUserCommand
                     IsUsed = true,
                     UserId = userprofile.UserId,
                     UserStatusId = status.FirstOrDefault(x => x.StatusName == "Public").UserStatusId,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = userprofile.CreatedAt,
+                    UpdatedAt = DateTime.Now
                 };
                 await _context.AvataPhotos.AddAsync(avata);
                 
@@ -116,115 +135,216 @@ namespace Application.Commands.UpdateUserCommand
                 {
                     if(a.AvataPhotosId != avata.AvataPhotosId)
                     {
-                        a.IsUsed = false;
-                        var updateavata = _mapper.Map<Domain.CommandModels.AvataPhoto>(a);
+                        var updateavata = new Domain.CommandModels.AvataPhoto
+                        {
+                            AvataPhotosId = a.AvataPhotosId,
+                            AvataPhotosUrl = a.AvataPhotosUrl,
+                            UserId = a.UserId,
+                            UserStatusId = a.UserStatusId,
+                            IsUsed = false,
+                            CreatedAt = a.CreatedAt,
+                            UpdatedAt = DateTime.Now
+                        };
                         _context.AvataPhotos.Update(updateavata);
                     }  
                 }
             }
 
-            if (request.UserInterests.Count > 0)
+            if (request.UserInterests != null)
             {
-                foreach (var us in request.UserInterests)
+                if(request.UserInterests.Count > 0)
                 {
-                    var existing = userinteres.FirstOrDefault(x => x.InterestId == us.InterestId);
-                    if(existing == null)
+                    foreach (var us in request.UserInterests)
                     {
-                        var addinteres = new Domain.CommandModels.UserInterest
+                        if(us.InterestId == null)
                         {
-                            UserInterestId = _helper.GenerateNewGuid(),
-                            InterestId = (Guid)us.InterestId,
-                            UserId = getuser.UserId,
-                            UserStatusId = (Guid)us.UserStatusId,
-                            CreatedAt = DateTime.Now
-                        };
-                        await _context.UserInterests.AddAsync(addinteres);
+                            var addinteres = new Domain.CommandModels.UserInterest
+                            {
+                                UserInterestId = _helper.GenerateNewGuid(),
+                                InterestId = (Guid)us.InterestId,
+                                UserId = getuser.UserId,
+                                UserStatusId = (Guid)us.UserStatusId,
+                                CreatedAt = DateTime.Now
+                            };
+                            await _context.UserInterests.AddAsync(addinteres);
+                        }
+                        else
+                        {
+                            var existing = userinteres.FirstOrDefault(x => x.InterestId == us.InterestId);
+                            if (existing == null)
+                            {
+                                var addinteres = new Domain.CommandModels.UserInterest
+                                {
+                                    UserInterestId = _helper.GenerateNewGuid(),
+                                    InterestId = (Guid)us.InterestId,
+                                    UserId = getuser.UserId,
+                                    UserStatusId = (Guid)us.UserStatusId,
+                                    CreatedAt = DateTime.Now
+                                };
+                                await _context.UserInterests.AddAsync(addinteres);
+                            }
+                            else
+                            {
+                                var updateinteres = new Domain.CommandModels.UserInterest
+                                {
+                                    UserInterestId = existing.UserInterestId,
+                                    InterestId = existing.InterestId,
+                                    UserId = existing.UserId,
+                                    UserStatusId = (Guid)us.UserStatusId,
+                                    CreatedAt = existing.CreatedAt,
+                                    UpdatedAt = DateTime.Now,
+                                };
+                                _context.UserInterests.Update(updateinteres);
+                            }
+                        }
+                        
                     }
-                    else
-                    {
-                        existing.UserStatusId = (Guid)us.UserStatusId;
-                        existing.UpdatedAt = DateTime.Now;
-                        var updateinteres = _mapper.Map<Domain.CommandModels.UserInterest>(existing);
-                        _context.UserInterests.Update(updateinteres);
-                    }
-                }
 
-                var removeitem = userinteres.Where(x => !request.UserInterests.Any(y => y.InterestId == x.InterestId)).ToList();
-                foreach (var item in removeitem)
-                {
-                    var interesrm = _mapper.Map<Domain.CommandModels.UserInterest>(item);
-                    _context.UserInterests.Remove(interesrm);
+                    var removeitem = userinteres.Where(x => !request.UserInterests.Any(y => y.InterestId == x.InterestId)).ToList();
+                    foreach (var item in removeitem)
+                    {
+                        var interesrm = new Domain.CommandModels.UserInterest
+                        {
+                            UserInterestId = item.UserInterestId,
+                            InterestId = item.InterestId,
+                            UserId = item.UserId,
+                            UserStatusId = item.UserStatusId,
+                            CreatedAt = item.CreatedAt,
+                            UpdatedAt = item.UpdatedAt
+                        };
+                        _context.UserInterests.Remove(interesrm);
+                    }
                 }
+                
             }
 
-            if (request.WorkPlaces.Count > 0)
+            if (request.WorkPlaces  != null)
             {
-                foreach (var us in request.WorkPlaces)
+                if(request.WorkPlaces.Count > 0)
                 {
-                    var existing = userwork.FirstOrDefault(x => x.WorkPlaceId == us.WorkPlaceId);
-                    if (existing == null)
+                    foreach (var us in request.WorkPlaces)
                     {
-                        var addwork = new Domain.CommandModels.WorkPlace
+                        if(us.WorkPlaceId == null)
                         {
-                            WorkPlaceId = _helper.GenerateNewGuid(),
-                            WorkPlaceName = us.WorkPlaceName,
-                            UserId = getuser.UserId,
-                            UserStatusId = (Guid)us.UserStatusId,
-                            CreatedAt = DateTime.Now
-                        };
-                        await _context.WorkPlaces.AddAsync(addwork);
-                    }
-                    else
-                    {
-                        existing.WorkPlaceName = us.WorkPlaceName;
-                        existing.UserStatusId = (Guid)us.UserStatusId;
-                        existing.UpdatedAt = DateTime.Now;
-                        var updatework = _mapper.Map<Domain.CommandModels.WorkPlace>(existing);
-                        _context.WorkPlaces.Update(updatework);
-                    }
-                }
+                            var addwork = new Domain.CommandModels.WorkPlace
+                            {
+                                WorkPlaceId = _helper.GenerateNewGuid(),
+                                WorkPlaceName = us.WorkPlaceName,
+                                UserId = getuser.UserId,
+                                UserStatusId = (Guid)us.UserStatusId,
+                                CreatedAt = DateTime.Now
+                            };
+                            await _context.WorkPlaces.AddAsync(addwork);
+                        }
+                        else
+                        {
+                            var existing = userwork.FirstOrDefault(x => x.WorkPlaceId == us.WorkPlaceId);
+                            if (existing == null)
+                            {
 
-                var removeitem = userwork.Where(x => !request.WorkPlaces.Any(y => y.WorkPlaceId == x.WorkPlaceId)).ToList();
-                foreach (var item in removeitem)
-                {
-                    var workrm = _mapper.Map<Domain.CommandModels.WorkPlace>(item);
-                    _context.WorkPlaces.Remove(workrm);
+                            }
+                            else
+                            {
+                                var updatework = new Domain.CommandModels.WorkPlace
+                                {
+                                    WorkPlaceId = existing.WorkPlaceId,
+                                    WorkPlaceName = us.WorkPlaceName,
+                                    UserId = getuser.UserId,
+                                    UserStatusId = (Guid)us.UserStatusId,
+                                    CreatedAt = existing.CreatedAt,
+                                    UpdatedAt = DateTime.Now
+                                };
+                                _context.WorkPlaces.Update(updatework);
+                            }
+                        }         
+                    }
+
+                    var removeitem = userwork.Where(x => !request.WorkPlaces.Any(y => y.WorkPlaceId == x.WorkPlaceId)).ToList();
+                    foreach (var item in removeitem)
+                    {
+                        var workrm = new Domain.CommandModels.WorkPlace
+                        {
+                            WorkPlaceId = item.WorkPlaceId,
+                            WorkPlaceName = item.WorkPlaceName,
+                            UserId = item.UserId,
+                            UserStatusId = item.UserStatusId,
+                            CreatedAt = item.CreatedAt,
+                            UpdatedAt = item.UpdatedAt
+                        };
+                        _context.WorkPlaces.Remove(workrm);
+                    }
                 }
+                
             }
 
-            if (request.WebAffiliations.Count > 0)
+            if (request.WebAffiliations != null)
             {
-                foreach (var us in request.WebAffiliations)
+                if(request.WebAffiliations.Count > 0)
                 {
-                    var existing = userweb.FirstOrDefault(x => x.WebAffiliationId == us.WebAffiliationId);
-                    if (existing == null)
+                    foreach (var us in request.WebAffiliations)
                     {
-                        var adduserweb = new Domain.CommandModels.WebAffiliation
+                        if(us.WebAffiliationId == null)
                         {
-                            WebAffiliationId = _helper.GenerateNewGuid(),
-                            WebAffiliationUrl = us.WebAffiliationUrl,
-                            UserId = getuser.UserId,
-                            UserStatusId = (Guid)us.UserStatusId,
-                            CreatedAt = DateTime.Now
-                        };
-                        await _context.WebAffiliations.AddAsync(adduserweb);
+                            var adduserweb = new Domain.CommandModels.WebAffiliation
+                            {
+                                WebAffiliationId = _helper.GenerateNewGuid(),
+                                WebAffiliationUrl = us.WebAffiliationUrl,
+                                UserId = getuser.UserId,
+                                UserStatusId = (Guid)us.UserStatusId,
+                                CreatedAt = DateTime.Now
+                            };
+                            await _context.WebAffiliations.AddAsync(adduserweb);
+                        }
+                        else
+                        {
+                            var existing = userweb.FirstOrDefault(x => x.WebAffiliationId == us.WebAffiliationId);
+                            if (existing == null)
+                            {
+                                var adduserweb = new Domain.CommandModels.WebAffiliation
+                                {
+                                    WebAffiliationId = _helper.GenerateNewGuid(),
+                                    WebAffiliationUrl = us.WebAffiliationUrl,
+                                    UserId = getuser.UserId,
+                                    UserStatusId = (Guid)us.UserStatusId,
+                                    CreatedAt = DateTime.Now
+                                };
+                                await _context.WebAffiliations.AddAsync(adduserweb);
+                            }
+                            else
+                            {
+                                existing.WebAffiliationUrl = us.WebAffiliationUrl;
+                                existing.UserStatusId = (Guid)us.UserStatusId;
+                                existing.UpdatedAt = DateTime.Now;
+                                var updateweb = new Domain.CommandModels.WebAffiliation
+                                {
+                                    WebAffiliationId = existing.WebAffiliationId,
+                                    WebAffiliationUrl = us.WebAffiliationUrl,
+                                    UserId = getuser.UserId,
+                                    UserStatusId = (Guid)us.UserStatusId,
+                                    CreatedAt = existing.CreatedAt,
+                                    UpdatedAt = DateTime.Now
+                                };
+                                _context.WebAffiliations.Update(updateweb);
+                            }
+                        }  
                     }
-                    else
-                    {
-                        existing.WebAffiliationUrl = us.WebAffiliationUrl;
-                        existing.UserStatusId = (Guid)us.UserStatusId;
-                        existing.UpdatedAt = DateTime.Now;
-                        var updateweb = _mapper.Map<Domain.CommandModels.WebAffiliation>(existing);
-                        _context.WebAffiliations.Update(updateweb);
-                    }
-                }
 
-                var removeitem = userwork.Where(x => !request.WebAffiliations.Any(y => y.WebAffiliationId == x.WorkPlaceId)).ToList();
-                foreach (var item in removeitem)
-                {
-                    var webrm = _mapper.Map<Domain.CommandModels.WebAffiliation>(item);
-                    _context.WebAffiliations.Remove(webrm);
+                    var removeitem = userweb.Where(x => !request.WebAffiliations.Any(y => y.WebAffiliationId == x.WebAffiliationId)).ToList();
+                    foreach (var item in removeitem)
+                    {
+                        var webrm = new Domain.CommandModels.WebAffiliation
+                        {
+                            WebAffiliationId = item.WebAffiliationId,
+                            WebAffiliationUrl = item.WebAffiliationUrl,
+                            UserId = item.UserId,
+                            UserStatusId = item.UserStatusId,
+                            CreatedAt = item.CreatedAt,
+                            UpdatedAt = item.UpdatedAt
+                        };
+                        _context.WebAffiliations.Remove(webrm);
+                    }
                 }
+                
             }
             await _context.SaveChangesAsync();
 
