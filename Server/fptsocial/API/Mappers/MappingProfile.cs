@@ -29,6 +29,8 @@ using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetUserStatus;
 using Application.Queries.GetUserPost;
 using Application.Commands.AddFriendCommand;
+using Application.Queries.GetRelationship;
+using Application.Queries.GetUserRelationships;
 
 namespace Application.Mappers
 {
@@ -132,6 +134,11 @@ namespace Application.Mappers
             CreateMap<Command.Friend, AddFriendCommandResult>()
                 .ForMember(dest => dest.SendBy, otp => otp.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
                 .ForMember(dest => dest.ReceiptBy, otp => otp.MapFrom(src => src.FriendNavigation.FirstName + " " + src.FriendNavigation.LastName));
+
+            CreateMap<Query.Relationship, GetRelationshipResult>();
+            CreateMap<Query.UserRelationship, GetUserRelationshipResult>()
+                .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
+
         }
     }
 }
