@@ -2,6 +2,7 @@
 {
     public class GetUserContactInfo
     {
+        public string? ContactInfoId { get; set; }
         public string? SecondEmail { get; set; }
         public string PrimaryNumber { get; set; } = null!;
         public string? SecondNumber { get; set; }
