@@ -126,7 +126,7 @@ namespace Application.Commands.UpdateUserCommand
                         RelationshipId = request.UserRelationship.RelationshipId,
                         UserId = userprofile.UserId,
                         UserStatusId = (Guid)request.UserRelationship.UserStatusId,
-                        CreatedAt = userrelationship.CreatedAt,
+                        CreatedAt = DateTime.Now,
                     };
                     await _context.UserRelationships.AddAsync(updaterelationship);
                 }
