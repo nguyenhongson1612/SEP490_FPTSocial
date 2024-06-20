@@ -40,6 +40,7 @@ namespace Application.Queries.GetOtherUser
                                 .Include(x => x.UserSettings)
                                 .Include(x => x.Role)
                                 .Include(x => x.UserInterests)
+                                .Include(x=>x.WorkPlaces)
                                 .Include(x => x.UserRelationship)
                                 .Include(x=>x.BlockUserUserIsBlockeds)
                                 .Include(x=>x.BlockUserUsers)
@@ -55,10 +56,10 @@ namespace Application.Queries.GetOtherUser
             }
             foreach (var item in getuser.BlockUserUserIsBlockeds)
             {
-                if (item.UserIsBlockedId == request.UserId 
-                    || item.UserIsBlockedId == request.ViewUserId 
-                    || item.UserId == request.ViewUserId
-                    || item.UserId == request.UserId)
+                if ((item.UserIsBlockedId == request.UserId
+                    && item.UserId == request.ViewUserId)
+                    || (item.UserIsBlockedId == request.ViewUserId 
+                    && item.UserId == request.UserId))
                 {
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);
                 }
@@ -66,8 +67,10 @@ namespace Application.Queries.GetOtherUser
 
             foreach (var item in getuser.BlockUserUsers)
             {
-                if (item.UserId == request.ViewUserId
-                    || item.UserId == request.UserId)
+                if ((item.UserIsBlockedId == request.UserId
+                    && item.UserId == request.ViewUserId)
+                    || (item.UserIsBlockedId == request.ViewUserId
+                    && item.UserId == request.UserId))
                 {
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);
                 }
