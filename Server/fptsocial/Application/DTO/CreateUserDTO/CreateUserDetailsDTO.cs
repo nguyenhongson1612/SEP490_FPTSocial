@@ -15,6 +15,7 @@ namespace Application.DTO.CreateUserDTO
             public string? SecondEmail { get; set; }
             public string? PrimaryNumber { get; set; }
             public string? SecondNumber { get; set; }
+            public Guid? UserStatusId { get; set; }
         }
         public class CreateUserInteresDTO
         {
