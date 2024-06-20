@@ -105,16 +105,32 @@ namespace Application.Commands.UpdateUserCommand
            
             if(request.UserRelationship != null)
             {
-                var updaterelationship= new Domain.CommandModels.UserRelationship
+                if(userrelationship != null)
                 {
-                    UserRelationshipId = userrelationship.UserRelationshipId,
-                    RelationshipId = request.UserRelationship.RelationshipId,
-                    UserId = userprofile.UserId,
-                    UserStatusId = (Guid)request.UserRelationship.UserStatusId,
-                    CreatedAt = userrelationship.CreatedAt,
-                    UpdatedAt = DateTime.Now,
-                };
-                _context.UserRelationships.Update(updaterelationship);
+                    var updaterelationship = new Domain.CommandModels.UserRelationship
+                    {
+                        UserRelationshipId = userrelationship.UserRelationshipId,
+                        RelationshipId = request.UserRelationship.RelationshipId,
+                        UserId = userprofile.UserId,
+                        UserStatusId = (Guid)request.UserRelationship.UserStatusId,
+                        CreatedAt = userrelationship.CreatedAt,
+                        UpdatedAt = DateTime.Now,
+                    };
+                    _context.UserRelationships.Update(updaterelationship);
+                }
+                else
+                {
+                    var updaterelationship = new Domain.CommandModels.UserRelationship
+                    {
+                        UserRelationshipId = _helper.GenerateNewGuid(),
+                        RelationshipId = request.UserRelationship.RelationshipId,
+                        UserId = userprofile.UserId,
+                        UserStatusId = (Guid)request.UserRelationship.UserStatusId,
+                        CreatedAt = userrelationship.CreatedAt,
+                    };
+                    await _context.UserRelationships.AddAsync(updaterelationship);
+                }
+               
             }
             if (request.Avataphoto != null)
             {

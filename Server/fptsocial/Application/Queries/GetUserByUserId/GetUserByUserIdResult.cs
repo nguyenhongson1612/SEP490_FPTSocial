@@ -32,7 +32,7 @@ namespace Application.Queries.GetUserByUserId
         public DateTime? UpdatedAt { get; set; }
         public Guid RoleId { get; set; }
         public string RoleName { get; set; }
-        public Guid StatusId { get; set; }
+        public Guid UserStatusId { get; set; }
         public string UserStatusName { get; set; }
         public List<GetUserWorkPlaceDTO>? WorkPlaces { get; set; }
         public List<GetUserInterers>? UserInterests { get; set;}
