@@ -41,6 +41,7 @@ namespace Application.Queries.GetUserByUserId
                                 .Include(x => x.WebAffiliations)
                                 .Include(x => x.UserSettings)
                                 .Include(x => x.Role)
+                                .Include(x=>x.WorkPlaces)
                                 .Include(x=> x.UserInterests)
                                 .Include(x => x.UserRelationship)
                                 .FirstOrDefaultAsync(x => x.UserId == request.UserId);
