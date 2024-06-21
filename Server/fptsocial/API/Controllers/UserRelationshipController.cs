@@ -1,5 +1,7 @@
 ﻿using Application.Commands.AddFriendCommand;
+using Application.Commands.FriendStatusCommand;
 using Application.Commands.GetUserProfile;
+using Application.Commands.UpdateUserSettings;
 using Application.Queries.GetUserRelationships;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -71,6 +73,46 @@ namespace API.Controllers
                 return StatusCode(500, res.Error);
             }
 
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("friendstatus")]
+        public async Task<IActionResult> FriendStatus(FriendStatusCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updatesettings")]
+        public async Task<IActionResult> UpdaetUserSetting(UpdateUserSettingsCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
             return Success(res.Value);
         }
     }

@@ -45,6 +45,8 @@ namespace Application.Queries.GetOtherUser
                                 .Include(x=>x.BlockUserUserIsBlockeds)
                                 .Include(x=>x.BlockUserUsers)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
+            var getstatus = await _context.UserStatuses.ToListAsync();
+            var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.UserId).ToListAsync();
             if (getuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -75,7 +77,98 @@ namespace Application.Queries.GetOtherUser
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);
                 }
             }
+            
+            if(getusersetting.FirstOrDefault(x=>x.Setting.SettingName.Equals("Profile Status")).UserStatusId 
+                == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+            {
+                getuser.ContactInfo = null;
+                getuser.UserGender = null;
+                getuser.UserRelationship = null;
+                getuser.UserInterests = null;
+                getuser.WorkPlaces = null;
+                getuser.WebAffiliations = null;
+            }
+            else if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
+                == getstatus.FirstOrDefault(x => x.StatusName == "Public").UserStatusId)
+            {
+                if (getuser.ContactInfo.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                {
+                    getuser.ContactInfo = null;
+                }
+                if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                {
+                    getuser.UserGender = null;
+                }
+                if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                {
+                    getuser.UserRelationship = null;
+                }
 
+                if (getuser.UserInterests != null)
+                {
+                    if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                    {
+                        getuser.UserInterests = null;
+                    }
+                }
+                if (getuser.WorkPlaces != null)
+                {
+                    if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                    {
+                        getuser.WorkPlaces = null;
+                    }
+                }
+                if (getuser.WebAffiliations != null)
+                {
+                    if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                    {
+                        getuser.WebAffiliations = null;
+                    }
+                }
+                var friend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.FriendId == request.ViewUserId)
+                                                    || (x.UserId == request.ViewUserId && x.FriendId == request.UserId));
+                if (friend.UserId == request.UserId && friend.Confirm == false)
+                {
+
+                }
+                if (friend == null)
+                {
+                    if (getuser.ContactInfo.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                    {
+                        getuser.ContactInfo = null;
+                    }
+                    if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                    {
+                        getuser.UserGender = null;
+                    }
+                    if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                    {
+                        getuser.UserRelationship = null;
+                    }
+                    if (getuser.UserInterests != null)
+                    {
+                        if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                        {
+                            getuser.UserInterests = null;
+                        }
+                    }
+                    if (getuser.WorkPlaces != null)
+                    {
+                        if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                        {
+                            getuser.WorkPlaces = null;
+                        }
+                    }
+                    if (getuser.WebAffiliations != null)
+                    {
+                        if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                        {
+                            getuser.WebAffiliations = null;
+                        }
+                    }
+                }
+            }
+           
             var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
             return Result<GetOtherUserQueryResult>.Success(result);
         }
