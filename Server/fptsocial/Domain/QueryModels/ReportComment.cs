@@ -17,6 +17,8 @@ namespace Domain.QueryModels
         public string? Conetent { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string? Content { get; set; }
+        public bool? Processing { get; set; }
 
         public virtual CommentPost Comment { get; set; } = null!;
         public virtual CommentGroupPost CommentGroupPost { get; set; } = null!;
