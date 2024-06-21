@@ -231,7 +231,23 @@ namespace Application.Commands.UpdateUserCommand
                         _context.UserInterests.Remove(interesrm);
                     }
                 }
-                
+
+            }
+            else
+            {
+                foreach(var item in userinteres)
+                {
+                    var interesrm = new Domain.CommandModels.UserInterest
+                    {
+                        UserInterestId = item.UserInterestId,
+                        InterestId = item.InterestId,
+                        UserId = item.UserId,
+                        UserStatusId = item.UserStatusId,
+                        CreatedAt = item.CreatedAt,
+                        UpdatedAt = item.UpdatedAt
+                    };
+                    _context.UserInterests.Remove(interesrm);
+                }
             }
 
             if (request.WorkPlaces  != null)
@@ -290,7 +306,23 @@ namespace Application.Commands.UpdateUserCommand
                         _context.WorkPlaces.Remove(workrm);
                     }
                 }
-                
+
+            }
+            else
+            {
+                foreach(var item in userwork)
+                {
+                    var workrm = new Domain.CommandModels.WorkPlace
+                    {
+                        WorkPlaceId = item.WorkPlaceId,
+                        WorkPlaceName = item.WorkPlaceName,
+                        UserId = item.UserId,
+                        UserStatusId = item.UserStatusId,
+                        CreatedAt = item.CreatedAt,
+                        UpdatedAt = item.UpdatedAt
+                    };
+                    _context.WorkPlaces.Remove(workrm);
+                }
             }
 
             if (request.WebAffiliations != null)
@@ -360,7 +392,23 @@ namespace Application.Commands.UpdateUserCommand
                         _context.WebAffiliations.Remove(webrm);
                     }
                 }
-                
+
+            }
+            else
+            {
+                foreach(var item in userweb)
+                {
+                    var webrm = new Domain.CommandModels.WebAffiliation
+                    {
+                        WebAffiliationId = item.WebAffiliationId,
+                        WebAffiliationUrl = item.WebAffiliationUrl,
+                        UserId = item.UserId,
+                        UserStatusId = item.UserStatusId,
+                        CreatedAt = item.CreatedAt,
+                        UpdatedAt = item.UpdatedAt
+                    };
+                    _context.WebAffiliations.Remove(webrm);
+                }
             }
             await _context.SaveChangesAsync();
 
