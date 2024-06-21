@@ -21,7 +21,14 @@ export const getUserByNumber = async (userNumber) => {
       }
     }
   )
-  // console.log(response)
+  return response.data?.data
+}
+
+export const getUserByUserId = async (userId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`,
+    { params: { UserId: userId } }
+  )
+  console.log(response.data?.data);
   return response.data?.data
 }
 
@@ -34,18 +41,27 @@ export const getOtherUserByUserId = async ({ userId, viewUserId }) => {
       }
     }
   )
-  // console.log(response)
+  return response.data?.data
+}
+
+export const getInterest = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getinterest`)
   return response.data?.data
 }
 
 export const getGender = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getgender`)
-  return response.data
+  return response.data?.data
 }
 
 export const getStatus = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getstatus`)
-  return response.data
+  return response.data?.data
+}
+
+export const getRelationships = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Relationship/getrelationship`)
+  return response.data?.data
 }
 
 export const createByLogin = async (data) => {
