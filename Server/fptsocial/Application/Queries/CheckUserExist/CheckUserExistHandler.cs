@@ -31,13 +31,9 @@ namespace Application.Queries.CheckUserExist
             }
 
             Domain.QueryModels.UserProfile user = new Domain.QueryModels.UserProfile();
-            if(request.Email != null)
+            if(request.UserId != null)
             {
-                user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.Email == request.Email);
-            }
-            else
-            {
-                user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.FeId == request.FeId);
+                user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             }
             
             var result = new CheckUserExistQueryResult();

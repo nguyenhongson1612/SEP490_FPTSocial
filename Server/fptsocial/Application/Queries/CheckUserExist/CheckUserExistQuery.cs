@@ -11,7 +11,6 @@ namespace Application.Queries.CheckUserExist
 {
     public class CheckUserExistQuery : IQuery<CheckUserExistQueryResult>
     {
-        public string Email { get; set; }
-        public string? FeId { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

@@ -67,7 +67,7 @@ namespace API.Controllers
                 return BadRequest();    
             }
             var input = new CheckUserExistQuery();
-            input.Email = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "email").Value;
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             //input.FeId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "feid").Value;
             var res = await _sender.Send(input);
             return Success(res.Value);
