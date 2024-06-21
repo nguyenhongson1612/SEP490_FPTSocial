@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllPost, getOtherUserByUserId } from '~/apis'
+import { getAllPost, getOtherUserByUserId, getUserByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -21,23 +21,11 @@ function Profile() {
   const userIdPram = searchParams.get('id')
 
   useEffect(() => {
-    if (userIdCurrent === userIdPram) {
-      setUserProfile(currentUser)
-    }
+    if (userIdCurrent === userIdPram)
+      getUserByUserId(userIdCurrent).then(res => setUserProfile(res)).catch(() => navigate('/notavailable'))
+    else
+      getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram }).then(res => setUserProfile(res)).catch(() => navigate('/notavailable'))
 
-    else {
-      getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram })
-        .then(res => {
-          setUserProfile(res)
-          console.log(res)
-        })
-        .catch(() => navigate('/notavailable'))
-    }
-  }, [])
-
-
-  useEffect(() => {
-    // Call API
     getAllPost().then((data) => setListPost(data))
   }, [])
 

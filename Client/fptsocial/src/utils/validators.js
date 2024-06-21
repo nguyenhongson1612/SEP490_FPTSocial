@@ -8,6 +8,9 @@ export const PHONE_NUMBER_MESSAGE = 'Phone number is invalid in vietnam'
 export const EMAIL_RULE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 export const EMAIL_MESSAGE = 'Email is invalid. (example@example.com)'
 
+export const URL_RULE = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/
+export const URl_MESSAGE = 'Url is invalid'
+
 // file validate
 export const LIMIT_COMMON_FILE_SIZE = 10485760 // byte = 10 MB
 export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']
