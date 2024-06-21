@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { checkUserExist } from '~/apis'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
-import { getUserByNumber } from '~/redux/user/userSlice'
+import { getUserByUserId } from '~/redux/user/userSlice'
 
 function AccountCheckExist() {
   const dispatch = useDispatch()
@@ -15,11 +15,12 @@ function AccountCheckExist() {
         navigate('/firstlogin')
       else if (resData?.data?.enumcode === 5) {
         toast.promise(
-          dispatch(getUserByNumber(resData?.data?.userNumber)),
+          dispatch(getUserByUserId(resData?.data?.userId)),
           { pending: 'Checking...' }
-        ).then(res => {
-          if (!res.error) navigate('/')
-        })
+        )
+          .then(res => {
+            if (!res.error) navigate('/')
+          })
       }
     })
   }, [])

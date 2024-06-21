@@ -1,7 +1,10 @@
 import { MultiSelect, NativeSelect } from '@mantine/core'
+import { useEffect } from 'react'
 import { Controller } from 'react-hook-form'
 
 function Interests({ user, listInterest, control, listStatus }) {
+
+
   return (
     <div className='w-full grid grid-cols-1 xs:grid-cols-2 gap-3 border border-blue-500 p-2 rounded-md'>
       <div className='col-span-1 xs:col-span-2'>
@@ -31,7 +34,6 @@ function Interests({ user, listInterest, control, listStatus }) {
       <Controller
         name="interestStatus"
         control={control}
-        defaultValue={user?.userInterests[0]?.userStatusId}
         render={({ field }) => (
           <NativeSelect
             {...field}
@@ -39,7 +41,8 @@ function Interests({ user, listInterest, control, listStatus }) {
             onChange={(value) => field.onChange(value)}
             value={field.value}
           >
-            <optgroup label="Select status">
+            <option value='' disabled>Select status</option>
+            <optgroup >
               {listStatus?.map(status => (
                 <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
               ))}

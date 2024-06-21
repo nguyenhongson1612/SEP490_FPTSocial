@@ -8,7 +8,7 @@ function ProfileTopBar() {
   const navigate = useNavigate()
   const [isOpenProfile, setIsOpenProfile] = useState(false)
   const dispatch = useDispatch()
-  const { signOut, signOutRedirect, } = useAuth();
+  const { signOutRedirect } = useAuth()
 
   const handleLogout = async () => {
     try {
@@ -38,7 +38,7 @@ function ProfileTopBar() {
       isOpenProfile && (
         <div className='absolute top-11 right-0 flex justify-center items-center gap-3 h-fit w-[90vw] sm:w-[360px] bg-white rounded-lg shadow-4edges z-20'>
           <div className='w-[90%] py-4'>
-            <Link to={'/profile'} className='mb-4 border-b-2 shadow-sm' >
+            <Link to={`/profile?id=${user?.userId}`} className='mb-4 border-b-2 shadow-sm' >
               <div className="icon-side-bar flex justify-start items-center mb-2 text-gray-500 hover:text-gray-950 gap-3" href='#'>
                 <img
                   src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"

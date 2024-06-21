@@ -1,9 +1,12 @@
 import { NativeSelect, TextInput } from '@mantine/core'
+import { useEffect } from 'react'
 import { Controller } from 'react-hook-form'
 import { FaPlus } from 'react-icons/fa6'
 import { URL_RULE, URl_MESSAGE } from '~/utils/validators'
 
 function WebAffiliations({ register, user, errors, control, listStatus, inputs, handleAddInput }) {
+
+
   return (
     <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
       <div className='col-span-1 xs:col-span-2'>
@@ -39,7 +42,6 @@ function WebAffiliations({ register, user, errors, control, listStatus, inputs, 
       <Controller
         name="webAffiliationsStatus"
         control={control}
-        defaultValue={user?.webAffiliations[0]?.userStatusId}
         render={({ field }) => (
           <NativeSelect
             {...field}
@@ -47,7 +49,8 @@ function WebAffiliations({ register, user, errors, control, listStatus, inputs, 
             onChange={(value) => field.onChange(value)}
             value={field.value}
           >
-            <optgroup label="Select status">
+            <option value='' disabled>Select status</option>
+            <optgroup>
               {listStatus?.map(status => (
                 <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
               ))}

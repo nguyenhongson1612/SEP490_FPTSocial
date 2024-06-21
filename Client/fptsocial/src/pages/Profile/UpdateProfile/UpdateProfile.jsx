@@ -2,10 +2,7 @@ import { Button, MultiSelect, NativeSelect, Text, TextInput, Textarea } from '@m
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { IoMdClose } from 'react-icons/io'
-import { FaPlus } from 'react-icons/fa'
 import { getGender, getInterest, getRelationships, getStatus, updateUserProfile } from '~/apis'
-import { EMAIL_RULE, EMAIL_MESSAGE, FIELD_REQUIRED_MESSAGE, PHONE_NUMBER_MESSAGE, PHONE_NUMBER_RULE, WHITESPACE_MESSAGE, WHITESPACE_RULE, URL_RULE, URl_MESSAGE } from '~/utils/validators'
-import { inputRegex } from '@tiptap/extension-image'
 import Contact from './Contact'
 import Information from './Information'
 import Gender from './Gender'
@@ -14,15 +11,18 @@ import Interests from './Interests'
 import Workspace from './Workspace'
 import WebAffiliations from './WebAffiliations'
 import ImageArea from './ImageArea'
+import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { getUserByUserId } from '~/redux/user/userSlice'
 
-function UpdateProfile({ onClose, user }) {
-  const { control, register, setValue, handleSubmit, formState: { errors } } = useForm()
+function UpdateProfile({ onClose, user, navigate }) {
+  const { control, reset, register, setValue, handleSubmit, formState: { errors } } = useForm()
   const [listGender, setListGender] = useState([])
   const [listStatus, setListStatus] = useState([])
   const [listInterest, setListInterest] = useState([])
   const [listRelationship, setListRelationship] = useState([])
   const [inputs, setInputs] = useState(user?.webAffiliations.length === 0 ? [''] : user?.webAffiliations)
-  console.log(inputs);
+  const dispatch = useDispatch()
   const handleAddInput = () => {
     if (inputs.length == 3) return
     setInputs([...inputs, ''])
@@ -37,6 +37,14 @@ function UpdateProfile({ onClose, user }) {
     getRelationships().then(data => setListRelationship(data))
   }, [])
 
+  useEffect(() => reset({
+    workplaceStatus: user?.workPlaces[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
+    contactStatus: user?.contactInfo?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
+    genderStatus: user?.userGender?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
+    webAffiliationsStatus: user?.webAffiliations[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
+    relationshipStatus: user?.userRelationship?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
+    interestStatus: user?.userInterests[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId
+  }), [listStatus])
 
 
   const validateData = (data) => {
@@ -44,31 +52,32 @@ function UpdateProfile({ onClose, user }) {
   }
 
   const submitUpdateProfile = (data) => {
-    console.log(data, 'formdata');
+    console.log(data, 'formdata')
     const submitData = {
       'userId': null,
-      'firstName': validateData(data?.firstName),
-      'lastName': validateData(data?.lastName),
+      'firstName': data?.firstName,
+      'lastName': data?.lastName,
       'birthDay': data?.birthDay,
-      'gender': {
+      'userGender': {
         'genderId': data?.gender,
         'userStatusId': data?.genderStatus
       },
       'contactInfo': {
-        'secondEmail': validateData(data?.secondEmail),
-        'primaryNumber': validateData(data?.primaryNumber),
-        'secondNumber': validateData(data?.secondNumber),
+        'secondEmail': data?.secondEmail,
+        'primaryNumber': data?.primaryNumber,
+        'secondNumber': data?.secondNumber,
         'userStatusId': data?.contactStatus
       },
-      'userRelationship': {
+      'userRelationship': data?.relationship ? {
         'relationshipId': data?.relationship,
         'userStatusId': data?.relationshipStatus
-      },
+      } : null,
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
       'coverImage': data?.coverImage,
       'avataphoto': data?.avataphoto,
-      'userInterests': data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })),
+      'userInterests': data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })).length == 0 ?
+        null : data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })),
       'workPlaces': [
         {
           'workPlaceId': user?.workPlaces[0]?.workPlaceId ?? null,
@@ -84,10 +93,26 @@ function UpdateProfile({ onClose, user }) {
           userStatusId: data?.webAffiliationsStatus
         })
         return acc
+      }, []).length == 0 ? null : inputs?.reduce((acc, e, i) => {
+        if (data[`webAffiliations_${i}`].length == 0) return acc
+        acc.push({
+          webAffiliationId: user?.webAffiliations[i]?.webAffiliationId ?? null,
+          webAffiliationUrl: data[`webAffiliations_${i}`],
+          userStatusId: data?.webAffiliationsStatus
+        })
+        return acc
       }, [])
     }
     console.log(submitData, 'submitdata')
-    updateUserProfile(submitData).then(() => console.log('log'))
+    toast.promise(
+      updateUserProfile(submitData),
+      { pending: 'Updating is in progress...' }
+    ).then(() => {
+      onClose()
+      dispatch(getUserByUserId(user?.userId))
+      navigate('/')
+      toast.success('Account updated successfully')
+    })
   }
 
   return (
@@ -110,7 +135,7 @@ function UpdateProfile({ onClose, user }) {
 
       <div className="w-full">
         <button id="button" type="submit"
-          className=" w-full p-4 font-medium bg-orangeFpt  text-white rounded-md hover:bg-orange-600">Update Profile</button>
+          className="interceptor-loading w-full p-4 font-medium bg-orangeFpt text-white rounded-md hover:bg-orange-600">Update Profile</button>
       </div>
     </form>
   )
