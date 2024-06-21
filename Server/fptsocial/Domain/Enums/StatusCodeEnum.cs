@@ -44,6 +44,12 @@ namespace Domain.Enums
         P01_Not_Found,
         [Description("Can not send friend")]
         FR01_Cannot_Send,
+        [Description("Accept friend")]
+        FR02_Accept_Friend,
+        [Description("Cancle friend")]
+        FR03_Cancle_Friend,
+        [Description("Reject friend")]
+        FR04_Reject_Friend,
         [Description("UserRelationship not found")]
         UR01_NOT_FOUND,
     }

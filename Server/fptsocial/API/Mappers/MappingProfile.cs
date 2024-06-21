@@ -31,6 +31,9 @@ using Application.Queries.GetUserPost;
 using Application.Commands.AddFriendCommand;
 using Application.Queries.GetRelationship;
 using Application.Queries.GetUserRelationships;
+using Application.Queries.GetSettings;
+using Application.Commands.UpdateUserSettings;
+using Application.DTO.UpdateSettingDTO;
 
 namespace Application.Mappers
 {
@@ -78,6 +81,7 @@ namespace Application.Mappers
 
 
             CreateMap<Query.UserProfile, GetOtherUserQueryResult>();
+            CreateMap<Query.Setting, GetSettingsQueryResult>();
             CreateMap<UpdateUserCommand, Query.UserProfile>();
             CreateMap<Query.UserPost, GetUserPostResult>();
 
@@ -129,6 +133,7 @@ namespace Application.Mappers
 
 
             CreateMap<Query.UserStatus, GetUserStatusQueryResult>();
+            CreateMap<UpdateUserSettingsCommand, UpdateUserCommandResult>().ReverseMap();
 
             //Add Friend:
             CreateMap<Command.Friend, AddFriendCommandResult>()
@@ -138,7 +143,7 @@ namespace Application.Mappers
             CreateMap<Query.Relationship, GetRelationshipResult>();
             CreateMap<Query.UserRelationship, GetUserRelationshipResult>()
                 .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
-
+            CreateMap<Query.UserSetting, UserSettingDTO>();
         }
     }
 }
