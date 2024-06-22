@@ -2,13 +2,19 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
-export const getUserByNumber = createAsyncThunk(
-  'user/getUserByNumbe', async (userNumber) => {
-    const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbynumber`, {
-      params: {
-        UserNumber: userNumber
-      }
-    })
+export const getUserByUserId = createAsyncThunk(
+  'user/getUserByUserId',
+  async (userId) => {
+    const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`,
+      { params: { UserId: userId } }
+    )
+    return response.data?.data
+  }
+)
+export const updateUserProfile = createAsyncThunk(
+  'user/updateUserProfile',
+  async (data) => {
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/updateprofile`, data)
     return response.data?.data
   }
 )
@@ -24,7 +30,7 @@ export const userSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(getUserByNumber.fulfilled, (state, action) => {
+    builder.addCase(getUserByUserId.fulfilled, (state, action) => {
       const user = action.payload
       state.currentUser = user
     })

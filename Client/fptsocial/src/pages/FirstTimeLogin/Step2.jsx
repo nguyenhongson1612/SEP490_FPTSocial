@@ -1,7 +1,27 @@
+import { MultiSelect, NativeSelect, TextInput } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Controller } from 'react-hook-form';
+import { getInterest, getRelationships, getStatus } from '~/apis';
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators';
 
 
-function Step2({ register, errors }) {
+function Step2({ register, errors, control }) {
+  const [listStatus, setListStatus] = useState([])
+  const [listInterest, setListInterest] = useState([])
+  const [listRelationship, setListRelationship] = useState([])
+  // const [inputs, setInputs] = useState(user?.webAffiliations.length === 0 ? [''] : user?.webAffiliations)
+  // const handleAddInput = () => {
+  //   if (inputs.length == 3) return
+  //   setInputs([...inputs, ''])
+  // }
+
+  useEffect(() => {
+    getStatus().then(data => setListStatus(data))
+    getInterest()
+      .then(data => (data?.map(e => ({ label: e?.interestName, value: e?.interestId }))))
+      .then(data => setListInterest(data))
+    getRelationships().then(data => setListRelationship(data))
+  }, [])
 
   return (
     <div className='flex flex-col h-full'>
@@ -10,51 +30,82 @@ function Step2({ register, errors }) {
       </div>
 
       <div className='px-4 pb-10 text-md font-semibold' >
+        <div className='grid grid-cols-2 gap-x-4 gap-y-3 sm:gap-y-2'>
+          <Controller
+            name="status"
+            control={control}
+            defaultValue={''}
+            rules={{ required: FIELD_REQUIRED_MESSAGE }}
+            render={({ field }) => (
+              <NativeSelect
+                className='col-span-2 sm:col-span-1'
+                {...field}
+                label="Information audience"
+                required
+                error={!!errors['status'] && `${errors['status']?.message}`}
+                onChange={(value) => field.onChange(value)}
+                value={field.value}
+              >
+                <option value="" disabled>Choose who can see the information</option>
+                <optgroup >
+                  {listStatus?.map(status => (
+                    <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
+                  ))}
+                </optgroup>
+              </NativeSelect>
+            )}
+          />
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-3 my-4 gap-y-5 sm:gap-y-12'>
-
-          <div className="relative ">
-            <input id='homeTown'
-              type="text"
-              className={`${errors.homeTown && ' !border-red-500 focus:outline-offset-4 focus:outline-red-500'} bg-white peer w-full px-4 pb-3 pt-3 font-medium border-b border-gray-300 rounded-md 
-                          hover:border-gray-900 focus:outline-offset-4 focus:outline-blue-500`}
-              placeholder=""
-              {...register('homeTown', {
-                pattern: {
-                  value: WHITESPACE_RULE,
-                }
-              })}
-            />
-            {errors.homeTown && <span className='text-red-500 text-xs'>{WHITESPACE_MESSAGE}</span>}
-            <label htmlFor="homeTown" className={`${errors.homeTown && '!text-red-500'} absolute left-0 top-0 ml-3 text-gray-500  duration-100 ease-linear peer-placeholder-shown:translate-y-4
-                peer-[:not(:placeholder-shown)]:text-xs  peer-placeholder-shown:text-gray-500 peer-focus:ml-3 peer-focus:translate-y-0 px-1 peer-focus:text-xs peer-focus:text-blue-500 `}
-            >
-              Hometown
-            </label>
-          </div>
-
-          <div className="relative ">
-            <input id='aboutMe'
-              type="text"
-              className={`${errors.aboutMe && ' !border-red-500 focus:outline-offset-4 focus:outline-red-500'} bg-white peer w-full px-4 pb-3 pt-3 font-medium border-b border-gray-300 rounded-md 
-                          hover:border-gray-900 focus:outline-offset-4 focus:outline-blue-500`}
-              placeholder=""
-              {...register('aboutMe', {
-                pattern: {
-                  value: WHITESPACE_RULE,
-                }
-              })}
-            />
-            {errors.aboutMe && <span className='text-red-500 text-xs'>{WHITESPACE_MESSAGE}</span>}
-            <label htmlFor="aboutMe" className={`${errors.aboutMe && '!text-red-500'} absolute left-0 top-0 ml-3 text-gray-500  duration-100 ease-linear peer-placeholder-shown:translate-y-4
-                peer-[:not(:placeholder-shown)]:text-xs  peer-placeholder-shown:text-gray-500 peer-focus:ml-3 peer-focus:translate-y-0 px-1 peer-focus:text-xs peer-focus:text-blue-500 `}
-            >
-              About me
-            </label>
-          </div>
-
-
-
+          <Controller
+            name="interest"
+            control={control}
+            render={({ field }) => (
+              <MultiSelect
+                className='col-span-2 sm:col-span-1'
+                {...field}
+                onChange={(value) => field.onChange(value)}
+                value={field.value}
+                label="Your interests"
+                placeholder="Select up to 3 interests"
+                data={listInterest}
+                maxValues={3}
+                clearable
+              />
+            )}
+          />
+          <Controller
+            name="relationship"
+            control={control}
+            defaultValue={''}
+            render={({ field }) => (
+              <NativeSelect
+                className='col-span-2 sm:col-span-1'
+                {...field}
+                onChange={(value) => field.onChange(value)}
+                value={field.value}
+                label="Your relationship"
+              >
+                <option value={''} disabled>Select relationship</option>
+                <optgroup>
+                  {listRelationship?.map(relationship => (
+                    <option key={relationship?.relationShipId} value={relationship?.relationShipId}>{relationship?.relationshipName}</option>
+                  ))}
+                </optgroup>
+              </NativeSelect>
+            )}
+          />
+          <TextInput
+            className='col-span-2 sm:col-span-1'
+            label="Workplace"
+            placeholder="Workplace"
+            error={!!errors['workPlace'] && `${errors['workPlace']?.message}`}
+            {...register('workPlace', {
+              pattern: {
+                value: WHITESPACE_RULE,
+                message: WHITESPACE_MESSAGE
+              }
+            })}
+          />
         </div>
       </div >
     </div >

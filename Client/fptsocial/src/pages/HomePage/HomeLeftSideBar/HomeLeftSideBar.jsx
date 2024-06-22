@@ -1,17 +1,21 @@
 // import React from 'react'
 
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
 function HomeLeftSideBar({ user }) {
   const [isMore, setIsMore] = useState(false)
+  const currentUser = useSelector(selectCurrentUser)
+
   return (
     <div className="max-h-[calc(100vh_-_55px)] hidden lg:!flex w-[380px] flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
       <div className="ml-3 mt-8 mb-5">
         <div id="explore"
           className=" flex flex-col items-start mb-8 border-b-2"
         >
-          <Link to={'/profile'}
+          <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"

@@ -1,7 +1,9 @@
 import { NativeSelect } from '@mantine/core'
+import { useEffect } from 'react'
 import { Controller } from 'react-hook-form'
 
 function Relationship({ user, listRelationship, control, listStatus }) {
+
   return (
     <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
       <div className='col-span-1 xs:col-span-2'>
@@ -13,7 +15,7 @@ function Relationship({ user, listRelationship, control, listStatus }) {
       <Controller
         name="relationship"
         control={control}
-        defaultValue={user?.userRelationship?.relationshipId}
+        defaultValue={user?.userRelationship?.relationshipId ?? ''}
         render={({ field }) => (
           <NativeSelect
             {...field}
@@ -21,7 +23,8 @@ function Relationship({ user, listRelationship, control, listStatus }) {
             value={field.value}
             label="Your relationship"
           >
-            <optgroup label="Select status">
+            <option value='' disabled>Select status</option>
+            <optgroup >
               {listRelationship?.map(relationship => (
                 <option key={relationship?.relationShipId} value={relationship?.relationShipId}>{relationship?.relationshipName}</option>
               ))}
@@ -33,7 +36,6 @@ function Relationship({ user, listRelationship, control, listStatus }) {
       <Controller
         name="relationshipStatus"
         control={control}
-        defaultValue={user?.userRelationship?.userStatusId}
         render={({ field }) => (
           <NativeSelect
             {...field}
@@ -41,7 +43,8 @@ function Relationship({ user, listRelationship, control, listStatus }) {
             onChange={(value) => field.onChange(value)}
             value={field.value}
           >
-            <optgroup label="Select status">
+            <option value='' disabled>Select status</option>
+            <optgroup>
               {listStatus?.map(status => (
                 <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
               ))}

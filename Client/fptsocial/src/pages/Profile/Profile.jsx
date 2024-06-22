@@ -18,11 +18,13 @@ function Profile() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const userIdCurrent = currentUser?.userId
+  console.log('🚀 ~ Profile ~ userIdCurrent:', userIdCurrent)
   const userIdPram = searchParams.get('id')
+  console.log('🚀 ~ Profile ~ userIdPram:', userIdPram)
 
   useEffect(() => {
     if (userIdCurrent === userIdPram)
-      getUserByUserId(userIdCurrent).then(res => setUserProfile(res)).catch(() => navigate('/notavailable'))
+      setUserProfile(currentUser)
     else
       getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram }).then(res => setUserProfile(res)).catch(() => navigate('/notavailable'))
 
@@ -47,7 +49,7 @@ function Profile() {
             padding={0}
             scrollAreaComponent={ScrollArea.Autosize}
           >
-            <UpdateProfile user={userProfile} onClose={close} />
+            <UpdateProfile user={userProfile} onClose={close} navigate={navigate} />
           </Modal>
         </div>
       </div>

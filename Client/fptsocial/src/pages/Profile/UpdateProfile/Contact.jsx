@@ -1,8 +1,11 @@
 import { NativeSelect, TextInput } from '@mantine/core';
+import { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import { EMAIL_MESSAGE, EMAIL_RULE, PHONE_NUMBER_MESSAGE, PHONE_NUMBER_RULE } from '~/utils/validators';
 
 function Contact({ register, user, errors, control, listStatus }) {
+
+
   return <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
     <div className='col-span-1 xs:col-span-2'>
       <div className='flex items-center '>
@@ -51,7 +54,6 @@ function Contact({ register, user, errors, control, listStatus }) {
     <Controller
       name="contactStatus"
       control={control}
-      defaultValue={user?.contactInfo?.userStatusId}
       render={({ field }) => (
         <NativeSelect
           {...field}
@@ -59,7 +61,8 @@ function Contact({ register, user, errors, control, listStatus }) {
           onChange={(value) => field.onChange(value)}
           value={field.value}
         >
-          <optgroup label="Select status">
+          <option value="" disabled>Select status</option>
+          <optgroup >
             {listStatus?.map(status => (
               <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
             ))}
