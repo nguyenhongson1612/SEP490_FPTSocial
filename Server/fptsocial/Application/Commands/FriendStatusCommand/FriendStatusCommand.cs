@@ -9,7 +9,7 @@ namespace Application.Commands.FriendStatusCommand
 {
     public class FriendStatusCommand : ICommand<FriendStatusCommandResult>
     {
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public Guid FriendId { get; set; }
         public bool? Confirm { get; set; }
         public bool? Cancle { get; set; }

@@ -34,9 +34,20 @@ namespace Application.Commands.AddFriendCommand
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
+            if (request.UserId == request.FriendId)
+            {
+                throw new ErrorException(StatusCodeEnum.FR01_Cannot_Send);
+            }
             var userreceipt = await _querycontext.UserProfiles.Include(x=>x.BlockUserUsers)
                 .Include(x=>x.BlockUserUserIsBlockeds).FirstOrDefaultAsync(x => x.UserId == request.FriendId);
-            if(userreceipt == null)
+            var friend = await _querycontext.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.FriendId == request.FriendId) || (x.UserId == request.FriendId
+                                                                                && x.FriendId == request.UserId));
+            if(friend != null)
+            {
+                throw new ErrorException(StatusCodeEnum.FR01_Cannot_Send);
+            }
+            
+            if (userreceipt == null)
             {
                 throw new ErrorException(StatusCodeEnum.FR01_Cannot_Send);
             }
