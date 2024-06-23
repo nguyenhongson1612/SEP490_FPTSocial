@@ -12,6 +12,7 @@ import { selectCurrentUser } from './redux/user/userSlice'
 import PageLoadingSpinner from './components/Loading/PageLoadingSpinner'
 import AccountCheckExist from './pages/Auth/AccountCheckExist'
 import NotAvailable from './pages/404/NotAvailable'
+import Setting from './pages/Settings/Setting'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -60,6 +61,8 @@ function App() {
           {/* Route need existed user */}
           <Route element={<ProtectedRouteByUser user={currentUser} jwtToken={jwtToken} />}>
             <Route path='/' element={<Navigate to='/homepage' />} />
+
+            <Route path='/settings' element={<Setting />} />
 
             {/* Home page */}
             <Route path='/homepage' element={<HomePage />} />

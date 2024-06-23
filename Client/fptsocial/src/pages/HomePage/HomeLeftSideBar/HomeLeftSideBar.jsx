@@ -10,7 +10,7 @@ function HomeLeftSideBar({ user }) {
   const currentUser = useSelector(selectCurrentUser)
 
   return (
-    <div className="max-h-[calc(100vh_-_55px)] hidden lg:!flex w-[380px] flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
+    <div className="max-h-[calc(100vh_-_55px)] hidden xl:!flex xl:basis-3/12 flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
       <div className="ml-3 mt-8 mb-5">
         <div id="explore"
           className=" flex flex-col items-start mb-8 border-b-2"

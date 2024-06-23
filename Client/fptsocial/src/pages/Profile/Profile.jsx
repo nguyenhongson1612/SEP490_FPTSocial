@@ -18,9 +18,7 @@ function Profile() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const userIdCurrent = currentUser?.userId
-  console.log('🚀 ~ Profile ~ userIdCurrent:', userIdCurrent)
   const userIdPram = searchParams.get('id')
-  console.log('🚀 ~ Profile ~ userIdPram:', userIdPram)
 
   useEffect(() => {
     if (userIdCurrent === userIdPram)
@@ -36,7 +34,7 @@ function Profile() {
       <div className="relative">
         <NavTopBar />
         <div className="">
-          <TopProfile open={open} user={userProfile} />
+          <TopProfile open={open} user={userProfile} currentUser={currentUser} />
           <ContentProfile listPost={listPost} user={userProfile} />
           <Modal
             classNames={{

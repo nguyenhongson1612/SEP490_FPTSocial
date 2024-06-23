@@ -10,13 +10,15 @@ import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { motion } from 'framer-motion'
-
+// import { RichTextEditor } from '@mantine/rte';
 function NewPost() {
   const [isCreate, setIsCreate] = useState(false)
   const [isChosePostAudience, setIsChosePostAudience] = useState(false)
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [content, setContent] = useState('')
   const user = useSelector(selectCurrentUser)
+  const [value, onChange] = useState()
+
   const createPost = () => {
     console.log(content)
     toast.success('Create post successfully')

@@ -15,7 +15,7 @@ function AccountCheckExist() {
         navigate('/firstlogin')
       else if (resData?.data?.enumcode === 5) {
         toast.promise(
-          dispatch(getUserByUserId(resData?.data?.userId)),
+          dispatch(getUserByUserId()),
           { pending: 'Checking...' }
         )
           .then(res => {

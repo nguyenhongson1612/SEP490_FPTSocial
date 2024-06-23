@@ -24,10 +24,8 @@ export const getUserByNumber = async (userNumber) => {
   return response.data?.data
 }
 
-export const getUserByUserId = async (userId) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`,
-    { params: { UserId: userId } }
-  )
+export const getUserByUserId = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`)
   console.log(response.data?.data);
   return response.data?.data
 }
@@ -64,6 +62,20 @@ export const getRelationships = async () => {
   return response.data?.data
 }
 
+export const getListSettings = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getsettings`)
+  return response.data?.data
+}
+export const getUserSettings = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getusersettings`)
+  return response.data?.data
+}
+export const updateSettings = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserRelationship/updatesettings`)
+  return response.data?.data
+}
+
+
 export const createByLogin = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/createbylogin`, data)
   return response.data?.data
@@ -73,3 +85,9 @@ export const updateUserProfile = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/updateprofile`, data)
   return response.data?.data
 }
+
+export const sendFriend = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/sendfriend`, data)
+  return response.data?.data
+}
+
