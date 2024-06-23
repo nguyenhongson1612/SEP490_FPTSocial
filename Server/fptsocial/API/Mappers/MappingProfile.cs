@@ -34,6 +34,7 @@ using Application.Queries.GetUserRelationships;
 using Application.Queries.GetSettings;
 using Application.Commands.UpdateUserSettings;
 using Application.DTO.UpdateSettingDTO;
+using Application.Commands.CreateReportType;
 
 namespace Application.Mappers
 {
@@ -94,7 +95,7 @@ namespace Application.Mappers
             CreateMap<Command.Interest, CreateInterestCommandResult>();
             CreateMap<CreateUserGenderCommand, Command.UserGender>();
             CreateMap<Command.UserGender, CreateUserGenderCommandResult>();
-
+            CreateMap<Command.ReportType, CreateReportTypeCommandResult>();
 
 
             //Mapping for getuser
