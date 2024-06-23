@@ -50,6 +50,14 @@ namespace Domain.Enums
         FR03_Cancle_Friend,
         [Description("Reject friend")]
         FR04_Reject_Friend,
+        [Description("Both are not friend")]
+        FR05_Not_Friend,
+        [Description("You can not accept friend")]
+        FR06_Can_Not_Friend,
+        [Description("You can not cancel friend request")]
+        FR07_Can_Not_Cancel_Friend,
+        [Description("You can not reject friend request")]
+        FR08_Can_Not_Reject_Friend,
         [Description("UserRelationship not found")]
         UR01_NOT_FOUND,
         [Description("ReportType is existed")]
