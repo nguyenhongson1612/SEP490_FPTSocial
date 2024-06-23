@@ -32,31 +32,6 @@ function Step2({ register, errors, control }) {
       <div className='px-4 pb-10 text-md font-semibold' >
         <div className='grid grid-cols-2 gap-x-4 gap-y-3 sm:gap-y-2'>
           <Controller
-            name="status"
-            control={control}
-            defaultValue={''}
-            rules={{ required: FIELD_REQUIRED_MESSAGE }}
-            render={({ field }) => (
-              <NativeSelect
-                className='col-span-2 sm:col-span-1'
-                {...field}
-                label="Information audience"
-                required
-                error={!!errors['status'] && `${errors['status']?.message}`}
-                onChange={(value) => field.onChange(value)}
-                value={field.value}
-              >
-                <option value="" disabled>Choose who can see the information</option>
-                <optgroup >
-                  {listStatus?.map(status => (
-                    <option key={status?.userStatusId} value={status?.userStatusId}>{status?.statusName}</option>
-                  ))}
-                </optgroup>
-              </NativeSelect>
-            )}
-          />
-
-          <Controller
             name="interest"
             control={control}
             render={({ field }) => (

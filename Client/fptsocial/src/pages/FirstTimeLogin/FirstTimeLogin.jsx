@@ -55,19 +55,19 @@ function FirstTimeLogin() {
       'lastName': data?.lastName,
       'email': data?.email,
       'feId': profileFedi?.email,
+      'roleName': null,
       'birthDay': data?.birthDay,
       'gender': {
         'genderId': data?.genderId,
-        'userStatusId': data?.status
       },
       'contactInfor': {
         'secondEmail': null,
         'primaryNumber': '',
-        'secondNumber': null
+        'secondNumber': null,
+        'userStatusId': null
       },
       'relationship': {
         'relationshipId': data?.relationship.length == 0 ? null : data?.relationship,
-        'userStatusId': data?.status
       },
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
@@ -79,10 +79,9 @@ function FirstTimeLogin() {
       'userSetting': [{
         'settingId': null
       }],
-      'interes': data?.interest?.map(e => ({ interestId: e, userStatusId: data?.status })) ?? [{ 'interestId': null }],
+      'interes': data?.interest?.map(e => ({ interestId: e })) ?? [{ 'interestId': null }],
       'workPlace': [{
         'workPlaceName': data?.workPlace,
-        'userStatusId': data?.status
       }],
       'webAffilication': [{
         'webAffiliationUrl': null

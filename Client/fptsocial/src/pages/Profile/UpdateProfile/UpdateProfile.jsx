@@ -109,7 +109,7 @@ function UpdateProfile({ onClose, user, navigate }) {
       { pending: 'Updating is in progress...' }
     ).then(() => {
       onClose()
-      dispatch(getUserByUserId(user?.userId))
+      dispatch(getUserByUserId())
       navigate('/')
       toast.success('Account updated successfully')
     })

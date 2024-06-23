@@ -27,9 +27,9 @@ function HomePage() {
   return (
     <>
       <NavTopBar />
-      <div className='flex bg-fbWhite justify-center lg:justify-around'>
+      <div className='flex bg-fbWhite justify-center'>
         <HomeLeftSideBar user={user} />
-        <div className='max-h-[calc(100vh_-_55px)] basis-11/12 md:basis-8/12 lg:basis-6/12 overflow-y-auto scrollbar-none-track 
+        <div className='max-h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-6/12 overflow-y-auto scrollbar-none-track 
         flex flex-col items-center gap-4'>
           <NewPost />
           {!listPost && <PageLoadingSpinner />}

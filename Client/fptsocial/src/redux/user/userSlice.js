@@ -4,10 +4,8 @@ import { API_ROOT } from '~/utils/constants'
 
 export const getUserByUserId = createAsyncThunk(
   'user/getUserByUserId',
-  async (userId) => {
-    const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`,
-      { params: { UserId: userId } }
-    )
+  async () => {
+    const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getuserbyuserid`)
     return response.data?.data
   }
 )

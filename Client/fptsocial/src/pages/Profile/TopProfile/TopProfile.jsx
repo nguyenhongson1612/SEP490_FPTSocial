@@ -1,5 +1,12 @@
+import { sendFriend } from '~/apis'
 
-function TopProfile({ open, user }) {
+function TopProfile({ open, user, currentUser }) {
+  console.log('🚀 ~ TopProfile ~ currentUser?.userId:', currentUser?.userId)
+  console.log('🚀 ~ TopProfile ~ user?.userId:', user?.userId)
+  const handleAddFriend = () => {
+    sendFriend({ userId: user?.userId, friendId: currentUser?.userId }).then(data => console.log(data))
+  }
+
   return (
     <div id='top-profile'
       className='bg-white shadow-md w-full flex flex-col items-center'
@@ -58,13 +65,21 @@ function TopProfile({ open, user }) {
               />
             </div>
           </div>
+          {user?.userId == currentUser?.userId ? (
+            <div id='update'
+              onClick={open}
+              className='flex flex-col justify-end mb-4 cursor-pointer'
+            >
+              <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Update Your Profile</span>
+            </div>) : (
+            <div id='update'
+              // onClick={handleAddFriend}
+              className='flex flex-col justify-end mb-4 cursor-pointer'
+            >
+              <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Add friend</span>
+            </div>
+          )}
 
-          <div id='update'
-            onClick={open}
-            className='flex flex-col justify-end mb-4 cursor-pointer'
-          >
-            <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Update Your Profile</span>
-          </div>
         </div>
       </div>
     </div>
