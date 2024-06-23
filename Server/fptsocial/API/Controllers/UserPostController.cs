@@ -1,5 +1,7 @@
 ﻿using Application.Queries.GetUserPost;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,6 +9,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserPostController : BaseController
     {
         private readonly ISender _sender;

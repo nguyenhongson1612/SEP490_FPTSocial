@@ -34,8 +34,6 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-
-    c.OperationFilter<AddXsrfTokenHeaderParameter>();
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -81,7 +79,6 @@ builder.Services.AddAuthorization(options =>
     });
 });
 //builder.Services.ConfigurePolicy(builder.Configuration);
-builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
 
 
 var app = builder.Build();
@@ -100,21 +97,6 @@ else
     app.UseExceptionHandler("/Home/Error");
 }
 var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
-
-app.Use(async (context, next) =>
-{
-    var path = context.Request.Path.Value;
-    string[] urlPaths = { "/api", "/swagger" };
-
-    if (urlPaths.Any(urlPath => path.StartsWith(urlPath)))
-    {
-        var tokens = antiforgery.GetAndStoreTokens(context);
-        context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
-            new CookieOptions() { HttpOnly = false, Secure = false, IsEssential = true, SameSite = SameSiteMode.Strict });
-    }
-
-    await next(); 
-});
 
 
 app.UseStaticFiles();

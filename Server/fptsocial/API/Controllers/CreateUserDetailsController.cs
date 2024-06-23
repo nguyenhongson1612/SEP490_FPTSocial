@@ -18,7 +18,6 @@ namespace API.Controllers
             _sender = sender;
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("postuserinterest")]
         public async Task<IActionResult> CreateUserInterest(UserInterestCommand userInterest)
@@ -27,7 +26,6 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost]
         [Route("createusergender")]
         public async Task<IActionResult> CreateUserGender(CreateUserGenderCommand input)
