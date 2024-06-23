@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllPost, getOtherUserByUserId, getUserByUserId } from '~/apis'
+import { getAllPost, getButtonFriend, getOtherUserByUserId, getUserByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -9,8 +9,10 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useDisclosure } from '@mantine/hooks'
 import { Modal, ScrollArea } from '@mantine/core'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { set } from 'lodash'
 
 function Profile() {
+  const [update, setUpdate] = useState(false)
   const [listPost, setListPost] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [opened, { open, close }] = useDisclosure(false)
@@ -19,22 +21,31 @@ function Profile() {
   const navigate = useNavigate()
   const userIdCurrent = currentUser?.userId
   const userIdPram = searchParams.get('id')
+  const [buttonProfile, setButtonProfile] = useState({})
 
+  const forceUpdate = () => setUpdate(!update)
   useEffect(() => {
     if (userIdCurrent === userIdPram)
       setUserProfile(currentUser)
     else
-      getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram }).then(res => setUserProfile(res)).catch(() => navigate('/notavailable'))
+      getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram })
+        .then(res => setUserProfile(res))
+        .catch(() => navigate('/notavailable'))
 
     getAllPost().then((data) => setListPost(data))
   }, [])
+
+  useEffect(() => {
+    userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)
+      .then(res => setButtonProfile(res))
+  }, [update, userProfile])
 
   return (
     <>
       <div className="relative">
         <NavTopBar />
         <div className="">
-          <TopProfile open={open} user={userProfile} currentUser={currentUser} />
+          <TopProfile open={open} user={userProfile} currentUser={currentUser} buttonProfile={buttonProfile} forceUpdate={forceUpdate} />
           <ContentProfile listPost={listPost} user={userProfile} />
           <Modal
             classNames={{
