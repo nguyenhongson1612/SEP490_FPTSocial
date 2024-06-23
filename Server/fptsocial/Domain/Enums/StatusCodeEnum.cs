@@ -52,5 +52,7 @@ namespace Domain.Enums
         FR04_Reject_Friend,
         [Description("UserRelationship not found")]
         UR01_NOT_FOUND,
+        [Description("ReportType is existed")]
+        RT01_ReportType_Existed,
     }
 }
