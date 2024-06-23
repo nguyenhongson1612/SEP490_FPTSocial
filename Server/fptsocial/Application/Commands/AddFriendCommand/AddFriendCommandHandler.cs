@@ -66,6 +66,8 @@ namespace Application.Commands.AddFriendCommand
                 UserId = (Guid)request.UserId,
                 FriendId = (Guid)request.FriendId,
                 Confirm = false,
+                ReactCount = null,
+                LastInteractionDate = null,
             };
             await _context.Friends.AddAsync(newfriend);
             await _context.SaveChangesAsync();

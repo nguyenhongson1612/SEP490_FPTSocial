@@ -63,6 +63,8 @@ namespace Application.Commands.FriendStatusCommand
                             UserId = friend.UserId,
                             FriendId = friend.FriendId,
                             Confirm = true,
+                            ReactCount = 0,
+                            LastInteractionDate = DateTime.Now
                         };
                         _context.Friends.Update(newfriend);
                         result.UserId = newfriend.UserId;
@@ -86,6 +88,8 @@ namespace Application.Commands.FriendStatusCommand
                             UserId = friend.UserId,
                             FriendId = friend.FriendId,
                             Confirm = friend.Confirm,
+                            ReactCount= friend.ReactCount,
+                            LastInteractionDate = friend.LastInteractionDate
                         };
                         _context.Friends.Remove(canclefriend);
                         result.UserId = canclefriend.UserId;
@@ -109,6 +113,8 @@ namespace Application.Commands.FriendStatusCommand
                             UserId = friend.UserId,
                             FriendId = friend.FriendId,
                             Confirm = friend.Confirm,
+                            ReactCount = friend.ReactCount,
+                            LastInteractionDate = friend.LastInteractionDate
                         };
                         _context.Friends.Remove(rejectfriend);
                         result.UserId = rejectfriend.UserId;
@@ -133,6 +139,8 @@ namespace Application.Commands.FriendStatusCommand
                         UserId = friend.UserId,
                         FriendId = friend.FriendId,
                         Confirm = friend.Confirm,
+                        ReactCount = friend.ReactCount,
+                        LastInteractionDate = friend.LastInteractionDate
                     };
                     _context.Friends.Remove(rejectfriend);
                     result.UserId = rejectfriend.UserId;

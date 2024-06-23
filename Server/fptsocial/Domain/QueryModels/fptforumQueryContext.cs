@@ -108,7 +108,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A47E32B07E");
+                    .HasName("PK__AvataPho__BF0395A40CB1CEAF");
 
                 entity.ToTable("AvataPhoto");
 
@@ -296,7 +296,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA57139424");
+                    .HasName("PK__CommentP__C3B4DFCAA1E82C52");
 
                 entity.ToTable("CommentPost");
 
@@ -402,6 +402,8 @@ namespace Domain.QueryModels
                 entity.HasIndex(e => new { e.UserId, e.FriendId }, "UQ_Friends_UserId")
                     .IsUnique();
 
+                entity.Property(e => e.LastInteractionDate).HasColumnType("datetime");
+
                 entity.HasOne(d => d.FriendNavigation)
                     .WithMany(p => p.FriendFriendNavigations)
                     .HasForeignKey(d => d.FriendId)
@@ -454,7 +456,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupChatMember>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B67DD1CB76E");
+                    .HasName("PK__GroupCha__1ED28B675FAF2770");
 
                 entity.ToTable("GroupChatMember");
 
@@ -501,7 +503,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36A5F3D1550");
+                    .HasName("PK__GroupFPT__149AF36AA87EEEC3");
 
                 entity.ToTable("GroupFPT");
 
@@ -541,7 +543,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCF2B4EB9E8");
+                    .HasName("PK__GroupInv__033C8DCFB64BDA3F");
 
                 entity.ToTable("GroupInvitation");
 
@@ -874,7 +876,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC132D3CA1");
+                    .HasName("PK__GroupTag__657CF9ACE0A88601");
 
                 entity.ToTable("GroupTag");
 
@@ -1205,7 +1207,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B5252856C85991");
+                    .HasName("PK__ReactGro__E6B52528AA620A1B");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1295,7 +1297,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E48F4055CA");
+                    .HasName("PK__ReactGro__B37F79E4F206E151");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -1933,7 +1935,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<UserLookingFor>(entity =>
             {
                 entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E9A97C871A");
+                    .HasName("PK__UserLook__DF7500E9E571BEC3");
 
                 entity.ToTable("UserLookingFor");
 
@@ -2074,7 +2076,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4C2188389B");
+                    .HasName("PK__UserProf__1788CC4C866BA3E5");
 
                 entity.ToTable("UserProfile");
 
