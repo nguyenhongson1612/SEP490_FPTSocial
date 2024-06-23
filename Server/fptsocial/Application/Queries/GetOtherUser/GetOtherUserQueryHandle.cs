@@ -46,7 +46,7 @@ namespace Application.Queries.GetOtherUser
                                 .Include(x=>x.BlockUserUsers)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
             var getstatus = await _context.UserStatuses.ToListAsync();
-            var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.UserId).ToListAsync();
+            var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.ViewUserId).ToListAsync();
             if (getuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -99,26 +99,29 @@ namespace Application.Queries.GetOtherUser
                 {
                     getuser.UserGender = null;
                 }
-                if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                if(getuser.UserRelationship != null)
                 {
-                    getuser.UserRelationship = null;
+                    if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                    {
+                        getuser.UserRelationship = null;
+                    }
                 }
 
-                if (getuser.UserInterests != null)
+                if (getuser.UserInterests.Count > 0)
                 {
                     if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
                         getuser.UserInterests = null;
                     }
                 }
-                if (getuser.WorkPlaces != null)
+                if (getuser.WorkPlaces.Count > 0)
                 {
                     if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
                         getuser.WorkPlaces = null;
                     }
                 }
-                if (getuser.WebAffiliations != null)
+                if (getuser.WebAffiliations.Count > 0)
                 {
                     if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
@@ -127,10 +130,6 @@ namespace Application.Queries.GetOtherUser
                 }
                 var friend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.FriendId == request.ViewUserId)
                                                     || (x.UserId == request.ViewUserId && x.FriendId == request.UserId));
-                if (friend.UserId == request.UserId && friend.Confirm == false)
-                {
-
-                }
                 if (friend == null)
                 {
                     if (getuser.ContactInfo.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
@@ -141,25 +140,28 @@ namespace Application.Queries.GetOtherUser
                     {
                         getuser.UserGender = null;
                     }
-                    if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                    if (getuser.UserRelationship != null)
                     {
-                        getuser.UserRelationship = null;
+                        if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                        {
+                            getuser.UserRelationship = null;
+                        }
                     }
-                    if (getuser.UserInterests != null)
+                    if (getuser.UserInterests.Count > 0)
                     {
                         if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
                             getuser.UserInterests = null;
                         }
                     }
-                    if (getuser.WorkPlaces != null)
+                    if (getuser.WorkPlaces.Count > 0)
                     {
                         if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
                             getuser.WorkPlaces = null;
                         }
                     }
-                    if (getuser.WebAffiliations != null)
+                    if (getuser.WebAffiliations.Count > 0)
                     {
                         if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
