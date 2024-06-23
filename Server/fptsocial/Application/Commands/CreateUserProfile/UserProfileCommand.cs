@@ -16,6 +16,7 @@ namespace Application.Commands.GetUserProfile
         public string LastName { get; set; } 
         public string? Email { get; set; }
         public string? FeId { get; set; }
+        public string? RoleName { get; set; }
         public DateTime BirthDay { get; set; }
         public CreateUserGenderDTO? Gender { get; set; }
         public CreateUserContactInforDTO? ContactInfor { get; set; }

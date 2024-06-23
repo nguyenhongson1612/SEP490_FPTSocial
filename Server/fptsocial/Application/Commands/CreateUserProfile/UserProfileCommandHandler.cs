@@ -46,7 +46,7 @@ namespace Application.Commands.CreateUserProfile
 
             var getuserbyemail = await _querycontext.UserProfiles.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
             var getuserbyfeid = await _querycontext.UserProfiles.FirstOrDefaultAsync(X => X.FeId.Equals(request.FeId));
-            var role = await _querycontext.Roles.FirstOrDefaultAsync(x=>x.NameRole == "User");
+            var role = await _querycontext.Roles.FirstOrDefaultAsync(x=>x.NameRole == request.RoleName);
             var status = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.StatusName == "Public");
             var listsetting = await _querycontext.Settings.ToListAsync();
             if(getuserbyemail != null || getuserbyfeid != null)
