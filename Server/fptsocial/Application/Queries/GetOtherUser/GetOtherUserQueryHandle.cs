@@ -50,6 +50,7 @@ namespace Application.Queries.GetOtherUser
             var getinteres = await _context.Interests.ToListAsync();
             var getrelationship = await _context.Relationships.ToListAsync();
             var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.ViewUserId).ToListAsync();
+            var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
             if (getuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -84,29 +85,29 @@ namespace Application.Queries.GetOtherUser
             if(getusersetting.FirstOrDefault(x=>x.Setting.SettingName.Equals("Profile Status")).UserStatusId 
                 == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
             {
-                getuser.ContactInfo = null;
-                getuser.UserGender = null;
-                getuser.UserRelationship = null;
-                getuser.UserInterests = null;
-                getuser.WorkPlaces = null;
-                getuser.WebAffiliations = null;
+                result.ContactInfo = null;
+                result.UserGender = null;
+                result.UserRelationship = null;
+                result.UserInterests = null;
+                result.WorkPlaces = null;
+                result.WebAffiliations = null;
             }
             else if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
                 == getstatus.FirstOrDefault(x => x.StatusName == "Public").UserStatusId)
             {
                 if (getuser.ContactInfo.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                 {
-                    getuser.ContactInfo = null;
+                    result.ContactInfo = null;
                 }
                 if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                 {
-                    getuser.UserGender = null;
+                    result.UserGender = null;
                 }
                 if(getuser.UserRelationship != null)
                 {
                     if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
-                        getuser.UserRelationship = null;
+                        result.UserRelationship = null;
                     }
                 }
 
@@ -114,21 +115,21 @@ namespace Application.Queries.GetOtherUser
                 {
                     if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
-                        getuser.UserInterests = null;
+                        result.UserInterests = null;
                     }
                 }
                 if (getuser.WorkPlaces.Count > 0)
                 {
                     if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
-                        getuser.WorkPlaces = null;
+                        result.WorkPlaces = null;
                     }
                 }
                 if (getuser.WebAffiliations.Count > 0)
                 {
                     if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
-                        getuser.WebAffiliations = null;
+                        result.WebAffiliations = null;
                     }
                 }
                 var friend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.FriendId == request.ViewUserId)
@@ -137,44 +138,44 @@ namespace Application.Queries.GetOtherUser
                 {
                     if (getuser.ContactInfo.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                     {
-                        getuser.ContactInfo = null;
+                        result.ContactInfo = null;
                     }
                     if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                     {
-                        getuser.UserGender = null;
+                        result.UserGender = null;
                     }
                     if (getuser.UserRelationship != null)
                     {
                         if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
-                            getuser.UserRelationship = null;
+                            result.UserRelationship = null;
                         }
                     }
                     if (getuser.UserInterests.Count > 0)
                     {
                         if (getuser.UserInterests.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
-                            getuser.UserInterests = null;
+                            result.UserInterests = null;
                         }
                     }
                     if (getuser.WorkPlaces.Count > 0)
                     {
                         if (getuser.WorkPlaces.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
-                            getuser.WorkPlaces = null;
+                            result.WorkPlaces = null;
                         }
                     }
                     if (getuser.WebAffiliations.Count > 0)
                     {
                         if (getuser.WebAffiliations.FirstOrDefault().UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
-                            getuser.WebAffiliations = null;
+                            result.WebAffiliations = null;
                         }
                     }
                 }
             }
            
-            var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
+            
             result.UserGender.GenderName = getgender.FirstOrDefault(x => x.GenderId == result.UserGender.GenderId).GenderName;
             if(result.UserRelationship != null)
             {
