@@ -1,4 +1,5 @@
 ﻿using API.Middlewares;
+using Application.Hub;
 using Application.Mappers;
 using Application.Services;
 using CloudinaryDotNet;
@@ -32,6 +33,9 @@ builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+//Config Hub and ServiceHub
+builder.Services.AddSignalR();
+//builder.Services.AddHostedService<ServerTimeNotifications>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -133,4 +137,6 @@ app.UseEndpoints(
             pattern: "{controller}/{action}/{id?}");
         endpoints.MapControllers();
     });
+//Config Hub Route
+app.MapHub<NotificationsHub>("notificationsHub");
 app.Run();
