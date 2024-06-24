@@ -178,7 +178,7 @@ namespace Application.Queries.GetOtherUser
             result.UserGender.GenderName = getgender.FirstOrDefault(x => x.GenderId == result.UserGender.GenderId).GenderName;
             if(result.UserRelationship != null)
             {
-                result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
+                result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
             }
             if(result.UserInterests != null || result.UserInterests.Count > 0)
             {
