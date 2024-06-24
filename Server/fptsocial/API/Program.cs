@@ -90,7 +90,7 @@ var cloudinary = new Cloudinary(new Account(
     cloudinaryConfig["ApiSecret"]
 ));
 builder.Services.AddSingleton(cloudinary);
-
+builder.Services.AddSingleton<CheckingBadWord>();
 var app = builder.Build();
 
 

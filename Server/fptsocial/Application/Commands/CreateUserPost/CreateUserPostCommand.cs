@@ -14,7 +14,6 @@ namespace Application.Commands.Post
        public Guid UserId { get; set; }
        public string Content { get; set; }
        public Guid UserStatusId { get; set; }
-       public string UserPostNumber { get; set; }
         public IEnumerable<string>? Photos { get; set; }
         public IEnumerable<string>? Videos { get; set; }
 
