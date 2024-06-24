@@ -1,6 +1,7 @@
 ﻿using API.Middlewares;
 using Application.Mappers;
 using Application.Services;
+using CloudinaryDotNet;
 using Domain.CommandModels;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.Antiforgery;
@@ -80,7 +81,16 @@ builder.Services.AddAuthorization(options =>
 });
 //builder.Services.ConfigurePolicy(builder.Configuration);
 
-
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+// Register Cloudinary service
+var cloudinaryConfig = builder.Configuration.GetSection("Cloudinary");
+var cloudinary = new Cloudinary(new Account(
+    cloudinaryConfig["CloudName"],
+    cloudinaryConfig["ApiKey"],
+    cloudinaryConfig["ApiSecret"]
+));
+builder.Services.AddSingleton(cloudinary);
+builder.Services.AddSingleton<CheckingBadWord>();
 var app = builder.Build();
 
 
