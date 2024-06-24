@@ -60,12 +60,19 @@ namespace Application.Queries.GetUserByUserId
             }
             var result = _mapper.Map<GetUserByUserIdResult>(getuser);
             result.UserGender.GenderName = getgender.FirstOrDefault(x=>x.GenderId == result.UserGender.GenderId).GenderName;
-            result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
-            foreach(var interes in result.UserInterests)
+            if(result.UserRelationship != null)
             {
-                interes.InteresName = getinteres.FirstOrDefault(x => x.InterestId == interes.InterestId).InterestName;
+                result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
             }
-           
+            if (result.UserInterests != null || result.UserInterests.Count > 0)
+            {
+                foreach (var interes in result.UserInterests)
+                {
+                    interes.InteresName = getinteres.FirstOrDefault(x => x.InterestId == interes.InterestId).InterestName;
+                }
+
+            }
+
             return Result<GetUserByUserIdResult>.Success(result);
             //var user = await _context.UserProfiles
             //                        .Include(x => x.ContactInfo)
