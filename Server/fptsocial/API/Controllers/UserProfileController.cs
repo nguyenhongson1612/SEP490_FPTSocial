@@ -1,6 +1,7 @@
 ﻿using Application.Commands.GetUserProfile;
 using Application.Commands.UpdateUserCommand;
 using Application.Queries.CheckUserExist;
+using Application.Queries.GetAllFriend;
 using Application.Queries.GetButtonFriend;
 using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
@@ -107,7 +108,29 @@ namespace API.Controllers
 
         }
 
-        
+        [HttpGet]
+        [Route("getallfriend")]
+        public async Task<IActionResult> GetAllFriend()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new GetAllFriendQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            //input.FeId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "feid").Value;
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
         [HttpPost]
         [Route("createbylogin")]     
         public async Task<IActionResult> CreateUser(UserProfileCommand input)
@@ -128,6 +151,8 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
+
+
 
         [HttpPost]
         [Route("updateprofile")]

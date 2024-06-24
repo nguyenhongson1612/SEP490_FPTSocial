@@ -46,6 +46,9 @@ namespace Application.Queries.GetOtherUser
                                 .Include(x=>x.BlockUserUsers)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
             var getstatus = await _context.UserStatuses.ToListAsync();
+            var getgender = await _context.Genders.ToListAsync();
+            var getinteres = await _context.Interests.ToListAsync();
+            var getrelationship = await _context.Relationships.ToListAsync();
             var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.ViewUserId).ToListAsync();
             if (getuser == null)
             {
@@ -172,6 +175,19 @@ namespace Application.Queries.GetOtherUser
             }
            
             var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
+            result.UserGender.GenderName = getgender.FirstOrDefault(x => x.GenderId == result.UserGender.GenderId).GenderName;
+            if(result.UserRelationship != null)
+            {
+                result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
+            }
+            if(result.UserInterests != null || result.UserInterests.Count > 0)
+            {
+                foreach (var interes in result.UserInterests)
+                {
+                    interes.InteresName = getinteres.FirstOrDefault(x => x.InterestId == interes.InterestId).InterestName;
+                }
+            }
+            
             return Result<GetOtherUserQueryResult>.Success(result);
         }
     }
