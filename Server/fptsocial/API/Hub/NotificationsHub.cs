@@ -25,7 +25,6 @@ using MediatR;
 
 namespace Application.Hub
 {
-    public enum NotificationsTypeEnum
     {
         NORMAL,
         IMPORTANCE
