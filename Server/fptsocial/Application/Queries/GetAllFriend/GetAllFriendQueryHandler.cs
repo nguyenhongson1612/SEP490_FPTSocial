@@ -31,22 +31,26 @@ namespace Application.Queries.GetAllFriend
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
             var listfriend = await _context.Friends.Include(x=>x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
-            listfriend.OrderByDescending(x => x.ReactCount).ThenBy(x => x.LastInteractionDate);
+
             var result = new GetAllFriendQueryResult();
             if(listfriend != null)
             {
                 result.Count = listfriend.Count;
                 foreach (var friend in listfriend)
                 {
+                    var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true);
+                    var mutualfriend = otherfriend.Intersect(listfriend);
                     var frienddto = new GetAllFriendDTO
                     {
                         FriendId = friend.FriendId,
                         FriendName = friend.FriendNavigation.FirstName + " " + friend.FriendNavigation.LastName,
                         ReactCount = friend.ReactCount,
+                        MutualFriends = mutualfriend.Count(),
                         LastInteractionDate = friend.LastInteractionDate
                     };
                     result.AllFriend.Add(frienddto);
                 }
+                result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }
             else
             {

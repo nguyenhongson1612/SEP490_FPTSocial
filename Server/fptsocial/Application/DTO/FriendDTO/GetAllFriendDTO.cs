@@ -12,6 +12,7 @@ namespace Application.DTO.FriendDTO
         public string FriendName { get; set; }
         public int? ReactCount { get; set; }
         public DateTime? LastInteractionDate { get; set; }
+        public int? MutualFriends { get; set; }
         public string Avata { get; set; }
 
     }
