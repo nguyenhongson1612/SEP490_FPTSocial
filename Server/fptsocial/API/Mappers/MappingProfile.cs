@@ -1,4 +1,4 @@
-﻿using API.Controllers;
+using API.Controllers;
 using Application.Commands.CreateContactInfor;
 using Application.Commands.CreateGender;
 using Application.Commands.CreateInterest;
