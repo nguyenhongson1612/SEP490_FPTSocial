@@ -10,6 +10,7 @@ namespace Application.DTO.GetUserProfileDTO
     {
         public Guid? UserRelationshipId { get; set; }
         public Guid? RelationshipId { get; set; }
+        public string RelationshipName { get; set; }
         public Guid? UserStatusId { get; set; }
         public string? StatusName { get; set; }
     }

@@ -42,9 +42,13 @@ namespace Application.Queries.GetUserByUserId
                                 .Include(x => x.UserSettings)
                                 .Include(x => x.Role)
                                 .Include(x=>x.WorkPlaces)
-                                .Include(x=> x.UserInterests)
+                                .Include(x => x.UserInterests)
                                 .Include(x => x.UserRelationship)
                                 .FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var getgender = await _context.Genders.ToListAsync();
+            var getinteres = await _context.Interests.ToListAsync();
+            var getrelationship = await _context.Relationships.ToListAsync();
+
             if(getuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -55,6 +59,13 @@ namespace Application.Queries.GetUserByUserId
                 throw new ErrorException(StatusCodeEnum.U02_Lock_User);
             }
             var result = _mapper.Map<GetUserByUserIdResult>(getuser);
+            result.UserGender.GenderName = getgender.FirstOrDefault(x=>x.GenderId == result.UserGender.GenderId).GenderName;
+            result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
+            foreach(var interes in result.UserInterests)
+            {
+                interes.InteresName = getinteres.FirstOrDefault(x => x.InterestId == interes.InterestId).InterestName;
+            }
+           
             return Result<GetUserByUserIdResult>.Success(result);
             //var user = await _context.UserProfiles
             //                        .Include(x => x.ContactInfo)
