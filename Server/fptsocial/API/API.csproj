@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="bannedWords.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bannedWords.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
     <PackageReference Include="MediatR" Version="12.2.0" />

@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Commands.CreateUserInterest;
+using Application.Services;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
@@ -17,8 +18,7 @@ namespace Application.Commands.Post
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
-        private readonly CheckingBadWord _checkContent;
-        private bool HaveBadWord;
+        private readonly CheckingBadWord _checkContent = new CheckingBadWord();
 
         public CreateUserPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
@@ -48,12 +48,14 @@ namespace Application.Commands.Post
             {
                 VideoIdSingle = await UploadVideo(videos.First(), request.UserId, request.UserStatusId);
             }
+
+           
             Domain.CommandModels.UserPost userPost = new Domain.CommandModels.UserPost
             {
                 UserPostId = _helper.GenerateNewGuid(),
                 UserId = request.UserId,
                 Content = request.Content,
-                UserPostNumber = request.UserPostNumber,
+                UserPostNumber = DateTime.Now.ToString("ddMMyyHHmmss") + request.UserId.ToString().Replace("-", ""),
                 UserStatusId = request.UserStatusId,
                 IsAvataPost = false,
                 IsCoverPhotoPost = false,
@@ -73,7 +75,12 @@ namespace Application.Commands.Post
             }
             await _context.UserPosts.AddAsync(userPost);
             await _context.SaveChangesAsync();
-            HaveBadWord = _checkContent.Compare2String(userPost.Content);
+            bool haveBadWord = _checkContent.Compare2String(userPost.Content);
+            if (haveBadWord)
+            {
+                userPost.IsHide = true;
+                await _context.SaveChangesAsync();
+            }
 
             if (numberPost > 1)
             {
@@ -119,33 +126,11 @@ namespace Application.Commands.Post
 
                 }
             }
+            var result = _mapper.Map<CreateUserPostCommandResult>(userPost);
+            result.HaveBadWord = haveBadWord;
 
-            return Result<CreateUserPostCommandResult>.Success(request);
+            return Result<CreateUserPostCommandResult>.Success(result);
         }
-
-        //private async Task<string> UploadFileToCloudinary(IFormFile file, string folder)
-        //{
-        //    using (var stream = new MemoryStream())
-        //    {
-        //        await file.CopyToAsync(stream);
-        //        stream.Seek(0, SeekOrigin.Begin);
-
-        //        var uploadParams = new RawUploadParams()
-        //        {
-        //            File = new FileDescription(file.FileName, stream),
-        //            Folder = folder
-        //        };
-
-        //        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-
-        //        if (uploadResult.StatusCode != System.Net.HttpStatusCode.OK)
-        //        {
-        //            throw new ErrorException(StatusCodeEnum.UL01_Upload_Cloud_Fail);
-        //        }
-
-        //        return uploadResult.SecureUrl.ToString();
-        //    }
-        //}
 
         private async Task<Guid> UploadImage(string photoUrl, Guid userId, Guid userStatusId)
         {

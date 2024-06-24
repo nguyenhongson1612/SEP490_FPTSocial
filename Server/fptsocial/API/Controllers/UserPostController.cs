@@ -1,4 +1,5 @@
-﻿using Application.Queries.GetUserPost;
+﻿using Application.Commands.Post;
+using Application.Queries.GetUserPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +35,16 @@ namespace API.Controllers
                 return StatusCode(500, res.Error);
             }
             return Success(res.Value);
+        }
+
+        
+        [HttpPost]
+        [Route("createPost")]
+        public async Task<IActionResult> CreatePost([FromQuery] CreateUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
         }
     }
 }

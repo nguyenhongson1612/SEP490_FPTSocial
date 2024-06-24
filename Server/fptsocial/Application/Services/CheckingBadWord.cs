@@ -29,13 +29,13 @@ namespace Application.Services
             }
         }
 
-        static List<BannedWord> ReadFromJson(string filePath)
+        private List<BannedWord> ReadFromJson(string filePath)
         {
             string json = File.ReadAllText(filePath);
             return JsonConvert.DeserializeObject<List<BannedWord>>(json);
         }
 
-        static List<BannedWord> DetectBannedKeywords(string sentence, List<BannedWord> bannedKeywords)
+        private List<BannedWord> DetectBannedKeywords(string sentence, List<BannedWord> bannedKeywords)
         {
             var detectedKeywords = new List<BannedWord>();
 
@@ -50,7 +50,7 @@ namespace Application.Services
             return detectedKeywords;
         }
 
-        static bool KMPSearch(string pattern, string text)
+        private bool KMPSearch(string pattern, string text)
         {
             int m = pattern.Length;
             int n = text.Length;
@@ -90,7 +90,7 @@ namespace Application.Services
             return false;
         }
 
-        static void ComputeLPSArray(string pattern, int m, int[] lps)
+        private void ComputeLPSArray(string pattern, int m, int[] lps)
         {
             int len = 0;
             int i = 1;

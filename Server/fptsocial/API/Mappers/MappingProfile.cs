@@ -35,6 +35,7 @@ using Application.Queries.GetSettings;
 using Application.Commands.UpdateUserSettings;
 using Application.DTO.UpdateSettingDTO;
 using Application.Commands.CreateReportType;
+using Application.Commands.Post;
 
 namespace Application.Mappers
 {
@@ -144,7 +145,9 @@ namespace Application.Mappers
             CreateMap<Query.Relationship, GetRelationshipResult>();
             CreateMap<Query.UserRelationship, GetUserRelationshipResult>()
                 .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
-            CreateMap<Query.UserSetting, UserSettingDTO>();
+            //CreateMap<Query.UserSetting, UserSettingDTO>();
+            CreateMap<Domain.CommandModels.UserPost, Application.Commands.Post.CreateUserPostCommandResult>()
+               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore()); 
         }
     }
 }
