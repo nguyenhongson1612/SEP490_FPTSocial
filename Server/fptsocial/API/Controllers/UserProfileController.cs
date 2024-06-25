@@ -148,6 +148,16 @@ namespace API.Controllers
             }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             input.RoleName = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "role").Value;
+            var projectCampuses = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "projectCampuses")?.Value;
+            if (!string.IsNullOrEmpty(projectCampuses))
+            {
+                var campuses = JsonConvert.DeserializeObject<dynamic>(projectCampuses);
+                foreach (var campus in campuses)
+                {
+                    input.Campus = campus.CampusCode;
+                    input.UserNumber = campus.RollNumber;
+                }
+            }
             var res = await _sender.Send(input);
             return Success(res.Value);
         }

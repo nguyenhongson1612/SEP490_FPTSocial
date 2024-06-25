@@ -30,7 +30,7 @@ namespace Application.Queries.GetOtherUser
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-
+            var getusersetting = await _context.UserSettings.Include(x => x.Setting).Where(x => x.UserId == request.ViewUserId).ToListAsync();
             var getuser = await _context.UserProfiles
                                 .Include(x => x.ContactInfo)
                                 .Include(x => x.UserStatus)
@@ -49,7 +49,7 @@ namespace Application.Queries.GetOtherUser
             var getgender = await _context.Genders.ToListAsync();
             var getinteres = await _context.Interests.ToListAsync();
             var getrelationship = await _context.Relationships.ToListAsync();
-            var getusersetting = await _context.UserSettings.Include(x=>x.Setting).Where(x => x.UserId == request.ViewUserId).ToListAsync();
+            
             var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
             if (getuser == null)
             {
@@ -91,6 +91,7 @@ namespace Application.Queries.GetOtherUser
                 result.UserInterests = null;
                 result.WorkPlaces = null;
                 result.WebAffiliations = null;
+                return Result<GetOtherUserQueryResult>.Success(result);
             }
             else if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
                 == getstatus.FirstOrDefault(x => x.StatusName == "Public").UserStatusId)
@@ -175,13 +176,15 @@ namespace Application.Queries.GetOtherUser
                 }
             }
            
-            
-            result.UserGender.GenderName = getgender.FirstOrDefault(x => x.GenderId == result.UserGender.GenderId).GenderName;
+            if(result.UserGender != null)
+            {
+                result.UserGender.GenderName = getgender.FirstOrDefault(x => x.GenderId == result.UserGender.GenderId).GenderName;
+            }
             if(result.UserRelationship != null)
             {
                 result.UserRelationship.RelationshipName = getrelationship.FirstOrDefault(x => x.RelationshipId == result.UserRelationship.RelationshipId).RelationshipName;
             }
-            if(result.UserInterests != null || result.UserInterests.Count > 0)
+            if(result.UserInterests != null)
             {
                 foreach (var interes in result.UserInterests)
                 {

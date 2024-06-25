@@ -26,6 +26,7 @@ namespace Application.Queries.GetUserByUserId
         public string? HomeTown { get; set; }
         public string? CoverImage { get; set; }
         public string? UserNumber { get; set; }
+        public string? Campus { get; set; }
         public bool IsFirstTimeLogin { get; set; }
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
