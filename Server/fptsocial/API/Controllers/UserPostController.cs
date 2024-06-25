@@ -56,5 +56,14 @@ namespace API.Controllers
             return Success(res.Value);
 
         }
+
+        [HttpPost]
+        [Route("commentPost")]
+        public async Task<IActionResult> CreateComment([FromQuery] CreateUserCommentPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
     }
 }
