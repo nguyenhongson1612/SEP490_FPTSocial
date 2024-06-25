@@ -24,6 +24,7 @@ namespace Application.Queries.GetOtherUser
         public string? HomeTown { get; set; }
         public string? CoverImage { get; set; }  //h
         public string? UserNumber { get; set; }  //h
+        public bool? ButtonFriend { get; set; }
         public List<GetUserWorkPlaceDTO>? WorkPlaces { get; set; }
         public List<GetUserInterers>? UserInterests { get; set; }
         public GetUserContactInfo? ContactInfo { get; set; }

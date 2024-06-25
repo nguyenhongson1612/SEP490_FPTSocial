@@ -51,6 +51,7 @@ namespace Application.Queries.GetOtherUser
             var getrelationship = await _context.Relationships.ToListAsync();
             
             var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
+            result.ButtonFriend = true;
             if (getuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
@@ -91,6 +92,7 @@ namespace Application.Queries.GetOtherUser
                 result.UserInterests = null;
                 result.WorkPlaces = null;
                 result.WebAffiliations = null;
+                result.ButtonFriend = false;
                 return Result<GetOtherUserQueryResult>.Success(result);
             }
             else if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
@@ -172,6 +174,10 @@ namespace Application.Queries.GetOtherUser
                         {
                             result.WebAffiliations = null;
                         }
+                    }
+                    if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Send Friend Invitations")).UserStatusId
+                        == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId){
+                        result.ButtonFriend = false;
                     }
                 }
             }
