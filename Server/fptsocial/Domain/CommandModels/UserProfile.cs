@@ -139,7 +139,6 @@ namespace Domain.CommandModels
         public virtual ICollection<UserChatWithUser> UserChatWithUsers { get; set; }
         public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
-        public virtual ICollection<UserLookingFor> UserLookingFors { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
         public virtual ICollection<Video> Videos { get; set; }

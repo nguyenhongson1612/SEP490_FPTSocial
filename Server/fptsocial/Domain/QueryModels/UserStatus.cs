@@ -8,9 +8,6 @@ namespace Domain.QueryModels
         public UserStatus()
         {
             AvataPhotos = new HashSet<AvataPhoto>();
-            CommentPhotoPosts = new HashSet<CommentPhotoPost>();
-            CommentPosts = new HashSet<CommentPost>();
-            CommentVideoPosts = new HashSet<CommentVideoPost>();
             ContactInfos = new HashSet<ContactInfo>();
             GroupFpts = new HashSet<GroupFpt>();
             GroupPhotos = new HashSet<GroupPhoto>();
@@ -20,7 +17,6 @@ namespace Domain.QueryModels
             Photos = new HashSet<Photo>();
             UserGenders = new HashSet<UserGender>();
             UserInterests = new HashSet<UserInterest>();
-            UserLookingFors = new HashSet<UserLookingFor>();
             UserPostPhotos = new HashSet<UserPostPhoto>();
             UserPostVideos = new HashSet<UserPostVideo>();
             UserPosts = new HashSet<UserPost>();
@@ -38,9 +34,6 @@ namespace Domain.QueryModels
         public DateTime? UpdatedAt { get; set; }
 
         public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
-        public virtual ICollection<CommentPhotoPost> CommentPhotoPosts { get; set; }
-        public virtual ICollection<CommentPost> CommentPosts { get; set; }
-        public virtual ICollection<CommentVideoPost> CommentVideoPosts { get; set; }
         public virtual ICollection<ContactInfo> ContactInfos { get; set; }
         public virtual ICollection<GroupFpt> GroupFpts { get; set; }
         public virtual ICollection<GroupPhoto> GroupPhotos { get; set; }
@@ -50,7 +43,6 @@ namespace Domain.QueryModels
         public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<UserGender> UserGenders { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
-        public virtual ICollection<UserLookingFor> UserLookingFors { get; set; }
         public virtual ICollection<UserPostPhoto> UserPostPhotos { get; set; }
         public virtual ICollection<UserPostVideo> UserPostVideos { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }

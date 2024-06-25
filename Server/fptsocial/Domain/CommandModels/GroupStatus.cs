@@ -7,9 +7,6 @@ namespace Domain.CommandModels
     {
         public GroupStatus()
         {
-            CommentGroupPosts = new HashSet<CommentGroupPost>();
-            CommentGroupVideoPosts = new HashSet<CommentGroupVideoPost>();
-            CommentPhotoGroupPosts = new HashSet<CommentPhotoGroupPost>();
             GroupPostPhotos = new HashSet<GroupPostPhoto>();
             GroupPostVideos = new HashSet<GroupPostVideo>();
             GroupPosts = new HashSet<GroupPost>();
@@ -21,9 +18,6 @@ namespace Domain.CommandModels
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<CommentGroupPost> CommentGroupPosts { get; set; }
-        public virtual ICollection<CommentGroupVideoPost> CommentGroupVideoPosts { get; set; }
-        public virtual ICollection<CommentPhotoGroupPost> CommentPhotoGroupPosts { get; set; }
         public virtual ICollection<GroupPostPhoto> GroupPostPhotos { get; set; }
         public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }

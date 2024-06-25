@@ -57,7 +57,6 @@ namespace Domain.QueryModels
             UserChatWithUsers = new HashSet<UserChatWithUser>();
             UserChats = new HashSet<UserChat>();
             UserInterests = new HashSet<UserInterest>();
-            UserLookingFors = new HashSet<UserLookingFor>();
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
             Videos = new HashSet<Video>();
@@ -83,6 +82,7 @@ namespace Domain.QueryModels
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? Campus { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual UserStatus UserStatus { get; set; } = null!;
@@ -139,7 +139,6 @@ namespace Domain.QueryModels
         public virtual ICollection<UserChatWithUser> UserChatWithUsers { get; set; }
         public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
-        public virtual ICollection<UserLookingFor> UserLookingFors { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
         public virtual ICollection<Video> Videos { get; set; }

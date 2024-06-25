@@ -17,11 +17,9 @@ namespace Domain.QueryModels
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }
         public bool? IsHide { get; set; }
-        public Guid GroupStatusId { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual GroupPost GroupPost { get; set; } = null!;
-        public virtual GroupStatus GroupStatus { get; set; } = null!;
         public virtual UserProfile User { get; set; } = null!;
         public virtual ICollection<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; }
         public virtual ICollection<ReportComment> ReportComments { get; set; }

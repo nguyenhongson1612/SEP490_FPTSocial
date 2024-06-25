@@ -16,13 +16,11 @@ namespace Domain.QueryModels
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }
-        public Guid UserStatusId { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
 
         public virtual UserProfile User { get; set; } = null!;
         public virtual UserPost UserPost { get; set; } = null!;
-        public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ICollection<ReactComment> ReactComments { get; set; }
         public virtual ICollection<ReportComment> ReportComments { get; set; }
     }

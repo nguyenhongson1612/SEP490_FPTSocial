@@ -37,6 +37,7 @@ namespace Domain.CommandModels
         public virtual DbSet<GroupPhoto> GroupPhotos { get; set; } = null!;
         public virtual DbSet<GroupPost> GroupPosts { get; set; } = null!;
         public virtual DbSet<GroupPostPhoto> GroupPostPhotos { get; set; } = null!;
+        public virtual DbSet<GroupPostReactCount> GroupPostReactCounts { get; set; } = null!;
         public virtual DbSet<GroupPostVideo> GroupPostVideos { get; set; } = null!;
         public virtual DbSet<GroupRole> GroupRoles { get; set; } = null!;
         public virtual DbSet<GroupSetting> GroupSettings { get; set; } = null!;
@@ -48,10 +49,10 @@ namespace Domain.CommandModels
         public virtual DbSet<GroupType> GroupTypes { get; set; } = null!;
         public virtual DbSet<GroupVideo> GroupVideos { get; set; } = null!;
         public virtual DbSet<Interest> Interests { get; set; } = null!;
-        public virtual DbSet<LookingFor> LookingFors { get; set; } = null!;
         public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<NotificationType> NotificationTypes { get; set; } = null!;
         public virtual DbSet<Photo> Photos { get; set; } = null!;
+        public virtual DbSet<PostReactCount> PostReactCounts { get; set; } = null!;
         public virtual DbSet<ReactComment> ReactComments { get; set; } = null!;
         public virtual DbSet<ReactGroupChatMessage> ReactGroupChatMessages { get; set; } = null!;
         public virtual DbSet<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; } = null!;
@@ -82,7 +83,6 @@ namespace Domain.CommandModels
         public virtual DbSet<UserChatWithUser> UserChatWithUsers { get; set; } = null!;
         public virtual DbSet<UserGender> UserGenders { get; set; } = null!;
         public virtual DbSet<UserInterest> UserInterests { get; set; } = null!;
-        public virtual DbSet<UserLookingFor> UserLookingFors { get; set; } = null!;
         public virtual DbSet<UserPost> UserPosts { get; set; } = null!;
         public virtual DbSet<UserPostPhoto> UserPostPhotos { get; set; } = null!;
         public virtual DbSet<UserPostVideo> UserPostVideos { get; set; } = null!;
@@ -193,12 +193,6 @@ namespace Domain.CommandModels
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_post_comment_FK");
 
-                entity.HasOne(d => d.GroupStatus)
-                    .WithMany(p => p.CommentGroupPosts)
-                    .HasForeignKey(d => d.GroupStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("comgp_status_FK");
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentGroupPosts)
                     .HasForeignKey(d => d.UserId)
@@ -222,12 +216,6 @@ namespace Domain.CommandModels
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_group_video_comment_p_FK");
 
-                entity.HasOne(d => d.GroupStatus)
-                    .WithMany(p => p.CommentGroupVideoPosts)
-                    .HasForeignKey(d => d.GroupStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("comment_group_video_post_status_FK");
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentGroupVideoPosts)
                     .HasForeignKey(d => d.UserId)
@@ -250,12 +238,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupPostPhotoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_comment_photo_group_FK");
-
-                entity.HasOne(d => d.GroupStatus)
-                    .WithMany(p => p.CommentPhotoGroupPosts)
-                    .HasForeignKey(d => d.GroupStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("status_commetn_photo_group_FK");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CommentPhotoGroupPosts)
@@ -285,12 +267,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserPostPhotoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_photo_comment_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.CommentPhotoPosts)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("compp_status_FK");
             });
 
             modelBuilder.Entity<CommentPost>(entity =>
@@ -317,12 +293,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserPostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_comment_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.CommentPosts)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("cp_status_FK");
             });
 
             modelBuilder.Entity<CommentVideoPost>(entity =>
@@ -346,12 +316,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserPostVideoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_comment_video__FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.CommentVideoPosts)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("comvp_status_FK");
             });
 
             modelBuilder.Entity<ContactInfo>(entity =>
@@ -713,6 +677,28 @@ namespace Domain.CommandModels
                     .HasConstraintName("gpp_status_FK");
             });
 
+            modelBuilder.Entity<GroupPostReactCount>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("GroupPostReactCount");
+
+                entity.HasOne(d => d.GroupPost)
+                    .WithMany()
+                    .HasForeignKey(d => d.GroupPostId)
+                    .HasConstraintName("react_count_group_post");
+
+                entity.HasOne(d => d.GroupPostPhoto)
+                    .WithMany()
+                    .HasForeignKey(d => d.GroupPostPhotoId)
+                    .HasConstraintName("react_count_group_post_photo");
+
+                entity.HasOne(d => d.GroupPostVideo)
+                    .WithMany()
+                    .HasForeignKey(d => d.GroupPostVideoId)
+                    .HasConstraintName("react_count_group_post_group");
+            });
+
             modelBuilder.Entity<GroupPostVideo>(entity =>
             {
                 entity.ToTable("GroupPostVideo");
@@ -980,21 +966,6 @@ namespace Domain.CommandModels
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<LookingFor>(entity =>
-            {
-                entity.ToTable("LookingFor");
-
-                entity.Property(e => e.LookingForId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.LookingForName)
-                    .HasMaxLength(1000)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.Property(e => e.NotificationId).ValueGeneratedNever();
@@ -1082,6 +1053,28 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserStatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("photo_status_FK");
+            });
+
+            modelBuilder.Entity<PostReactCount>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("PostReactCount");
+
+                entity.HasOne(d => d.UserPost)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserPostId)
+                    .HasConstraintName("react_count_user_post");
+
+                entity.HasOne(d => d.UserPostPhoto)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserPostPhotoId)
+                    .HasConstraintName("react_count_user_post_photo");
+
+                entity.HasOne(d => d.UserPostVideo)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserPostVideoId)
+                    .HasConstraintName("react_count_user_post_group");
             });
 
             modelBuilder.Entity<ReactComment>(entity =>
@@ -1932,38 +1925,6 @@ namespace Domain.CommandModels
                     .HasConstraintName("Interest_status_FK");
             });
 
-            modelBuilder.Entity<UserLookingFor>(entity =>
-            {
-                entity.HasKey(e => e.LookingForId)
-                    .HasName("PK__UserLook__DF7500E9E571BEC3");
-
-                entity.ToTable("UserLookingFor");
-
-                entity.Property(e => e.LookingForId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.LookingFor)
-                    .WithOne(p => p.UserLookingFor)
-                    .HasForeignKey<UserLookingFor>(d => d.LookingForId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("lf_rlf_FK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserLookingFors)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("lf_user_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.UserLookingFors)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("lf_status_FK");
-            });
-
             modelBuilder.Entity<UserPost>(entity =>
             {
                 entity.ToTable("UserPost");
@@ -2086,6 +2047,8 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.BirthDay).HasColumnType("date");
 
+                entity.Property(e => e.Campus).HasMaxLength(100);
+
                 entity.Property(e => e.CoverImage)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
@@ -2171,8 +2134,8 @@ namespace Domain.CommandModels
                     .HasConstraintName("rlu_rlf_FK");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.UserRelationship)
-                    .HasForeignKey<UserRelationship>(d => d.UserId)
+                    .WithMany(p => p.UserRelationships)
+                    .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("rlu_user_FK");
 
