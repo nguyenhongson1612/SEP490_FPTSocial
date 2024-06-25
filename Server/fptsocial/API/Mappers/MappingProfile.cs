@@ -168,10 +168,7 @@ namespace Application.Mappers
             CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
             CreateMap<Command.UserPost, CreateUserPostCommandResult>()
-               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
-
-            CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
-                .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); ;
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); 
         }
     }
 }
