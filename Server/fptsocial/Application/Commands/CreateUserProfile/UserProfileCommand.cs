@@ -26,6 +26,7 @@ namespace Application.Commands.GetUserProfile
         public string? CoverImage { get; set; }
         public string? UserNumber { get; set; }
         public string? Avataphoto { get; set; }
+        public string? Campus { get; set; }
         public List<CreateUserSettingDTO>? UserSetting { get; set; }
         public List<CreateUserInteresDTO>? Interes { get; set; }
         public List<CreateUserWorkPlaceDTO>? WorkPlace { get; set; }

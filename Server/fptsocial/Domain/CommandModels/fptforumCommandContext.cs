@@ -2134,10 +2134,10 @@ namespace Domain.CommandModels
                     .HasConstraintName("rlu_rlf_FK");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserRelationships)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("rlu_user_FK");
+                     .WithOne(p => p.UserRelationship)
+                     .HasForeignKey<UserRelationship>(d => d.UserId)
+                     .OnDelete(DeleteBehavior.ClientSetNull)
+                     .HasConstraintName("rlu_user_FK");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserRelationships)
