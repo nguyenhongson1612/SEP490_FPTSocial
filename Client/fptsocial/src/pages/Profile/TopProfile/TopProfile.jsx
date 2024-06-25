@@ -1,11 +1,40 @@
-import { sendFriend } from '~/apis'
-
-function TopProfile({ open, user, currentUser }) {
-  console.log('🚀 ~ TopProfile ~ currentUser?.userId:', currentUser?.userId)
-  console.log('🚀 ~ TopProfile ~ user?.userId:', user?.userId)
+import { useEffect, useState } from 'react'
+import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
+import { IconUserCheck, IconUserPlus, IconEdit, IconUserX } from '@tabler/icons-react'
+import { modals } from '@mantine/modals';
+import { Text } from '@mantine/core';
+function TopProfile({ open, user, currentUser, buttonProfile, forceUpdate }) {
   const handleAddFriend = () => {
-    sendFriend({ userId: user?.userId, friendId: currentUser?.userId }).then(data => console.log(data))
+    sendFriend({ userId: currentUser?.userId, friendId: user?.userId }).then(forceUpdate)
   }
+
+  const handleResponse = (data_) => {
+    const data = {
+      'userId': currentUser?.userId,
+      'friendId': user?.userId,
+      ...data_
+    }
+    updateFriendStatus(data).then(forceUpdate)
+  }
+
+  const openDeleteModal = () =>
+    modals.openConfirmModal({
+      title: 'Unfriend this account?',
+      centered: true,
+      children: (
+        <Text size="sm" >
+          Are you sure want to remove this account from friend list?
+        </Text>
+      ),
+      labels: { confirm: 'Not anymore', cancel: 'Continue friend forever' },
+      confirmProps: { color: 'red' },
+      // onCancel: () => console.log('Cancel'),
+      onConfirm: () => handleResponse({
+        'confirm': false,
+        'cancle': false,
+        'reject': true
+      }),
+    })
 
   return (
     <div id='top-profile'
@@ -65,20 +94,63 @@ function TopProfile({ open, user, currentUser }) {
               />
             </div>
           </div>
-          {user?.userId == currentUser?.userId ? (
-            <div id='update'
-              onClick={open}
-              className='flex flex-col justify-end mb-4 cursor-pointer'
-            >
-              <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Update Your Profile</span>
-            </div>) : (
-            <div id='update'
-              // onClick={handleAddFriend}
-              className='flex flex-col justify-end mb-4 cursor-pointer'
-            >
-              <span className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Add friend</span>
-            </div>
-          )}
+          {user?.userId == currentUser?.userId
+            ? (
+              <div onClick={open}
+                className='flex flex-col justify-end mb-4 cursor-pointer'>
+                <span></span>
+                <span className='font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2'><IconEdit />Update Your Profile</span>
+              </div>
+            )
+            : buttonProfile?.friend
+              ? (
+                <div className='flex flex-col justify-end mb-4 cursor-pointer'>
+                  <span
+                    onClick={openDeleteModal}
+                    className='font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2'><IconUserCheck stroke={3} />Friend</span>
+                </div>
+              )
+              : buttonProfile?.request
+                ? <div
+                  onClick={() => handleResponse({
+                    'confirm': false,
+                    'cancle': true,
+                    'reject': false
+                  })}
+                  className='interceptor-loading flex flex-col justify-end mb-4 cursor-pointer'>
+                  <span className='font-bold text-lg text-white p-2 rounded-md  bg-blue-500 hover:bg-blue-700 flex items-center gap-2'><IconUserX stroke={3} />Cancel request</span>
+                </div>
+                : !buttonProfile?.confirm
+                  ? (
+                    <div
+                      onClick={handleAddFriend}
+                      className='flex flex-col justify-end mb-4 cursor-pointer'>
+                      <span className='interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2'><IconUserPlus stroke={3} />Add friend</span>
+                    </div>
+                  )
+                  : (
+                    <div
+                      // onClick={handleAddFriend}
+                      className='flex flex-col justify-end mb-4 cursor-pointer'>
+                      <div className='flex gap-2'>
+                        <span
+                          onClick={() => handleResponse({
+                            'confirm': true,
+                            'cancle': false,
+                            'reject': false
+                          })}
+                          className='interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700'>Confirm request</span>
+                        <span
+                          onClick={() => handleResponse({
+                            'confirm': false,
+                            'cancle': false,
+                            'reject': true
+                          })}
+                          className='font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500'>Delete request</span>
+                      </div>
+                    </div>
+                  )
+          }
 
         </div>
       </div>

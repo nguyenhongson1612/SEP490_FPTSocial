@@ -66,12 +66,24 @@ export const getListSettings = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getsettings`)
   return response.data?.data
 }
+
 export const getUserSettings = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserEntitiesDetail/getusersettings`)
   return response.data?.data
 }
-export const updateSettings = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserRelationship/updatesettings`)
+
+export const getButtonFriend = async (userId, friendId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getbuttonfriend?UserId=${userId}&FriendId=${friendId}`)
+  return response.data?.data
+}
+
+export const updateFriendStatus = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/friendstatus`, data)
+  return response.data?.data
+}
+
+export const updateSettings = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/updatesettings`, data)
   return response.data?.data
 }
 

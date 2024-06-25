@@ -99,7 +99,7 @@ function FirstTimeLogin() {
 
   return (
     <div className={`bg-gradient-to-r from-[rgba(242,113,36,0.3)] to-[rgba(242,113,36,0.7)] ${step !== 0 && 'img-bg2'} w-screen h-screen flex flex-col items-center justify-center overflow-hidden`}>
-      <div className='relative min-w-[16rem] h-fit w-[80%] md:w-[70%] lg:w-[55%] bg-white rounded-2xl shadow-4edges '>
+      <div className='relative min-w-[16rem] min-h-[25rem] h-fit w-[80%] md:w-[70%] lg:w-[55%] bg-white rounded-2xl shadow-4edges '>
         <form ref={formRef} className='h-full' id='formSubmit' onSubmit={handleSubmit(submitData)}>{renderSteps()}</form>
         {step !== 0 &&
           <Progress handleNext={handleNext} handlePrev={handlePrev} processWidth={processWidth}
