@@ -1,4 +1,5 @@
-﻿using Domain.CommandModels;
+﻿using Application.Services;
+using Domain.CommandModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Application.Commands.Post
         public bool? IsAvataPost { get; set; }
         public bool? IsCoverPhotoPost { get; set; }
         public bool? IsHide { get; set; }
-        public bool? HaveBadWord { get; set; }
+        public List<CheckingBadWord.BannedWord> BannedWords { get; set; } = new List<CheckingBadWord.BannedWord>();
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

@@ -1,42 +1,18 @@
-﻿[
-	{
-		"Word": "fuck",
-		"Category": "tục tĩu"
-	},
-	{
-		"Word": "địt",
-		"Category": "tục tĩu"
-	},
-	{
-		"Word": "parky",
-		"Category": "chính trị"
-	},
-	{
-		"Word": "idiot",
-		"Category": "xúc phạm"
-	},
-	{
-		"Word": "bitch",
-		"Category": "kỳ thị giới tính"
-	},
-	{
-		"Word": "bastard",
-		"Category": "xúc phạm"
-	},
-	{
-		"Word": "cunt",
-		"Category": "tục tĩu"
-	},
-	{
-		"Word": "slut",
-		"Category": "kỳ thị giới tính"
-	},
-	{
-		"Word": "traitor",
-		"Category": "chính trị"
-	},
-	{
-		"Word": "scum",
-		"Category": "xúc phạm"
-	}
-]
+﻿{
+    "tục tĩu": [
+        "fuck", "địt", "cunt", "shit", "asshole", "dick", "pussy", "cock", "wanker", "prick",
+        "motherfucker", "bastard", "bollocks", "arse", "twat", "bugger", "tosser", "wank", "slut", "whore"
+    ],
+    "chính trị": [
+        "badword3", "traitor", "dictator", "terrorist", "fascist", "communist", "anarchist", "tyrant", "nazi", "extremist",
+        "rebel", "insurgent", "propagandist", "subversive", "radical", "oppressor", "autocrat", "despot", "junta", "coup"
+    ],
+    "xúc phạm": [
+        "idiot", "bastard", "scum", "moron", "retard", "imbecile", "loser", "fool", "dumbass", "jerk",
+        "ignoramus", "simpleton", "nincompoop", "dunce", "dolt", "cretin", "blockhead", "clown", "dimwit", "ninny"
+    ],
+    "kỳ thị giới tính": [
+        "bitch", "slut", "whore", "skank", "tramp", "hooker", "harlot", "tart", "floozy", "slag",
+        "hussy", "wench", "jezebel", "strumpet", "vixen", "madam", "moll", "concubine", "courtesan", "trollop"
+    ]
+}

@@ -164,7 +164,7 @@ namespace Application.Mappers
             CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
             CreateMap<Command.UserPost, CreateUserPostCommandResult>()
-               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore()); 
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); 
         }
     }
 }

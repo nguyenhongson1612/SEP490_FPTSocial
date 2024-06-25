@@ -9,6 +9,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using static Application.Services.CheckingBadWord;
 
 namespace Application.Commands.Post
 {
@@ -49,7 +50,7 @@ namespace Application.Commands.Post
                 VideoIdSingle = await UploadVideo(videos.First(), request.UserId, request.UserStatusId);
             }
 
-           
+
             Domain.CommandModels.UserPost userPost = new Domain.CommandModels.UserPost
             {
                 UserPostId = _helper.GenerateNewGuid(),
@@ -75,10 +76,11 @@ namespace Application.Commands.Post
             }
             await _context.UserPosts.AddAsync(userPost);
             await _context.SaveChangesAsync();
-            bool haveBadWord = _checkContent.Compare2String(userPost.Content);
-            if (haveBadWord)
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(userPost.Content);
+            if (haveBadWord.Any())
             {
                 userPost.IsHide = true;
+                userPost.Content = MarkBannedWordsInContent(userPost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }
 
@@ -127,7 +129,7 @@ namespace Application.Commands.Post
                 }
             }
             var result = _mapper.Map<CreateUserPostCommandResult>(userPost);
-            result.HaveBadWord = haveBadWord;
+            result.BannedWords = haveBadWord;
 
             return Result<CreateUserPostCommandResult>.Success(result);
         }
@@ -168,5 +170,15 @@ namespace Application.Commands.Post
             return videoEntity.VideoId;
         }
 
+        public string MarkBannedWordsInContent(string content, List<BannedWord> bannedWords)
+        {
+            foreach (var bannedWord in bannedWords)
+            {
+                string wordPattern = $"\\b{bannedWord.Word}\\b";
+                string replacement = $"<span style='background-color: yellow;'>{bannedWord.Word}</span>";
+                content = System.Text.RegularExpressions.Regex.Replace(content, wordPattern, replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+            return content;
+        }
     }
 }
