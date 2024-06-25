@@ -57,7 +57,6 @@ namespace Domain.CommandModels
             UserChatWithUsers = new HashSet<UserChatWithUser>();
             UserChats = new HashSet<UserChat>();
             UserInterests = new HashSet<UserInterest>();
-            UserLookingFors = new HashSet<UserLookingFor>();
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
             Videos = new HashSet<Video>();
@@ -83,6 +82,7 @@ namespace Domain.CommandModels
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? Campus { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual UserStatus UserStatus { get; set; } = null!;
