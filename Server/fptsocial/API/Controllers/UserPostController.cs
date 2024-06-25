@@ -1,4 +1,5 @@
-﻿using Application.Commands.Post;
+﻿using Application.Commands.CreateUserCommentPost;
+using Application.Commands.Post;
 using Application.Queries.GetUserPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,6 +42,15 @@ namespace API.Controllers
         [HttpPost]
         [Route("createPost")]
         public async Task<IActionResult> CreatePost(CreateUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("commentPost")]
+        public async Task<IActionResult> CreateComment([FromQuery] CreateUserCommentPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);

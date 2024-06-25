@@ -36,12 +36,16 @@ using Application.Commands.UpdateUserSettings;
 using Application.DTO.UpdateSettingDTO;
 using Application.Commands.CreateReportType;
 using Application.Commands.Post;
+<<<<<<< HEAD
 using Application.Commands.CreateGroupRole;
 using Application.Queries.GetAllGroupRole;
 using Application.Commands.CreateGroupTag;
 using Application.Queries.GetAllGroupTag;
 using Application.Commands.CreateGroupSetting;
 using Application.Queries.GetAllGroupSetting;
+=======
+using Application.Commands.CreateUserCommentPost;
+>>>>>>> 0c012af (Create comment user post function)
 
 namespace Application.Mappers
 {
@@ -164,7 +168,10 @@ namespace Application.Mappers
             CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
             CreateMap<Command.UserPost, CreateUserPostCommandResult>()
-               .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); 
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+
+            CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); ;
         }
     }
 }
