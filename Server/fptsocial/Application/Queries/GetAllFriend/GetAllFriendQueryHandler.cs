@@ -45,8 +45,7 @@ namespace Application.Queries.GetAllFriend
                         FriendId = friend.FriendId,
                         FriendName = friend.FriendNavigation.FirstName + " " + friend.FriendNavigation.LastName,
                         ReactCount = friend.ReactCount,
-                        MutualFriends = mutualfriend.Count(),
-                        LastInteractionDate = friend.LastInteractionDate
+                        MutualFriends = mutualfriend.Count()
                     };
                     result.AllFriend.Add(frienddto);
                 }

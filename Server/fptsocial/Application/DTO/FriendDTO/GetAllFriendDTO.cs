@@ -11,7 +11,6 @@ namespace Application.DTO.FriendDTO
         public Guid FriendId { get; set; }
         public string FriendName { get; set; }
         public int? ReactCount { get; set; }
-        public DateTime? LastInteractionDate { get; set; }
         public int? MutualFriends { get; set; }
         public string Avata { get; set; }
 
