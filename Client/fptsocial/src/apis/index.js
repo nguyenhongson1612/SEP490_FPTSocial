@@ -103,3 +103,23 @@ export const sendFriend = async (data) => {
   return response.data?.data
 }
 
+// file upload
+export const uploadImage = async ({ userId, data }) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UploadFile/uploadImage?userId=${userId}`, data)
+  return response.data
+}
+export const uploadVideo = async ({ userId, data }) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UploadFile/uploadVideo?userId=${userId}`, data)
+  return response.data
+}
+
+//api post
+export const getUserPostByUserId = async (userId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostbyuserid?userId=${userId}`)
+  return response.data?.data
+}
+
+export const createPost = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/createPost`, data)
+  return response.data?.data
+}

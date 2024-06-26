@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllPost, getButtonFriend, getOtherUserByUserId, getUserByUserId } from '~/apis'
+import { getAllPost, getButtonFriend, getOtherUserByUserId, getUserByUserId, getUserPostByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -32,7 +32,7 @@ function Profile() {
         .then(res => setUserProfile(res))
         .catch(() => navigate('/notavailable'))
 
-    getAllPost().then((data) => setListPost(data))
+    getUserPostByUserId(userIdCurrent).then((data) => setListPost(data))
   }, [])
 
   useEffect(() => {
