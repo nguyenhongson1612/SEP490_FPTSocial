@@ -40,7 +40,7 @@ namespace API.Controllers
         
         [HttpPost]
         [Route("createPost")]
-        public async Task<IActionResult> CreatePost([FromQuery] CreateUserPostCommand command)
+        public async Task<IActionResult> CreatePost(CreateUserPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
