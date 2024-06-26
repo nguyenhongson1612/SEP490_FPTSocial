@@ -36,6 +36,12 @@ using Application.Commands.UpdateUserSettings;
 using Application.DTO.UpdateSettingDTO;
 using Application.Commands.CreateReportType;
 using Application.Commands.Post;
+using Application.Commands.CreateGroupRole;
+using Application.Queries.GetAllGroupRole;
+using Application.Commands.CreateGroupTag;
+using Application.Queries.GetAllGroupTag;
+using Application.Commands.CreateGroupSetting;
+using Application.Queries.GetAllGroupSetting;
 
 namespace Application.Mappers
 {
@@ -147,7 +153,16 @@ namespace Application.Mappers
                 .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
             CreateMap<Query.UserSetting, UserSettingDTO>();
             CreateMap<Domain.CommandModels.UserPost, Application.Commands.Post.CreateUserPostCommandResult>()
-               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore()); 
+               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore());
+
+            //Group
+            CreateMap<Command.GroupRole, CreateGroupRoleCommandResult>();
+            CreateMap<Command.GroupTag, CreateGroupTagCommandResult>();
+            CreateMap<Query.GroupRole, GetAllGroupRoleQueryResult>();
+            CreateMap<Command.GroupTag, CreateGroupTagCommandResult>();
+            CreateMap<Query.GroupTag, GetAllGroupTagQueryResult>();
+            CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
+            CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
         }
     }
 }

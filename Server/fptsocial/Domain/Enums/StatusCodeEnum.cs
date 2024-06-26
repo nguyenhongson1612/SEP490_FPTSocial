@@ -62,5 +62,11 @@ namespace Domain.Enums
         UR01_NOT_FOUND,
         [Description("ReportType is existed")]
         RT01_ReportType_Existed,
+        [Description("Group role is existed")]
+        GR01_Group_Role_Existed,
+        [Description("Group tag is existed")]
+        GR02_Group_Tag_Existed,
+        [Description("Group setting is existed")]
+        GR03_Group_Setting_Existed,
     }
 }
