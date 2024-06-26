@@ -25,6 +25,7 @@ using MediatR;
 
 namespace Application.Hub
 {
+    public class NotificationsHub : Hub<INotificationsClient>
     {
         NORMAL,
         IMPORTANCE
@@ -48,12 +49,6 @@ namespace Application.Hub
 
         public override async Task OnConnectedAsync()
         {
-            HttpContext _httpContext = Context.GetHttpContext();
-            if (_httpContext == null)
-            {
-                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
-            }
-            var rawToken = _httpContext.Request.Query["access_token"];
 
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
