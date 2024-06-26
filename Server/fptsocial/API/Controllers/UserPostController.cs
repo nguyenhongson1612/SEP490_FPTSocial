@@ -50,20 +50,13 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("commentPost")]
-        public async Task<IActionResult> CreateComment([FromQuery] CreateUserCommentPostCommand command)
+        public async Task<IActionResult> CreateComment(CreateUserCommentPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
 
         }
 
-        [HttpPost]
-        [Route("commentPost")]
-        public async Task<IActionResult> CreateComment([FromQuery] CreateUserCommentPostCommand command)
-        {
-            var res = await _sender.Send(command);
-            return Success(res.Value);
 
-        }
     }
 }

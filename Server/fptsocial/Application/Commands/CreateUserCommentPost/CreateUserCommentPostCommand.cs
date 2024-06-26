@@ -13,6 +13,5 @@ namespace Application.Commands.CreateUserCommentPost
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }
-        public Guid UserStatusId { get; set; }
     }
 }

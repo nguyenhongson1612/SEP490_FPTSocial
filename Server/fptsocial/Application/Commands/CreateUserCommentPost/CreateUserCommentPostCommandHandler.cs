@@ -51,7 +51,6 @@ namespace Application.Commands.CreateUserCommentPost
                 UserId = request.UserId,
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
-                UserStatusId = request.UserStatusId,
                 IsHide = false,
                 CreatedDate = DateTime.Now
             };

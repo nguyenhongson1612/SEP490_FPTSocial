@@ -43,6 +43,8 @@ using Application.Queries.GetAllGroupTag;
 using Application.Commands.CreateGroupSetting;
 using Application.Queries.GetAllGroupSetting;
 using Application.Commands.CreateUserCommentPost;
+using Application.Queries.GetCommentByPostId;
+using Application.DTO.CommentDTO;
 
 
 namespace Application.Mappers
@@ -169,7 +171,10 @@ namespace Application.Mappers
                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
-                .ForMember(dest => dest.BannedWords, opt => opt.Ignore()); ;
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
+            CreateMap<Query.CommentPost, CommentDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
         }
     }
 }
