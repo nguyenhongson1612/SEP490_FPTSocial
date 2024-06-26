@@ -58,6 +58,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("creategender")]
         public async Task<IActionResult> CreateGender(CreateGenderCommand input)
@@ -66,7 +67,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createcontactinfor")]
         public async Task<IActionResult> CreateContactInfor(CreateContactInforCommand input)
@@ -75,7 +76,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createstatus")]
         public async Task<IActionResult> CreateStatus(CreateStatusCommand input)
@@ -84,6 +85,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createrelaionship")]
         public async Task<IActionResult> CreateRelationship(CreateRelationShipCommand input)
@@ -92,6 +94,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createsetting")]
         public async Task<IActionResult> CreateSetting(CreateSettingsCommand input)
@@ -100,7 +103,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createrole")]
         public async Task<IActionResult> CreateRole(CreateRoleCommand input)
@@ -109,6 +112,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [Authorize(Roles = "Societe-student")]
         [HttpPost]
         [Route("createinterest")]
         public async Task<IActionResult> CreateInterest(CreateInterestCommand input)
