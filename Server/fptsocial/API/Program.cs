@@ -1,4 +1,5 @@
-﻿using API.Middlewares;
+﻿using API.Hub;
+using API.Middlewares;
 using Application.Hub;
 using Application.Mappers;
 using Application.Services;
@@ -34,7 +35,12 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Depen
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 //Config Hub and ServiceHub
-builder.Services.AddSignalR();
+builder.Services.AddSignalR( options =>
+{   
+    options.MaximumParallelInvocationsPerClient = 2;
+    options.StreamBufferCapacity = 1024;
+
+});
 //builder.Services.AddHostedService<ServerTimeNotifications>();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -122,9 +128,11 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseCors(builder =>
 {
-    builder.AllowAnyOrigin()
+    builder.WithOrigins("http://127.0.0.1:5500")
+           .AllowAnyOrigin()
            .AllowAnyMethod()
            .AllowAnyHeader();
 });
