@@ -13,6 +13,7 @@ namespace Domain.QueryModels
         public Guid UserStatusId { get; set; }
         public bool? IsRead { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public string? NotifiUrl { get; set; }
 
         public virtual NotificationType NotificationType { get; set; } = null!;
         public virtual UserProfile Sender { get; set; } = null!;

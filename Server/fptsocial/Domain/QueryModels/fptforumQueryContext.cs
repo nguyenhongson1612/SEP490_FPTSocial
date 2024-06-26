@@ -976,6 +976,10 @@ namespace Domain.QueryModels
 
                 entity.Property(e => e.NotiMessage).HasMaxLength(255);
 
+                entity.Property(e => e.NotifiUrl)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
                 entity.HasOne(d => d.NotificationType)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.NotificationTypeId)
