@@ -6,6 +6,18 @@ body {
   @apply font-sans text-base font-normal text-black bg-fbWhite
 }
 
+@layer base {
+  h1 {
+  @apply text-2xl font-bold;
+  }
+  h2 {
+  @apply text-xl;
+  }
+  h3 {
+  @apply text-lg;
+  }
+
+}
 @layer utilities {
   
   .tiptap p.is-editor-empty:first-child::before {

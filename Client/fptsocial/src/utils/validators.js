@@ -12,8 +12,8 @@ export const URL_RULE = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/
 export const URl_MESSAGE = 'Url is invalid'
 
 // file validate
-export const LIMIT_COMMON_FILE_SIZE = 10485760 // byte = 10 MB
-export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']
+export const LIMIT_COMMON_FILE_SIZE = 31457280 // 30 MB
+export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png', 'video/mp4', 'video/webm']
 export const singleFileValidator = (file) => {
   if (!file || !file.name || !file.size || !file.type) {
     return 'File cannot be blank.'

@@ -1,14 +1,17 @@
+import DOMPurify from 'dompurify';
 import React from 'react'
 import LazyImage from '~/components/LazyImage'
+import parse from 'html-react-parser'
 
 function PostDescription({ postData }) {
-  // console.log('🚀 ~ PostDescription ~ postData?.image:', postData?.image)
+  const cleanHtml = parse(DOMPurify.sanitize(postData?.content))
+
   return (
     <div id="post-description"
       className="flex flex-col w-full gap-3"
     >
       <div className="">
-        {postData?.description}
+        {cleanHtml}
       </div>
       <div className="w-full h-fit flex justify-center items-center">
         {/* <LazyImage placeholderSrc={'./src/assets/img/alphabuilding_long.jpg'} placeholderClassName={'w-fit h-fit'} dataSrc={postData?.image} alt={'group-img'} className={'w-[200px] h-[200px]'} /> */}
