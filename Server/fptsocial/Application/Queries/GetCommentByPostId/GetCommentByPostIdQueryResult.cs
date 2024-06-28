@@ -10,6 +10,6 @@ namespace Application.Queries.GetCommentByPostId
 {
     public class GetCommentByPostIdQueryResult
     {
-        public List<CommentDTO> Posts { get; set; }
+        public List<CommentDto>? Posts { get; set; }
     }
 }

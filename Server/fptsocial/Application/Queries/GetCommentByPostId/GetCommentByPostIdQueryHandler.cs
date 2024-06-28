@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CreateUserCommentPost;
 using Application.DTO.CommentDTO;
+using Application.Queries.GetAllFriend;
 using Application.Queries.GetAllFriendOtherProfiel;
 using AutoMapper;
 using Core.CQRS;
@@ -34,15 +35,28 @@ namespace Application.Queries.GetCommentByPostId
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var commentPosts = _context.CommentPosts.Include(cp => cp.User).ToList(); // Lấy dữ liệu comment và user profile
+            var getComment = await _context.CommentPosts.Include(cp => cp.User).Where(x => x.UserPostId == request.UserPostId).OrderByDescending(x => x.CreatedDate).ToListAsync();
 
-            var commentDTOs = _mapper.Map<List<CommentDTO>>(commentPosts); // Ánh xạ
-
-            var getComment = await _context.CommentPosts.Where(x => x.UserPostId == request.UserPostId).OrderByDescending(x => x.CreatedDate).ToListAsync();
-
-
-
-            return Result<GetCommentByPostIdQueryResult>.Success(getComment);
+            var result = new GetCommentByPostIdQueryResult() { Posts = new List<CommentDto>()};
+            if (getComment != null)
+            {
+                foreach ( var comment in getComment)
+                {
+                    CommentDto dto = new CommentDto
+                    {
+                        UserId = comment.UserId,
+                        UserName = comment.User.FirstName + " " + comment.User.LastName,
+                        UserPostId = comment.UserPostId,
+                        CreatedDate = comment.CreatedDate,
+                        Content = comment.Content,
+                        IsHide = comment.IsHide,    
+                        CommentId = comment.CommentId,
+                        ParentCommentId = comment.ParentCommentId
+                    };
+                    result.Posts.Add(dto);
+                }
+            }
+            return Result<GetCommentByPostIdQueryResult>.Success(result);
         }
 
     }

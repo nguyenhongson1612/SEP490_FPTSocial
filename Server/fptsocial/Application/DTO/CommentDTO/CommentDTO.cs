@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.DTO.CommentDTO
 {
-    public class CommentDTO
+    public class CommentDto
     {
         public Guid UserId { get; set; }
         public Guid CommentId { get; set; }

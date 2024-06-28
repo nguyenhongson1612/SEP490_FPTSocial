@@ -156,8 +156,6 @@ namespace Application.Mappers
             CreateMap<Query.UserRelationship, GetUserRelationshipResult>()
                 .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
             CreateMap<Query.UserSetting, UserSettingDTO>();
-            CreateMap<Domain.CommandModels.UserPost, Application.Commands.Post.CreateUserPostCommandResult>()
-               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore());
 
             //Group
             CreateMap<Command.GroupRole, CreateGroupRoleCommandResult>();
@@ -173,7 +171,7 @@ namespace Application.Mappers
             CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
-            CreateMap<Query.CommentPost, CommentDTO>()
+            CreateMap<Query.CommentPost, CommentDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
         }
     }
