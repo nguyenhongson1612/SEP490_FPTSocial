@@ -41,6 +41,12 @@ const Home = () => {
   else return <Navigate to='/' />
 }
 
+const Logout = () => {
+  if (!jwtToken) return <PageLoadingSpinner />
+  else return <Navigate to='/' />
+}
+
+
 function App() {
   const currentUser = useSelector(selectCurrentUser)
 

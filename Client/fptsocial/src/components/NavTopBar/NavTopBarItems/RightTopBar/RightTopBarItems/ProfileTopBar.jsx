@@ -1,24 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { logoutCurrentUser, selectCurrentUser } from '~/redux/user/userSlice'
 import { useAuth } from 'oidc-react'
+import { toast } from 'react-toastify'
 
 function ProfileTopBar() {
-  const navigate = useNavigate()
   const [isOpenProfile, setIsOpenProfile] = useState(false)
-  const dispatch = useDispatch()
   const { signOutRedirect } = useAuth()
 
   const handleLogout = async () => {
     try {
-      dispatch(logoutCurrentUser())
-      console.log('signout')
-      await signOutRedirect()
+      signOutRedirect()
+
     } catch (error) {
-      console.error('Error during logout:', error)
+      toast.error('Error during logout')
     }
   }
+
   const user = useSelector(selectCurrentUser)
   const handleClickProfile = () => {
     setIsOpenProfile(!isOpenProfile)

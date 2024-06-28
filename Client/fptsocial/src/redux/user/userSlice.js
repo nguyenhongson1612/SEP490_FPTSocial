@@ -24,6 +24,7 @@ export const userSlice = createSlice({
   },
   reducers: {
     logoutCurrentUser: (state, action) => {
+      console.log('vao day');
       state.currentUser = null
     }
   },
