@@ -12,6 +12,10 @@ namespace Domain.Enums
         Success = 0,
         [Description("System Error")]
         Error,
+        [Description("Notifications Type not found")]
+        NT01_Not_Found,
+        [Description("You don't have any notifications")]
+        N01_Not_Found,
         [Description("User not found")]
         U01_Not_Found,
         [Description("")]

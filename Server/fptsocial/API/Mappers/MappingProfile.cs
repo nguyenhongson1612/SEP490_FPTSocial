@@ -42,6 +42,7 @@ using Application.Commands.CreateGroupTag;
 using Application.Queries.GetAllGroupTag;
 using Application.Commands.CreateGroupSetting;
 using Application.Queries.GetAllGroupSetting;
+using Application.Queries.GetUserNotificationsList;
 
 namespace Application.Mappers
 {
@@ -163,6 +164,9 @@ namespace Application.Mappers
             CreateMap<Query.GroupTag, GetAllGroupTagQueryResult>();
             CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
+
+            //Notification
+            CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
         }
     }
 }

@@ -232,3 +232,9 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/Server/fptsocial/API/appsettings.json
+/Server/fptsocial/Application/Program.cs
+/Server/fptsocial/API/appsettings.json
+/Server/fptsocial/Domain/CommandModels/fptforumCommandContext.cs
+/Server/fptsocial/Domain/QueryModels/fptforumQueryContext.cs
+/Server/fptsocial/Application/Application.csproj
