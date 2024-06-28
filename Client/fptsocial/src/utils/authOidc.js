@@ -2,6 +2,9 @@ const oidcConfig = {
   onSignIn: () => {
     window.location.href = '/home'
   },
+  signOutRedirect: () => {
+
+  },
   authority: 'https://feid.ptudev.net',
   clientId: 'societe-front-end',
   redirectUri: 'http://localhost:3000/home',

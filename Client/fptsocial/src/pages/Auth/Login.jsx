@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import FPTUen from '~/assets/img/FPTUen.png'
 import IconGoogle from '~/assets/svg/iconGoogle'
+import { logoutCurrentUser } from '~/redux/user/userSlice'
 
 function Login() {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(logoutCurrentUser())
+  }, [])
   return (
     <div
       className='bg-gradient-to-r from-[rgba(242,113,36,0.7)] to-[rgb(242,113,36)]  w-screen h-screen flex items-center justify-center'>
