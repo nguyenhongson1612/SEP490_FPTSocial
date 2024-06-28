@@ -204,6 +204,9 @@ namespace Application.Mappers
             CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();
             CreateMap<Query.GroupStatus, GetGroupStatusQueryResult>();
             CreateMap<Command.GroupFpt, CreateGroupCommandResult>();
+
+            //Notification
+            CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
             CreateMap<Query.UserPost, GetPostResult>()
                 .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo))
                 .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Video))
