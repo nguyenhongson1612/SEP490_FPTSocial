@@ -48,6 +48,9 @@ builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+builder.Services.AddTransient<CreateNotificationsHandler>();
+builder.Services.AddTransient<GetNotificationsHandler>();
+builder.Services.AddTransient<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 //Config Hub and ServiceHub
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<NotificationsHub>();
