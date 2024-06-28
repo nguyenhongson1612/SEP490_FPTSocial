@@ -1,7 +1,9 @@
 ﻿using API.Hub;
 using API.Middlewares;
+using Application.Commands.CreateNotifications;
 using Application.Hub;
 using Application.Mappers;
+using Application.Queries.GetNotifications;
 using Application.Services;
 using CloudinaryDotNet;
 using Domain.CommandModels;
@@ -29,19 +31,25 @@ builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNa
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+        .WithOrigins("http://127.0.0.1:5500")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+builder.Services.AddTransient<CreateNotificationsHandler>();
+builder.Services.AddTransient<GetNotificationsHandler>();
+builder.Services.AddTransient<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 //Config Hub and ServiceHub
-builder.Services.AddSignalR( options =>
-{   
-    options.MaximumParallelInvocationsPerClient = 2;
-    options.StreamBufferCapacity = 1024;
-
-});
-//builder.Services.AddHostedService<ServerTimeNotifications>();
+builder.Services.AddSignalR();
+//builder.Services.AddHostedService<NotificationsHubBackgroundService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -101,6 +109,7 @@ var cloudinary = new Cloudinary(new Account(
 ));
 builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton<CheckingBadWord>();
+builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 var app = builder.Build();
 
 
@@ -123,19 +132,13 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
 app.UseHttpsRedirection();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCors(builder =>
-{
-    builder.WithOrigins("http://127.0.0.1:5500")
-           .AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
+
 app.UseEndpoints(
     endpoints => 
     { 
