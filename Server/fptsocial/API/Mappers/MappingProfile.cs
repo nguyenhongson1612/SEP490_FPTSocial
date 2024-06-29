@@ -1,4 +1,4 @@
-﻿using API.Controllers;
+using API.Controllers;
 using Application.Commands.CreateContactInfor;
 using Application.Commands.CreateGender;
 using Application.Commands.CreateInterest;
@@ -42,6 +42,10 @@ using Application.Commands.CreateGroupTag;
 using Application.Queries.GetAllGroupTag;
 using Application.Commands.CreateGroupSetting;
 using Application.Queries.GetAllGroupSetting;
+using Application.Commands.CreateUserCommentPost;
+using Application.Queries.GetCommentByPostId;
+using Application.DTO.CommentDTO;
+
 
 namespace Application.Mappers
 {
@@ -152,8 +156,6 @@ namespace Application.Mappers
             CreateMap<Query.UserRelationship, GetUserRelationshipResult>()
                 .ForMember(dest => dest.RelationshipName, otp => otp.MapFrom(src => src.Relationship.RelationshipName));
             CreateMap<Query.UserSetting, UserSettingDTO>();
-            CreateMap<Domain.CommandModels.UserPost, Application.Commands.Post.CreateUserPostCommandResult>()
-               .ForMember(dest => dest.HaveBadWord, opt => opt.Ignore());
 
             //Group
             CreateMap<Command.GroupRole, CreateGroupRoleCommandResult>();
@@ -163,6 +165,14 @@ namespace Application.Mappers
             CreateMap<Query.GroupTag, GetAllGroupTagQueryResult>();
             CreateMap<Command.GroupSetting, CreateGroupSettingCommandResult>();
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
+            CreateMap<Command.UserPost, CreateUserPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+
+            CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
+            CreateMap<Query.CommentPost, CommentDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
         }
     }
 }

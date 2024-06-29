@@ -10,7 +10,7 @@ namespace Application.Services
 {
     public class CheckingBadWord
     {
-        public bool Compare2String (string inputSentence)
+        public List<BannedWord> Compare2String(string inputSentence)
         {
             string projectDirectory = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
             string relativePath = Path.Combine("bannedWords.json");
@@ -19,20 +19,24 @@ namespace Application.Services
             List<BannedWord> bannedKeywords = ReadFromJson(fullPath);
             var detectedKeywords = DetectBannedKeywords(inputSentence, bannedKeywords);
 
-            if (detectedKeywords.Count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return detectedKeywords;
         }
 
         private List<BannedWord> ReadFromJson(string filePath)
         {
             string json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<List<BannedWord>>(json);
+            var bannedWordsDictionary = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+
+            var bannedWords = new List<BannedWord>();
+            foreach (var category in bannedWordsDictionary)
+            {
+                foreach (var word in category.Value)
+                {
+                    bannedWords.Add(new BannedWord { Word = word, Category = category.Key });
+                }
+            }
+
+            return bannedWords;
         }
 
         private List<BannedWord> DetectBannedKeywords(string sentence, List<BannedWord> bannedKeywords)
