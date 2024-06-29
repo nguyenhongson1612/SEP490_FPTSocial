@@ -1,10 +1,14 @@
 ﻿using Application.Commands.CreateGender;
 using Application.Commands.CreateGroupRole;
 using Application.Commands.CreateGroupSetting;
+using Application.Commands.CreateGroupStatus;
 using Application.Commands.CreateGroupTag;
+using Application.Commands.CreateGroupType;
 using Application.Queries.GetAllGroupRole;
 using Application.Queries.GetAllGroupSetting;
+using Application.Queries.GetAllGroupStatus;
 using Application.Queries.GetAllGroupTag;
+using Application.Queries.GetAllGroupType;
 using Application.Queries.GetGender;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -74,6 +78,43 @@ namespace API.Controllers
         [HttpPost]
         [Route("creategroupsetting")]
         public async Task<IActionResult> CreateGroupSetting(CreateGroupSettingCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [HttpGet]
+        [Route("getgrouptype")]
+        public async Task<IActionResult> GetGroupTypes()
+        {
+            var input = new GetAllGroupTypeQuery();
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [Authorize(Roles = "Societe-student")]
+        [HttpPost]
+        [Route("creategrouptype")]
+        public async Task<IActionResult> CreateGroupType(CreateGroupTypeCommand input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getgroupstatus")]
+        public async Task<IActionResult> GetGroupStatus()
+        {
+            var input = new GetGroupStatusQuery();
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [Authorize(Roles = "Societe-student")]
+        [HttpPost]
+        [Route("creategroupstatus")]
+        public async Task<IActionResult> CreateGroupStatus(CreateGroupStatusCommand input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);

@@ -69,6 +69,10 @@ namespace Domain.Enums
         [Description("Group setting is existed")]
         GR03_Group_Setting_Existed,
         [Description("Comment can't null")]
-        CM01_Comment_Not_Null
+        CM01_Comment_Not_Null,
+        [Description("Group type is existed")]
+        GR04_Group_Type_Existed,
+        [Description("Group status is existed")]
+        GR05_Group_Status_Existed,
     }
 }

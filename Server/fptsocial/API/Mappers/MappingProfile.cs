@@ -1,4 +1,4 @@
-using API.Controllers;
+﻿using API.Controllers;
 using Application.Commands.CreateContactInfor;
 using Application.Commands.CreateGender;
 using Application.Commands.CreateInterest;
@@ -45,7 +45,10 @@ using Application.Queries.GetAllGroupSetting;
 using Application.Commands.CreateUserCommentPost;
 using Application.Queries.GetCommentByPostId;
 using Application.DTO.CommentDTO;
-
+using Application.Commands.CreateGroupType;
+using Application.Queries.GetAllGroupType;
+using Application.Commands.CreateGroupStatus;
+using Application.Queries.GetAllGroupStatus;
 
 namespace Application.Mappers
 {
@@ -173,6 +176,10 @@ namespace Application.Mappers
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
             CreateMap<Query.CommentPost, CommentDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
+            CreateMap<Command.GroupType, CreateGroupTypeCommandResult>();
+            CreateMap<Query.GroupType, GetAllGroupTypeQueryResult>();
+            CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();
+            CreateMap<Query.GroupStatus, GetGroupStatusQueryResult>();
         }
     }
 }
