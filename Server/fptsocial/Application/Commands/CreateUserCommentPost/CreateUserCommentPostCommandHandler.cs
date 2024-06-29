@@ -40,7 +40,7 @@ namespace Application.Commands.CreateUserCommentPost
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            if (request.Content == null)
+            if (request.Content == null || request.Content == "")
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
