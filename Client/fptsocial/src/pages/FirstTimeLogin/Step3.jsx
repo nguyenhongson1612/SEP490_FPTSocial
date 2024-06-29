@@ -1,43 +1,30 @@
+import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
+import { uploadImage } from '~/apis'
 import { singleFileValidator } from '~/utils/validators'
 
-function Step3({ register, setValue }) {
-  const handleUpdateAvatar = (e) => {
+function Step3({ register, setValue, getValues, watch }) {
+  const confirmFile = useConfirm()
+
+  const handleUploadFile = (e, type) => {
+    const fileData = new FormData()
     const file = e.target.files[0]
     const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
-
-    const imgAvatar = document.getElementById('holderAvatar')
-
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        imgAvatar.src = event.target.result
-      }
-      reader.readAsDataURL(file)
-      setValue('avataphoto', reader.readAsDataURL(file))
-    }
-  }
-
-  const handleUpdateCover = (e) => {
-    const imgCover = document.getElementById('holderCover')
-    const file = e.target.files[0]
-    const error = singleFileValidator(file)
-    if (error) {
-      toast.error(error)
-      return
-    }
-    setValue('coverImage', file)
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        imgCover.style.backgroundImage = `url(${event.target.result})`
-      }
-      reader.readAsDataURL(file)
-    }
+    fileData.append('file', file)
+    const url = URL.createObjectURL(file)
+    confirmFile({
+      title: (<div>Confirm using this file?<img src={url} /></div>),
+      description: ('Are you sure you want to add this file? This file will be add into cloud if you click Confirm and cannot undo? '),
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      uploadImage({ userId: null, data: fileData }).then(data => setValue(type == 'avatar' ? 'avataphoto' : 'coverImage', data?.url))
+    }).catch(() => { })
+    e.target.value = ''
   }
 
   return (
@@ -52,17 +39,16 @@ function Step3({ register, setValue }) {
               <span className='text-xl font-bold'>Avatar</span>
               <input type='file' id='avataphoto' className='hidden' accept="image/*"
                 {...register('avataphoto', {
-                  onChange: handleUpdateAvatar
-                })
-                } />
+                  onChange: (e) => handleUploadFile(e, 'avatar')
+                })}
+              />
               <label htmlFor='avataphoto' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
             </div>
             <div className='flex justify-center items-center pt-2'>
               <div className='w-[8rem] xl:w-[10rem] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
                 <img
                   id="holderAvatar"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                  alt="group-img"
+                  src={watch('avataphoto')}
                   className="rounded-[50%] aspect-square object-cover w-[95%]"
                 />
               </div>
@@ -74,16 +60,20 @@ function Step3({ register, setValue }) {
               <span className='text-xl font-bold'>Cover </span>
               <input type='file' id='coverImage' className='hidden' accept="image/*"
                 {...register('coverImage', {
-                  onChange: handleUpdateCover
+                  onChange: (e) => handleUploadFile(e, 'cover')
                 })
                 } />
               <label htmlFor='coverImage' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
             </div>
             <div className='flex justify-center items-center pt-2'>
               <div id='holderCover'
-                className='w-full lg:w-[940px] aspect-[74/27] rounded-md
-                           bg-[url(https://thumbs.dreamstime.com/b/incredibly-beautiful-sunset-sun-lake-sunrise-landscape-panorama-nature-sky-amazing-colorful-clouds-fantasy-design-115177001.jpg)] bg-cover bg-center bg-no-repeat'
+                className="w-full lg:w-[940px] aspect-[74/27] rounded-md"
               >
+                <img
+                  id="holderAvatar"
+                  src={watch('coverImage')}
+                  className="w-full lg:w-[940px] aspect-[74/27] rounded-md object-cover"
+                />
               </div>
             </div>
           </div>

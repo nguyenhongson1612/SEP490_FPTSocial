@@ -1,10 +1,7 @@
 // 'use client'
-import { FaBold, FaItalic, FaRedo, FaQuoteRight, FaUndo, FaUnderline, FaImage } from 'react-icons/fa'
-import { AiOutlineEnter } from 'react-icons/ai'
-import { MdFormatListBulleted, MdOutlineStrikethroughS, MdEmojiEmotions } from 'react-icons/md'
-import { VscListOrdered } from 'react-icons/vsc'
 import { useRef, useState } from 'react'
 import EmojiPicker from 'emoji-picker-react'
+import { IconArrowBackUp, IconArrowForwardUp, IconBold, IconItalic, IconList, IconListNumbers, IconMoodHappy, IconPhotoUp, IconQuote, IconStrikethrough, IconUnderline } from '@tabler/icons-react'
 
 
 const Toolbar = ({ editor, handleOpenChoseFile }) => {
@@ -63,7 +60,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaBold className='w-5 h-5' />
+          <IconBold className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -77,7 +74,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaItalic className='w-5 h-5' />
+          <IconItalic className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -87,7 +84,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
             : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <MdOutlineStrikethroughS className='w-5 h-5' />
+          <IconStrikethrough className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -101,7 +98,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaUnderline className='w-5 h-5' />
+          <IconUnderline className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -111,7 +108,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
             : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <MdFormatListBulleted className='w-5 h-5' />
+          <IconList className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -125,7 +122,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <VscListOrdered className='w-5 h-5' />
+          <IconListNumbers className='w-5 h-5' />
         </button>
 
         <button
@@ -133,7 +130,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
           onClick={handleOpenChoseFile}
           className={'text-orange-300 hover:text-orangeFpt'}
         >
-          <FaImage className='w-5 h-5' />
+          <IconPhotoUp className='w-5 h-5' />
         </button>
 
         <div
@@ -143,7 +140,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt cursor-pointer'
           }
         >
-          <MdEmojiEmotions className='w-5 h-5' onClick={() => setIsOpenEmoji(!isOpenEmoji)} />
+          <IconMoodHappy className='w-5 h-5' onClick={() => setIsOpenEmoji(!isOpenEmoji)} />
           <EmojiPicker
             open={isOpenEmoji}
             lazyLoadEmojis={true}
@@ -174,7 +171,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
             : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaQuoteRight className='w-5 h-5' />
+          <IconQuote className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -188,7 +185,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaUndo className='w-5 h-5' />
+          <IconArrowBackUp className='w-5 h-5' />
         </button>
         <button
           type="button"
@@ -202,7 +199,7 @@ const Toolbar = ({ editor, handleOpenChoseFile }) => {
               : 'text-orange-300 hover:text-orangeFpt'
           }
         >
-          <FaRedo className='w-5 h-5' />
+          <IconArrowForwardUp className='w-5 h-5' />
         </button>
       </div>
     </div>

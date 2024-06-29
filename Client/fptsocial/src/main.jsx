@@ -7,44 +7,35 @@ import { store } from './redux/store.js'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import persistStore from 'redux-persist/es/persistStore'
-import '@mantine/core/styles.css'
 import './index.css'
-import '@mantine/tiptap/styles.css';
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
+import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
+import theme from '~/theme.js'
+import { CssBaseline } from '@mui/material'
+import { ConfirmProvider } from 'material-ui-confirm'
 
-import { MantineProvider, Tabs, createTheme } from '@mantine/core';
-import { ModalsProvider } from '@mantine/modals'
-
-const cache = createCache(
-  { key: 'mantine', prepend: false },
-)
 const persistor = persistStore(store)
-const theme = createTheme({
-  components: {
-    Tabs: Tabs.extend({
-      classNames: {
 
-      }
-    })
-  }
-})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
-  <CacheProvider value={cache}>
-    <MantineProvider theme={theme}>
-      <ModalsProvider>
-        <Provider store={store} >
-          <PersistGate persistor={persistor}>
-            <BrowserRouter>
-              <App />
-              <ToastContainer position="top-right" theme="colored" />
-            </BrowserRouter>
-          </PersistGate>
-        </Provider>
-      </ModalsProvider>
-    </MantineProvider>
-  </CacheProvider>
+  <Provider store={store} >
+    <PersistGate persistor={persistor}>
+      <BrowserRouter>
+        <CssVarsProvider >
+          <ConfirmProvider defaultOptions={{
+            allowClose: false,
+            dialogProps: { maxWidth: 'xs' },
+            buttonOrder: ['confirm', 'cancel'],
+            cancellationButtonProps: { color: 'inherit' },
+            confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
+          }}>
+            <CssBaseline />
+            <App />
+            <ToastContainer position="top-right" theme="colored" />
+          </ConfirmProvider>
+        </CssVarsProvider>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>
   // </React.StrictMode>
 )

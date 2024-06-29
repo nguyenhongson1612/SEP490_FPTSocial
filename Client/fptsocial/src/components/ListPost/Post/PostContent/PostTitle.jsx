@@ -8,12 +8,10 @@ function PostTitle({ postData }) {
         <img
           src={`${postData?.image}`}
           loading='lazy'
-          alt="group-img"
           className="rounded-md aspect-square object-cover w-10"
         />
         <img
           src={`${postData?.image}`}
-          alt="group-img"
           loading='lazy'
           className="absolute -bottom-1 -right-1 rounded-[50%] aspect-squa  re object-cover w-7"
         />

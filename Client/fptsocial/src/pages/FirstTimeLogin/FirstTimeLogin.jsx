@@ -19,7 +19,9 @@ function FirstTimeLogin() {
     'email': profileFedi?.email,
   }
 
-  const { register, control, setValue, handleSubmit, trigger, formState: { errors, isValid } } = useForm({ mode: 'all', defaultValues: initialGeneralForm })
+  const { register, control, getValues, setValue, watch, handleSubmit, trigger, formState: { errors, isValid } } = useForm({ mode: 'all', defaultValues: initialGeneralForm })
+  const [avataphoto, coverImage] = watch(['avataphoto', 'coverImage'])
+
   const totalStep = 3
   const handlePrev = () => {
     if (step >= 1) setStep(step - 1)
@@ -41,14 +43,15 @@ function FirstTimeLogin() {
   const renderSteps = () => {
     switch (step) {
       case 0: return <Step0 handleNext={handleNext} />
-      case 1: return <Step1 register={register} errors={errors} control={control} />
-      case 2: return <Step2 register={register} errors={errors} control={control} />
-      case 3: return <Step3 register={register} errors={errors} setValue={setValue} />
+      case 1: return <Step1 register={register} errors={errors} control={control} getValues={getValues} setValue={setValue} />
+      case 2: return <Step2 register={register} errors={errors} control={control} getValues={getValues} setValue={setValue} />
+      case 3: return <Step3 register={register} errors={errors} watch={watch} getValues={getValues} setValue={setValue} />
       default: return <Step0 handleNext={handleNext} />
     }
   }
 
   const submitData = (data) => {
+    // console.log(data)
     const initialSubmitData = {
       'useId': null,
       'firstName': data?.firstName,
@@ -67,19 +70,17 @@ function FirstTimeLogin() {
         'userStatusId': null
       },
       'relationship': {
-        'relationshipId': data?.relationship.length == 0 ? null : data?.relationship,
+        'relationshipId': data?.relationship?.length == 0 ? null : data?.relationship,
       },
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
-      'coverImage': null,
-      // 'coverImage': data?.coverImage,
+      'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : null,
       'userNumber': profileFedi?.userId,
-      // 'avataphoto': 'data?.avataphoto',
-      'avataphoto': null,
+      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : null,
       'userSetting': [{
         'settingId': null
       }],
-      'interes': data?.interest?.map(e => ({ interestId: e })) ?? [{ 'interestId': null }],
+      'interes': data?.interest?.length !== 0 ? data?.interest?.map(e => ({ interestId: e })) : [{ 'interestId': null }],
       'workPlace': [{
         'workPlaceName': data?.workPlace,
       }],

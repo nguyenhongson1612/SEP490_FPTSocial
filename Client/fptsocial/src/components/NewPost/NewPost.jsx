@@ -1,9 +1,6 @@
 // import React from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { IoMdClose, IoMdArrowBack } from 'react-icons/io'
-import { FaLock } from 'react-icons/fa6'
-import { IoMdArrowDropdown } from 'react-icons/io'
 import Tiptap from '../TitTap/TitTap'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -11,7 +8,10 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { motion } from 'framer-motion'
 import { createPost, getStatus } from '~/apis'
-import { Group, Radio, Stack, Text } from '@mantine/core'
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
+import { IconCaretDownFilled, IconChevronLeft, IconX } from '@tabler/icons-react'
+
+
 function NewPost() {
   const [isCreate, setIsCreate] = useState(false)
   const [isChosePostAudience, setIsChosePostAudience] = useState(false)
@@ -62,8 +62,7 @@ function NewPost() {
           to={`/profile?id=${currentUser?.userId}`}
           className=" hover:text-gray-950 flex items-center justify-center gap-3">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-            alt="group-img"
+            src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
             className="rounded-[50%] aspect-square object-cover w-10"
           />
         </Link>
@@ -84,13 +83,12 @@ function NewPost() {
                     <div className='h-[60px] flex justify-between items-center px-2 border-b '>
                       <span></span>
                       <span className='text-2xl font-bold'>Create post</span>
-                      <IoMdClose className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsCreate(!isCreate)} />
+                      <IconX className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsCreate(!isCreate)} />
                     </div>
                     <div className='mx-4'>
                       <div className='flex items-center h-[40] p-4 gap-2 '>
                         <img
-                          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                          alt="group-img"
+                          src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
                           className="rounded-[50%] aspect-square object-cover w-10"
                         />
                         <div className='flex flex-col w-full cursor-pointer'>
@@ -100,7 +98,7 @@ function NewPost() {
                             className='flex items-center gap-1 text-xs text-white font-bold py-1 px-2 bg-orangeFpt w-fit rounded-lg'>
                             {/* <FaLock /> */}
                             <span className=''>{listStatus?.find(e => e.userStatusId == choseStatus)?.statusName}</span>
-                            <IoMdArrowDropdown className='size-4' />
+                            <IconCaretDownFilled className='size-4' />
                           </div>
                         </div>
                       </div>
@@ -137,7 +135,7 @@ function NewPost() {
                 >
                   <div className='flex flex-col'>
                     <div className='h-[60px]  flex justify-between items-center px-5 border-b '>
-                      <IoMdArrowBack className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsChosePostAudience(!isChosePostAudience)} />
+                      <IconChevronLeft className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsChosePostAudience(!isChosePostAudience)} />
                       <span className='text-2xl font-bold'>Post Audience</span>
                       <span></span>
                     </div>
@@ -151,25 +149,22 @@ function NewPost() {
                         </div>
                       </div>
                       <div>
-                        <Radio.Group
-                          value={choseStatus}
-                          onChange={setChoseStatus}
-                          label="Pick one package to install"
-                          description="Choose a package that you will need in your application"
-                        >
-                          <Stack pt="md" gap="xs">
+                        <FormControl>
+                          <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
+                          <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            value={choseStatus}
+                            onChange={e => setChoseStatus(e.target.value)}
+                            name="radio-buttons-group"
+                          >
                             {listStatus?.map((status) => (
-                              <Radio.Card radius="md" value={status.userStatusId} key={status.userStatusId}>
-                                <Group wrap="nowrap" align="flex-start">
-                                  <Radio.Indicator />
-                                  <div>
-                                    <Text className={''}>{status.statusName}</Text>
-                                  </div>
-                                </Group>
-                              </Radio.Card>
+                              <FormControlLabel key={status.userStatusId} value={status.userStatusId} control={<Radio />} label={status.statusName} />
                             ))}
-                          </Stack>
-                        </Radio.Group>
+
+                            <FormControlLabel value="male" control={<Radio />} label="Male" />
+                            <FormControlLabel value="other" control={<Radio />} label="Other" />
+                          </RadioGroup>
+                        </FormControl>
                       </div>
 
                     </div >

@@ -18,7 +18,7 @@ function PostDescription({ postData }) {
         <div className={`bg-[url${postData?.image}]`}>
           <img
             src={`${postData?.image}`}
-            alt="group-img"
+            alt="post-img"
             loading="lazy"
             className=" w-fit h-fit"
           />

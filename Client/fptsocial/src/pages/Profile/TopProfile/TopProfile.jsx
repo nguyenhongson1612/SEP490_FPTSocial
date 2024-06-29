@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
-import { IconUserCheck, IconUserPlus, IconEdit, IconUserX } from '@tabler/icons-react'
-import { modals } from '@mantine/modals';
-import { Text } from '@mantine/core';
-function TopProfile({ open, user, currentUser, buttonProfile, forceUpdate }) {
+import { useConfirm } from 'material-ui-confirm'
+import { IconEdit, IconUserCheck, IconUserPlus, IconUserX } from '@tabler/icons-react'
+
+function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate }) {
+  const coverImage = user?.coverImage;
+  const backgroundStyle = coverImage
+    ? { backgroundImage: `url(${coverImage})` }
+    : {
+      background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
+    }
+
   const handleAddFriend = () => {
     sendFriend({ userId: currentUser?.userId, friendId: user?.userId }).then(forceUpdate)
   }
@@ -17,33 +24,29 @@ function TopProfile({ open, user, currentUser, buttonProfile, forceUpdate }) {
     updateFriendStatus(data).then(forceUpdate)
   }
 
+  const confirmUnfriend = useConfirm()
   const openDeleteModal = () =>
-    modals.openConfirmModal({
+    confirmUnfriend({
       title: 'Unfriend this account?',
-      centered: true,
-      children: (
-        <Text size="sm" >
-          Are you sure want to remove this account from friend list?
-        </Text>
-      ),
-      labels: { confirm: 'Not anymore', cancel: 'Continue friend forever' },
-      confirmProps: { color: 'red' },
-      // onCancel: () => console.log('Cancel'),
-      onConfirm: () => handleResponse({
-        'confirm': false,
-        'cancle': false,
-        'reject': true
-      }),
-    })
+      description: ('Are you sure want to remove this account from friend list?'),
+      confirmationText: 'Not anymore',
+      cancellationText: 'Continue friend forever'
+    }).then(() => handleResponse({
+      'confirm': false,
+      'cancle': false,
+      'reject': true
+    })).catch(() => { })
 
   return (
     <div id='top-profile'
       className='bg-white shadow-md w-full flex flex-col items-center'
     >
-      <div id=''
-        className='w-full lg:w-[940px] aspect-[74/27] rounded-md
-                bg-[url(https://thumbs.dreamstime.com/b/incredibly-beautiful-sunset-sun-lake-sunrise-landscape-panorama-nature-sky-amazing-colorful-clouds-fantasy-design-115177001.jpg)] 
-                bg-cover bg-center bg-no-repeat'></div>
+      <div
+        id="holderCover"
+        className="w-full lg:w-[940px] aspect-[74/27] rounded-md bg-cover bg-center bg-no-repeat"
+        style={backgroundStyle}
+      >
+      </div>
       <div id='avatar-profile'
         className='w-full flex justify-center pb-4 border-b'
       >
@@ -52,8 +55,7 @@ function TopProfile({ open, user, currentUser, buttonProfile, forceUpdate }) {
             <div className='relative w-[170px] h-[90px] lg:h-0'>
               <div className='absolute bottom-0 w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
                 <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                  alt="group-img"
+                  src={user?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
                   className="rounded-[50%] aspect-square object-cover w-[95%]"
                 />
               </div>
@@ -69,34 +71,29 @@ function TopProfile({ open, user, currentUser, buttonProfile, forceUpdate }) {
             <div className='flex items-center [&>img:not(:first-child)]:-ml-4'>
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                alt="group-img"
                 className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
               />
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                alt="group-img"
                 className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
               />
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                alt="group-img"
                 className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
               />
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                alt="group-img"
                 className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
               />
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                alt="group-img"
                 className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
               />
             </div>
           </div>
           {user?.userId == currentUser?.userId
             ? (
-              <div onClick={open}
+              <div onClick={() => setIsOpenModalUpdateProfile(true)}
                 className='flex flex-col justify-end mb-4 cursor-pointer'>
                 <span></span>
                 <span className='font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2'><IconEdit />Update Your Profile</span>

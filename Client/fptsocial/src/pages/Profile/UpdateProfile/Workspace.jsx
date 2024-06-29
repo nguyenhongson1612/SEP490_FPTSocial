@@ -1,23 +1,24 @@
-import { NativeSelect, TextInput } from '@mantine/core'
-import { useEffect } from 'react'
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { Controller } from 'react-hook-form'
 import { WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators'
 
-function Workspace({ register, user, errors, control, listStatus }) {
+function Workspace({ register, user, errors, control, listStatus, setValue, watch }) {
 
 
   return (
-    <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
-      <div className='col-span-1 xs:col-span-2'>
+    <div className='grid grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
+      <div className='col-span-2'>
         <div className='flex items-center '>
           <span className='text-xl font-bold'>Workplace</span>
         </div>
       </div>
-      <TextInput
+      <TextField
         label="Workplace"
+        className="col-span-2 xs:col-span-1"
         defaultValue={user?.workPlaces[0]?.workPlaceName}
         placeholder="Workplace"
-        error={!!errors['workPlace'] && `${errors['workPlace']?.message}`}
+        error={!!errors['workPlace']}
+        helperText={errors['workPlace']?.message}
         {...register('workPlace', {
           pattern: {
             value: WHITESPACE_RULE,
@@ -26,7 +27,22 @@ function Workspace({ register, user, errors, control, listStatus }) {
         })}
       />
 
-      <Controller
+      <FormControl fullWidth className="col-span-2 xs:col-span-1">
+        <InputLabel id="labelStatusWorkplaces">Status</InputLabel>
+        <Select
+          labelId="labelStatusWorkplaces"
+          label="Status"
+          {...register('workplaceStatus', {})}
+          onChange={e => { setValue('workplaceStatus', e.target.value) }}
+          value={watch('workplaceStatus') ?? ''}
+        >
+          {listStatus?.map(status => (
+            <MenuItem value={status?.userStatusId} key={status?.userStatusId}>{status?.statusName}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* <Controller
         name="workplaceStatus"
         control={control}
         render={({ field }) => (
@@ -44,7 +60,7 @@ function Workspace({ register, user, errors, control, listStatus }) {
             </optgroup>
           </NativeSelect>
         )}
-      />
+      /> */}
     </div>
   )
 }

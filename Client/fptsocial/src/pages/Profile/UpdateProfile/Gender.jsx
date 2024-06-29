@@ -1,8 +1,9 @@
-import { NativeSelect } from '@mantine/core'
-import { useEffect } from 'react'
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import { Controller } from 'react-hook-form'
+import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators';
 
-function Gender({ user, control, listGender, listStatus }) {
+function Gender({ user, control, listGender, listStatus, register, setValue, watch, errors }) {
 
 
   return (
@@ -12,7 +13,7 @@ function Gender({ user, control, listGender, listStatus }) {
           <span className='text-xl font-bold'>Gender</span>
         </div>
       </div>
-      <Controller
+      {/* <Controller
         name="gender"
         control={control}
         defaultValue={user?.userGender?.genderId}
@@ -30,9 +31,45 @@ function Gender({ user, control, listGender, listStatus }) {
             </optgroup>
           </NativeSelect>
         )}
-      />
+      /> */}
 
-      <Controller
+      <FormControl fullWidth className="col-span-2 sm:col-span-1">
+        <InputLabel id="labelGender" required error={!!errors['gender']}>Gender</InputLabel>
+        <Select
+          labelId="labelGender"
+          error={!!errors['gender']}
+          label="Gender"
+          {...register('gender', {
+            required: FIELD_REQUIRED_MESSAGE
+          })}
+          onChange={e => setValue('gender', e.target.value)}
+          value={watch('gender') || user?.userGender?.genderId}
+        >
+          {listGender?.map(gender => (
+            <MenuItem value={gender?.genderId} key={gender?.genderId}>{gender?.genderName}</MenuItem>
+          ))}
+        </Select>
+        <FieldErrorAlert errors={errors} fieldName={'gender'} />
+      </FormControl>
+
+      <FormControl fullWidth className="col-span-2 sm:col-span-1">
+        <InputLabel id="labelStatusContact">Status</InputLabel>
+        <Select
+          labelId="labelStatusContact"
+          // error={!!errors['contactStatus']}
+          label="Gender"
+          {...register('genderStatus', {})}
+          onChange={e => { setValue('genderStatus', e.target.value) }}
+          value={watch('genderStatus') ?? ''}
+        >
+          {listStatus?.map(status => (
+            <MenuItem value={status?.userStatusId} key={status?.userStatusId}>{status?.statusName}</MenuItem>
+          ))}
+        </Select>
+        {/* <FieldErrorAlert errors={errors} fieldName={'contactStatus'} /> */}
+      </FormControl>
+
+      {/* <Controller
         name="genderStatus"
         control={control}
         render={({ field }) => (
@@ -50,7 +87,7 @@ function Gender({ user, control, listGender, listStatus }) {
             </optgroup>
           </NativeSelect>
         )}
-      />
+      /> */}
     </div>
   )
 }
