@@ -49,6 +49,7 @@ using Application.Commands.CreateGroupType;
 using Application.Queries.GetAllGroupType;
 using Application.Commands.CreateGroupStatus;
 using Application.Queries.GetAllGroupStatus;
+using Application.Commands.CreateGroupCommand;
 
 namespace Application.Mappers
 {
@@ -180,6 +181,7 @@ namespace Application.Mappers
             CreateMap<Query.GroupType, GetAllGroupTypeQueryResult>();
             CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();
             CreateMap<Query.GroupStatus, GetGroupStatusQueryResult>();
+            CreateMap<Command.GroupFpt, CreateGroupCommandResult>();
         }
     }
 }

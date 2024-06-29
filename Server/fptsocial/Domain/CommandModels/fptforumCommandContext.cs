@@ -473,6 +473,10 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.GroupId).ValueGeneratedNever();
 
+                entity.Property(e => e.CoverImage)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.GroupDescription).HasMaxLength(1000);
