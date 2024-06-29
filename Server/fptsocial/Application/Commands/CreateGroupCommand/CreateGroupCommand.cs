@@ -9,9 +9,11 @@ namespace Application.Commands.CreateGroupCommand
 {
     public class CreateGroupCommand : ICommand<CreateGroupCommandResult>
     {
-        public string? GroupNumber { get; set; }
         public string GroupName { get; set; }
-        public string GroupDescription { get; set; } 
+        public string? GroupDescription { get; set; }
+        public string? CoverImage { get; set; }
+        public Guid UserStatusId { get; set; }
+        public Guid GroupTypeId { get; set; }
         public Guid? CreatedById { get; set; }
     }
 }
