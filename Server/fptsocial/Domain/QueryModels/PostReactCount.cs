@@ -11,6 +11,8 @@ namespace Domain.QueryModels
         public int? ReactCount { get; set; }
         public int? CommentCount { get; set; }
         public int? ShareCount { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public DateTime? UpdateAt { get; set; }
 
         public virtual UserPost? UserPost { get; set; }
         public virtual UserPostPhoto? UserPostPhoto { get; set; }
