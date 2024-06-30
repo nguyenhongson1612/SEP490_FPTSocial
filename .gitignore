@@ -238,3 +238,4 @@ _Pvt_Extensions
 /Server/fptsocial/Domain/CommandModels/fptforumCommandContext.cs
 /Server/fptsocial/Domain/QueryModels/fptforumQueryContext.cs
 /Server/fptsocial/Application/Application.csproj
+/Server/fptsocial/API/API.csproj

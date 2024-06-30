@@ -1,4 +1,5 @@
 ﻿using API.Hub;
+using API.Hub.SubscribeSqlTableDependencies;
 using API.Middlewares;
 using Application.Commands.CreateNotifications;
 using Application.Hub;
@@ -11,10 +12,12 @@ using Domain.QueryModels;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
+using TableDependency.SqlClient;
 
 [assembly: ApiController]
 var builder = WebApplication.CreateBuilder(args);
@@ -44,11 +47,14 @@ builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
-builder.Services.AddTransient<CreateNotificationsHandler>();
-builder.Services.AddTransient<GetNotificationsHandler>();
-builder.Services.AddTransient<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 //Config Hub and ServiceHub
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<NotificationsHub>();
+builder.Services.AddHostedService<NotificationsHostedService>();
+builder.Services.AddSingleton<SubscribeNotificationsTableDependency>();
+builder.Services.AddSingleton<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
+builder.Services.AddSingleton<ICreateNotifications, CreateNotifications>();
+builder.Services.AddSingleton<IGetNotifications,  GetNotifications>();
 //builder.Services.AddHostedService<NotificationsHubBackgroundService>();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -111,7 +117,7 @@ builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton<CheckingBadWord>();
 builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 var app = builder.Build();
-
+var connectionString = app.Configuration.GetConnectionString("QureryConnection");
 
 // Kích hoạt Middleware để kiểm soát loại dữ liệu làm việc trên SwaggerUI
 app.UseSwagger();
@@ -137,8 +143,6 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
-
-
 app.UseEndpoints(
     endpoints => 
     { 
