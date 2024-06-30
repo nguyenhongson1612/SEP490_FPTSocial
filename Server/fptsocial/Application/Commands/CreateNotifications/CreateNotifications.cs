@@ -40,7 +40,7 @@ namespace Application.Commands.CreateNotifications
         {
             //using (var scope = _serviceProvider.CreateScope())
             //{
-            Domain.CommandModels.Notification _notification = new();
+                Domain.CommandModels.Notification _notification = new();
                 //var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
                 //var _commandcontext = scope.ServiceProvider.GetRequiredService<fptforumCommandContext>();
                 if (_queryContext == null || _commandContext == null)
