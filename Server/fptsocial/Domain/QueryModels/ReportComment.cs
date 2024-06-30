@@ -13,11 +13,10 @@ namespace Domain.QueryModels
         public Guid CommentGroupPostId { get; set; }
         public Guid CommentPhotoGroupPostId { get; set; }
         public Guid CommentGroupVideoPostId { get; set; }
+        public string? Content { get; set; }
         public Guid ReportById { get; set; }
-        public string? Conetent { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string? Content { get; set; }
         public bool? Processing { get; set; }
 
         public virtual CommentPost Comment { get; set; } = null!;

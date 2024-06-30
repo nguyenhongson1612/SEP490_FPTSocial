@@ -108,7 +108,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A40CB1CEAF");
+                    .HasName("PK__AvataPho__BF0395A418AAC60D");
 
                 entity.ToTable("AvataPhoto");
 
@@ -183,7 +183,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CommentGroupPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -206,7 +206,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CommentGroupVideoPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -229,7 +229,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CommentPhotoGroupPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -252,7 +252,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CommentPhotoPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -272,13 +272,13 @@ namespace Domain.CommandModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCAA1E82C52");
+                    .HasName("PK__CommentP__C3B4DFCA1C834F2C");
 
                 entity.ToTable("CommentPost");
 
                 entity.Property(e => e.CommentId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -301,7 +301,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CommentVideoPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -420,7 +420,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupChatMember>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B675FAF2770");
+                    .HasName("PK__GroupCha__1ED28B6749061874");
 
                 entity.ToTable("GroupChatMember");
 
@@ -449,7 +449,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.MessageChat).HasColumnType("text");
+                entity.Property(e => e.MessageChat).HasColumnType("ntext");
 
                 entity.HasOne(d => d.GroupChat)
                     .WithMany(p => p.GroupChatMessages)
@@ -467,7 +467,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36AA87EEEC3");
+                    .HasName("PK__GroupFPT__149AF36A14AF842B");
 
                 entity.ToTable("GroupFPT");
 
@@ -511,7 +511,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCFB64BDA3F");
+                    .HasName("PK__GroupInv__033C8DCF554893A4");
 
                 entity.ToTable("GroupInvitation");
 
@@ -613,7 +613,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.GroupPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -652,7 +652,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.GroupPostPhotoId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -709,7 +709,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.GroupPostVideoId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -802,7 +802,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.GroupSharePostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -866,7 +866,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9ACE0A88601");
+                    .HasName("PK__GroupTag__657CF9AC5F02D0A7");
 
                 entity.ToTable("GroupTag");
 
@@ -1212,7 +1212,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B52528AA620A1B");
+                    .HasName("PK__ReactGro__E6B525280DC83B7D");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1302,7 +1302,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E4F206E151");
+                    .HasName("PK__ReactGro__B37F79E405307353");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -1543,9 +1543,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.ReportCommentId).ValueGeneratedNever();
 
-                entity.Property(e => e.Conetent).HasColumnType("text");
-
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -1765,7 +1763,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.SharePostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -1840,7 +1838,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
-                entity.Property(e => e.MessageChat).HasColumnType("text");
+                entity.Property(e => e.MessageChat).HasColumnType("ntext");
 
                 entity.HasOne(d => d.FromUser)
                     .WithMany(p => p.UserChatMessages)
@@ -1943,7 +1941,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.UserPostId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -1982,7 +1980,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.UserPostPhotoId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2017,7 +2015,7 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.UserPostVideoId).ValueGeneratedNever();
 
-                entity.Property(e => e.Content).HasColumnType("text");
+                entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -2049,7 +2047,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4C866BA3E5");
+                    .HasName("PK__UserProf__1788CC4CF31F6A80");
 
                 entity.ToTable("UserProfile");
 
@@ -2174,7 +2172,7 @@ namespace Domain.CommandModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__7EC1CEDB");
+                    .HasConstraintName("FK__UserSetti__UserI__79FD19BE");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)
