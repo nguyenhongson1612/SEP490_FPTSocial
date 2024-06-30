@@ -78,5 +78,7 @@ namespace Domain.Enums
         GR06_Group_Name_Existed,
         [Description("Group Name is not null")]
         GR07_Group_Name_Not_Null,
+        [Description("Group is not exist")]
+        GR08_Group_Is_Not_Exist,
     }
 }

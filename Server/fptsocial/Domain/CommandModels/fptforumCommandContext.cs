@@ -1069,6 +1069,10 @@ namespace Domain.CommandModels
 
                 entity.ToTable("PostReactCount");
 
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
+
                 entity.HasOne(d => d.UserPost)
                     .WithMany()
                     .HasForeignKey(d => d.UserPostId)
