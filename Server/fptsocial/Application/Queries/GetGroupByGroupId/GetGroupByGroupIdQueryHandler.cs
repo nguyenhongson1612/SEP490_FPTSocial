@@ -76,7 +76,9 @@ namespace Application.Queries.GetGroupByGroupId
                     };
                 }
             }
-            
+
+            var result = new GetGroupByGroupIdQueryResult();
+            return Result<GetGroupByGroupIdQueryResult>.Success(result);
         }
     }
 }
