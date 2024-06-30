@@ -104,7 +104,7 @@ namespace API.Hub
             //await _hubContext.Clients.All.ReceiveNotification(msg, url);
             //var receiverConnectId = _connections.GetConnections(receiverId);
             foreach (var connectionId in _connections.GetConnections(receiverId))
-            {
+                {
                 await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
             }
 
