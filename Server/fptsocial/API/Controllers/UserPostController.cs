@@ -1,5 +1,7 @@
 ﻿using Application.Commands.CreateUserCommentPost;
 using Application.Commands.CreateUserCommentVideoPost;
+﻿using Application.Commands.CreateUserCommentPhotoPost;
+using Application.Commands.CreateUserCommentPost;
 using Application.Commands.Post;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetCommentByVideoPostId;
@@ -77,6 +79,14 @@ namespace API.Controllers
             return Success(res.Value);
 
         }
+        
+        [Route("commentPhotoPost")]
+        public async Task<IActionResult> CreatePhotoComment(CreateUserCommentPhotoPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
 
         [HttpPost]
         [Route("getVideoComment")]
@@ -86,6 +96,14 @@ namespace API.Controllers
             return Success(res.Value);
 
         }
+        //[HttpPost]
+        //[Route("getPhotoComment")]
+        //public async Task<IActionResult> GetPhotoComment(GetCommentByPhotoPostIdQuery command)
+        //{
+        //    var res = await _sender.Send(command);
+        //    return Success(res.Value);
+
+        //}
 
 
     }
