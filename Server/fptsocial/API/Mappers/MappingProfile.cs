@@ -52,6 +52,9 @@ using Application.Queries.GetAllGroupStatus;
 using Application.Commands.CreateGroupCommand;
 using Application.Commands.CreateUserCommentVideoPost;
 using Application.Commands.CreateUserCommentPhotoPost;
+using Application.Queries.GetPost;
+using Domain.QueryModels;
+using Application.DTO.UserPostDTO;
 
 namespace Application.Mappers
 {
@@ -190,6 +193,32 @@ namespace Application.Mappers
             CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();
             CreateMap<Query.GroupStatus, GetGroupStatusQueryResult>();
             CreateMap<Command.GroupFpt, CreateGroupCommandResult>();
+            CreateMap<Query.UserPost, GetPostResult>()
+                .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo))
+                .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Video))
+                .ForMember(dest => dest.UserPostPhotos, opt => opt.MapFrom(src => src.UserPostPhotos))
+                .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos));
+
+            CreateMap<UserPost, UserPostDTO>()
+            .ForMember(dest => dest.UserPostId, opt => opt.MapFrom(src => src.UserPostId))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+            .ForMember(dest => dest.UserPostNumber, opt => opt.MapFrom(src => src.UserPostNumber))
+            .ForMember(dest => dest.UserStatusId, opt => opt.MapFrom(src => src.UserStatusId))
+            .ForMember(dest => dest.IsAvataPost, opt => opt.MapFrom(src => src.IsAvataPost))
+            .ForMember(dest => dest.IsCoverPhotoPost, opt => opt.MapFrom(src => src.IsCoverPhotoPost))
+            .ForMember(dest => dest.IsHide, opt => opt.MapFrom(src => src.IsHide))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.PhotoId, opt => opt.MapFrom(src => src.PhotoId))
+            .ForMember(dest => dest.VideoId, opt => opt.MapFrom(src => src.VideoId))
+            .ForMember(dest => dest.NumberPost, opt => opt.MapFrom(src => src.NumberPost))
+            .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo))
+            .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Video))
+            .ForMember(dest => dest.UserPostPhotos, opt => opt.MapFrom(src => src.UserPostPhotos))
+            .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos))
+            .ReverseMap();
+            CreateMap<UserPostDTO, GetPostResult>();
         }
     }
 }

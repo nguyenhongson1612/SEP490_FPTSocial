@@ -5,11 +5,14 @@ using Application.Commands.CreateUserCommentPost;
 using Application.Commands.Post;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetCommentByVideoPostId;
+using Application.Queries.GetPost;
 using Application.Queries.GetUserPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Application.Queries.GetCommentByPhotoPostId;
 
@@ -44,7 +47,28 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        
+        [HttpGet]
+        [Route("getpost")]
+        public async Task<IActionResult> GetPost()
+        {
+            var input = new GetPostQuery();
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
         [HttpPost]
         [Route("createPost")]
         public async Task<IActionResult> CreatePost(CreateUserPostCommand command)
