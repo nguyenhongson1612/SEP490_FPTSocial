@@ -35,14 +35,19 @@ builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNa
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+        .WithOrigins("http://127.0.0.1:5500")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
-builder.Services.AddTransient<CreateNotificationsHandler>();
-builder.Services.AddTransient<GetNotificationsHandler>();
-builder.Services.AddTransient<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 //Config Hub and ServiceHub
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<NotificationsHub>();
@@ -156,18 +161,6 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
-{
-    builder.WithOrigins("http://127.0.0.1:5500")
-           .AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
-{
-    builder.WithOrigins("http://127.0.0.1:5500")
-           .AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
 app.UseEndpoints(
     endpoints => 
     { 
