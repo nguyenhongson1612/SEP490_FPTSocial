@@ -1,5 +1,4 @@
-﻿using Application.Commands.CreateUserGender;
-using Application.Commands.Post;
+﻿using Application.Commands.CreateUserCommentPost;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -8,7 +7,6 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.QueryModels;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,9 +14,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.CreateUserCommentPost
+namespace Application.Commands.CreateUserCommentVideoPost
 {
-    public class CreateUserCommentPostCommandHandler : ICommandHandler<CreateUserCommentPostCommand, CreateUserCommentPostCommandResult>
+    public class CreateUserCommentVideoPostCommandHandler : ICommandHandler<CreateUserCommentVideoPostCommand, CreateUserCommentVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly IMapper _mapper;
@@ -26,7 +24,7 @@ namespace Application.Commands.CreateUserCommentPost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -35,7 +33,7 @@ namespace Application.Commands.CreateUserCommentPost
             _checkContent = new CheckingBadWord();
         }
 
-        public async Task<Result<CreateUserCommentPostCommandResult>> Handle(CreateUserCommentPostCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CreateUserCommentVideoPostCommandResult>> Handle(CreateUserCommentVideoPostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -45,10 +43,10 @@ namespace Application.Commands.CreateUserCommentPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            Domain.CommandModels.CommentPost comment = new Domain.CommandModels.CommentPost
+            Domain.CommandModels.CommentVideoPost comment = new Domain.CommandModels.CommentVideoPost
             {
-                CommentId = _helper.GenerateNewGuid(),
-                UserPostId = request.UserPostId,
+                CommentVideoPostId = _helper.GenerateNewGuid(),
+                UserPostVideoId = request.UserPostVideoId,
                 UserId = request.UserId,
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
@@ -56,17 +54,17 @@ namespace Application.Commands.CreateUserCommentPost
                 CreatedDate = DateTime.Now
             };
             List<CheckingBadWord.BannedWord> BadWords = _checkContent.Compare2String(comment.Content);
-            if(BadWords.Any())
+            if (BadWords.Any())
             {
                 comment.IsHide = true;
             }
-            await _context.CommentPosts.AddAsync(comment);
+            await _context.CommentVideoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
-            var result = _mapper.Map<CreateUserCommentPostCommandResult>(comment);
+            var result = _mapper.Map<CreateUserCommentVideoPostCommandResult>(comment);
             result.BannedWords = BadWords;
-            return Result<CreateUserCommentPostCommandResult>.Success(result);
-
+            return Result<CreateUserCommentVideoPostCommandResult>.Success(result);
         }
+
 
     }
 }

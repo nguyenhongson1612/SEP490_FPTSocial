@@ -1,6 +1,8 @@
 ﻿using Application.Commands.CreateUserCommentPost;
+using Application.Commands.CreateUserCommentVideoPost;
 using Application.Commands.Post;
 using Application.Queries.GetCommentByPostId;
+using Application.Queries.GetCommentByVideoPostId;
 using Application.Queries.GetUserPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,6 +63,24 @@ namespace API.Controllers
         [HttpPost]
         [Route("getComment")]
         public async Task<IActionResult> GetComment(GetCommentByPostIdQuery command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("commentVideoPost")]
+        public async Task<IActionResult> CreateVideoComment(CreateUserCommentVideoPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("getVideoComment")]
+        public async Task<IActionResult> GetVideoComment(GetCommentByVideoPostIdQuery command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
