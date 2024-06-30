@@ -1,5 +1,5 @@
 ﻿using API.Hub;
-using Domain.CommandModels;
+using Domain.QueryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,7 @@ namespace Application.Hub
     public interface INotificationsClient
     {
         Task ReceiveNotification(string message);
+        Task ReceiveNotification(List<Notification> message);
         Task ReceiveNotification(string message, string url);
         Task ReceiveNotification(string firstMessage, string secondMessage, string url);
         
