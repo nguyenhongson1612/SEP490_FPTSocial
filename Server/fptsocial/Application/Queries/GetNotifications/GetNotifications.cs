@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
-using Core.Helper;
-using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Queries.GetNotifications
@@ -49,7 +46,10 @@ namespace Application.Queries.GetNotifications
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                var notice = _querycontext.Notification.Where(x => x.UserId.Equals(Guid.Parse(userId))).ToList();
+                var notice = _querycontext.Notification.Where(x => x.UserId == Guid.Parse(userId))
+                                                        .OrderByDescending(x => x.CreatedAt)
+                                                        .Take(15)
+                                                        .ToList();
                 if (notice == null)
                 {
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);

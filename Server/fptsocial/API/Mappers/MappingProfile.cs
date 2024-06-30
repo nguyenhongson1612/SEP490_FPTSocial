@@ -59,6 +59,7 @@ using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateNewReact;
+using Application.Queries.GetUserNotificationsList;
 
 namespace Application.Mappers
 {
