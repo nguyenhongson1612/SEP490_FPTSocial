@@ -50,6 +50,7 @@ using Application.Queries.GetAllGroupType;
 using Application.Commands.CreateGroupStatus;
 using Application.Queries.GetAllGroupStatus;
 using Application.Commands.CreateGroupCommand;
+using Application.Commands.CreateUserCommentVideoPost;
 
 namespace Application.Mappers
 {
@@ -177,6 +178,8 @@ namespace Application.Mappers
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
             CreateMap<Query.CommentPost, CommentDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
+            CreateMap<Command.CommentVideoPost, CreateUserCommentVideoPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Command.GroupType, CreateGroupTypeCommandResult>();
             CreateMap<Query.GroupType, GetAllGroupTypeQueryResult>();
             CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();

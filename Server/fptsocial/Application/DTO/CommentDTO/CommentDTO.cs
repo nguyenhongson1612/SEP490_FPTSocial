@@ -17,4 +17,16 @@ namespace Application.DTO.CommentDTO
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
+
+    public class CommentVideoDto
+    {
+        public Guid UserId { get; set; }
+        public Guid CommentVideoPostId { get; set; }
+        public Guid UserPostVideoId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+    }
 }
