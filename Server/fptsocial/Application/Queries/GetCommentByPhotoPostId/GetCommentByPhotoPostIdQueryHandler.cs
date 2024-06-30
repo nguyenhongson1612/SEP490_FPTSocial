@@ -13,46 +13,46 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Queries.GetCommentByVideoPostId
+namespace Application.Queries.GetCommentByPhotoPostId
 {
-    public class GetCommentByVideoPostIdQueryHandler : IQueryHandler<GetCommentByVideoPostIdQuery, GetCommentByVideoPostIdQueryResult>
+    public class GetCommentByPhotoPostIdQueryHandler : IQueryHandler<GetCommentByPhotoPostIdQuery, GetCommentByPhotoPostIdQueryResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetCommentByVideoPostIdQueryHandler(fptforumQueryContext context, IMapper mapper)
+        public GetCommentByPhotoPostIdQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<GetCommentByVideoPostIdQueryResult>> Handle(GetCommentByVideoPostIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetCommentByPhotoPostIdQueryResult>> Handle(GetCommentByPhotoPostIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var getComment = await _context.CommentVideoPosts.Include(cp => cp.User).Where(x => x.UserPostVideoId == request.UserPostVideoId).OrderByDescending(x => x.CreatedDate).ToListAsync();
+            var getComment = await _context.CommentPhotoPosts.Include(cp => cp.User).Where(x => x.UserPostPhotoId == request.UserPostPhotoId).OrderByDescending(x => x.CreatedDate).ToListAsync();
 
-            var result = new GetCommentByVideoPostIdQueryResult() { Posts = new List<CommentVideoDto>() };
+            var result = new GetCommentByPhotoPostIdQueryResult() { Posts = new List<CommentPhotoDto>() };
             if (getComment != null)
             {
                 foreach (var comment in getComment)
                 {
-                    CommentVideoDto dto = new CommentVideoDto
+                    CommentPhotoDto dto = new CommentPhotoDto
                     {
                         UserId = comment.UserId,
                         UserName = comment.User.FirstName + " " + comment.User.LastName,
-                        UserPostVideoId = comment.UserPostVideoId,
+                        UserPostPhotoId = comment.UserPostPhotoId,
                         CreatedDate = comment.CreatedDate,
                         Content = comment.Content,
                         IsHide = comment.IsHide,
-                        CommentVideoPostId = comment.CommentVideoPostId,
+                        CommentPhotoPostId = comment.CommentPhotoPostId,
                         ParentCommentId = comment.ParentCommentId
                     };
                     result.Posts.Add(dto);
                 }
             }
-            return Result<GetCommentByVideoPostIdQueryResult>.Success(result);
+            return Result<GetCommentByPhotoPostIdQueryResult>.Success(result);
         }
 
     }

@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetCommentByVideoPostId
+namespace Application.Queries.GetCommentByPhotoPostId
 {
-    public class GetCommentByVideoPostIdQuery : IQuery<GetCommentByVideoPostIdQueryResult>
+    public class GetCommentByPhotoPostIdQuery : IQuery<GetCommentByPhotoPostIdQueryResult>
     {
-        public Guid UserPostVideoId { get; set; }
+        public Guid UserPostPhotoId { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Application.Queries.GetCommentByPhotoPostId;
 
 namespace API.Controllers
 {
@@ -62,9 +63,9 @@ namespace API.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("getComment")]
-        public async Task<IActionResult> GetComment(GetCommentByPostIdQuery command)
+        public async Task<IActionResult> GetComment([FromQuery] GetCommentByPostIdQuery command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
@@ -79,7 +80,8 @@ namespace API.Controllers
             return Success(res.Value);
 
         }
-        
+
+        [HttpPost]
         [Route("commentPhotoPost")]
         public async Task<IActionResult> CreatePhotoComment(CreateUserCommentPhotoPostCommand command)
         {
@@ -88,22 +90,23 @@ namespace API.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("getVideoComment")]
-        public async Task<IActionResult> GetVideoComment(GetCommentByVideoPostIdQuery command)
+        public async Task<IActionResult> GetVideoComment([FromQuery] GetCommentByVideoPostIdQuery command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
 
         }
-        //[HttpPost]
-        //[Route("getPhotoComment")]
-        //public async Task<IActionResult> GetPhotoComment(GetCommentByPhotoPostIdQuery command)
-        //{
-        //    var res = await _sender.Send(command);
-        //    return Success(res.Value);
 
-        //}
+        [HttpGet]
+        [Route("getPhotoComment")]
+        public async Task<IActionResult> GetPhotoComment([FromQuery] GetCommentByPhotoPostIdQuery command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
 
 
     }

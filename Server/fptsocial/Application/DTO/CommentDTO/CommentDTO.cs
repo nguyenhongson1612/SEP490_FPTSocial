@@ -29,4 +29,16 @@ namespace Application.DTO.CommentDTO
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
+
+    public class CommentPhotoDto
+    {
+        public Guid UserId { get; set; }
+        public Guid CommentPhotoPostId { get; set; }
+        public Guid UserPostPhotoId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+    }
 }
