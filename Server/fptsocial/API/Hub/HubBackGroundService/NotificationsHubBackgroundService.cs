@@ -1,4 +1,5 @@
 ﻿using Application.Commands.CreateNotifications;
+using Application.DTO.NotificationDTO;
 using Application.Hub;
 using Application.Queries.GetNotifications;
 using Core.Helper;
@@ -25,6 +26,7 @@ namespace API.Hub
     {
         const string NORMAL = "Normal";
         private static readonly TimeSpan Period = TimeSpan.FromSeconds(3);
+        //private readonly static ConnectionMapping<string> _connections = new();
         private readonly ICreateNotifications _createNotifications;
         private readonly IGetNotifications _getNotifications;
         private readonly GuidHelper _helper;
@@ -49,21 +51,30 @@ namespace API.Hub
             dynamic routeOb = JsonConvert.DeserializeObject<dynamic>(notice);
             string receiverId = routeOb.Receiver;
             string url = routeOb.Url;
-            string senderId = routeOb.Sender;
+            string code = routeOb.MsgCode;
             Domain.QueryModels.UserProfile sender;
 
-            //var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            //if (string.IsNullOrEmpty(rawToken))
-            //{
-            //    await ValueTask.CompletedTask;
-            //}
-            //var handle = new JwtSecurityTokenHandler();
-            //var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
-            //if (jsontoken == null)
-            //{
-            //    await ValueTask.CompletedTask;
-            //}
-            //string senderId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (_httpContext == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
+
+            var path = _httpContext.Request.Path;
+            if (string.IsNullOrEmpty(rawToken) &&
+                (!path.StartsWithSegments("/notificationsHub")))
+            {
+                await _hubContext.Clients.Client(context.ConnectionId).ReceiveNotification($"The  ({context.ConnectionId}) Connected Fail!");
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                await _hubContext.Clients.Client(context.ConnectionId).ReceiveNotification($"The  ({context.ConnectionId}) Connected Fail!");
+            }
+            var senderId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+
+
             using (fptforumQueryContext _querycontext = new fptforumQueryContext())
             {
                 sender = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
@@ -73,18 +84,41 @@ namespace API.Hub
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);
                 }
             }
+
             string senderName = sender.FirstName + " " + sender.LastName;
-            string notificationsMessage = _configuration.GetSection("MessageContents").GetSection("User-003").Value;
+            string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
             string msg = senderName + notificationsMessage;
-            //await _hubContext.Clients.User(receiverId).ReceiveNotification(msg, url);
-            await _hubContext.Clients.All.ReceiveNotification(msg, url);
+            NotificationOutDTO notificationOutDTO = new()
+            {
+                SenderId = senderId,
+                ReciverId = receiverId,
+                SenderAvatar = "HonNguAvatar",
+                Message = msg,
+                Url = url
+
+            };
+            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
+            //await _hubContext.Clients.All.ReceiveNotification(msg, url);
+            await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
             await _createNotifications.CreateNotitfication(senderId, receiverId, msg, url);
 
         }
-
+        /// <summary>
+        /// When the Receiver are connecting
+        /// After Notification was created in DB, this method will be trigged and push list notifications to Receiver
+        /// *Note: If Receiver disconnected or offline -> Use API 'GetNotificationsListByUserid' to get list Notifications when Receiver online
+        /// </summary>
+        /// <param name="context">This context transport from Notifications Hub</param>
+        /// <param name="userId">ID of Receiver</param>
+        /// <returns>
+        /// 15 Newest Notificattions of Receiver
+        /// </returns>
         public async Task PushAllNotifyByUserIdWithTableDependencyService(HubCallerContext context, string userId)
         {
+            var _connections = new ConnectionMapping<string>();
+
+            var receiverId = _connections.GetConnections(userId).GetEnumerator().Current;
             HttpContext _httpContext = context.GetHttpContext();
             List<Domain.QueryModels.Notification> notice = _getNotifications.GetNotifyByUserId(userId);
 
@@ -101,7 +135,7 @@ namespace API.Hub
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using PeriodicTimer timer = new PeriodicTimer(Period);
-            while (!stoppingToken.IsCancellationRequested  && await timer.WaitForNextTickAsync(stoppingToken))
+            while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
                 DateTime datetime = DateTime.Now;
                 _logger.LogInformation($"excute {1}", nameof(NotificationsHubBackgroundService), datetime);

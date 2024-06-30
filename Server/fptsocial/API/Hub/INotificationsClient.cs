@@ -1,4 +1,5 @@
 ﻿using API.Hub;
+using Application.DTO.NotificationDTO;
 using Domain.QueryModels;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Application.Hub
     public interface INotificationsClient
     {
         Task ReceiveNotification(string message);
+        Task ReceiveNotification(NotificationOutDTO message);
         Task ReceiveNotification(List<Notification> message);
         Task ReceiveNotification(string message, string url);
         Task ReceiveNotification(string firstMessage, string secondMessage, string url);
