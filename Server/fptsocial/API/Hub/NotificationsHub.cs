@@ -165,8 +165,8 @@ namespace Application.Hub
         //===================================================================================== Notify For Member's Actions ===================================================================================== 
         public async Task SendAddFriendReqNotify(string sender, string receiver, string url)
         {
-            string msg = sender + _configuration["MessageContents:User-001"];
-            await Clients.User(receiver).ReceiveNotification(msg, url);
+
+            await _INotificationsHubBackgroundService.SendReactNotifyService(Context ,notice);
 
         public async Task PushAllNotifyByUserIdWithTableDependency(string userId)
         {

@@ -3,12 +3,16 @@ using Application.DTO.NotificationDTO;
 using Application.Hub;
 using Application.Queries.GetNotifications;
 using Core.Helper;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
 
 namespace API.Hub
 {
@@ -17,7 +21,7 @@ namespace API.Hub
         NORMAL,
         IMPORTANCE
     }
-
+    
     public class NotificationsHubBackgroundService : BackgroundService, INotificationsHubBackgroundService
     {
         const string NORMAL = "Normal";
@@ -136,7 +140,7 @@ namespace API.Hub
                 DateTime datetime = DateTime.Now;
                 _logger.LogInformation($"excute {1}", nameof(NotificationsHubBackgroundService), datetime);
 
-
+                
             }
         }
         public override Task StartAsync(CancellationToken cancellationToken)
