@@ -22,7 +22,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
-        private readonly CheckingBadWord _checkContent = new CheckingBadWord();
+        private readonly CheckingBadWord _checkContent;
 
         public CreateUserCommentVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
@@ -30,6 +30,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
+            _checkContent = new CheckingBadWord();
         }
 
         public async Task<Result<CreateUserCommentVideoPostCommandResult>> Handle(CreateUserCommentVideoPostCommand request, CancellationToken cancellationToken)
@@ -45,7 +46,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
             Domain.CommandModels.CommentVideoPost comment = new Domain.CommandModels.CommentVideoPost
             {
                 CommentVideoPostId = _helper.GenerateNewGuid(),
-                UserPostVideoId = request.UserPostVídeoId,
+                UserPostVideoId = request.UserPostVideoId,
                 UserId = request.UserId,
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,

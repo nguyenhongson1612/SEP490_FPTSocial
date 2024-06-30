@@ -10,7 +10,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
 {
     public class CreateUserCommentVideoPostCommand : ICommand<CreateUserCommentVideoPostCommandResult>
     {
-        public Guid UserPostVídeoId { get; set; }
+        public Guid UserPostVideoId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }

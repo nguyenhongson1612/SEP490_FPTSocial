@@ -24,7 +24,7 @@ namespace Application.Commands.CreateUserCommentPost
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
-        private readonly CheckingBadWord _checkContent = new CheckingBadWord();
+        private readonly CheckingBadWord _checkContent;
 
         public CreateUserCommentPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
@@ -32,6 +32,7 @@ namespace Application.Commands.CreateUserCommentPost
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
+            _checkContent = new CheckingBadWord();
         }
 
         public async Task<Result<CreateUserCommentPostCommandResult>> Handle(CreateUserCommentPostCommand request, CancellationToken cancellationToken)
