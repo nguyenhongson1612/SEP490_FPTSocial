@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<fptforumQueryContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("QureryConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("QueryConnection")));
 builder.Services.AddDbContext<fptforumCommandContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CommandConnection")));
 // Config Swagger/Open API
