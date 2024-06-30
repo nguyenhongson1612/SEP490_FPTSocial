@@ -35,7 +35,7 @@ namespace Application.Queries.GetUserNotificationsList
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            List<Domain.QueryModels.Notification> notifys = await _context.Notifications
+            List<Domain.QueryModels.Notification> notifys = await _context.Notification
                                     .Include(x => x.NotificationType)
                                     .Where(x => x.UserId.Equals(request.UserId)).ToListAsync(cancellationToken);
             List<GetUserNotificationsListQueryResult> result = new();
