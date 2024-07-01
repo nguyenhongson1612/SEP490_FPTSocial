@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Domain.QueryModels
 {
-    public partial class fptforumContext : DbContext
+    public partial class fptforumQueryContext : DbContext
     {
-        public fptforumContext()
+        public fptforumQueryContext()
         {
         }
 
-        public fptforumContext(DbContextOptions<fptforumContext> options)
+        public fptforumQueryContext(DbContextOptions<fptforumQueryContext> options)
             : base(options)
         {
         }
