@@ -2,10 +2,10 @@ import axios from 'axios'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT, API_ROOT_FAKE_DATA } from '~/utils/constants'
 
-export const getAllPost = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT_FAKE_DATA}/products`)
-  return response.data
-}
+// export const getAllPost = async () => {
+//   const response = await authorizedAxiosInstance.get(`${API_ROOT_FAKE_DATA}/products`)
+//   return response.data
+// }
 
 export const checkUserExist = async () => {
   // console.log(token, 'checkUserExist');
@@ -103,6 +103,13 @@ export const sendFriend = async (data) => {
   return response.data?.data
 }
 
+//user profile
+export const getAllFriend = async (userId, friendId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriend`)
+  return response.data?.data
+}
+
+
 // file upload
 export const uploadImage = async ({ userId, data }) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UploadFile/uploadImage?userId=${userId}`, data)
@@ -119,7 +126,13 @@ export const getUserPostByUserId = async (userId) => {
   return response.data?.data
 }
 
+export const getAllPost = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getpost`)
+  return response.data?.data
+}
+
 export const createPost = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/createPost`, data)
   return response.data?.data
 }
+

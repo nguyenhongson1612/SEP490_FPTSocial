@@ -13,6 +13,7 @@ import PageLoadingSpinner from './components/Loading/PageLoadingSpinner'
 import AccountCheckExist from './pages/Auth/AccountCheckExist'
 import NotAvailable from './pages/404/NotAvailable'
 import Setting from './pages/Settings/Setting'
+import Friends from './pages/Friends/Friends'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -75,6 +76,14 @@ function App() {
 
             {/* Profile page */}
             <Route path='/profile' element={<Profile />} />
+
+            {/* Friend page */}
+            <Route path='/friends' element={<Friends />}>
+              <Route path='' element={<Friends />} />
+              <Route path='requests' element={<Friends />} />
+              <Route path='suggestions' element={<Friends />} />
+              <Route path='list' element={<Friends />} />
+            </Route>
 
             {/* Group page */}
             <Route path='/groups' element={<Group />}>
