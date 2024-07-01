@@ -35,10 +35,16 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             var getuser = await _context.UserProfiles
                                 .Include(x => x.UserSettings)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
-            var listfriend = await _context.Friends.Include(x => x.FriendNavigation).Include(x=>x.User).ThenInclude(x => x.AvataPhotos).Where(x => x.UserId == request.ViewUserId && x.Confirm == true).ToListAsync();
+            var listfriend = await _context.Friends
+                .Include(x => x.FriendNavigation)
+                .Include(x=>x.User)
+                .ThenInclude(x => x.AvataPhotos)
+                .Where(x => (x.UserId == request.ViewUserId && x.Confirm == true) 
+                || (x.FriendId == request.ViewUserId && x.Confirm == true)).ToListAsync();
             var listmyfriend = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
             var getstatus = await _context.UserStatuses.ToListAsync();
             var result = new GetAllFriendOtherProfileQueryResult();
+
             if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
                == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
             {
@@ -49,9 +55,14 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
                == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
             {
-                result = null;
-                return Result<GetAllFriendOtherProfileQueryResult>.Success(result);
+                var isfriend = listfriend.FirstOrDefault(x => x.FriendId == request.UserId || x.UserId == request.UserId);
+                if(isfriend == null)
+                {
+                    result = null;
+                    return Result<GetAllFriendOtherProfileQueryResult>.Success(result);
+                }  
             }
+
             if (listfriend != null)
             {
                 result.Count = listfriend.Count;
