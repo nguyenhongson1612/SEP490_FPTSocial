@@ -18,8 +18,7 @@ function HomeLeftSideBar({ user }) {
           <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
+              src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
               className="rounded-[50%] aspect-square object-cover w-8"
             />
             <span className="font-semibold">{user?.firstName + ' ' + user?.lastName}</span>
@@ -54,7 +53,6 @@ function HomeLeftSideBar({ user }) {
           <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
               className="rounded-md aspect-square object-cover w-8"
             />
 
@@ -64,7 +62,6 @@ function HomeLeftSideBar({ user }) {
           <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
               className="rounded-md aspect-square object-cover w-8"
             />
 
@@ -73,7 +70,6 @@ function HomeLeftSideBar({ user }) {
           <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
               className="rounded-md aspect-square object-cover w-8"
             />
 

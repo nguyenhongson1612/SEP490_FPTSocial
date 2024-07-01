@@ -1,4 +1,4 @@
-import { IconUserCircle } from '@tabler/icons-react';
+import { IconUserCircle } from '@tabler/icons-react'
 
 function About({ user }) {
   return <div id=''

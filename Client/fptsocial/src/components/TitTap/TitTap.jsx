@@ -4,13 +4,12 @@ import Toolbar from './ToolBar'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
 import { useEffect, useState } from 'react'
-import { IconEdit, IconFilePlus, IconPhotoPlus, IconX } from '@tabler/icons-react'
-import { modals } from '@mantine/modals'
-import { Text } from '@mantine/core'
 import { uploadImage, uploadVideo } from '~/apis'
 import { singleFileValidator } from '~/utils/validators'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
+import { IconEdit, IconFilePlus, IconPhotoPlus } from '@tabler/icons-react'
+import { useConfirm } from 'material-ui-confirm'
 
 const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos }) => {
   const [isChoseFIle, setIsChoseFile] = useState(false)
@@ -21,6 +20,8 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
   const handleOpenChoseFile = () => {
     setIsChoseFile(!isChoseFIle)
   }
+
+  const confirmFile = useConfirm()
 
   const handleImageUpload = (event) => {
     const fileData = new FormData()
@@ -33,30 +34,42 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
     fileData.append('file', file)
     const url = URL.createObjectURL(file)
     const type = file?.type?.includes('image') ? 'image' : 'video'
-    modals.openConfirmModal({
-      title: 'Add this file?',
-      centered: true,
-      children: (
-        <div>
-          {
-            type == 'image' ? <img src={url} /> : <video src={url} />
-          }
-          <Text size="sm">
-            Are you sure you want to add this file? This file will be add into cloud if you click Add
-            and cannot undo?
-          </Text>
-        </div>
-      ),
-      labels: { confirm: 'Add', cancel: 'Cancel' },
-      confirmProps: { color: 'blue' },
-      onCancel: () => console.log('Cancel'),
-      onConfirm: () => {
-        type == 'image'
-          ? uploadImage({ userId: null, data: fileData }).then(data => setListPhotos([...listPhotos, data?.url])).finally(() => setIsLoading(false))
-          : uploadVideo({ userId: null, data: fileData }).then(data => setListVideos([...listVideos, data?.url])).finally(() => setIsLoading(false))
-        setIsLoading(true)
-      }
-    })
+    fileData.append('file', file)
+    confirmFile({
+      title: (<div>Confirm using this file?<img src={url} /></div>),
+      description: ('Are you sure you want to add this file? This file will be add into cloud if you click Confirm and cannot undo? '),
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      type == 'image'
+        ? uploadImage({ userId: null, data: fileData }).then(data => setListPhotos([...listPhotos, data?.url])).finally(() => setIsLoading(false))
+        : uploadVideo({ userId: null, data: fileData }).then(data => setListVideos([...listVideos, data?.url])).finally(() => setIsLoading(false))
+      setIsLoading(true)
+    }).catch(() => { })
+    // modals.openConfirmModal({
+    //   title: 'Add this file?',
+    //   centered: true,
+    //   children: (
+    //     <div>
+    //       {
+    //         type == 'image' ? <img src={url} /> : <video src={url} />
+    //       }
+    //       <Text size="sm">
+    //         Are you sure you want to add this file? This file will be add into cloud if you click Add
+    //         and cannot undo?
+    //       </Text>
+    //     </div>
+    //   ),
+    //   labels: { confirm: 'Add', cancel: 'Cancel' },
+    //   confirmProps: { color: 'blue' },
+    //   onCancel: () => console.log('Cancel'),
+    //   onConfirm: () => {
+    //     type == 'image'
+    //       ? uploadImage({ userId: null, data: fileData }).then(data => setListPhotos([...listPhotos, data?.url])).finally(() => setIsLoading(false))
+    //       : uploadVideo({ userId: null, data: fileData }).then(data => setListVideos([...listVideos, data?.url])).finally(() => setIsLoading(false))
+    //     setIsLoading(true)
+    //   }
+    // })
     event.target.value = ''
   }
   useEffect(() => {
@@ -70,7 +83,7 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
       Underline,
       Placeholder.configure({
         emptyEditorClass: 'is-editor-empty',
-        placeholder: 'What\'s on your mind, Hoan?',
+        placeholder: 'Write something.',
       }),
     ],
     editorProps: {

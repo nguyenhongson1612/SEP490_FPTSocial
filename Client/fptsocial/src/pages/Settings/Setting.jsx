@@ -1,11 +1,44 @@
-import { Switch } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { Form, useNavigate } from 'react-router-dom'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
-import { IconLock, IconWorld } from '@tabler/icons-react';
-import { getListSettings, getStatus, getUserSettings, updateSettings } from '~/apis';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { getListSettings, getStatus, getUserSettings, updateSettings } from '~/apis'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import { FormControlLabel, FormGroup, Switch } from '@mui/material'
+import styled from '@emotion/styled'
+
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    '&::before, &::after': {
+      content: '""',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: 16,
+      height: 16,
+    },
+    '&::before': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    '&::after': {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main),
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
 
 function Setting() {
   const [listSetting, setListSetting] = useState([])
@@ -15,7 +48,7 @@ function Setting() {
   const publicId = listStatus?.find(e => e.statusName.toLowerCase() == 'public')?.userStatusId
   const navigate = useNavigate()
 
-  const { register, control, watch, setValue, handleSubmit, formState: { errors, isValid } } = useForm({})
+  const { handleSubmit } = useForm({})
   useEffect(() => {
     getListSettings().then(data => setListSetting(data))
     getStatus().then(data => setListStatus(data))
@@ -64,20 +97,22 @@ function Setting() {
                   <div key={setting?.settingId}>
                     <div className='font-bold text-lg'>{setting?.settingName}</div>
                     <div className='flex gap-3 font-semibold'>
-                      <Switch size="lg"
-                        checked={userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId == publicId}
-                        onClick={() => handleUpdateStatus(
-                          setting?.settingId,
-                          userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId
-                        )}
-                        offLabel={<IconLock />} onLabel={<IconWorld />}
-                        {...register(`setting_${setting?.settingName.replace(/\s/g, '_').toLowerCase()}`)}
-                      />
-                      {
-                        userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId == publicId ?
-                          <span><span className='text-blue-500 font-bold'>Public</span>. Everyone can see you</span> :
-                          <span><span className='text-red-500 font-bold'>Private</span>. No one can see you </span>
-                      }
+                      <FormGroup>
+                        <FormControlLabel
+                          control={<Android12Switch sx={{ m: 1 }} />}
+                          value={userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId == publicId}
+                          checked={userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId == publicId}
+                          onChange={() => handleUpdateStatus(
+                            setting?.settingId,
+                            userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId
+                          )}
+                          label={
+                            userSetting?.find(e => e.settingId == setting?.settingId)?.userStatusId == publicId ?
+                              <span><span className='text-blue-500 font-bold'>Public</span>. Everyone can see you</span> :
+                              <span><span className='text-red-500 font-bold'>Private</span>. No one can see you </span>
+                          }
+                        />
+                      </FormGroup>
                     </div>
                   </div>
                 ))

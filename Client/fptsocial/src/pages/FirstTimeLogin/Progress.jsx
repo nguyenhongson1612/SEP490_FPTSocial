@@ -1,5 +1,4 @@
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
-import { MdOutlineDone } from 'react-icons/md'
+import { IconCaretLeftFilled, IconCaretRightFilled, IconCircleCheck } from '@tabler/icons-react'
 
 function Progress({ handlePrev, handleNext, step, processWidth, isValid, submitForm }) {
   return <div className='absolute top-0 -translate-y-8 w-full h-6 flex justify-between items-center px-2 pb-2'>
@@ -7,7 +6,7 @@ function Progress({ handlePrev, handleNext, step, processWidth, isValid, submitF
       className='text-white bg-blue-500 hover:bg-blue-700 h-10 min-w-10 flex justify-center items-center gap-5 rounded-[50%] font-bold'
       onClick={handlePrev}
     >
-      <IoIosArrowBack className='h-8 w-8' />
+      <IconCaretLeftFilled className='h-8 w-8' />
     </button>
     <div className=' w-full mx-5 flex justify-between items-center relative before:absolute before:bg-fbWhite before:h-1 before:w-[95%] be
           before:top-[50%] before:left-1 before:-translate-y-[50%]'>
@@ -24,13 +23,13 @@ function Progress({ handlePrev, handleNext, step, processWidth, isValid, submitF
         type='button'
         onClick={handleNext}
       >
-        <IoIosArrowForward className='h-8 w-8' />
+        <IconCaretRightFilled className='h-8 w-8' />
       </button>
       :
       <button className='interceptor-loading text-white bg-blue-500 hover:bg-blue-700 h-10 min-w-10 flex justify-center items-center gap-5 rounded-[50%] font-bold'
         onClick={submitForm}
       >
-        <MdOutlineDone className='h-8 w-8' />
+        <IconCircleCheck className='h-8 w-8' />
       </button>
     }
   </div>
