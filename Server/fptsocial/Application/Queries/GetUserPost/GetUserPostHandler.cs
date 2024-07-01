@@ -53,6 +53,7 @@ namespace Application.Queries.GetUserPost
             {
                 throw new ErrorException(StatusCodeEnum.P01_Not_Found);
             }
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
 
             var result = userPosts.Select(userPost => new GetUserPostResult
             {
@@ -99,6 +100,7 @@ namespace Application.Queries.GetUserPost
                     PostPosition = upp.PostPosition,
                     Video = _mapper.Map<VideoDTO>(upp.Video)
                 }).ToList(),
+                Avatar = _mapper.Map<GetUserAvatar>(avt)
             }).ToList();
 
             return Result<List<GetUserPostResult>>.Success(result);

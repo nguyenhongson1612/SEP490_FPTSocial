@@ -1,4 +1,5 @@
-﻿using Application.DTO.UserPostPhotoDTO;
+﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using Domain.QueryModels;
 using System;
@@ -28,6 +29,7 @@ namespace Application.Queries.GetUserPost
         public virtual Video? Video { get; set; }
         public virtual ICollection<UserPostPhotoDTO>? UserPostPhotos { get; set; }
         public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
+        public virtual GetUserAvatar? Avatar { get; set; }
 
     }
 }
