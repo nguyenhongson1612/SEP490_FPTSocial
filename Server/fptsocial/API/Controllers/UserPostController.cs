@@ -32,18 +32,22 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getuserpostbyuserid")]
-        public async Task<IActionResult> GetUserPostByUserId([FromQuery] GetUserPostQuery input)
+        public async Task<IActionResult> GetUserPostByUserId()
         {
-            if (input.UserId == null)
+            var input = new GetUserPostQuery();
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
             {
-                return BadRequest("UserId is required.");
+                return BadRequest();
             }
-
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
-            if (!res.IsSuccess)
-            {
-                return StatusCode(500, res.Error);
-            }
             return Success(res.Value);
         }
 
