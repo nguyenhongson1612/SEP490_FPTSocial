@@ -25,11 +25,12 @@ namespace Application.Queries.GetUserPost
         public Guid? PhotoId { get; set; }
         public Guid? VideoId { get; set; }
         public int? NumberPost { get; set; }
-        public virtual Photo? Photo { get; set; }
-        public virtual Video? Video { get; set; }
+        public virtual PhotoDTO? Photo { get; set; }
+        public virtual VideoDTO? Video { get; set; }
         public virtual ICollection<UserPostPhotoDTO>? UserPostPhotos { get; set; }
         public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
         public virtual GetUserAvatar? Avatar { get; set; }
+        public string? FullName {  get; set; }
 
     }
 }
