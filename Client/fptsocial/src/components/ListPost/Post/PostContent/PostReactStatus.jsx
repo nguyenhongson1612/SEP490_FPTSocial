@@ -1,7 +1,4 @@
-import React, { useRef, useState } from 'react'
-import { set } from 'react-hook-form';
-import { BiSolidLike, BiLike, BiSolidDislike } from 'react-icons/bi'
-import { FaFaceAngry, FaFaceKissWinkHeart } from 'react-icons/fa6'
+import { IconHeart, IconMoodAngry, IconThumbDownFilled, IconThumbUpFilled } from '@tabler/icons-react'
 
 function PostReactStatus({ isOpen, setIsOpen, postData }) {
 
@@ -16,14 +13,14 @@ function PostReactStatus({ isOpen, setIsOpen, postData }) {
         className=" flex items-center justify-start gap-2">
         <a className="flex items-center relative  [&>#test]:hover:!opacity-100 hover:scale-150"
         >
-          <BiLike className="text-gray-500 size-6" />
+          <IconThumbUpFilled className="text-gray-500 size-6" />
           <span className="text-sm text-gray-500">100</span>
 
           <div id='test' className='absolute flex gap-1 opacity-0 transition-opacity duration-300 delay-500 top-0 -translate-y-10 bg-white shadow-4edges rounded-3xl px-2 py-1'>
-            <BiSolidLike className="text-blue-700 size-10 hover:scale-[1.2]" />
-            <FaFaceKissWinkHeart className="text-pink-500 size-10 hover:scale-[1.2]" />
-            <FaFaceAngry className="text-red-500 size-10 hover:scale-[1.2]" />
-            <BiSolidDislike className="text-black size-10 hover:scale-[1.2]" />
+            <IconThumbUpFilled className="text-blue-700 size-10 hover:scale-[1.2]" />
+            <IconHeart className="text-pink-500 size-10 hover:scale-[1.2]" />
+            <IconMoodAngry className="text-red-500 size-10 hover:scale-[1.2]" />
+            <IconThumbDownFilled className="text-black size-10 hover:scale-[1.2]" />
           </div>
 
         </a >

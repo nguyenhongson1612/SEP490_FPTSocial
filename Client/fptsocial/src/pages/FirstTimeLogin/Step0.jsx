@@ -1,5 +1,6 @@
 import FPTUen from '~/assets/img/FPTUen.png'
-import { IoMdArrowForward } from 'react-icons/io'
+import { IconArrowRight } from '@tabler/icons-react';
+
 
 function Step0({ handleNext }) {
   return <div className='grid grid-cols-12 h-full'>
@@ -24,7 +25,7 @@ function Step0({ handleNext }) {
           <div
             className='text-white bg-orangeFpt py-2 w-full xs:w-1/2 lg:w-full flex justify-center items-center rounded-md font-bold cursor-pointer'
             onClick={handleNext}
-          ><span>Update your profile</span><IoMdArrowForward className='text-2xl' /></div>
+          ><span>Update your profile</span><IconArrowRight className='text-2xl' /></div>
         </div>
       </div>
     </div>

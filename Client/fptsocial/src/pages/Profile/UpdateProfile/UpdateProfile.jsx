@@ -1,7 +1,5 @@
-import { Button, MultiSelect, NativeSelect, Text, TextInput, Textarea } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { IoMdClose } from 'react-icons/io'
 import { getGender, getInterest, getRelationships, getStatus, updateUserProfile } from '~/apis'
 import Contact from './Contact'
 import Information from './Information'
@@ -14,9 +12,10 @@ import ImageArea from './ImageArea'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { getUserByUserId } from '~/redux/user/userSlice'
+import { IconX } from '@tabler/icons-react'
 
-function UpdateProfile({ onClose, user, navigate }) {
-  const { control, reset, register, setValue, handleSubmit, formState: { errors } } = useForm()
+function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
+  const { watch, reset, register, setValue, handleSubmit, formState: { errors } } = useForm()
   const [listGender, setListGender] = useState([])
   const [listStatus, setListStatus] = useState([])
   const [listInterest, setListInterest] = useState([])
@@ -32,8 +31,8 @@ function UpdateProfile({ onClose, user, navigate }) {
     getGender().then(data => setListGender(data))
     getStatus().then(data => setListStatus(data))
     getInterest()
-      .then(data => (data?.map(e => ({ label: e?.interestName, value: e?.interestId }))))
-      .then(data => setListInterest(data))
+      // .then(data => (data?.map(e => ({ label: e?.interestName, value: e?.interestId }))))
+      .then(data => setListInterest(data)).then(() => setValue('interest',))
     getRelationships().then(data => setListRelationship(data))
   }, [])
 
@@ -47,12 +46,16 @@ function UpdateProfile({ onClose, user, navigate }) {
   }), [listStatus])
 
 
-  const validateData = (data) => {
-    return data?.trim() || null
-  }
+  // const validateData = (data) => {
+  //   return data?.trim() || null
+  // }
 
   const submitUpdateProfile = (data) => {
-    console.log(data, 'formdata')
+    // console.log(data, 'formdata')
+    // console.log(typeof data?.avataphoto);
+    // console.log(data?.avataphoto);
+    // console.log(typeof data?.coverImage);
+    // console.log(data?.coverImage);
     const submitData = {
       'userId': null,
       'firstName': data?.firstName,
@@ -74,8 +77,8 @@ function UpdateProfile({ onClose, user, navigate }) {
       } : null,
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
-      'coverImage': data?.coverImage,
-      'avataphoto': data?.avataphoto,
+      'coverImage': typeof data?.coverImage == 'string' ? data?.coverImage : null,
+      'avataphoto': typeof data?.avataphoto == 'string' ? data?.avataphoto : null,
       'userInterests': data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })).length == 0 ?
         null : data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })),
       'workPlaces': [
@@ -103,12 +106,12 @@ function UpdateProfile({ onClose, user, navigate }) {
         return acc
       }, [])
     }
-    console.log(submitData, 'submitdata')
+    // console.log(submitData, 'submitdata')
     toast.promise(
       updateUserProfile(submitData),
       { pending: 'Updating is in progress...' }
     ).then(() => {
-      onClose()
+      setIsOpenModalUpdateProfile(false)
       dispatch(getUserByUserId())
       navigate('/')
       toast.success('Account updated successfully')
@@ -122,16 +125,16 @@ function UpdateProfile({ onClose, user, navigate }) {
       <div className='flex justify-between items-center pb-2 border-b-2'>
         <span></span>
         <span className='text-xl font-bold'>Edit Profile</span>
-        <IoMdClose className='bg-orangeFpt text-white rounded-full size-8 cursor-pointer hover:bg-orange-600' onClick={onClose} />
+        <IconX className='bg-orangeFpt text-white rounded-full size-8 cursor-pointer hover:bg-orange-600' onClick={() => setIsOpenModalUpdateProfile(false)} />
       </div>
-      <ImageArea register={register} setValue={setValue} />
+      <ImageArea register={register} setValue={setValue} user={user} watch={watch} />
       <Information register={register} user={user} errors={errors} />
-      <Contact control={control} errors={errors} listStatus={listStatus} register={register} user={user} />
-      <Gender control={control} listGender={listGender} listStatus={listStatus} user={user} />
-      <Relationship control={control} listRelationship={listRelationship} listStatus={listStatus} user={user} />
-      <Interests control={control} listInterest={listInterest} listStatus={listStatus} user={user} />
-      <Workspace control={control} errors={errors} listStatus={listStatus} register={register} user={user} />
-      <WebAffiliations control={control} errors={errors} handleAddInput={handleAddInput} inputs={inputs} listStatus={listStatus} register={register} user={user} />
+      <Contact errors={errors} listStatus={listStatus} register={register} user={user} watch={watch} setValue={setValue} />
+      <Gender listGender={listGender} listStatus={listStatus} user={user} errors={errors} register={register} setValue={setValue} watch={watch} />
+      <Relationship listRelationship={listRelationship} listStatus={listStatus} user={user} errors={errors} register={register} setValue={setValue} watch={watch} />
+      <Interests listInterest={listInterest} listStatus={listStatus} user={user} register={register} setValue={setValue} watch={watch} />
+      <Workspace errors={errors} listStatus={listStatus} register={register} user={user} setValue={setValue} watch={watch} />
+      <WebAffiliations errors={errors} handleAddInput={handleAddInput} inputs={inputs} listStatus={listStatus} user={user} register={register} setValue={setValue} watch={watch} />
 
       <div className="w-full">
         <button id="button" type="submit"

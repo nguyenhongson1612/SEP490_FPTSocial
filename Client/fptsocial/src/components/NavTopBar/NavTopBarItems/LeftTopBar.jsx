@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FPTUen from '~/assets/img/FPTUen.png'
 import { mockSearchData } from '~/apis/mock-data'
-import { ImSearch } from 'react-icons/im'
-import { BiArrowBack } from 'react-icons/bi'
+import { IconCaretLeftFilled, IconSearch } from '@tabler/icons-react'
+
 function LeftTopBar() {
   const [isSearch, setIsSearch] = useState(false)
   const [searchHistoryData, setSearchHistoryData] = useState(mockSearchData.data)
@@ -100,7 +100,7 @@ function LeftTopBar() {
           className='h-[55px] w-fit xs:w-[120px] flex justify-start items-center xs:translate-x-10'>
           <div className='p-2 bg-orangeFpt text-white rounded-full cursor-pointer'
             onClick={() => setIsSearch(!isSearch)}>
-            <BiArrowBack className='size-6' />
+            <IconCaretLeftFilled className='size-6' />
           </div>
         </div>
       }
@@ -111,7 +111,7 @@ function LeftTopBar() {
       >
         <div className={`p-1 left-6 ${isSearch && 'hidden w-0'}`}
         >
-          <ImSearch className='size-5 text-orangeFpt' />
+          <IconSearch className='size-5 text-orangeFpt' />
         </div>
 
         <input
