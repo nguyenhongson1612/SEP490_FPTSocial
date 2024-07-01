@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
+using Domain.QueryModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +21,14 @@ namespace Application.Queries.GetUserPost
         public bool? IsHide { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public Guid? PhotoId { get; set; }
+        public Guid? VideoId { get; set; }
+        public int? NumberPost { get; set; }
+        public virtual Photo? Photo { get; set; }
+        public virtual Video? Video { get; set; }
+        public virtual ICollection<UserPostPhotoDTO>? UserPostPhotos { get; set; }
+        public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
+
     }
 }
 
