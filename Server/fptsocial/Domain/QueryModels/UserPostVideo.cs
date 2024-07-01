@@ -9,6 +9,7 @@ namespace Domain.QueryModels
         {
             CommentVideoPosts = new HashSet<CommentVideoPost>();
             GroupSharePosts = new HashSet<GroupSharePost>();
+            PostReactCounts = new HashSet<PostReactCount>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
             SharePosts = new HashSet<SharePost>();
@@ -30,6 +31,7 @@ namespace Domain.QueryModels
         public virtual Video Video { get; set; } = null!;
         public virtual ICollection<CommentVideoPost> CommentVideoPosts { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
+        public virtual ICollection<PostReactCount> PostReactCounts { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }
         public virtual ICollection<SharePost> SharePosts { get; set; }

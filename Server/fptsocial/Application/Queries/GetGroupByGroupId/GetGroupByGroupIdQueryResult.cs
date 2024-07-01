@@ -11,7 +11,7 @@ namespace Application.Queries.GetGroupByGroupId
     {
         public GetGroupByGroupIdQueryResult()
         {
-            GroupMember = new GroupMemberDTO();
+            GroupMember = new List<GroupMemberDTO>();
         }
         public Guid GroupId { get; set; }
         public string? GroupNumber { get; set; }
@@ -19,7 +19,9 @@ namespace Application.Queries.GetGroupByGroupId
         public string GroupDescription { get; set; } = null!;
         public string GroupAdmin { get; set; }
         public string? CoverImage { get; set; }
+        public bool IsJoin { get; set; }
+        public bool IsAdmin { get; set; }
         public int MemberCount { get; set; }
-        public GroupMemberDTO GroupMember { get; set; }
+        public List<GroupMemberDTO> GroupMember { get; set; }
     }
 }
