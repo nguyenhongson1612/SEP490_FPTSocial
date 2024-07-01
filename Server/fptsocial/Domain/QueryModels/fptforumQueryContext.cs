@@ -108,7 +108,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A418AAC60D");
+                    .HasName("PK__AvataPho__BF0395A47BDE90EA");
 
                 entity.ToTable("AvataPhoto");
 
@@ -272,7 +272,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA1C834F2C");
+                    .HasName("PK__CommentP__C3B4DFCA43CC868E");
 
                 entity.ToTable("CommentPost");
 
@@ -420,7 +420,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupChatMember>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B6749061874");
+                    .HasName("PK__GroupCha__1ED28B670330ED1C");
 
                 entity.ToTable("GroupChatMember");
 
@@ -467,7 +467,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36A14AF842B");
+                    .HasName("PK__GroupFPT__149AF36A861679DA");
 
                 entity.ToTable("GroupFPT");
 
@@ -511,7 +511,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCF554893A4");
+                    .HasName("PK__GroupInv__033C8DCF8DBB9E7D");
 
                 entity.ToTable("GroupInvitation");
 
@@ -683,22 +683,22 @@ namespace Domain.QueryModels
 
             modelBuilder.Entity<GroupPostReactCount>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("GroupPostReactCount");
 
+                entity.Property(e => e.GroupPostReactCountId).ValueGeneratedNever();
+
                 entity.HasOne(d => d.GroupPost)
-                    .WithMany()
+                    .WithMany(p => p.GroupPostReactCounts)
                     .HasForeignKey(d => d.GroupPostId)
                     .HasConstraintName("react_count_group_post");
 
                 entity.HasOne(d => d.GroupPostPhoto)
-                    .WithMany()
+                    .WithMany(p => p.GroupPostReactCounts)
                     .HasForeignKey(d => d.GroupPostPhotoId)
                     .HasConstraintName("react_count_group_post_photo");
 
                 entity.HasOne(d => d.GroupPostVideo)
-                    .WithMany()
+                    .WithMany(p => p.GroupPostReactCounts)
                     .HasForeignKey(d => d.GroupPostVideoId)
                     .HasConstraintName("react_count_group_post_group");
             });
@@ -866,7 +866,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC5F02D0A7");
+                    .HasName("PK__GroupTag__657CF9AC7EDECBD2");
 
                 entity.ToTable("GroupTag");
 
@@ -1065,26 +1065,26 @@ namespace Domain.QueryModels
 
             modelBuilder.Entity<PostReactCount>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("PostReactCount");
+
+                entity.Property(e => e.PostReactCountId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.UserPost)
-                    .WithMany()
+                    .WithMany(p => p.PostReactCounts)
                     .HasForeignKey(d => d.UserPostId)
                     .HasConstraintName("react_count_user_post");
 
                 entity.HasOne(d => d.UserPostPhoto)
-                    .WithMany()
+                    .WithMany(p => p.PostReactCounts)
                     .HasForeignKey(d => d.UserPostPhotoId)
                     .HasConstraintName("react_count_user_post_photo");
 
                 entity.HasOne(d => d.UserPostVideo)
-                    .WithMany()
+                    .WithMany(p => p.PostReactCounts)
                     .HasForeignKey(d => d.UserPostVideoId)
                     .HasConstraintName("react_count_user_post_group");
             });
@@ -1212,7 +1212,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B525280DC83B7D");
+                    .HasName("PK__ReactGro__E6B52528CF3FCE86");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1302,7 +1302,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E405307353");
+                    .HasName("PK__ReactGro__B37F79E403AB399E");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -2047,7 +2047,7 @@ namespace Domain.QueryModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4CF31F6A80");
+                    .HasName("PK__UserProf__1788CC4CBFC7D09E");
 
                 entity.ToTable("UserProfile");
 
@@ -2172,7 +2172,7 @@ namespace Domain.QueryModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__79FD19BE");
+                    .HasConstraintName("FK__UserSetti__UserI__7BE56230");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)

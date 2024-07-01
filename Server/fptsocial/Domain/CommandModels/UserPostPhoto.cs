@@ -9,6 +9,7 @@ namespace Domain.CommandModels
         {
             CommentPhotoPosts = new HashSet<CommentPhotoPost>();
             GroupSharePosts = new HashSet<GroupSharePost>();
+            PostReactCounts = new HashSet<PostReactCount>();
             ReactPhotoPostComments = new HashSet<ReactPhotoPostComment>();
             ReactPhotoPosts = new HashSet<ReactPhotoPost>();
             SharePosts = new HashSet<SharePost>();
@@ -30,6 +31,7 @@ namespace Domain.CommandModels
         public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ICollection<CommentPhotoPost> CommentPhotoPosts { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
+        public virtual ICollection<PostReactCount> PostReactCounts { get; set; }
         public virtual ICollection<ReactPhotoPostComment> ReactPhotoPostComments { get; set; }
         public virtual ICollection<ReactPhotoPost> ReactPhotoPosts { get; set; }
         public virtual ICollection<SharePost> SharePosts { get; set; }

@@ -5,6 +5,7 @@ namespace Domain.CommandModels
 {
     public partial class PostReactCount
     {
+        public Guid PostReactCountId { get; set; }
         public Guid? UserPostId { get; set; }
         public Guid? UserPostPhotoId { get; set; }
         public Guid? UserPostVideoId { get; set; }

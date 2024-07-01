@@ -62,18 +62,23 @@ namespace Application.Queries.GetGroupByGroupId
             if (isJoin == false)
             {
                 getgroup.GroupMember = null;
+                getgroup.IsJoin = false;
             }
             else
             {
+                getgroup.IsJoin = true;
                 foreach(var mem in member)
                 {
+                    var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId);
                     var gmem = new GroupMemberDTO {
                         GroupId = mem.GroupId,
                         UserId = mem.UserId,
                         MemberName = mem.User.FirstName + " " + mem.User.LastName,
+                        Avata = user.AvataPhotosUrl,
                         GroupRoleId = mem.GroupRoleId,
                         GroupRoleName = mem.GroupRole.GroupRoleName
                     };
+                    getgroup.GroupMember.Add(gmem);
                 }
             }
 

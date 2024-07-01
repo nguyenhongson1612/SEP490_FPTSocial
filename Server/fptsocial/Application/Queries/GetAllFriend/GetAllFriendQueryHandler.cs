@@ -38,7 +38,7 @@ namespace Application.Queries.GetAllFriend
                 result.Count = listfriend.Count;
                 foreach (var friend in listfriend)
                 {
-                    var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true);
+                    var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true).ToList();
                     var mutualfriend = otherfriend.Intersect(listfriend);
                     var frienddto = new GetAllFriendDTO
                     {
