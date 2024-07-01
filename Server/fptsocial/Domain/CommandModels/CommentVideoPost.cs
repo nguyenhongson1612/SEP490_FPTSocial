@@ -16,6 +16,7 @@ namespace Domain.CommandModels
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }
+        public int? LevelCmt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
 

@@ -5,6 +5,7 @@ namespace Domain.QueryModels
 {
     public partial class GroupPostReactCount
     {
+        public Guid GroupPostReactCountId { get; set; }
         public Guid? GroupPostId { get; set; }
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? GroupPostVideoId { get; set; }
