@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Application.DTO.UserPostDTO;
 using Core.Helper;
+using Application.DTO.GetUserProfileDTO;
 
 namespace Application.Queries.GetPost
 {
@@ -58,11 +59,14 @@ namespace Application.Queries.GetPost
                 .Include(p => p.UserPostVideos)
                     .ThenInclude(upv => upv.Video)
                 .ToListAsync(cancellationToken);
+
             var PostDTO = _mapper.Map<List<UserPostDTO>>(posts);
+            var avt = new AvataPhoto();
+            var user = new Domain.QueryModels.UserProfile();
             var counts = await _context.PostReactCounts.ToListAsync(cancellationToken);
 
-            foreach (var count in counts) {
-                foreach (var post in PostDTO)
+            foreach (var post in PostDTO) {
+                foreach (var count in counts)
                 {
                     if(post.UserPostId == count.UserPostId)
                     {
@@ -70,6 +74,10 @@ namespace Application.Queries.GetPost
                         post.alo = getEdgeRank.GetEdgeRank(count.ReactCount ?? 0, count.CommentCount ?? 0, count.ShareCount ?? 0, count.CreateAt ?? DateTime.Now);
                     }
                 }
+                avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserId);
+                post.Avatar = _mapper.Map<GetUserAvatar>(avt);
+                user = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == post.UserId);
+                post.FullName = user?.FirstName + " " + user.LastName;
             }
             PostDTO = PostDTO.OrderByDescending(p => p.alo).ToList();
             var result = _mapper.Map<List<GetPostResult>>(PostDTO);
