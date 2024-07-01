@@ -9,7 +9,7 @@ namespace Application.Queries.GetAllRequestFriend
 {
     public class GetAllRequestFriendQueryResult
     {
-        public GetAllFriendQueryResult()
+        public GetAllRequestFriendQueryResult()
         {
             AllFriend = new List<GetAllFriendDTO>();
         }
