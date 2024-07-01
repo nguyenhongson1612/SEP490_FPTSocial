@@ -9,6 +9,10 @@ namespace Application.Queries.GetAllFriend
 {
     public class GetAllFriendQueryResult
     {
+        public GetAllFriendQueryResult()
+        {
+            AllFriend = new List<GetAllFriendDTO>();
+        }
         public List<GetAllFriendDTO> AllFriend { get; set; }
         public int Count { get; set; }
     }
