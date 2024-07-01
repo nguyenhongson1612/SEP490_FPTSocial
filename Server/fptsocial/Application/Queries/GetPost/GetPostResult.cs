@@ -1,4 +1,7 @@
-﻿using Domain.QueryModels;
+﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
+using Domain.QueryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +25,13 @@ namespace Application.Queries.GetPost
         public Guid? PhotoId { get; set; }
         public Guid? VideoId { get; set; }
         public int? NumberPost { get; set; }
-        public virtual Photo? Photo { get; set; }
-        public virtual Video? Video { get; set; }
-        public virtual ICollection<UserPostPhoto>? UserPostPhotos { get; set; }
-        public virtual ICollection<UserPostVideo>? UserPostVideos { get; set; }
+        public virtual PhotoDTO? Photo { get; set; }
+        public virtual VideoDTO? Video { get; set; }
+        public virtual ICollection<UserPostPhotoDTO>? UserPostPhotos { get; set; }
+        public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
+        public virtual GetUserAvatar? Avatar { get; set; }
+        public string? FullName { get; set; }
 
-
-        
     }
 
 }
