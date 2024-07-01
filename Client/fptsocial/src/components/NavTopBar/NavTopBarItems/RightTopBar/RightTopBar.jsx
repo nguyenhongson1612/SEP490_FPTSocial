@@ -5,7 +5,6 @@ import { IconBell, IconBrandMessenger, IconCategoryFilled } from '@tabler/icons-
 function RightTopBar() {
   return (
     <div className=''>
-
       <ul className="flex items-center gap-1 md:gap-3">
         <li className='sm:hidden'>
           <IconCategoryFilled className='size-10 p-2 text-white bg-[#F27125] rounded-full' />

@@ -1,27 +1,34 @@
+import moment from 'moment';
+import { Link } from 'react-router-dom'
 
 
 function PostTitle({ postData }) {
+  const serverDate = moment(postData?.createdAt)
+  const timeAgo = serverDate.fromNow()
+  console.log(timeAgo)
+
   return (
     <div id="post-title"
       className="w-full flex gap-4">
-      <a className="w-fit relative text-gray-500 hover:text-gray-950 flex items-center justify-start gap-3">
+      <Link to={`/profile?id=${postData?.userId}`} className="w-fit cursor-pointer relative text-gray-500 hover:text-gray-950 flex items-center justify-start gap-3">
         <img
-          src={`${postData?.image}`}
+          src={postData?.avatar?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
           loading='lazy'
-          className="rounded-md aspect-square object-cover w-10"
+          // className="rounded-md aspect-square object-cover w-10"
+          className="rounded-[50%] aspect-square object-cover w-10"
         />
-        <img
+        {/* <img
           src={`${postData?.image}`}
           loading='lazy'
           className="absolute -bottom-1 -right-1 rounded-[50%] aspect-squa  re object-cover w-7"
-        />
-      </a>
+        /> */}
+      </Link>
 
-      <div id="group-author-name" className="flex flex-col gap-1">
-        <div id="group-name" className="font-semibold font-sans">{postData?.title}</div>
-        <div id="author-name" className="flex justify-start gap-2 text-gray-500 font-semibold text-sm">
-          <span>{postData?.category}</span>.
-          <span>12 h</span>
+      <div className="flex flex-col gap-1">
+        <div className="font-semibold font-sans">{postData?.fullName}</div>
+        <div className="flex justify-start gap-2 text-gray-500  text-sm">
+          {/* <span>{postData?.userId}</span>. */}
+          <span>{timeAgo}</span>
         </div>
       </div>
     </div>

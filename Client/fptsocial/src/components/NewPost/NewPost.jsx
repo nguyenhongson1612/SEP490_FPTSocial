@@ -119,7 +119,7 @@ function NewPost() {
 
                     </div >
 
-                    <div className='py-4 flex justify-center items-center'>
+                    <div className='interceptor-loading py-4 flex justify-center items-center'>
                       <button className='h-9 w-full  mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
                       >
                         Post
