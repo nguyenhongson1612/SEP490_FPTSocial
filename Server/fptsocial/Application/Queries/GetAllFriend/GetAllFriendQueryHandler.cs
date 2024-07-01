@@ -30,7 +30,7 @@ namespace Application.Queries.GetAllFriend
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var listfriend = await _context.Friends.Include(x=>x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
+            var listfriend = await _context.Friends.Include(x=>x.FriendNavigation).Where(x => (x.UserId == request.UserId || x.FriendId ==request.UserId) && x.Confirm == true).ToListAsync();
 
             var result = new GetAllFriendQueryResult();
             if(listfriend != null)
