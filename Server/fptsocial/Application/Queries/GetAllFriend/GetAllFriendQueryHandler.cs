@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -30,7 +31,7 @@ namespace Application.Queries.GetAllFriend
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var listfriend = await _context.Friends.Include(x=>x.FriendNavigation).Where(x => (x.UserId == request.UserId || x.FriendId ==request.UserId) && x.Confirm == true).ToListAsync();
+            var listfriend = await _context.Friends.Include(x => x.User).ThenInclude(x=>x.AvataPhotos).Include(x=>x.FriendNavigation).Where(x => (x.UserId == request.UserId && x.Confirm == true )|| (x.FriendId == request.UserId && x.Confirm == true) ).ToListAsync();
 
             var result = new GetAllFriendQueryResult();
             if(listfriend != null)
@@ -47,8 +48,13 @@ namespace Application.Queries.GetAllFriend
                         ReactCount = friend.ReactCount,
                         MutualFriends = mutualfriend.Count()
                     };
+                    if (friend.User.AvataPhotos.Count > 0)
+                    {
+                        frienddto.Avata = friend.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                    }
                     result.AllFriend.Add(frienddto);
                 }
+               
                 result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }
             else
