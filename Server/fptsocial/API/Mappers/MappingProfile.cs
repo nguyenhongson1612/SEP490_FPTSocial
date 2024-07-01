@@ -57,6 +57,8 @@ using Domain.QueryModels;
 using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
+using Application.Commands.CreateReactUserPost;
+using Application.Commands.CreateNewReact;
 
 namespace Application.Mappers
 {
@@ -226,6 +228,10 @@ namespace Application.Mappers
             .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos))
             .ReverseMap();
             CreateMap<UserPostDTO, GetPostResult>();
+
+            //user react
+            CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();
+            CreateMap<Command.ReactType, CreateNewReactCommandResult>();
         }
     }
 }
