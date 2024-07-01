@@ -54,7 +54,7 @@ namespace Application.Queries.GetUserPost
                 throw new ErrorException(StatusCodeEnum.P01_Not_Found);
             }
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-
+            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var result = userPosts.Select(userPost => new GetUserPostResult
             {
                 UserPostId = userPost.UserPostId,
@@ -70,8 +70,8 @@ namespace Application.Queries.GetUserPost
                 PhotoId = userPost.PhotoId,
                 VideoId = userPost.VideoId,
                 NumberPost = userPost.NumberPost,
-                Photo = userPost.Photo,
-                Video = userPost.Video,
+                Photo = _mapper.Map<PhotoDTO>(userPost.Photo),
+                Video = _mapper.Map<VideoDTO>(userPost.Video),
                 UserPostPhotos = userPost.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
                 {
                     UserPostPhotoId = upp.UserPostPhotoId,
@@ -100,7 +100,8 @@ namespace Application.Queries.GetUserPost
                     PostPosition = upp.PostPosition,
                     Video = _mapper.Map<VideoDTO>(upp.Video)
                 }).ToList(),
-                Avatar = _mapper.Map<GetUserAvatar>(avt)
+                Avatar = _mapper.Map<GetUserAvatar>(avt),
+                FullName = user.FirstName + " " + user.LastName
             }).ToList();
 
             return Result<List<GetUserPostResult>>.Success(result);
