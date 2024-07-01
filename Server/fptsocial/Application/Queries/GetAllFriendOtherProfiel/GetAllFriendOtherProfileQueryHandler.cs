@@ -35,7 +35,7 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             var getuser = await _context.UserProfiles
                                 .Include(x => x.UserSettings)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
-            var listfriend = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.ViewUserId && x.Confirm == true).ToListAsync();
+            var listfriend = await _context.Friends.Include(x => x.FriendNavigation).Include(x=>x.User).ThenInclude(x => x.AvataPhotos).Where(x => x.UserId == request.ViewUserId && x.Confirm == true).ToListAsync();
             var listmyfriend = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
             var getstatus = await _context.UserStatuses.ToListAsync();
             var result = new GetAllFriendOtherProfileQueryResult();
@@ -57,8 +57,13 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                         FriendId = friend.FriendId,
                         FriendName = friend.FriendNavigation.FirstName + " " + friend.FriendNavigation.LastName,
                         ReactCount = friend.ReactCount,
+                        Avata = friend.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl,
                         MutualFriends = mutualfriend.Count()
                     };
+                    if (friend.User.AvataPhotos.Count > 0)
+                    {
+                        frienddto.Avata = friend.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                    }
                     result.AllFriend.Add(frienddto);
                 }
                 result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
