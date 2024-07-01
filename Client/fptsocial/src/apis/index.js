@@ -104,11 +104,14 @@ export const sendFriend = async (data) => {
 }
 
 //user profile
-export const getAllFriend = async (userId, friendId) => {
+export const getAllFriend = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriend`)
   return response.data?.data
 }
-
+export const getAllFriendOtherProfile = async (viewUserId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriendotherprofile?ViewUserId=${viewUserId}`)
+  return response.data?.data
+}
 
 // file upload
 export const uploadImage = async ({ userId, data }) => {
@@ -131,8 +134,34 @@ export const getAllPost = async () => {
   return response.data?.data
 }
 
+export const getComment = async (userPostId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getComment?UserPostId=${userPostId}`)
+  return response.data?.data
+}
+export const getVideoComment = async (userPostVideoId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getVideoComment?UserPostVideoId=${userPostVideoId}`)
+  return response.data?.data
+}
+export const getPhotoComment = async (userPostPhotoId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getPhotoComment?UserPostId=${userPostPhotoId}`)
+  return response.data?.data
+}
+
 export const createPost = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/createPost`, data)
+  return response.data?.data
+}
+
+export const commentPost = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/commentPost`, data)
+  return response.data?.data
+}
+export const commentVideoPost = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/commentVideoPost`, data)
+  return response.data?.data
+}
+export const commentPhotoPost = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/commentPhotoPost`, data)
   return response.data?.data
 }
 

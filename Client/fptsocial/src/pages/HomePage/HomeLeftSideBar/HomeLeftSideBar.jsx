@@ -18,7 +18,7 @@ function HomeLeftSideBar({ user }) {
           <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img
-              src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+              src={currentUser?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
               className="rounded-[50%] aspect-square object-cover w-8"
             />
             <span className="font-semibold">{user?.firstName + ' ' + user?.lastName}</span>

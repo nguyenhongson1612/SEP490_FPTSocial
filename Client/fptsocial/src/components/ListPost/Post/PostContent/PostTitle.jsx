@@ -1,11 +1,9 @@
 import moment from 'moment';
 import { Link } from 'react-router-dom'
+import { compareDateTime } from '~/utils/formatters';
 
 
 function PostTitle({ postData }) {
-  const serverDate = moment(postData?.createdAt)
-  const timeAgo = serverDate.fromNow()
-  console.log(timeAgo)
 
   return (
     <div id="post-title"
@@ -28,7 +26,7 @@ function PostTitle({ postData }) {
         <div className="font-semibold font-sans">{postData?.fullName}</div>
         <div className="flex justify-start gap-2 text-gray-500  text-sm">
           {/* <span>{postData?.userId}</span>. */}
-          <span>{timeAgo}</span>
+          <span>{compareDateTime(postData?.createdAt)}</span>
         </div>
       </div>
     </div>

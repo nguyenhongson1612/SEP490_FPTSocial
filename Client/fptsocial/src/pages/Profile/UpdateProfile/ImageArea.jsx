@@ -43,7 +43,7 @@ function ImageArea({ register, setValue, watch, user }) {
           <div className='w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
             <img
               id="imgAvatar"
-              src={typeof watch('avataphoto') == 'string' ? watch('avataphoto') : user?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+              src={typeof watch('avataphoto') == 'string' ? watch('avataphoto') : user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
               className="rounded-[50%] aspect-square object-cover w-[95%]"
             />
           </div>

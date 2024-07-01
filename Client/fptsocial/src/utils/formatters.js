@@ -1,3 +1,7 @@
+import DOMPurify from 'dompurify'
+import parse from 'html-react-parser'
+import moment from 'moment'
+
 //prevent spam slick call api
 export const interceptorLoadingElements = (calling) => {
   const elements = document.querySelectorAll('.interceptor-loading')
@@ -10,4 +14,15 @@ export const interceptorLoadingElements = (calling) => {
       elements[i].style.pointerEvents = 'initial'
     }
   }
+}
+
+export const cleanAndParseHTML = (html) => {
+  const cleanHtml = parse(DOMPurify.sanitize(html))
+  return cleanHtml
+}
+
+export const compareDateTime = (date) => {
+  const serverDate = moment(date)
+  const timeAgo = serverDate.fromNow()
+  return timeAgo
 }

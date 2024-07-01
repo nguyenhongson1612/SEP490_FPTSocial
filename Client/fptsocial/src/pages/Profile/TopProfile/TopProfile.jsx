@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
 import { useConfirm } from 'material-ui-confirm'
 import { IconEdit, IconUserCheck, IconUserPlus, IconUserX } from '@tabler/icons-react'
+import { Link } from 'react-router-dom';
 
-function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate }) {
+function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
   const coverImage = user?.coverImage;
   const backgroundStyle = coverImage
     ? { backgroundImage: `url(${coverImage})` }
@@ -55,7 +56,8 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             <div className='relative w-[170px] h-[90px] lg:h-0'>
               <div className='absolute bottom-0 w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
                 <img
-                  src={user?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+                  // src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+                  src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
                   className="rounded-[50%] aspect-square object-cover w-[95%]"
                 />
               </div>
@@ -66,29 +68,21 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             className='flex flex-col items-center lg:items-start justify-end mb-4 gap-1'
           >
             <span className='text-gray-900 font-bold text-3xl'>{user?.firstName + ' ' + user?.lastName}</span>
-            <span className='text-gray-500 font-bold'> 999 Friends</span>
+            <span className='text-gray-500 font-bold'> {listFriend?.count} Friend{listFriend?.count > 1 && 's'}</span>
 
             <div className='flex items-center [&>img:not(:first-child)]:-ml-4'>
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-              />
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-              />
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-              />
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-              />
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-                className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-              />
+              {
+                listFriend?.allFriend?.map(friend => (
+                  <Link to={`/profile?id=${friend?.friendId}`} key={friend?.friendId}>
+                    <img
+                      src={friend?.avata}
+                      className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
+                    />
+                  </Link>
+
+                ))
+              }
+
             </div>
           </div>
           {user?.userId == currentUser?.userId

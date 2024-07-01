@@ -68,9 +68,9 @@ body {
     scrollbar-gutter: auto | stable && both-edges?
   }
   .scrollbar-none-track::-webkit-scrollbar-thumb {
-    background: #transparent;
+    background: transparent;
     border-radius: 100vh;
-    border: 1px solid #f6f7ed;
+    border: 1px solid transparent;
   }
   .scrollbar-none-track:hover::-webkit-scrollbar-thumb{
     background: rgb(242,113,36);
