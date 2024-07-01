@@ -55,6 +55,8 @@ using Application.Commands.CreateUserCommentPhotoPost;
 using Application.Queries.GetPost;
 using Domain.QueryModels;
 using Application.DTO.UserPostDTO;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
 
 namespace Application.Mappers
 {
@@ -105,6 +107,11 @@ namespace Application.Mappers
             CreateMap<Query.Setting, GetSettingsQueryResult>();
             CreateMap<UpdateUserCommand, Query.UserProfile>();
             CreateMap<Query.UserPost, GetUserPostResult>();
+            CreateMap<UserPostPhoto, UserPostPhotoDTO>();
+            CreateMap<Photo, PhotoDTO>();
+            CreateMap<UserPostVideo, UserPostVideoDTO>();
+            CreateMap<Video, VideoDTO>();
+
 
             CreateMap<Command.Gender, CreateGenderCommandResult>();
             CreateMap<Command.ContactInfo, CreateContactInforCommandResult>();
