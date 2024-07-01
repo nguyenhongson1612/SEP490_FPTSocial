@@ -1,8 +1,8 @@
 ﻿using Application.DTO.FriendDTO;
+using Application.Queries.GetAllFriend;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
-using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -13,19 +13,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetAllFriend
+namespace Application.Queries.GetAllRequestFriend
 {
-    public class GetAllFriendQueryHandler : IQueryHandler<GetAllFriendQuery, GetAllFriendQueryResult>
+    public class GetAllRequestFriendQueryHandler : IQueryHandler<GetAllRequestFriendQuery, GetAllRequestFriendQueryResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetAllFriendQueryHandler(fptforumQueryContext context, IMapper mapper)
+        public GetAllRequestFriendQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<GetAllFriendQueryResult>> Handle(GetAllFriendQuery request, CancellationToken cancellationToken)
+
+        public async Task<Result<GetAllRequestFriendQueryResult>> Handle(GetAllRequestFriendQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -33,18 +34,18 @@ namespace Application.Queries.GetAllFriend
             }
             var listfriend = await _context.Friends
                 .Include(x => x.User)
-                .ThenInclude(x=>x.AvataPhotos)
-                .Include(x=>x.FriendNavigation)
-                .Where(x => (x.UserId == request.UserId && x.Confirm == true )
-                || (x.FriendId == request.UserId && x.Confirm == true) ).ToListAsync();
+                .ThenInclude(x => x.AvataPhotos)
+                .Include(x => x.FriendNavigation)
+                .Where(x => (x.FriendId == request.UserId && x.Confirm == false)).ToListAsync();
 
             var result = new GetAllFriendQueryResult();
-            if(listfriend != null)
+            if (listfriend != null)
             {
                 result.Count = listfriend.Count;
                 foreach (var friend in listfriend)
                 {
-                    var otherfriend = _context.Friends.Where(x => (x.UserId == friend.UserId && x.Confirm == true) || (x.FriendId == friend.UserId && x.Confirm == true)).ToList();
+                    var otherfriend = _context.Friends.Where(x => (x.UserId == friend.UserId && x.Confirm == true) 
+                    || (x.FriendId == friend.UserId && x.Confirm == true)).ToList();
                     var mutualfriend = otherfriend.Intersect(listfriend);
                     var frienddto = new GetAllFriendDTO
                     {
@@ -59,7 +60,7 @@ namespace Application.Queries.GetAllFriend
                     }
                     result.AllFriend.Add(frienddto);
                 }
-               
+
                 result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }
             else
@@ -67,7 +68,7 @@ namespace Application.Queries.GetAllFriend
                 result.Count = 0;
             }
 
-            return Result<GetAllFriendQueryResult>.Success(result);
+            return Result<GetAllRequestFriendQueryResult>.Success(result);
         }
     }
 }
