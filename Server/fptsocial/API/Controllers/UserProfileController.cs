@@ -135,7 +135,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getallfriendotherprofile")]
-        public async Task<IActionResult> GetAllFriendOtherProfile()
+        public async Task<IActionResult> GetAllFriendOtherProfile([FromQuery] GetAllFriendOtherProfileQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
@@ -148,7 +148,6 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            var input = new GetAllFriendOtherProfileQuery();
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);

@@ -45,6 +45,13 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                 result = null;
                 return Result<GetAllFriendOtherProfileQueryResult>.Success(result);
             }
+
+            if (getusersetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatusId
+               == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+            {
+                result = null;
+                return Result<GetAllFriendOtherProfileQueryResult>.Success(result);
+            }
             if (listfriend != null)
             {
                 result.Count = listfriend.Count;
