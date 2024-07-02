@@ -74,7 +74,7 @@ namespace Application.Queries.GetPost
                         post.alo = getEdgeRank.GetEdgeRank(count.ReactCount ?? 0, count.CommentCount ?? 0, count.ShareCount ?? 0, count.CreateAt ?? DateTime.Now);
                     }
                 }
-                avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserId);
+                avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserId && x.IsUsed == true);
                 post.Avatar = _mapper.Map<GetUserAvatar>(avt);
                 user = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == post.UserId);
                 post.FullName = user?.FirstName + " " + user.LastName;
