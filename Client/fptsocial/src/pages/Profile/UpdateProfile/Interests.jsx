@@ -4,8 +4,13 @@ import { useEffect } from 'react';
 
 function Interests({ user, listInterest, listStatus, register, setValue, watch, errors }) {
   useEffect(() => {
-    if (typeof watch('interest') === 'string') {
-      setValue('interest', watch('interest').split(','));
+    // console.log(watch('interest'))
+    // console.log(typeof watch('interest') == 'string' ? watch('interest').split() : watch('interest') || user?.userInterests?.map(e => e?.interestId) || '');
+    if (Array.isArray(watch('interest')) && watch('interest')[0]?.length == 0) setValue('interest', [])
+    else if (typeof watch('interest') === 'string') {
+      // console.log(watch('interest'));
+      // console.log(typeof watch('interest'));
+      setValue('interest', watch('interest').split(','))
     }
   }, [watch('interest')])
 
@@ -40,7 +45,7 @@ function Interests({ user, listInterest, listStatus, register, setValue, watch, 
           {...register('interest')}
           onChange={handleUpdateInterest}
           // value={Array.isArray(watch('interest')) ? watch('interest') : (user?.userInterests?.map(e => e?.interestId) || [])}
-          value={typeof watch('interest') == 'string' ? watch('interest').split() : watch('interest') || user?.userInterests?.map(e => e?.interestId) || []}
+          value={typeof watch('interest') == 'string' ? watch('interest').split() : watch('interest') || user?.userInterests?.map(e => e?.interestId) || ''}
           renderValue={(selected) => (
             <div className="flex flex-wrap gap-1">
               {selected.map((value) => (
