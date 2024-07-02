@@ -62,7 +62,7 @@ function NewPost() {
           to={`/profile?id=${currentUser?.userId}`}
           className=" hover:text-gray-950 flex items-center justify-center gap-3">
           <img
-            src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+            src={currentUser?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
             className="rounded-[50%] aspect-square object-cover w-10"
           />
         </Link>
@@ -88,7 +88,7 @@ function NewPost() {
                     <div className='mx-4'>
                       <div className='flex items-center h-[40] p-4 gap-2 '>
                         <img
-                          src={currentUser?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+                          src={currentUser?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
                           className="rounded-[50%] aspect-square object-cover w-10"
                         />
                         <div className='flex flex-col w-full cursor-pointer'>

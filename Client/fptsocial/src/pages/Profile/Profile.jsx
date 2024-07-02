@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getButtonFriend, getOtherUserByUserId, getUserPostByUserId } from '~/apis'
+import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId, getUserPostByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -13,24 +13,31 @@ function Profile() {
   const [update, setUpdate] = useState(false)
   const [listPost, setListPost] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
+  const [buttonProfile, setButtonProfile] = useState({})
+  const [isOpenModalUpdateProfile, setIsOpenModalUpdateProfile] = useState(false)
+  const [listFriend, setListFriend] = useState([])
+
   const currentUser = useSelector(selectCurrentUser)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const userIdCurrent = currentUser?.userId
-  const userIdPram = searchParams.get('id')
-  const [buttonProfile, setButtonProfile] = useState({})
-  const [isOpenModalUpdateProfile, setIsOpenModalUpdateProfile] = useState(false)
+  const currentUserId = currentUser?.userId
+  const paramUserId = searchParams.get('id')
 
   const forceUpdate = () => setUpdate(!update)
   useEffect(() => {
-    if (userIdCurrent === userIdPram)
+    if (currentUserId === paramUserId) {
       setUserProfile(currentUser)
-    else
-      getOtherUserByUserId({ userId: userIdCurrent, viewUserId: userIdPram })
+      getAllFriend().then(data => setListFriend(data))
+      getUserPostByUserId(currentUserId).then((data) => setListPost(data))
+    }
+    else {
+      getOtherUserByUserId({ userId: currentUserId, viewUserId: paramUserId })
         .then(res => setUserProfile(res))
         .catch(() => navigate('/notavailable'))
-    getUserPostByUserId(userIdCurrent).then((data) => setListPost(data))
-  }, [])
+      getUserPostByUserId(paramUserId).then((data) => setListPost(data))
+      getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
+    }
+  }, [paramUserId])
 
   useEffect(() => {
     userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)
@@ -42,7 +49,7 @@ function Profile() {
       <div className="relative">
         <NavTopBar />
         <div className="">
-          <TopProfile setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} user={userProfile} currentUser={currentUser} buttonProfile={buttonProfile} forceUpdate={forceUpdate} />
+          <TopProfile listFriend={listFriend} setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} user={userProfile} currentUser={currentUser} buttonProfile={buttonProfile} forceUpdate={forceUpdate} />
           <ContentProfile listPost={listPost} user={userProfile} />
 
         </div>

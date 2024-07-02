@@ -8,10 +8,10 @@ import { uploadImage, uploadVideo } from '~/apis'
 import { singleFileValidator } from '~/utils/validators'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
-import { IconEdit, IconFilePlus, IconPhotoPlus } from '@tabler/icons-react'
+import { IconEdit, IconFilePlus, IconPhotoPlus, IconSend2 } from '@tabler/icons-react'
 import { useConfirm } from 'material-ui-confirm'
 
-const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos }) => {
+const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos, type }) => {
   const [isChoseFIle, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isEditMedia, setIsEditMedia] = useState(false)
@@ -20,9 +20,8 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
   const handleOpenChoseFile = () => {
     setIsChoseFile(!isChoseFIle)
   }
-
   const confirmFile = useConfirm()
-
+  console.log(content);
   const handleImageUpload = (event) => {
     const fileData = new FormData()
     const file = event.target.files[0]
@@ -95,7 +94,16 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
       setContent(editor.getHTML())
     }
   })
-
+  const handleRemoveCurrentContent = () => {
+    if (editor) {
+      editor.commands.setContent('')
+    }
+  }
+  // useEffect(() => {
+  //   if (editor) {
+  //     editor.commands.setContent(')
+  //   }
+  // }, [content])
 
   return (
     <div className="w-full px-3">
@@ -183,7 +191,17 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
           onChange={handleImageUpload}
         />
       </div>
-      <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} />
+      <div className='flex items-center bg-fbWhite'>
+        <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} />
+        {
+          type == 'comment' && (
+            <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2'>
+              <IconSend2 className='text-blue-500 rounded-full size-8 hover:bg-blue-200 p-1' stroke={1} />
+            </button>
+          )
+        }
+      </div>
+
     </div >
   )
 }

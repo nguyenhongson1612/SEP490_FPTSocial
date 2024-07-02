@@ -27,7 +27,7 @@ function ProfileTopBar() {
   >
     <a className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3" href='#' onClick={handleClickProfile}>
       <img
-        src={user?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+        src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
         className="rounded-[50%] aspect-square object-cover max-w-[40px]"
       />
     </a>
@@ -39,7 +39,7 @@ function ProfileTopBar() {
             <Link to={`/profile?id=${user?.userId}`} className='mb-4 border-b-2 shadow-sm' >
               <div className="icon-side-bar flex justify-start items-center mb-2 text-gray-500 hover:text-gray-950 gap-3" href='#'>
                 <img
-                  src={user?.avataPhotos[0]?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
+                  src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
                   className="rounded-[50%] aspect-square object-cover w-10"
                 />
                 <span>{user?.firstName + ' ' + user?.lastName}</span>

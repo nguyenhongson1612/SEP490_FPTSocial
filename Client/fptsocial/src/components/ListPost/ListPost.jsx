@@ -1,6 +1,5 @@
-import NewPost from '~/components/NewPost/NewPost'
-import PostOverLay from './PostOverlay/PostOverlay'
 import ActivePost from '../Modal/ActivePost/ActivePost'
+import Post from './Post/Post'
 
 function ListPost({ listPost }) {
 
@@ -11,7 +10,7 @@ function ListPost({ listPost }) {
       <ActivePost />
       {
         listPost?.map((post, key) => {
-          return <PostOverLay
+          return <Post
             key={key}
             postData={post} />
         })
