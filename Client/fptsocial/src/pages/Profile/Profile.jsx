@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId, getUserPostByUserId } from '~/apis'
+import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId, getOtherUserPost, getStatus, getUserPostByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -28,13 +28,13 @@ function Profile() {
     if (currentUserId === paramUserId) {
       setUserProfile(currentUser)
       getAllFriend().then(data => setListFriend(data))
-      getUserPostByUserId(currentUserId).then((data) => setListPost(data))
+      getUserPostByUserId().then((data) => setListPost(data))
     }
     else {
       getOtherUserByUserId({ userId: currentUserId, viewUserId: paramUserId })
         .then(res => setUserProfile(res))
         .catch(() => navigate('/notavailable'))
-      getUserPostByUserId(paramUserId).then((data) => setListPost(data))
+      getOtherUserPost(paramUserId).then((data) => setListPost(data))
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
   }, [paramUserId])

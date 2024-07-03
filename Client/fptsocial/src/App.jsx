@@ -3,7 +3,6 @@ import Login from './pages/Auth/Login'
 import HomePage from './pages/HomePage/HomePage'
 import Profile from './pages/Profile/Profile'
 import NotFound from './pages/404/NotFound'
-import Group from './pages/Group/Group'
 import { AuthProvider } from 'oidc-react'
 import oidcConfig from './utils/authOidc'
 import FirstTimeLogin from './pages/FirstTimeLogin/FirstTimeLogin'
@@ -14,6 +13,8 @@ import AccountCheckExist from './pages/Auth/AccountCheckExist'
 import NotAvailable from './pages/404/NotAvailable'
 import Setting from './pages/Settings/Setting'
 import Friends from './pages/Friends/Friends'
+import Groups from './pages/Groups'
+import Group from './pages/Groups/_id'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -38,14 +39,14 @@ const UnCheckUser = ({ user }) => {
 }
 
 const Home = () => {
-  if (!jwtToken) return <PageLoadingSpinner />
+  if (!jwtToken) return <div className='w-screen h-screen flex items-center justify-center'><PageLoadingSpinner /></div>
   else return <Navigate to='/' />
 }
 
-const Logout = () => {
-  if (!jwtToken) return <PageLoadingSpinner />
-  else return <Navigate to='/' />
-}
+// const Logout = () => {
+//   if (!jwtToken) return <PageLoadingSpinner />
+//   else return <Navigate to='/' />
+// }
 
 
 function App() {
@@ -86,12 +87,13 @@ function App() {
             </Route>
 
             {/* Group page */}
-            <Route path='/groups' element={<Group />}>
-              <Route path='feed' element={<Group />} />
-              <Route path='discover' element={<Group />} />
-              <Route path='joins' element={<Group />} />
-              <Route path='create' element={<Profile />} />
+            <Route path='/groups' element={<Groups />}>
+              <Route path='feed' element={<Groups />} />
+              <Route path='discover' element={<Groups />} />
+              <Route path='joins' element={<Groups />} />
+              <Route path='create' element={<Groups />} />
             </Route>
+            <Route path='/groups/:groupId' element={<Group />} />
           </Route>
 
           {/* Auth */}

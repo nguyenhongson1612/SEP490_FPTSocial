@@ -3,26 +3,56 @@ import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
 import { useConfirm } from 'material-ui-confirm'
 import { IconEdit, IconUserCheck, IconUserPlus, IconUserX } from '@tabler/icons-react'
 import { Link } from 'react-router-dom';
+import connectionSignalR from '~/utils/signalRConnection';
+import { Avatar } from '@mui/material';
+// import Avatar from '~/components/UI/Avatar';
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
-  const coverImage = user?.coverImage;
+  const coverImage = user?.coverImage
   const backgroundStyle = coverImage
     ? { backgroundImage: `url(${coverImage})` }
     : {
       background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
     }
 
-  const handleAddFriend = () => {
-    sendFriend({ userId: currentUser?.userId, friendId: user?.userId }).then(forceUpdate)
-  }
 
+  const handleAddFriend = async () => {
+    try {
+      const response = await sendFriend({ userId: currentUser?.userId, friendId: user?.userId })
+      forceUpdate()
+      if (response) {
+        const signalRData = {
+          MsgCode: 'User-001',
+          Receiver: user?.userId,
+          Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+          AdditionsMsd: ''
+        }
+        console.log(signalRData);
+        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+      }
+    } catch (err) {
+      console.error('Error while starting connection: ', err)
+    }
+  }
   const handleResponse = (data_) => {
     const data = {
       'userId': currentUser?.userId,
       'friendId': user?.userId,
       ...data_
     }
-    updateFriendStatus(data).then(forceUpdate)
+    updateFriendStatus(data)
+      .then((data) => {
+        if (data?.confirm) {
+          const signalRData = {
+            MsgCode: 'User-002',
+            Receiver: `${user?.userId}`,
+            Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+            AdditionsMsd: ''
+          }
+          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+        }
+      })
+      .then(forceUpdate)
   }
 
   const confirmUnfriend = useConfirm()
@@ -54,12 +84,8 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
         <div className='flex flex-col lg:flex-row items-center lg:items-end justify-center gap-4'>
           <div id='avatar'>
             <div className='relative w-[170px] h-[90px] lg:h-0'>
-              <div className='absolute bottom-0 w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
-                <img
-                  // src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-                  src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-                  className="rounded-[50%] aspect-square object-cover w-[95%]"
-                />
+              <div className='absolute bottom-0'>
+                <Avatar alt="Remy Sharp" src={user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl} sx={{ width: 170, height: 170, border: '6px solid white' }} />
               </div>
             </div>
           </div>

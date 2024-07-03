@@ -8,10 +8,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import NewPost from '~/components/NewPost/NewPost'
+import { selectIsShowHomeLeftSideBar } from '~/redux/ui/uiSlice'
 
 function HomePage() {
   const user = useSelector(selectCurrentUser)
   const [listPost, setListPost] = useState(null)
+  const isShowHomeLeftSideBar = useSelector(selectIsShowHomeLeftSideBar)
+
   useEffect(() => {
     // Call API
     getAllPost().then(data => {
@@ -27,15 +30,19 @@ function HomePage() {
   return (
     <>
       <NavTopBar />
-      <div className='flex bg-fbWhite justify-center'>
-        <HomeLeftSideBar user={user} />
-        <div className='h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-6/12 overflow-y-auto scrollbar-none-track 
-        flex flex-col items-center gap-4'>
-          <NewPost />
-          {!listPost && <PageLoadingSpinner />}
-          <ListPost listPost={listPost} />
-        </div>
-        <HomeRightSideBar />
+      <div className={`flex bg-fbWhite ${!isShowHomeLeftSideBar && 'justify-center'}`}>
+        <HomeLeftSideBar isShowHomeLeftSideBar={isShowHomeLeftSideBar} user={user} />
+        {
+          !isShowHomeLeftSideBar && <>
+            <div className='h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-6/12 overflow-y-auto scrollbar-none-track 
+              flex flex-col items-center gap-4'>
+              <NewPost />
+              {!listPost && <PageLoadingSpinner />}
+              <ListPost listPost={listPost} />
+            </div>
+            <HomeRightSideBar />
+          </>
+        }
       </div>
     </>
 

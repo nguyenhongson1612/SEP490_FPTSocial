@@ -3,24 +3,23 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import CurrentUserAvatar from '~/components/UI/CurrentUserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
-function HomeLeftSideBar({ user }) {
+function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
   const [isMore, setIsMore] = useState(false)
   const currentUser = useSelector(selectCurrentUser)
 
+
   return (
-    <div className="max-h-[calc(100vh_-_55px)] hidden xl:!flex xl:basis-3/12 flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
+    <div className={`h-[calc(100vh_-_55px)] ${!isShowHomeLeftSideBar && 'hidden'} lg:!flex lg:basis-3/12 flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold`}>
       <div className="ml-3 mt-8 mb-5">
         <div id="explore"
           className=" flex flex-col items-start mb-8 border-b-2"
         >
           <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
-            <img
-              src={currentUser?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-              className="rounded-[50%] aspect-square object-cover w-8"
-            />
+            <CurrentUserAvatar />
             <span className="font-semibold">{user?.firstName + ' ' + user?.lastName}</span>
           </Link>
           <Link className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer ">

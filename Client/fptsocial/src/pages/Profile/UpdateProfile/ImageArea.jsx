@@ -1,9 +1,17 @@
+import { Avatar } from '@mui/material'
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
 import { uploadImage } from '~/apis'
 import { singleFileValidator } from '~/utils/validators'
 
 function ImageArea({ register, setValue, watch, user }) {
+  const coverImage = user?.coverImage
+  const backgroundStyle = coverImage
+    ? { backgroundImage: `url(${coverImage})` }
+    : {
+      background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
+    }
+
   const confirmFile = useConfirm()
   const handleUploadFile = (e, type) => {
     const fileData = new FormData()
@@ -41,11 +49,7 @@ function ImageArea({ register, setValue, watch, user }) {
         </div>
         <div className='flex justify-center items-center '>
           <div className='w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
-            <img
-              id="imgAvatar"
-              src={typeof watch('avataphoto') == 'string' ? watch('avataphoto') : user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-              className="rounded-[50%] aspect-square object-cover w-[95%]"
-            />
+            <Avatar alt="avatar" src={user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl} sx={{ width: 170, height: 170, border: '6px solid white' }} />
           </div>
         </div>
       </div>
@@ -64,7 +68,7 @@ function ImageArea({ register, setValue, watch, user }) {
           <div id='profile-cover'
             className='w-full lg:w-[940px] aspect-[74/27] rounded-md
                        bg-cover bg-center bg-no-repeat'
-            style={{ backgroundImage: `url(${typeof watch('coverImage') == 'string' ? watch('coverImage') : user?.coverImage || './src/assets/img/cover_holder.jpg'})` }}
+            style={backgroundStyle}
           >
           </div>
         </div>

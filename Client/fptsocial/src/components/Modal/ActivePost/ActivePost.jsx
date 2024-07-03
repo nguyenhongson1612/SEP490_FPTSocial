@@ -11,6 +11,7 @@ import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
+import CurrentUserAvatar from '~/components/UI/CurrentUserAvatar'
 import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
@@ -26,7 +27,6 @@ function ActivePost() {
   const [listVideos, setListVideos] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
-  console.log(reloadComment)
 
   useEffect(() => {
     isShowActivePost && getComment(currentActivePost?.userPostId).then(data => setListComment(data?.posts))
@@ -74,10 +74,7 @@ function ActivePost() {
             <PostComment comment={listComment} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
-            <img
-              src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-              className="rounded-[50%] aspect-square object-cover size-10"
-            />
+            <CurrentUserAvatar />
             <div className='rounded-lg pt-2 w-full'>
               <Tiptap
                 setContent={setContent}
