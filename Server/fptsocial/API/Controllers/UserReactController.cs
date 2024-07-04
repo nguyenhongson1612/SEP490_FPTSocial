@@ -1,5 +1,7 @@
 ﻿using Application.Commands.CreateNewReact;
+using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserPost;
+using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,6 +34,24 @@ namespace API.Controllers
         [HttpPost]
         [Route("createReactPost")]
         public async Task<IActionResult> CreateReactPost(CreateReactUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("createReactPhotoPost")]
+        public async Task<IActionResult> CreateReactPhotoPost(CreateReactUserPhotoPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("createReactVideoPost")]
+        public async Task<IActionResult> CreateReactVideoPost(CreateReactUserVideoPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);

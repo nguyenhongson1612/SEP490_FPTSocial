@@ -59,6 +59,8 @@ using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateNewReact;
+using Application.Commands.CreateReactUserPhotoPost;
+using Application.Commands.CreateReactUserVideoPost;
 
 namespace Application.Mappers
 {
@@ -232,6 +234,8 @@ namespace Application.Mappers
             //user react
             CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();
             CreateMap<Command.ReactType, CreateNewReactCommandResult>();
+            CreateMap<Command.ReactPhotoPost, CreateReactUserPhotoPostCommandResult>();
+            CreateMap<Command.ReactVideoPost, CreateReactUserVideoPostCommandResult>();
         }
     }
 }
