@@ -7,12 +7,10 @@ namespace Domain.CommandModels
     {
         public Guid TagId { get; set; }
         public Guid GroupId { get; set; }
-        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
         public virtual GroupFpt Group { get; set; } = null!;
         public virtual GroupTag Tag { get; set; } = null!;
-        public virtual UserStatus UserStatus { get; set; } = null!;
     }
 }

@@ -500,12 +500,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("type_group_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.GroupFpts)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_status_FK");
             });
 
             modelBuilder.Entity<GroupInvitation>(entity =>
@@ -599,12 +593,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("photo_group_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.GroupPhotos)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("gp_status_FK");
             });
 
             modelBuilder.Entity<GroupPost>(entity =>
@@ -903,12 +891,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.TagId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("tag_group_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.GroupTagUseds)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_tag_status_FK");
             });
 
             modelBuilder.Entity<GroupType>(entity =>
@@ -949,12 +931,6 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("video_group_FK");
-
-                entity.HasOne(d => d.UserStatus)
-                    .WithMany(p => p.GroupVideos)
-                    .HasForeignKey(d => d.UserStatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("gvideo_status_FK");
             });
 
             modelBuilder.Entity<Interest>(entity =>
@@ -972,6 +948,8 @@ namespace Domain.CommandModels
 
             modelBuilder.Entity<Notification>(entity =>
             {
+                entity.ToTable("Notification");
+
                 entity.Property(e => e.NotificationId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");

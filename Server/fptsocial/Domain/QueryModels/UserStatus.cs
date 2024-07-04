@@ -9,10 +9,6 @@ namespace Domain.QueryModels
         {
             AvataPhotos = new HashSet<AvataPhoto>();
             ContactInfos = new HashSet<ContactInfo>();
-            GroupFpts = new HashSet<GroupFpt>();
-            GroupPhotos = new HashSet<GroupPhoto>();
-            GroupTagUseds = new HashSet<GroupTagUsed>();
-            GroupVideos = new HashSet<GroupVideo>();
             Notifications = new HashSet<Notification>();
             Photos = new HashSet<Photo>();
             UserGenders = new HashSet<UserGender>();
@@ -35,10 +31,6 @@ namespace Domain.QueryModels
 
         public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
         public virtual ICollection<ContactInfo> ContactInfos { get; set; }
-        public virtual ICollection<GroupFpt> GroupFpts { get; set; }
-        public virtual ICollection<GroupPhoto> GroupPhotos { get; set; }
-        public virtual ICollection<GroupTagUsed> GroupTagUseds { get; set; }
-        public virtual ICollection<GroupVideo> GroupVideos { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<UserGender> UserGenders { get; set; }

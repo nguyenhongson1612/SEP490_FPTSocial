@@ -15,12 +15,10 @@ namespace Domain.QueryModels
         public string VideoUrl { get; set; } = null!;
         public Guid GroupId { get; set; }
         public string? GroupVideoNumber { get; set; }
-        public Guid UserStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
         public virtual GroupFpt Group { get; set; } = null!;
-        public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
     }

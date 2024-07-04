@@ -24,12 +24,10 @@ namespace Domain.CommandModels
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdateAt { get; set; }
         public Guid GroupTypeId { get; set; }
-        public Guid UserStatusId { get; set; }
         public string? CoverImage { get; set; }
 
         public virtual UserProfile CreatedBy { get; set; } = null!;
         public virtual GroupType GroupType { get; set; } = null!;
-        public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ICollection<GroupInvitation> GroupInvitations { get; set; }
         public virtual ICollection<GroupMember> GroupMembers { get; set; }
         public virtual ICollection<GroupPhoto> GroupPhotos { get; set; }
