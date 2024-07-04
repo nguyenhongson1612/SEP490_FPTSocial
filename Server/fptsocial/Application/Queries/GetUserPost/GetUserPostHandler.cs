@@ -47,6 +47,7 @@ namespace Application.Queries.GetUserPost
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
                 .Where(x => x.UserId == request.UserId)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
             if (userPosts == null || !userPosts.Any())
@@ -61,7 +62,11 @@ namespace Application.Queries.GetUserPost
                 UserId = userPost.UserId,
                 Content = userPost.Content,
                 UserPostNumber = userPost.UserPostNumber,
-                UserStatusId = userPost.UserStatusId,
+                UserStatus = new GetUserStatusDTO
+                {
+                    UserStatusId = userPost.UserStatusId,
+                    UserStatusName = _context.UserStatuses.Where(x => x.UserStatusId == userPost.UserStatusId).Select(x => x.StatusName).FirstOrDefault()
+                },
                 IsAvataPost = userPost.IsAvataPost,
                 IsCoverPhotoPost = userPost.IsCoverPhotoPost,
                 IsHide = userPost.IsHide,
@@ -106,5 +111,6 @@ namespace Application.Queries.GetUserPost
 
             return Result<List<GetUserPostResult>>.Success(result);
         }
+
     }
 }
