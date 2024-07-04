@@ -7,10 +7,12 @@ namespace Domain.QueryModels
     {
         public GroupStatus()
         {
+            GroupFpts = new HashSet<GroupFpt>();
             GroupPostPhotos = new HashSet<GroupPostPhoto>();
             GroupPostVideos = new HashSet<GroupPostVideo>();
             GroupPosts = new HashSet<GroupPost>();
             GroupSettingUses = new HashSet<GroupSettingUse>();
+            GroupTagUseds = new HashSet<GroupTagUsed>();
         }
 
         public Guid GroupStatusId { get; set; }
@@ -18,9 +20,11 @@ namespace Domain.QueryModels
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public virtual ICollection<GroupFpt> GroupFpts { get; set; }
         public virtual ICollection<GroupPostPhoto> GroupPostPhotos { get; set; }
         public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSettingUse> GroupSettingUses { get; set; }
+        public virtual ICollection<GroupTagUsed> GroupTagUseds { get; set; }
     }
 }

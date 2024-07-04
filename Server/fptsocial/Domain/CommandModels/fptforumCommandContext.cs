@@ -108,7 +108,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A47BDE90EA");
+                    .HasName("PK__AvataPho__BF0395A418495406");
 
                 entity.ToTable("AvataPhoto");
 
@@ -272,7 +272,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA43CC868E");
+                    .HasName("PK__CommentP__C3B4DFCAEEA436E4");
 
                 entity.ToTable("CommentPost");
 
@@ -420,7 +420,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupChatMember>(entity =>
             {
                 entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B670330ED1C");
+                    .HasName("PK__GroupCha__1ED28B67A99F7600");
 
                 entity.ToTable("GroupChatMember");
 
@@ -467,7 +467,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36A861679DA");
+                    .HasName("PK__GroupFPT__149AF36A89EA393F");
 
                 entity.ToTable("GroupFPT");
 
@@ -495,6 +495,11 @@ namespace Domain.CommandModels
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("create_group_FK");
 
+                entity.HasOne(d => d.GroupStatus)
+                    .WithMany(p => p.GroupFpts)
+                    .HasForeignKey(d => d.GroupStatusId)
+                    .HasConstraintName("fk_group_status_group");
+
                 entity.HasOne(d => d.GroupType)
                     .WithMany(p => p.GroupFpts)
                     .HasForeignKey(d => d.GroupTypeId)
@@ -505,7 +510,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCF8DBB9E7D");
+                    .HasName("PK__GroupInv__033C8DCF91E97ECE");
 
                 entity.ToTable("GroupInvitation");
 
@@ -854,7 +859,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC7EDECBD2");
+                    .HasName("PK__GroupTag__657CF9AC1B2C681E");
 
                 entity.ToTable("GroupTag");
 
@@ -885,6 +890,11 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_FK");
+
+                entity.HasOne(d => d.GroupStatus)
+                    .WithMany(p => p.GroupTagUseds)
+                    .HasForeignKey(d => d.GroupStatusId)
+                    .HasConstraintName("fk_group_tag_used");
 
                 entity.HasOne(d => d.Tag)
                     .WithMany(p => p.GroupTagUseds)
@@ -1190,7 +1200,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B52528CF3FCE86");
+                    .HasName("PK__ReactGro__E6B525284D750E4F");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1280,7 +1290,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E403AB399E");
+                    .HasName("PK__ReactGro__B37F79E44C036F8E");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -2025,7 +2035,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4CBFC7D09E");
+                    .HasName("PK__UserProf__1788CC4CEEE9F3A7");
 
                 entity.ToTable("UserProfile");
 
@@ -2150,7 +2160,7 @@ namespace Domain.CommandModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__7BE56230");
+                    .HasConstraintName("FK__UserSetti__UserI__79FD19BE");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)

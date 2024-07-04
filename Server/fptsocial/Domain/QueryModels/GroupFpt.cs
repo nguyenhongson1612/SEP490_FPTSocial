@@ -25,8 +25,10 @@ namespace Domain.QueryModels
         public DateTime? UpdateAt { get; set; }
         public Guid GroupTypeId { get; set; }
         public string? CoverImage { get; set; }
+        public Guid? GroupStatusId { get; set; }
 
         public virtual UserProfile CreatedBy { get; set; } = null!;
+        public virtual GroupStatus? GroupStatus { get; set; }
         public virtual GroupType GroupType { get; set; } = null!;
         public virtual ICollection<GroupInvitation> GroupInvitations { get; set; }
         public virtual ICollection<GroupMember> GroupMembers { get; set; }

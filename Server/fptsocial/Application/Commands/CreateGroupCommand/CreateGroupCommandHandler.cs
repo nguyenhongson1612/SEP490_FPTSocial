@@ -38,7 +38,7 @@ namespace Application.Commands.CreateGroupCommand
             var group = await _querycontext.GroupFpts.FirstOrDefaultAsync(x => x.GroupName.Equals(request.GroupName));
             var user = await _querycontext.UserProfiles.Include(x=>x.Role).FirstOrDefaultAsync(x => x.UserId == request.CreatedById);
             var grouptag = await _querycontext.GroupTags.ToListAsync();
-            var status = await _querycontext.UserStatuses.ToListAsync();
+            var status = await _querycontext.GroupStatuses.ToListAsync();
             var setting = await _querycontext.GroupSettings.ToListAsync();
             var groupstatus = await _querycontext.GroupStatuses.ToListAsync();
             var role = await _querycontext.GroupRoles.ToListAsync();
@@ -64,14 +64,14 @@ namespace Application.Commands.CreateGroupCommand
                 CoverImage = request.CoverImage,
                 CreatedDate = DateTime.Now,
                 GroupTypeId = request.GroupTypeId,
-                UserStatusId = request.UserStatusId,
+                GroupStatusId = request.UserStatusId,
             };
             await _context.GroupFpts.AddAsync(newgroup);
 
             var newgrouptag = new Domain.CommandModels.GroupTagUsed
             {
                 GroupId = newgroup.GroupId,
-                UserStatusId  = status.FirstOrDefault(x=>x.StatusName.Equals("Public")).UserStatusId,
+                GroupStatusId = status.FirstOrDefault(x=>x.GroupStatusName.Equals("Public")).GroupStatusId,
                 CreatedAt = DateTime.Now,
                 UpdateAt = null
             };
