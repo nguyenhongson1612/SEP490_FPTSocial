@@ -15,19 +15,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetUserPost
+namespace Application.Queries.GetOtherUserPost
 {
-    public class GetUserPostHandler : IQueryHandler<GetUserPostQuery, List<GetUserPostResult>>
+    public class GetOtherUserPostHandler : IQueryHandler<GetOtherUserPostQuery, List<GetOtherUserPostResult>>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
-        List<GetUserPostResult> userPosts = new List<GetUserPostResult>();
-        public GetUserPostHandler(fptforumQueryContext context, IMapper mapper)
+        List<GetOtherUserPostResult> userPosts = new List<GetOtherUserPostResult>();
+        public GetOtherUserPostHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<List<GetUserPostResult>>> Handle(GetUserPostQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<GetOtherUserPostResult>>> Handle(GetOtherUserPostQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -36,8 +36,11 @@ namespace Application.Queries.GetUserPost
 
             if (request.UserId == null)
             {
-                return Result<List<GetUserPostResult>>.Failure("UserId is required.");
+                return Result<List<GetOtherUserPostResult>>.Failure("UserId is required.");
             }
+
+            var sttpublic = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Public");
+            var sttfriend = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Friend");
 
             var userPosts = await _context.UserPosts
                 .Include(x => x.Photo)
@@ -46,7 +49,7 @@ namespace Application.Queries.GetUserPost
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.UserId)
+                .Where(x => x.UserId == request.UserId && (x.UserStatusId == sttpublic.UserStatusId || x.UserStatusId == sttfriend.UserStatusId))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
@@ -56,7 +59,7 @@ namespace Application.Queries.GetUserPost
             }
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-            var result = userPosts.Select(userPost => new GetUserPostResult
+            var result = userPosts.Select(userPost => new GetOtherUserPostResult
             {
                 UserPostId = userPost.UserPostId,
                 UserId = userPost.UserId,
@@ -109,7 +112,7 @@ namespace Application.Queries.GetUserPost
                 FullName = user.FirstName + " " + user.LastName
             }).ToList();
 
-            return Result<List<GetUserPostResult>>.Success(result);
+            return Result<List<GetOtherUserPostResult>>.Success(result);
         }
 
     }

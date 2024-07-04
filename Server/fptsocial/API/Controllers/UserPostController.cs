@@ -15,6 +15,7 @@ using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Application.Queries.GetCommentByPhotoPostId;
+using Application.Queries.GetOtherUserPost;
 
 namespace API.Controllers
 {
@@ -47,6 +48,14 @@ namespace API.Controllers
                 return BadRequest();
             }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getotheruserpost")]
+        public async Task<IActionResult> GetOtherUserPost([FromQuery]GetOtherUserPostQuery input)
+        {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }

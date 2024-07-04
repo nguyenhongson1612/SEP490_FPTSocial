@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetUserPost
+namespace Application.Queries.GetOtherUserPost
 {
-    public class GetUserPostResult
+    public class GetOtherUserPostResult
     {
         public Guid UserPostId { get; set; }
         public Guid UserId { get; set; }
