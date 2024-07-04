@@ -42,18 +42,24 @@ namespace Application.Queries.GetPost
             }
 
             // Retrieve the list of friend UserIds
-            var friendUserIds = await _context.Friends
+            var friendUserId1 = await _context.Friends
                                               .Where(f => f.UserId == request.UserId)
                                               .Select(f => f.FriendId)
                                               .ToListAsync(cancellationToken);
 
+            var friendUserId2 = await _context.Friends
+                                              .Where(f => f.FriendId == request.UserId)
+                                              .Select(f => f.UserId)
+                                              .ToListAsync(cancellationToken);
             /*var groupMemberIds = await _context.GroupMembers
                                                 .Where(x => x.UserId == request.UserId)
                                                 .Select(x => x.GroupId)
                                                 .ToListAsync(cancellationToken);*/
+            var sttpublic = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Public");
+            var sttfriend = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Friend");
 
             var posts = await _context.UserPosts
-                .Where(p => friendUserIds.Contains(p.UserId))
+                .Where(p => (friendUserId1.Contains(p.UserId) || friendUserId2.Contains(p.UserId)) && (p.UserStatusId == sttpublic.UserStatusId || p.UserStatusId == sttfriend.UserStatusId))
                 .Include(p => p.Photo)
                 .Include(p => p.Video)
                 .Include(p => p.UserPostPhotos)
