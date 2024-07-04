@@ -16,7 +16,7 @@ namespace Application.Queries.GetUserPost
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? UserPostNumber { get; set; }
-        public Guid UserStatusId { get; set; }
+        public GetUserStatusDTO? UserStatus { get; set; }
         public bool? IsAvataPost { get; set; }
         public bool? IsCoverPhotoPost { get; set; }
         public bool? IsHide { get; set; }

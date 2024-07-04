@@ -16,7 +16,7 @@ namespace Application.Queries.GetPost
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? UserPostNumber { get; set; }
-        public Guid UserStatusId { get; set; }
+        public GetUserStatusDTO? UserStatus { get; set; }
         public bool? IsAvataPost { get; set; }
         public bool? IsCoverPhotoPost { get; set; }
         public bool? IsHide { get; set; }
@@ -31,6 +31,7 @@ namespace Application.Queries.GetPost
         public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
         public virtual GetUserAvatar? Avatar { get; set; }
         public string? FullName { get; set; }
+        public double? EdgeRank { get; set; }
 
     }
 
