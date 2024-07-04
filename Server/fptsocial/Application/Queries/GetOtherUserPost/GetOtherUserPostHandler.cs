@@ -39,6 +39,9 @@ namespace Application.Queries.GetOtherUserPost
                 return Result<List<GetOtherUserPostResult>>.Failure("UserId is required.");
             }
 
+            var sttpublic = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Public");
+            var sttfriend = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Friend");
+
             var userPosts = await _context.UserPosts
                 .Include(x => x.Photo)
                 .Include(x => x.Video)
@@ -46,7 +49,7 @@ namespace Application.Queries.GetOtherUserPost
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.UserId)
+                .Where(x => x.UserId == request.UserId && (x.UserStatusId == sttpublic.UserStatusId || x.UserStatusId == sttfriend.UserStatusId))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 

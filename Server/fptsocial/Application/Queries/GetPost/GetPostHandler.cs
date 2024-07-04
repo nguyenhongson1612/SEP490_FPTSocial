@@ -55,9 +55,11 @@ namespace Application.Queries.GetPost
                                                 .Where(x => x.UserId == request.UserId)
                                                 .Select(x => x.GroupId)
                                                 .ToListAsync(cancellationToken);*/
+            var sttpublic = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Public");
+            var sttfriend = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Friend");
 
             var posts = await _context.UserPosts
-                .Where(p => friendUserId1.Contains(p.UserId) || friendUserId2.Contains(p.UserId))
+                .Where(p => (friendUserId1.Contains(p.UserId) || friendUserId2.Contains(p.UserId)) && (p.UserStatusId == sttpublic.UserStatusId || p.UserStatusId == sttfriend.UserStatusId))
                 .Include(p => p.Photo)
                 .Include(p => p.Video)
                 .Include(p => p.UserPostPhotos)
