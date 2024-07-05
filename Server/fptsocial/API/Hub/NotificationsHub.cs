@@ -33,7 +33,7 @@ namespace Application.Hub
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationsHub : Hub<INotificationsClient>
     {
-        private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
+        private readonly ConnectionMapping<string> _connections;
         private readonly IConfiguration _configuration;
         public readonly ICreateNotifications _createNotifications;
         public readonly INotificationsHubBackgroundService _INotificationsHubBackgroundService;
