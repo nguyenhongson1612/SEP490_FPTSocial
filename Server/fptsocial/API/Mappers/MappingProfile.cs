@@ -61,7 +61,6 @@ using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateNewReact;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserVideoPost;
-using Application.Queries.GetUserNotificationsList;
 using Application.Commands.CreateGroupPost;
 
 namespace Application.Mappers
@@ -211,6 +210,7 @@ namespace Application.Mappers
                 .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Video))
                 .ForMember(dest => dest.UserPostPhotos, opt => opt.MapFrom(src => src.UserPostPhotos))
                 .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos));
+            CreateMap<Command.GroupPost, CreateGroupPostCommandResult>();
 
             CreateMap<UserPost, UserPostDTO>()
             .ForMember(dest => dest.UserPostId, opt => opt.MapFrom(src => src.UserPostId))
