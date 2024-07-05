@@ -19,7 +19,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace Application.Queries.GetPost
 {
-    public class GetPostHandler : IQueryHandler<GetPostQuery, PaginatedResult<GetPostResult>>
+    public class GetPostHandler : IQueryHandler<GetPostQuery, List<GetPostResult>>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ namespace Application.Queries.GetPost
             _mapper = mapper;
         }
 
-        public async Task<Result<PaginatedResult<GetPostResult>>> Handle(GetPostQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<GetPostResult>>> Handle(GetPostQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -39,12 +39,12 @@ namespace Application.Queries.GetPost
 
             if (request == null)
             {
-                return Result<PaginatedResult<GetPostResult>>.Failure("Request is null");
+                return Result<List<GetPostResult>>.Failure("Request is null");
             }
 
             if (request.Page <= 0)
             {
-                return Result<PaginatedResult<GetPostResult>>.Failure("Page number must be greater than 0");
+                return Result<List<GetPostResult>>.Failure("Page number must be greater than 0");
             }
 
             // Retrieve the list of friend UserIds
@@ -130,18 +130,12 @@ namespace Application.Queries.GetPost
                 }
             }
 
-            var paginatedResult = new PaginatedResult<GetPostResult>
-            {
-                Items = result.OrderByDescending(x => x.EdgeRank)
+            result = result.OrderByDescending(x => x.EdgeRank)
                               .Skip((request.Page - 1) * request.PageSize)
                               .Take(request.PageSize)
-                              .ToList(),
-                Page = request.Page,
-                PageSize = request.PageSize,
-                TotalCount = totalPosts
-            };
+                              .ToList();
 
-            return Result<PaginatedResult<GetPostResult>>.Success(paginatedResult);
+            return Result<List<GetPostResult>>.Success(result);
         }
 
 
