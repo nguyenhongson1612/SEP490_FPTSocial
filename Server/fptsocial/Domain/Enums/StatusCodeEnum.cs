@@ -80,5 +80,7 @@ namespace Domain.Enums
         GR07_Group_Name_Not_Null,
         [Description("Group is not exist")]
         GR08_Group_Is_Not_Exist,
+        [Description("Group post have bad word")]
+        GR09_Group_Post_Have_Bad_Word,
     }
 }

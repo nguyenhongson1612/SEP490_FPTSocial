@@ -43,15 +43,15 @@ namespace Application.Commands.CreateGroupPost
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
+
             if (photos.Count() == 1 && numberPost == 1)
             {
-                PhotoIdSingle = await UploadImage(photos.First(), request.UserId, request.GroupStatusId);
+                PhotoIdSingle = await UploadImage(photos.First(), request.GroupId);
             }
             if (videos.Count() == 1 && numberPost == 1)
             {
-                VideoIdSingle = await UploadVideo(videos.First(), request.UserId, request.GroupStatusId);
+                VideoIdSingle = await UploadVideo(videos.First(), request.GroupId);
             }
-
 
             Domain.CommandModels.GroupPost groupPost = new Domain.CommandModels.GroupPost
             {
@@ -65,6 +65,7 @@ namespace Application.Commands.CreateGroupPost
                 UpdatedAt = DateTime.Now,
                 NumberPost = numberPost
             };
+
             if (PhotoIdSingle != Guid.Empty)
             {
                 groupPost.GroupPhotoId = PhotoIdSingle;
@@ -100,7 +101,7 @@ namespace Application.Commands.CreateGroupPost
                 int postPosition = 0;
                 foreach (var photo in photos)
                 {
-                    Guid photoId = await UploadImage(photo, request.UserId, request.GroupStatusId);
+                    Guid photoId = await UploadImage(photo, request.GroupId);
                     Domain.CommandModels.GroupPostPhoto groupPostPhoto = new Domain.CommandModels.GroupPostPhoto
                     {
                         GroupPostPhotoId = _helper.GenerateNewGuid(),
@@ -117,12 +118,12 @@ namespace Application.Commands.CreateGroupPost
                     await _context.GroupPostPhotos.AddAsync(groupPostPhoto);
                     await _context.SaveChangesAsync();
 
+
                     Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
                         GroupPostReactCountId = _helper.GenerateNewGuid(),
                         GroupPostId = groupPost.GroupPostId,
                         GroupPostPhotoId = groupPostPhoto.GroupPostPhotoId,
-                        GroupPostVideoId = Guid.Empty,
                         ReactCount = 0,
                         CommentCount = 0,
                         ShareCount = 0,
@@ -133,7 +134,7 @@ namespace Application.Commands.CreateGroupPost
 
                 foreach (var video in videos)
                 {
-                    Guid videoId = await UploadVideo(video, request.UserId, request.GroupStatusId);
+                    Guid videoId = await UploadVideo(video, request.GroupId);
                     Domain.CommandModels.GroupPostVideo groupPostVideo = new Domain.CommandModels.GroupPostVideo
                     {
                         GroupPostVideoId = _helper.GenerateNewGuid(),
@@ -153,8 +154,7 @@ namespace Application.Commands.CreateGroupPost
                     Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
                         GroupPostReactCountId = _helper.GenerateNewGuid(),
-                        GroupPostId = Guid.Empty,
-                        GroupPostPhotoId = Guid.Empty,
+                        GroupPostId = groupPost.GroupPostId,
                         GroupPostVideoId = groupPostVideo.GroupPostVideoId,
                         ReactCount = 0,
                         CommentCount = 0,
@@ -166,17 +166,23 @@ namespace Application.Commands.CreateGroupPost
             }
             var result = _mapper.Map<CreateGroupPostCommandResult>(groupPost);
             result.BannedWords = haveBadWord;
-            return Result<CreateGroupPostCommandResult>.Success(result);
+            if(haveBadWord.Any())
+            {
+                throw new ErrorException(StatusCodeEnum.GR09_Group_Post_Have_Bad_Word);
+            }
+            else
+            {
+                return Result<CreateGroupPostCommandResult>.Success(result);
+            }
         }
 
-        private async Task<Guid> UploadImage(string photoUrl, Guid groupId, Guid userStatusId)
+        private async Task<Guid> UploadImage(string photoUrl, Guid groupId)
         {
             var photoEntity = new Domain.CommandModels.GroupPhoto
             {
                 GroupPhotoId = _helper.GenerateNewGuid(),
                 GroupId = groupId,
                 PhotoUrl = photoUrl,
-                UserStatusId = userStatusId,
                 GroupPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -188,14 +194,13 @@ namespace Application.Commands.CreateGroupPost
             return photoEntity.GroupPhotoId;
         }
 
-        private async Task<Guid> UploadVideo(string videoUrl, Guid groupId, Guid userStatusId)
+        private async Task<Guid> UploadVideo(string videoUrl, Guid groupId)
         {
             var videoEntity = new Domain.CommandModels.GroupVideo
             {
                 GroupVideoId = _helper.GenerateNewGuid(),
                 GroupId = groupId,
                 VideoUrl = videoUrl,
-                UserStatusId = userStatusId,
                 GroupVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
