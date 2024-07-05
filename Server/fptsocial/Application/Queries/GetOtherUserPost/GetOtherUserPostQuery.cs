@@ -10,6 +10,7 @@ namespace Application.Queries.GetOtherUserPost
     public class GetOtherUserPostQuery : IQuery<List<GetOtherUserPostResult>>
     {
         public Guid? UserId { get; set; }
+        public Guid? OtherUserId { get; set; }
     }
 }
 

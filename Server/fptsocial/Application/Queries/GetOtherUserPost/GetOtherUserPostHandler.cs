@@ -39,8 +39,22 @@ namespace Application.Queries.GetOtherUserPost
                 return Result<List<GetOtherUserPostResult>>.Failure("UserId is required.");
             }
 
-            var sttpublic = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Public");
-            var sttfriend = _context.UserStatuses.FirstOrDefault(x => x.StatusName == "Friend");
+            var isFriend = _context.Friends
+                            .FirstOrDefault(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId) 
+                            || (x.UserId == request.OtherUserId && x.FriendId == request.UserId));
+
+            var sttNames = new List<string> { "Public" };
+
+            if (isFriend != null)
+            {
+                sttNames.Add("Friend");
+            }
+
+            var sttStatuses = _context.UserStatuses
+                .Where(x => sttNames.Contains(x.StatusName))
+                .ToList();
+
+            var sttStatusIds = sttStatuses.Select(x => x.UserStatusId).ToList();
 
             var userPosts = await _context.UserPosts
                 .Include(x => x.Photo)
@@ -49,16 +63,17 @@ namespace Application.Queries.GetOtherUserPost
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.UserId && (x.UserStatusId == sttpublic.UserStatusId || x.UserStatusId == sttfriend.UserStatusId))
+                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains(x.UserStatusId))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
+
 
             if (userPosts == null || !userPosts.Any())
             {
                 throw new ErrorException(StatusCodeEnum.P01_Not_Found);
             }
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId);
+            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId);
             var result = userPosts.Select(userPost => new GetOtherUserPostResult
             {
                 UserPostId = userPost.UserPostId,
