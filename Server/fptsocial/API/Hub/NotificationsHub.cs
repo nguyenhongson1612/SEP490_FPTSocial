@@ -37,7 +37,7 @@ namespace Application.Hub
         private readonly IConfiguration _configuration;
         public readonly ICreateNotifications _createNotifications;
         public readonly INotificationsHubBackgroundService _INotificationsHubBackgroundService;
-        
+
         public NotificationsHub(IConfiguration configuration, INotificationsHubBackgroundService notificationsHubBackgroundService, ICreateNotifications createNotifications)
         {
             _configuration = configuration;
@@ -70,7 +70,7 @@ namespace Application.Hub
             var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
             _connections.Add(userId, Context.ConnectionId);
             //await Clients.Client(Context.ConnectionId).ReceiveNotification($"The {Context.User?.Identity?.Name} ({Context.ConnectionId}) connected success!");
-                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) connected success!");
+            await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) connected success!");
 
 
         }
@@ -119,7 +119,7 @@ namespace Application.Hub
             var handle = new JwtSecurityTokenHandler();
             var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
             if (jsontoken == null)
-        {
+            {
                 await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
             }
             var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
