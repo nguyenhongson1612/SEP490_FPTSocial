@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.DTO.NotificationDTO;
+using AutoMapper;
 using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
@@ -38,6 +39,34 @@ namespace Application.Queries.GetNotifications
             }
 
         }
+        public GetAvatarSenderDTO GetAvatarBySenderId(string senderId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
+                if (_querycontext == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+                }
+                var user = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
+                var avatarUrl = _querycontext.AvataPhotos.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
+                if (avatarUrl == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.Error);
+                }
+                if (user == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
+                }
+                GetAvatarSenderDTO getAvatarSenderDTO = new()
+                {
+                    UserProfile = user,
+                    SenderAvatarURL = avatarUrl.AvataPhotosUrl,
+                };
+                return getAvatarSenderDTO;
+            }
+
+        }
 
         public List<Domain.QueryModels.Notification> GetNotifyByUserId(string userId)
         {
@@ -49,7 +78,7 @@ namespace Application.Queries.GetNotifications
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                var notice = _querycontext.Notification.Where(x => x.UserId == Guid.Parse(userId))
+                var notice = _querycontext.Notifications.Where(x => x.UserId == Guid.Parse(userId))
                                                         .OrderByDescending(x => x.CreatedAt)
                                                         .Take(15)
                                                         .ToList();
@@ -71,7 +100,7 @@ namespace Application.Queries.GetNotifications
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                var notice = _querycontext.Notification.Where(x => x.SenderId.Equals(Guid.Parse(senderId))).ToList();
+                var notice = _querycontext.Notifications.Where(x => x.SenderId.Equals(Guid.Parse(senderId))).ToList();
                 if (notice == null)
                 {
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);

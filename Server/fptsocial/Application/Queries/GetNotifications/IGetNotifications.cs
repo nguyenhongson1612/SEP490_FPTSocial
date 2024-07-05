@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.DTO.NotificationDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Application.Queries.GetNotifications
 {
     public interface IGetNotifications
     {
+        public GetAvatarSenderDTO GetAvatarBySenderId(string senderId);
         public Domain.QueryModels.UserProfile GetUserProfileByUserId(string userId);
         public List<Domain.QueryModels.Notification> GetNotifyByUserId(string userId);
         public List<Domain.QueryModels.Notification> GetNotifyBySenderId(string senderId);

@@ -33,16 +33,17 @@ namespace Application.Hub
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationsHub : Hub<INotificationsClient>
     {
-        private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
+        private readonly ConnectionMapping<string> _connections;
         private readonly IConfiguration _configuration;
         public readonly ICreateNotifications _createNotifications;
         public readonly INotificationsHubBackgroundService _INotificationsHubBackgroundService;
 
-        public NotificationsHub(IConfiguration configuration, INotificationsHubBackgroundService notificationsHubBackgroundService, ICreateNotifications createNotifications)
+        public NotificationsHub(IConfiguration configuration, INotificationsHubBackgroundService notificationsHubBackgroundService, ICreateNotifications createNotifications, ConnectionMapping<string> connections)
         {
             _configuration = configuration;
             _INotificationsHubBackgroundService = notificationsHubBackgroundService;
             _createNotifications = createNotifications;
+            _connections = connections;
 
         }
 
@@ -156,18 +157,13 @@ namespace Application.Hub
         }
         //===================================================================================== Notify For Member's Actions ===================================================================================== 
 
-        public async Task SendReactNotify(string notice)
+        public async Task SendNotify(string notice)
         {
 
             await _INotificationsHubBackgroundService.SendReactNotifyService(Context ,notice);
 
         }
         //===================================================================================== Notify For Member's Actions ===================================================================================== 
-        public async Task SendAddFriendReqNotify(string sender, string receiver, string url)
-        {
-
-            await _INotificationsHubBackgroundService.SendReactNotifyService(Context ,notice);
-
         public async Task PushAllNotifyByUserIdWithTableDependency(string userId)
         {
 

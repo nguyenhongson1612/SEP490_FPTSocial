@@ -56,6 +56,7 @@ builder.Services.AddSingleton<SubscribeNotificationsTableDependency>();
 builder.Services.AddSingleton<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 builder.Services.AddSingleton<ICreateNotifications, CreateNotifications>();
 builder.Services.AddSingleton<IGetNotifications,  GetNotifications>();
+builder.Services.AddSingleton(typeof(ConnectionMapping<>));
 //builder.Services.AddHostedService<NotificationsHubBackgroundService>();
 builder.Services.AddSwaggerGen(c =>
 {
