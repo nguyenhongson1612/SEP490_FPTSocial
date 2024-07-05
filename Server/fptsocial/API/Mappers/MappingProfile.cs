@@ -62,6 +62,7 @@ using Application.Commands.CreateNewReact;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Queries.GetUserNotificationsList;
+using Application.Commands.CreateGroupPost;
 
 namespace Application.Mappers
 {

@@ -1,4 +1,5 @@
-﻿using API.Hub;
+﻿using API.Middlewares;
+using API.Hub;
 using API.Hub.SubscribeSqlTableDependencies;
 using API.Middlewares;
 using Application.Commands.CreateNotifications;
