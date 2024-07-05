@@ -11,12 +11,16 @@ using Application.Queries.GetNotifications;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using CloudinaryDotNet.Actions;
+using MediatR;
 
 
 namespace Application.Hub
@@ -26,44 +30,103 @@ namespace Application.Hub
         NORMAL,
         IMPORTANCE
     }
-    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationsHub : Hub<INotificationsClient>
     {
-        private readonly static ConnectionMapping<string> _connections =
-            new ConnectionMapping<string>();
-
-        HttpContext _httpContext;
+        private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
         private readonly IConfiguration _configuration;
         public readonly ICreateNotifications _createNotifications;
         public readonly INotificationsHubBackgroundService _INotificationsHubBackgroundService;
-        
+
         public NotificationsHub(IConfiguration configuration, INotificationsHubBackgroundService notificationsHubBackgroundService, ICreateNotifications createNotifications)
         {
             _configuration = configuration;
             _INotificationsHubBackgroundService = notificationsHubBackgroundService;
             _createNotifications = createNotifications;
+
         }
 
         public override async Task OnConnectedAsync()
         {
-            //_connections.Add(Context.User?.Identity?.Name, Context.ConnectionId);
+            HttpContext _httpContext = Context.GetHttpContext();
+            if (_httpContext == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
+
+            var path = _httpContext.Request.Path;
+            if (string.IsNullOrEmpty(rawToken) &&
+                (!path.StartsWithSegments("/notificationsHub")))
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            _connections.Add(userId, Context.ConnectionId);
             //await Clients.Client(Context.ConnectionId).ReceiveNotification($"The {Context.User?.Identity?.Name} ({Context.ConnectionId}) connected success!");
-                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) connected success!");
+            await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) connected success!");
+
 
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            //_connections.Remove(Context.User.Identity.Name, Context.ConnectionId);
+            HttpContext _httpContext = Context.GetHttpContext();
+            if (_httpContext == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
+
+            var path = _httpContext.Request.Path;
+            if (string.IsNullOrEmpty(rawToken) &&
+                (!path.StartsWithSegments("/notificationsHub")))
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            _connections.Remove(userId, Context.ConnectionId);
             await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) disconnected !");
            // return base.OnDisconnectedAsync(exception);
         }
 
-        public void OnReconnected()
+        public async Task OnReconnected()
         {
-
-            if (!_connections.GetConnections(Context.User.Identity.Name).Contains(Context.ConnectionId))
+            HttpContext _httpContext = Context.GetHttpContext();
+            if (_httpContext == null)
             {
-                _connections.Add(Context.User.Identity.Name, Context.ConnectionId);
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
+
+            var path = _httpContext.Request.Path;
+            if (string.IsNullOrEmpty(rawToken) &&
+                (!path.StartsWithSegments("/notificationsHub")))
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) Connected Fail!");
+            }
+            var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+
+            if (!_connections.GetConnections(userId).Contains(Context.ConnectionId))
+            {
+                _connections.Add(userId, Context.ConnectionId);
             }
 
         }
