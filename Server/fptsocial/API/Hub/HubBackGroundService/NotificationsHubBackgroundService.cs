@@ -1,5 +1,4 @@
 ﻿using Application.Commands.CreateNotifications;
-using Application.DTO.NotificationDTO;
 using Application.Hub;
 using Application.Queries.GetNotifications;
 using Core.Helper;
@@ -21,7 +20,7 @@ namespace API.Hub
         NORMAL,
         IMPORTANCE
     }
-    
+
     public class NotificationsHubBackgroundService : BackgroundService, INotificationsHubBackgroundService
     {
         const string NORMAL = "Normal";
@@ -153,7 +152,7 @@ namespace API.Hub
                 DateTime datetime = DateTime.Now;
                 _logger.LogInformation($"excute {1}", nameof(NotificationsHubBackgroundService), datetime);
 
-                
+
             }
         }
         public override Task StartAsync(CancellationToken cancellationToken)
