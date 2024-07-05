@@ -10,6 +10,7 @@ using CloudinaryDotNet;
 using Domain.CommandModels;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +95,22 @@ builder.Services.AddAuthentication("Bearer")
         {
             ValidateAudience = false,
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/notificationsHub")))
+                {
+                    // Read the token out of the query string
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 builder.Services.AddAuthorization(options =>
 {
@@ -117,7 +134,7 @@ builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton<CheckingBadWord>();
 builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 var app = builder.Build();
-var connectionString = app.Configuration.GetConnectionString("QureryConnection");
+var connectionString = app.Configuration.GetConnectionString("QueryConnection");
 
 // Kích hoạt Middleware để kiểm soát loại dữ liệu làm việc trên SwaggerUI
 app.UseSwagger();
