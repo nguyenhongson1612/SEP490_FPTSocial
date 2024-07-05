@@ -90,10 +90,11 @@ namespace API.Hub
 
             string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
             string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
-            string msg = senderName + notificationsMessage + addMsg;
+            string msg = notificationsMessage + addMsg;
             NotificationOutDTO notificationOutDTO = new()
             {
                 SenderId = senderId,
+                SenderName = senderName,
                 ReciverId = receiverId,
                 SenderAvatar = senderInfo.SenderAvatarURL,
                 Message = msg,
