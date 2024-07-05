@@ -30,16 +30,10 @@ namespace Application.Hub
         NORMAL,
         IMPORTANCE
     }
-    
-    public class NotificationsHub : Hub<INotificationsClient>
-    {
-        NORMAL,
-        IMPORTANCE
-    }
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationsHub : Hub<INotificationsClient>
     {
-        private readonly ConnectionMapping<string> _connections;
+        private readonly static ConnectionMapping<string> _connections = new ConnectionMapping<string>();
         private readonly IConfiguration _configuration;
         public readonly ICreateNotifications _createNotifications;
         public readonly INotificationsHubBackgroundService _INotificationsHubBackgroundService;
@@ -55,6 +49,12 @@ namespace Application.Hub
 
         public override async Task OnConnectedAsync()
         {
+            HttpContext _httpContext = Context.GetHttpContext();
+            if (_httpContext == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
 
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
