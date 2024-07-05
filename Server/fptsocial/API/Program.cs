@@ -1,16 +1,25 @@
 ﻿using API.Middlewares;
+using API.Hub;
+using API.Hub.SubscribeSqlTableDependencies;
+using API.Middlewares;
+using Application.Commands.CreateNotifications;
+using Application.Hub;
 using Application.Mappers;
+using Application.Queries.GetNotifications;
 using Application.Services;
 using CloudinaryDotNet;
 using Domain.CommandModels;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
+using TableDependency.SqlClient;
 
 [assembly: ApiController]
 var builder = WebApplication.CreateBuilder(args);
@@ -27,11 +36,29 @@ builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNa
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+        .WithOrigins("http://127.0.0.1:5500")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+//Config Hub and ServiceHub
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<NotificationsHub>();
+builder.Services.AddHostedService<NotificationsHostedService>();
+builder.Services.AddSingleton<SubscribeNotificationsTableDependency>();
+builder.Services.AddSingleton<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
+builder.Services.AddSingleton<ICreateNotifications, CreateNotifications>();
+builder.Services.AddSingleton<IGetNotifications,  GetNotifications>();
+builder.Services.AddSingleton(typeof(ConnectionMapping<>));
+//builder.Services.AddHostedService<NotificationsHubBackgroundService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -70,6 +97,22 @@ builder.Services.AddAuthentication("Bearer")
         {
             ValidateAudience = false,
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/notificationsHub")))
+                {
+                    // Read the token out of the query string
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 builder.Services.AddAuthorization(options =>
 {
@@ -91,8 +134,9 @@ var cloudinary = new Cloudinary(new Account(
 ));
 builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton<CheckingBadWord>();
+builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 var app = builder.Build();
-
+var connectionString = app.Configuration.GetConnectionString("QueryConnection");
 
 // Kích hoạt Middleware để kiểm soát loại dữ liệu làm việc trên SwaggerUI
 app.UseSwagger();
@@ -113,17 +157,11 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
 app.UseHttpsRedirection();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
 app.UseEndpoints(
     endpoints => 
     { 
@@ -133,4 +171,6 @@ app.UseEndpoints(
             pattern: "{controller}/{action}/{id?}");
         endpoints.MapControllers();
     });
+//Config Hub Route
+app.MapHub<NotificationsHub>("notificationsHub");
 app.Run();

@@ -238,6 +238,9 @@ namespace Application.Mappers
             CreateMap<Command.ReactType, CreateNewReactCommandResult>();
             CreateMap<Command.ReactPhotoPost, CreateReactUserPhotoPostCommandResult>();
             CreateMap<Command.ReactVideoPost, CreateReactUserVideoPostCommandResult>();
+
+            //Notification
+            CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
         }
     }
 }
