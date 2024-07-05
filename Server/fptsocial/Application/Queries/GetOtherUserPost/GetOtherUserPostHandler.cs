@@ -40,8 +40,8 @@ namespace Application.Queries.GetOtherUserPost
             }
 
             var isFriend = _context.Friends
-                            .FirstOrDefault(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId) 
-                            || (x.UserId == request.OtherUserId && x.FriendId == request.UserId));
+                            .FirstOrDefault(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId && x.Confirm == true) 
+                            || (x.UserId == request.OtherUserId && x.FriendId == request.UserId && x.Confirm == true));
 
             var sttNames = new List<string> { "Public" };
 

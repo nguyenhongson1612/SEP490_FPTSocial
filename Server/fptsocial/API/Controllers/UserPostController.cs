@@ -74,9 +74,8 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getpost")]
-        public async Task<IActionResult> GetPost()
+        public async Task<IActionResult> GetPost([FromQuery] GetPostQuery input)
         {
-            var input = new GetPostQuery();
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
