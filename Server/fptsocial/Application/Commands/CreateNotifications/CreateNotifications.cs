@@ -81,7 +81,7 @@ namespace Application.Commands.CreateNotifications
                 _notification.NotifiUrl = notifiUrl;
                 try
                 {
-                    _commandContext.Notification.Add(_notification);
+                    _commandContext.Notifications.Add(_notification);
                     await _commandContext.SaveChangesAsync();
                 }
                 catch (Exception ex)

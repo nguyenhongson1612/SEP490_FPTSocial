@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.QueryModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,11 @@ namespace Application.DTO.NotificationDTO
         public string SenderAvatar { get; set; }
         public string Message { get; set; }
         public string Url { get; set; }
+    }
+
+    public class GetAvatarSenderDTO
+    {
+        public UserProfile UserProfile { get; set; }
+        public string SenderAvatarURL { get; set; }
     }
 }

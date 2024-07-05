@@ -26,7 +26,7 @@ namespace API.Hub
     {
         const string NORMAL = "Normal";
         private static readonly TimeSpan Period = TimeSpan.FromSeconds(3);
-        //private readonly static ConnectionMapping<string> _connections = new();
+        private readonly ConnectionMapping<string> _connections;
         private readonly ICreateNotifications _createNotifications;
         private readonly IGetNotifications _getNotifications;
         private readonly GuidHelper _helper;
@@ -35,7 +35,7 @@ namespace API.Hub
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
         private readonly HubCallerContext _hubCallerContext;
         public NotificationsHubBackgroundService(ILogger<NotificationsHubBackgroundService> logger, IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
-            ICreateNotifications createNotifications, IGetNotifications getNotifications)
+            ICreateNotifications createNotifications, IGetNotifications getNotifications, ConnectionMapping<string> connections)
         {
             _helper = new GuidHelper();
             _logger = logger;
@@ -43,6 +43,7 @@ namespace API.Hub
             _createNotifications = createNotifications;
             _getNotifications = getNotifications;
             _hubContext = hubContext;
+            _connections = connections;
         }
 
         public async Task SendReactNotifyService(HubCallerContext context, string notice)
@@ -52,6 +53,7 @@ namespace API.Hub
             string receiverId = routeOb.Receiver;
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
+            string addMsg = routeOb.AddMsg;
             Domain.QueryModels.UserProfile sender;
 
             if (_httpContext == null)
@@ -75,31 +77,39 @@ namespace API.Hub
             var senderId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
 
 
-            using (fptforumQueryContext _querycontext = new fptforumQueryContext())
-            {
-                sender = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
+            //using (fptforumQueryContext _querycontext = new fptforumQueryContext())
+            //{
+            //    sender = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
 
-                if (sender == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
-            }
+            //    if (sender == null)
+            //    {
+            //        throw new ErrorException(StatusCodeEnum.U01_Not_Found);
+            //    }
+            //}
+            var senderInfo = _getNotifications.GetAvatarBySenderId(senderId);
 
-            string senderName = sender.FirstName + " " + sender.LastName;
+            string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
             string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
-            string msg = senderName + notificationsMessage;
+            string msg = senderName + notificationsMessage + addMsg;
             NotificationOutDTO notificationOutDTO = new()
             {
                 SenderId = senderId,
                 ReciverId = receiverId,
-                SenderAvatar = "HonNguAvatar",
+                SenderAvatar = senderInfo.SenderAvatarURL,
                 Message = msg,
                 Url = url
 
             };
             string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
             //await _hubContext.Clients.All.ReceiveNotification(msg, url);
-            await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
+            //var receiverConnectId = _connections.GetConnections(receiverId);
+            foreach (var connectionId in _connections.GetConnections(receiverId))
+            {
+                await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+            }
+
+
+            //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
             await _createNotifications.CreateNotitfication(senderId, receiverId, msg, url);
 
@@ -116,9 +126,9 @@ namespace API.Hub
         /// </returns>
         public async Task PushAllNotifyByUserIdWithTableDependencyService(HubCallerContext context, string userId)
         {
-            var _connections = new ConnectionMapping<string>();
 
-            var receiverId = _connections.GetConnections(userId).GetEnumerator().Current;
+            var receiverConnectId = _connections.GetConnections(userId);
+
             HttpContext _httpContext = context.GetHttpContext();
             List<Domain.QueryModels.Notification> notice = _getNotifications.GetNotifyByUserId(userId);
 
@@ -126,7 +136,10 @@ namespace API.Hub
 
 
             //await _hubContext.Clients.User(receiverId).ReceiveNotification(msg, url);
-            await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
+            foreach (var connectionId in receiverConnectId)
+            {
+                await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+            }
 
 
         }
