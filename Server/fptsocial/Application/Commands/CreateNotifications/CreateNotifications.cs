@@ -27,24 +27,27 @@ namespace Application.Commands.CreateNotifications
         const string NORMAL = "Normal";
         private readonly GuidHelper _helper;
         private readonly IServiceProvider _serviceProvider;
+        fptforumCommandContext _commandContext;
+        fptforumQueryContext _queryContext;
         public CreateNotifications(IServiceProvider serviceProvider)
         {
             _helper = new GuidHelper();
             _serviceProvider = serviceProvider;
+            _commandContext = new();
+            _queryContext = new();
         }
         public async Task CreateNotitfication(string senderId, string receiverId, string notiMessage, string notifiUrl, [Optional] NotificationsTypeEnum? notificationsTypeEnum)
         {
-            
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                Domain.CommandModels.Notification _notification = new();
-                var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
-                var _commandcontext = scope.ServiceProvider.GetRequiredService<fptforumCommandContext>();
-                if (_querycontext == null || _commandcontext == null)
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            Domain.CommandModels.Notification _notification = new();
+                //var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
+                //var _commandcontext = scope.ServiceProvider.GetRequiredService<fptforumCommandContext>();
+                if (_queryContext == null || _commandContext == null)
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                Domain.QueryModels.UserStatus receiverStatus = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.UserStatusId.Equals(Guid.Parse(receiverId)));
+                Domain.QueryModels.UserStatus receiverStatus = await _queryContext.UserStatuses.FirstOrDefaultAsync(x => x.UserStatusId.Equals(Guid.Parse(receiverId)));
                 if (receiverStatus == null)
                 {
                     throw new ErrorException(StatusCodeEnum.Error);
@@ -52,7 +55,7 @@ namespace Application.Commands.CreateNotifications
                 
                 if (notificationsTypeEnum != null)
                 {
-                    Domain.QueryModels.NotificationType receiverTypeE = await _querycontext.NotificationTypes.FirstOrDefaultAsync(x => x.NotificationTypeName.Equals(notificationsTypeEnum));
+                    Domain.QueryModels.NotificationType receiverTypeE = await _queryContext.NotificationTypes.FirstOrDefaultAsync(x => x.NotificationTypeName.Equals(notificationsTypeEnum));
                     if (receiverTypeE == null)
                     {
                         throw new ErrorException(StatusCodeEnum.NT01_Not_Found);
@@ -61,7 +64,7 @@ namespace Application.Commands.CreateNotifications
                 }
                 if (notificationsTypeEnum == null)
                 {
-                    Domain.QueryModels.NotificationType receiverTypeE = await _querycontext.NotificationTypes.FirstOrDefaultAsync(x => x.NotificationTypeName.Equals(NORMAL));
+                    Domain.QueryModels.NotificationType receiverTypeE = await _queryContext.NotificationTypes.FirstOrDefaultAsync(x => x.NotificationTypeName.Equals(NORMAL));
                     if (receiverTypeE == null)
                     {
                         throw new ErrorException(StatusCodeEnum.NT01_Not_Found);
@@ -78,14 +81,14 @@ namespace Application.Commands.CreateNotifications
                 _notification.NotifiUrl = notifiUrl;
                 try
                 {
-                    _commandcontext.Notification.Add(_notification);
-                    await _commandcontext.SaveChangesAsync();
+                    _commandContext.Notification.Add(_notification);
+                    await _commandContext.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-            }   
+           // }   
 
         }
 
