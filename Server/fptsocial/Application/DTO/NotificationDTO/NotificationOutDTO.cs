@@ -10,6 +10,7 @@ namespace Application.DTO.NotificationDTO
     public class NotificationOutDTO
     {
         public string SenderId { get; set; }
+        public string SenderName { get; set; }
         public string ReciverId { get; set; }
         public string SenderAvatar { get; set; }
         public string Message { get; set; }

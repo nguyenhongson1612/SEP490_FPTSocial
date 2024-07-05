@@ -1,4 +1,5 @@
-﻿using Application.Queries.GetUserByUserId;
+﻿using Application.Commands.UpdateNotificationStatus;
+using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserNotificationsList;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,6 +37,14 @@ namespace API.Controllers
                 return BadRequest();
             }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPut]
+        [Route("UpdateNotificationStatusbynotificationid")]
+        public async Task<IActionResult> UpdateNotificationStatusByNotificationId([FromQuery] UpdateNotificationStatusCommand input)
+        {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
