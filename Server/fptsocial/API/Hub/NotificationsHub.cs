@@ -163,7 +163,14 @@ namespace Application.Hub
             await _INotificationsHubBackgroundService.SendNotifyService(Context ,notice);
 
         }
-       
+
+        public async Task SendNotifyByGroupId(string notice)
+        {
+
+            await _INotificationsHubBackgroundService.SendGroupNotifyService(Context, notice);
+
+        }
+
         public async Task PushAllNotifyByUserIdWithTableDependency(string userId)
         {
 
