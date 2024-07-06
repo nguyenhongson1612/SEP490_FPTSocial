@@ -123,7 +123,7 @@ namespace Application.Queries.GetNotifications
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                var user = _querycontext.GroupMembers.Where(x => x.GroupId.Equals(Guid.Parse(groupId))).ToList();
+                var user = _querycontext.GroupMembers.Where(x => x.GroupId.Equals(Guid.Parse(groupId)) && x.IsJoined == true).ToList();
 
                 if (user == null)
                 {
