@@ -161,10 +161,10 @@ namespace Application.Hub
         public async Task SendNotify(string notice)
         {
 
-            await _INotificationsHubBackgroundService.SendReactNotifyService(Context ,notice);
+            await _INotificationsHubBackgroundService.SendNotifyService(Context ,notice);
 
         }
-        //===================================================================================== Notify For Member's Actions ===================================================================================== 
+       
         public async Task PushAllNotifyByUserIdWithTableDependency(string userId)
         {
 
