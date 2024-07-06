@@ -9,6 +9,7 @@ namespace Application.Queries.GetNotifications
 {
     public interface IGetNotifications
     {
+        public List<Domain.QueryModels.GroupMember> GetGroupMemberByGroupId(string groupId);
         public GetAvatarSenderDTO GetAvatarBySenderId(string senderId);
         public Domain.QueryModels.UserProfile GetUserProfileByUserId(string userId);
         public List<Domain.QueryModels.Notification> GetNotifyByUserId(string userId);

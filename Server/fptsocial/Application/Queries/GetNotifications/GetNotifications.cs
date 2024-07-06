@@ -108,5 +108,26 @@ namespace Application.Queries.GetNotifications
                 return notice;
             }
         }
+
+        public List<Domain.QueryModels.GroupMember> GetGroupMemberByGroupId(string groupId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
+                if (_querycontext == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+                }
+                var user = _querycontext.GroupMembers.Where(x => x.GroupId.Equals(Guid.Parse(groupId))).ToList();
+
+                if (user == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
+                }
+                return user;
+            }
+
+        }
+
     }
 }
