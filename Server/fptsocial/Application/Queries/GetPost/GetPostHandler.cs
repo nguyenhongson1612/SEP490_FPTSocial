@@ -49,7 +49,7 @@ namespace Application.Queries.GetPost
 
             // Retrieve the list of friend UserIds
             var friendUserIds = await _context.Friends
-                                              .Where(f => f.UserId == request.UserId || f.FriendId == request.UserId)
+                                              .Where(f => (f.UserId == request.UserId || f.FriendId == request.UserId) && f.Confirm == true)
                                               .Select(f => f.UserId == request.UserId ? f.FriendId : f.UserId)
                                               .ToListAsync(cancellationToken);
 
