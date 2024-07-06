@@ -12,6 +12,7 @@ namespace Application.Queries.GetUserNotificationsList
         public Guid NotificationId { get; set; }
         public Guid UserId { get; set; }
         public Guid SenderId { get; set; }
+        public string SenderName { get; set; }
         public Guid NotificationTypeId { get; set; }
         public string? NotiMessage { get; set; }
         public Guid UserStatusId { get; set; }
