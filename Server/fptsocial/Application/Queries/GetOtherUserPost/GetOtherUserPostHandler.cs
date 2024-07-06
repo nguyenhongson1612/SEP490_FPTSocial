@@ -67,11 +67,6 @@ namespace Application.Queries.GetOtherUserPost
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
-
-            if (userPosts == null || !userPosts.Any())
-            {
-                throw new ErrorException(StatusCodeEnum.P01_Not_Found);
-            }
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId);
             var result = userPosts.Select(userPost => new GetOtherUserPostResult
