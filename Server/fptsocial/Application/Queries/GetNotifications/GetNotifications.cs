@@ -43,6 +43,7 @@ namespace Application.Queries.GetNotifications
         {
             using (var scope = _serviceProvider.CreateScope())
             {
+                GetAvatarSenderDTO getAvatarSenderDTO = new();
                 var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
                 if (_querycontext == null)
                 {
@@ -52,17 +53,21 @@ namespace Application.Queries.GetNotifications
                 var avatarUrl = _querycontext.AvataPhotos.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
                 if (avatarUrl == null)
                 {
-                    throw new ErrorException(StatusCodeEnum.Error);
+                    getAvatarSenderDTO.UserProfile = user;
+                    getAvatarSenderDTO.SenderAvatarURL = "";
+                }
+                else
+                {
+                    getAvatarSenderDTO.UserProfile = user;
+                    getAvatarSenderDTO.SenderAvatarURL = avatarUrl.AvataPhotosUrl;
                 }
                 if (user == null)
                 {
                     throw new ErrorException(StatusCodeEnum.U01_Not_Found);
                 }
-                GetAvatarSenderDTO getAvatarSenderDTO = new()
-                {
-                    UserProfile = user,
-                    SenderAvatarURL = avatarUrl.AvataPhotosUrl,
-                };
+
+
+
                 return getAvatarSenderDTO;
             }
 

@@ -11,8 +11,11 @@ namespace Application.Hub
 {
     public interface INotificationsClient
     {
+        
         Task ReceiveNotification(string message);
+        Task listReceiveNotification(string message);
         Task ReceiveNotification(NotificationOutDTO message);
+        Task listReceiveNotification(NotificationOutDTO message);
         Task ReceiveNotification(List<Notification> message);
         Task ReceiveNotification(string message, string url);
         Task ReceiveNotification(string firstMessage, string secondMessage, string url);

@@ -71,6 +71,7 @@ namespace Application.Hub
             var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
             _connections.Add(userId, Context.ConnectionId);
             //await Clients.Client(Context.ConnectionId).ReceiveNotification($"The {Context.User?.Identity?.Name} ({Context.ConnectionId}) connected success!");
+            await _INotificationsHubBackgroundService.PushAllNotifyByUserIdWithTableDependencyService(Context, userId);
             await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) connected success!");
 
 
