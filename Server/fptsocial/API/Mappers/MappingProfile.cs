@@ -62,6 +62,8 @@ using Application.Commands.CreateNewReact;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.CreateGroupPost;
+using Application.Queries.GetUserNotificationsList;
+using Application.Commands.UpdateNotificationStatus;
 
 namespace Application.Mappers
 {
@@ -241,6 +243,7 @@ namespace Application.Mappers
 
             //Notification
             CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
+            CreateMap<Query.Notification, UpdateNotificationStatusResult>();
         }
     }
 }
