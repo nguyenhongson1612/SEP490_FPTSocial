@@ -15,7 +15,7 @@ namespace API.Middlewares
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            string connectionString = _configuration.GetSection("ConnectionStrings").GetSection("CommandConnection").Value;
+            string connectionString = _configuration.GetSection("ConnectionStrings").GetSection("SignalConnection").Value;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var notificationsTableDependency = scope.ServiceProvider.GetRequiredService<SubscribeNotificationsTableDependency>();

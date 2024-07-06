@@ -139,7 +139,7 @@ namespace API.Hub
             //await _hubContext.Clients.User(receiverId).ReceiveNotification(msg, url);
             foreach (var connectionId in receiverConnectId)
             {
-                await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                await _hubContext.Clients.Client(connectionId).listReceiveNotification(jsonNotice);
             }
 
 
