@@ -11,9 +11,9 @@ function AccountCheckExist() {
   const navigate = useNavigate()
   useEffect(() => {
     checkUserExist().then((resData) => {
-      if (resData?.data?.enumcode === 2)
+      if (resData?.data?.enumcode === 4)
         navigate('/firstlogin')
-      else if (resData?.data?.enumcode === 5) {
+      else if (resData?.data?.enumcode === 7) {
         toast.promise(
           dispatch(getUserByUserId()),
           { pending: 'Checking...' }
@@ -24,7 +24,12 @@ function AccountCheckExist() {
       }
     })
   }, [])
-  return <PageLoadingSpinner />
+  return (
+    <div className='w-screen h-screen flex items-center justify-center'>
+      <PageLoadingSpinner />
+    </div>
+  )
+
 }
 
 export default AccountCheckExist

@@ -124,8 +124,13 @@ export const uploadVideo = async ({ userId, data }) => {
 }
 
 //api post
-export const getUserPostByUserId = async (userId) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostbyuserid?userId=${userId}`)
+export const getUserPostByUserId = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostbyuserid`)
+  return response.data?.data
+}
+
+export const getOtherUserPost = async (userId) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getotheruserpost?UserId=${userId}`)
   return response.data?.data
 }
 
@@ -162,6 +167,17 @@ export const commentVideoPost = async (data) => {
 }
 export const commentPhotoPost = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserPost/commentPhotoPost`, data)
+  return response.data?.data
+}
+
+//group api
+export const getGroupType = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupEntity/getgrouptype`)
+  return response.data?.data
+}
+
+export const createGroup = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Group/creategroup`, data)
   return response.data?.data
 }
 

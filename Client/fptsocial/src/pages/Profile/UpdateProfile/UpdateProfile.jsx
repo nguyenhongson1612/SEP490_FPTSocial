@@ -77,8 +77,8 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
       } : null,
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
-      'coverImage': typeof data?.coverImage == 'string' ? data?.coverImage : null,
-      'avataphoto': typeof data?.avataphoto == 'string' ? data?.avataphoto : null,
+      'coverImage': typeof data?.coverImage == 'string' ? data?.coverImage : user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl,
+      'avataphoto': typeof data?.avataphoto == 'string' ? data?.avataphoto : user?.coverImage,
       'userInterests': data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })).length == 0 ?
         null : data?.interest?.map(e => ({ interestId: e, userStatusId: data?.interestStatus })),
       'workPlaces': [

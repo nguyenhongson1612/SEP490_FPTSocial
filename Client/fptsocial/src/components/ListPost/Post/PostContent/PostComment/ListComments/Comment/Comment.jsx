@@ -51,7 +51,7 @@ function Comment({ comment }) {
     <div className={`${''}`}>
       <div className='flex gap-2'>
         <img
-          src={'./src/assets/img/user_holder.jpg'}
+          src={'./src/assets/img/avatar_holder.png'}
           className="rounded-[50%] aspect-square object-cover size-10"
         />
         <div className='flex flex-col gap-1'>
@@ -75,8 +75,8 @@ function Comment({ comment }) {
             >
               <form onSubmit={handleSubmit(handleRelyComment)} className='my-4 w-full flex gap-2 px-4'>
                 <img
-                  // src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-                  src={'./src/assets/img/user_holder.jpg'}
+                  // src={user?.avataPhotos?.find(e => e.isUsed == true).avataPhotosUrl || || './src/assets/img/avatar_holder.png'}
+                  src={'./src/assets/img/avatar_holder.png'}
                   className="rounded-[50%] aspect-square object-cover size-10"
                 />
                 <div className='rounded-lg pt-2 w-full'>
