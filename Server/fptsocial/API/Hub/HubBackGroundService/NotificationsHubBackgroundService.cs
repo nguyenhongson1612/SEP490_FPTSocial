@@ -55,7 +55,7 @@ namespace API.Hub
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
             string addMsg = routeOb.AddMsg;
-            Domain.QueryModels.UserProfile sender;
+            //Domain.QueryModels.UserProfile sender;
 
             if (_httpContext == null)
             {
@@ -113,7 +113,7 @@ namespace API.Hub
 
             //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
-            await _createNotifications.CreateNotitfication(senderId, receiverId, msg, url);
+            await _createNotifications.CreateNotitfication(senderId,receiverId, msg, url);
 
         }
 
@@ -121,11 +121,11 @@ namespace API.Hub
         {
             HttpContext _httpContext = context.GetHttpContext();
             dynamic routeOb = JsonConvert.DeserializeObject<dynamic>(notice);
-            string groupId = routeOb.GroupId;
+            string groupId = routeOb.Receiver;
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
             string addMsg = routeOb.AddMsg;
-            Domain.QueryModels.UserProfile sender;
+            //Domain.QueryModels.UserProfile sender;
 
             if (_httpContext == null)
             {

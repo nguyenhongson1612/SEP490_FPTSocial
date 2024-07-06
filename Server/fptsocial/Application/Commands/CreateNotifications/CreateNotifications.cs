@@ -38,8 +38,10 @@ namespace Application.Commands.CreateNotifications
         }
         public async Task CreateNotitfication(string senderId, string receiverId, string notiMessage, string notifiUrl, [Optional] NotificationsTypeEnum? notificationsTypeEnum)
         {
-            //using (var scope = _serviceProvider.CreateScope())
-            //{
+            try
+            {
+                //using (var scope = _serviceProvider.CreateScope())
+                //{
                 Domain.CommandModels.Notification _notification = new();
                 //var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
                 //var _commandcontext = scope.ServiceProvider.GetRequiredService<fptforumCommandContext>();
@@ -47,8 +49,8 @@ namespace Application.Commands.CreateNotifications
                 {
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
-                Domain.QueryModels.UserStatus receiverStatus = await _queryContext.UserStatuses.FirstOrDefaultAsync(x => x.UserStatusId.Equals(Guid.Parse(receiverId)));
-                if (receiverStatus == null)
+                Domain.QueryModels.UserProfile user = await _queryContext.UserProfiles.FirstOrDefaultAsync(x => x.UserId.Equals(Guid.Parse(receiverId)));
+                if (user == null)
                 {
                     throw new ErrorException(StatusCodeEnum.Error);
                 }
@@ -72,15 +74,14 @@ namespace Application.Commands.CreateNotifications
                     _notification.NotificationTypeId = receiverTypeE.NotificationTypeId;
                 }
                 _notification.NotificationId = _helper.GenerateNewGuid();
-                _notification.UserId = Guid.Parse(receiverId);
+                _notification.UserId = user.UserId;
                 _notification.SenderId = Guid.Parse(senderId);
                 _notification.NotiMessage = notiMessage;
-                _notification.UserStatusId = receiverStatus.UserStatusId;
+                _notification.UserStatusId = user.UserStatusId;
                 _notification.IsRead = false;
                 _notification.CreatedAt = DateTime.Now;
                 _notification.NotifiUrl = notifiUrl;
-                try
-                {
+
                     _commandContext.Notifications.Add(_notification);
                     await _commandContext.SaveChangesAsync();
                 }
