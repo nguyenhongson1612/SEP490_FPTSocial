@@ -8,8 +8,11 @@ using Core.CQRS.Query;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +25,13 @@ namespace Application.Queries.GetUserNotificationsList
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
+        private readonly SplitString _splitString;
 
         public GetUserNotificationsListQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+            _splitString = new SplitString();
         }
 
         public async Task<Result<List<GetUserNotificationsListQueryResult>>> Handle(GetUserNotificationsListQuery request, CancellationToken cancellationToken)
@@ -37,7 +42,8 @@ namespace Application.Queries.GetUserNotificationsList
             }
             List<Domain.QueryModels.Notification> notifys = await _context.Notifications
                                     .Include(x => x.NotificationType)
-                                    .Where(x => x.UserId.Equals(request.UserId)).ToListAsync(cancellationToken);
+                                    .Where(x => x.UserId.Equals(request.UserId))
+                                    .ToListAsync(cancellationToken);
             List<GetUserNotificationsListQueryResult> result = new();
             if (notifys == null)
             {
@@ -47,7 +53,11 @@ namespace Application.Queries.GetUserNotificationsList
             {
                 foreach (var notify in notifys)
                 {
+                    var senderName = _splitString.SplitStringForNotify(notify.NotiMessage).First();
+                    var msg = _splitString.SplitStringForNotify(notify.NotiMessage).Last();
                     var mapgender = _mapper.Map<GetUserNotificationsListQueryResult>(notify);
+                    mapgender.SenderName = senderName;
+                    mapgender.NotiMessage = msg;
                     result.Add(mapgender);
                 }
             }
