@@ -9,6 +9,7 @@ namespace Application.DTO.CommentDTO
     public class CommentDto
     {
         public Guid UserId { get; set; }
+        public string Url { get; set; }
         public Guid CommentId { get; set; }
         public Guid UserPostId { get; set; }
         public string? UserName { get; set; }
@@ -16,6 +17,9 @@ namespace Application.DTO.CommentDTO
         public Guid? ParentCommentId { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<CommentDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
     }
 
     public class CommentVideoDto
@@ -28,6 +32,9 @@ namespace Application.DTO.CommentDTO
         public Guid? ParentCommentId { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<CommentVideoDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
     }
 
     public class CommentPhotoDto
@@ -40,5 +47,8 @@ namespace Application.DTO.CommentDTO
         public Guid? ParentCommentId { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<CommentPhotoDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
     }
 }

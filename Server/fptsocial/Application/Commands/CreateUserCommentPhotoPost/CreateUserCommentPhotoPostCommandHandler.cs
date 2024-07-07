@@ -35,15 +35,52 @@ namespace Application.Commands.CreateUserCommentPhotoPost
 
         public async Task<Result<CreateUserCommentPhotoPostCommandResult>> Handle(CreateUserCommentPhotoPostCommand request, CancellationToken cancellationToken)
         {
+            // Check if context is null
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            if (request.Content == null || request.Content == "")
+
+            // Check if content is null or whitespace
+            if (string.IsNullOrWhiteSpace(request.Content))
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            Domain.CommandModels.CommentPhotoPost comment = new Domain.CommandModels.CommentPhotoPost
+
+            int levelCmt = 1;
+            string listNumber = null;
+
+            // Check if there's a parent comment
+            if (request.ParentCommentId.HasValue)
+            {
+                // Find the parent comment
+                var parentComment = await _context.CommentPhotoPosts.FindAsync(request.ParentCommentId.Value);
+
+                // If parent comment doesn't exist, throw error
+                if (parentComment == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.CM02_Parent_Comment_Not_Found);
+                }
+
+                // Determine the level of the new comment based on the parent comment's level
+                if (parentComment.LevelCmt == 1)
+                {
+                    levelCmt = 2;
+                }
+                else if (parentComment.LevelCmt == 2)
+                {
+                    listNumber = parentComment.CommentPhotoPostId.ToString();
+                    levelCmt = 3;
+                }
+                else if (parentComment.LevelCmt == 3)
+                {
+                    listNumber = parentComment.ListNumber;
+                    levelCmt = 3;
+                }
+            }
+
+            // Create the new comment
+            var comment = new Domain.CommandModels.CommentPhotoPost
             {
                 CommentPhotoPostId = _helper.GenerateNewGuid(),
                 UserPostPhotoId = request.UserPostPhotoId,
@@ -51,17 +88,26 @@ namespace Application.Commands.CreateUserCommentPhotoPost
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
                 IsHide = false,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                LevelCmt = levelCmt,
+                ListNumber = listNumber
             };
-            List<CheckingBadWord.BannedWord> BadWords = _checkContent.Compare2String(comment.Content);
-            if (BadWords.Any())
+
+            // Check for banned words
+            List<CheckingBadWord.BannedWord> badWords = _checkContent.Compare2String(comment.Content);
+            if (badWords.Any())
             {
                 comment.IsHide = true;
             }
+
+            // Add comment to the database and save changes
             await _context.CommentPhotoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
+
+            // Prepare the result
             var result = _mapper.Map<CreateUserCommentPhotoPostCommandResult>(comment);
-            result.BannedWords = BadWords;
+            result.BannedWords = badWords;
+
             return Result<CreateUserCommentPhotoPostCommandResult>.Success(result);
         }
 

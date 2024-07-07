@@ -35,28 +35,61 @@ namespace Application.Queries.GetCommentByPostId
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var getComment = await _context.CommentPosts.Include(cp => cp.User).Where(x => x.UserPostId == request.UserPostId).OrderByDescending(x => x.CreatedDate).ToListAsync();
 
-            var result = new GetCommentByPostIdQueryResult() { Posts = new List<CommentDto>()};
-            if (getComment != null)
+            var comments = await (from c in _context.CommentPosts
+                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
+                                  from a in ap.DefaultIfEmpty()
+                                  where c.UserPostId == request.UserPostId && c.IsHide == false
+                                  orderby c.CreatedDate ascending
+                                  select new CommentDto
+                                  {
+                                      UserId = c.UserId,
+                                      UserName = c.User.FirstName + " " + c.User.LastName,
+                                      Url = a.AvataPhotosUrl,
+                                      UserPostId = c.UserPostId,
+                                      CreatedDate = c.CreatedDate,
+                                      Content = c.Content,
+                                      IsHide = c.IsHide,
+                                      CommentId = c.CommentId,
+                                      ParentCommentId = c.ParentCommentId,
+                                      Level = c.LevelCmt,
+                                      ListNumber = c.ListNumber, 
+                                      Replies = new List<CommentDto>()
+                                  })
+                           .ToListAsync(cancellationToken);
+
+            var result = new GetCommentByPostIdQueryResult
             {
-                foreach ( var comment in getComment)
+                Posts = BuildCommentHierarchy(comments)
+            };
+
+            return Result<GetCommentByPostIdQueryResult>.Success(result);
+        }
+
+        private List<CommentDto> BuildCommentHierarchy(List<CommentDto> comments)
+        {
+            var commentDict = comments.ToDictionary(c => c.CommentId);
+
+            foreach (var comment in comments)
+            {
+                // Xử lý comment level 3
+                if (comment.Level == 3 && !string.IsNullOrEmpty(comment.ListNumber))
                 {
-                    CommentDto dto = new CommentDto
+                    Guid parentId = Guid.Parse(comment.ListNumber); // Chuyển ListNumber thành Guid
+
+                    if (commentDict.ContainsKey(parentId))
                     {
-                        UserId = comment.UserId,
-                        UserName = comment.User.FirstName + " " + comment.User.LastName,
-                        UserPostId = comment.UserPostId,
-                        CreatedDate = comment.CreatedDate,
-                        Content = comment.Content,
-                        IsHide = comment.IsHide,    
-                        CommentId = comment.CommentId,
-                        ParentCommentId = comment.ParentCommentId
-                    };
-                    result.Posts.Add(dto);
+                        commentDict[parentId].Replies.Add(comment); // Thêm vào Replies của comment cha (level 2)
+                    }
+                }
+                else if (comment.ParentCommentId.HasValue && commentDict.ContainsKey(comment.ParentCommentId.Value))
+                {
+                    commentDict[comment.ParentCommentId.Value].Replies.Add(comment); // Thêm vào Replies của comment cha (level 2)
+
                 }
             }
-            return Result<GetCommentByPostIdQueryResult>.Success(result);
+
+            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
         }
 
     }
