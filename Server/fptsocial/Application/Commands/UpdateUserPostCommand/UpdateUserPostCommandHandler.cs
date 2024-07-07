@@ -153,6 +153,7 @@ namespace Application.Commands.UpdateUserPostCommand
             }
 
             var result = _mapper.Map<UpdateUserPostCommandResult>(userPost);
+            result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;
             if (haveBadWord.Any())
             {
