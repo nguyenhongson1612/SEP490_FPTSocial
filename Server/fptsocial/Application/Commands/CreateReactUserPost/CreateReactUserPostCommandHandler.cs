@@ -7,6 +7,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,19 +35,50 @@ namespace Application.Commands.CreateReactUserPost
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            Domain.CommandModels.ReactPost reactPost = new Domain.CommandModels.ReactPost
-            {
-                ReactPostId = _helper.GenerateNewGuid(),
-                UserPostId = request.UserPostId,
-                ReactTypeId = request.ReactTypeId,
-                UserId = request.UserId,
-                CreatedDate = DateTime.Now
-            };
 
-            await _context.ReactPosts.AddAsync(reactPost);
+            // 1. Check for Existing Reaction
+            var existingReact = await _context.ReactPosts
+                .FirstOrDefaultAsync(r => r.UserPostId == request.UserPostId && r.UserId == request.UserId, cancellationToken);
+            Domain.CommandModels.ReactPost reactPost = new Domain.CommandModels.ReactPost();
+            if (existingReact != null)
+            {
+                // 2. Handle Existing Reaction (Update or Remove)
+                if (existingReact.ReactTypeId == request.ReactTypeId)
+                {
+                    // User clicked the same react type again -> Remove it
+                    _context.ReactPosts.Remove(existingReact);
+                }
+                else
+                {
+                    // User changed react type -> Update
+                    existingReact.ReactTypeId = request.ReactTypeId;
+                    existingReact.CreatedDate = DateTime.Now; // Optionally update timestamp
+                }
+            }
+            else
+            {
+                // 3. Create New Reaction
+                reactPost = new Domain.CommandModels.ReactPost
+                {
+                    ReactPostId = _helper.GenerateNewGuid(),
+                    UserPostId = request.UserPostId,
+                    ReactTypeId = request.ReactTypeId,
+                    UserId = request.UserId,
+                    CreatedDate = DateTime.Now
+                };
+
+                await _context.ReactPosts.AddAsync(reactPost);
+            }
+
             await _context.SaveChangesAsync();
-            var result = _mapper.Map<CreateReactUserPostCommandResult>(reactPost);
+
+            // 4. Return Result (Consider Adjustments)
+            var result = existingReact != null
+                ? _mapper.Map<CreateReactUserPostCommandResult>(existingReact) // If updated/removed
+                : _mapper.Map<CreateReactUserPostCommandResult>(reactPost);   // If newly created
+
             return Result<CreateReactUserPostCommandResult>.Success(result);
         }
+
     }
 }

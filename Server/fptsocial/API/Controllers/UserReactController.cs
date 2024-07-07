@@ -4,6 +4,7 @@ using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
 using Application.Queries.GetAllReactType;
+using Application.Queries.GetReactByPost;
 using Application.Queries.GetUserStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,6 +67,14 @@ namespace API.Controllers
         {
             var input = new GetAllReactTypeQuery();
             var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByPostId")]
+        public async Task<IActionResult> GetAllReactByPostId([FromQuery] GetReactByPostQuery query)
+        {
+            var res = await _sender.Send(query);
             return Success(res.Value);
         }
     }
