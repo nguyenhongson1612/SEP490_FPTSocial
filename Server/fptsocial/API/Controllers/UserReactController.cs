@@ -3,6 +3,8 @@ using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
+using Application.Queries.GetAllReactType;
+using Application.Queries.GetUserStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +58,15 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("getAllReactType")]
+        public async Task<IActionResult> GetAllReactType()
+        {
+            var input = new GetAllReactTypeQuery();
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
     }
 }
