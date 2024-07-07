@@ -7,6 +7,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,18 +35,48 @@ namespace Application.Commands.CreateReactUserVideoPost
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            Domain.CommandModels.ReactVideoPost reactPost = new Domain.CommandModels.ReactVideoPost
-            {
-                ReactVideoPostId = _helper.GenerateNewGuid(),
-                UserPostVideoId = request.UserPostVideoId,
-                ReactTypeId = request.ReactTypeId,
-                UserId = request.UserId,
-                CreatedDate = DateTime.Now
-            };
 
-            await _context.ReactVideoPosts.AddAsync(reactPost);
+            // 1. Kiểm tra phản ứng hiện có
+            var existingReact = await _context.ReactVideoPosts
+                .FirstOrDefaultAsync(r => r.UserPostVideoId == request.UserPostVideoId && r.UserId == request.UserId, cancellationToken);
+
+            if (existingReact != null)
+            {
+                // 2. Xử lý phản ứng hiện có
+                if (existingReact.ReactTypeId == request.ReactTypeId)
+                {
+                    // Cùng loại phản ứng -> Xóa
+                    _context.ReactVideoPosts.Remove(existingReact);
+                }
+                else
+                {
+                    // Khác loại phản ứng -> Cập nhật
+                    existingReact.ReactTypeId = request.ReactTypeId;
+                    existingReact.CreatedDate = DateTime.Now;
+                }
+            }
+            else
+            {
+                // 3. Tạo phản ứng mới
+                Domain.CommandModels.ReactVideoPost reactPost = new Domain.CommandModels.ReactVideoPost
+                {
+                    ReactVideoPostId = _helper.GenerateNewGuid(),
+                    UserPostVideoId = request.UserPostVideoId,
+                    ReactTypeId = request.ReactTypeId,
+                    UserId = request.UserId,
+                    CreatedDate = DateTime.Now
+                };
+
+                await _context.ReactVideoPosts.AddAsync(reactPost);
+            }
+
             await _context.SaveChangesAsync();
-            var result = _mapper.Map<CreateReactUserVideoPostCommandResult>(reactPost);
+
+            // 4. Trả về kết quả
+            var result = existingReact != null
+                ? _mapper.Map<CreateReactUserVideoPostCommandResult>(existingReact) // Nếu cập nhật/xóa
+                : _mapper.Map<CreateReactUserVideoPostCommandResult>(await _context.ReactVideoPosts.FirstOrDefaultAsync(r => r.UserPostVideoId == request.UserPostVideoId && r.UserId == request.UserId, cancellationToken)); // Nếu mới tạo
+
             return Result<CreateReactUserVideoPostCommandResult>.Success(result);
         }
     }
