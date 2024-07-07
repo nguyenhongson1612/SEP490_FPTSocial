@@ -35,7 +35,9 @@ function RightTopBar() {
           className="mr-2">
           <div className="flex items-center relative cursor-pointer" onClick={handleClick} ref={notificationRef}>
             <IconBell className='size-10 p-2 text-white bg-[#F27125] rounded-full' />
-            <span className="absolute -right-3 text-center -top-1 font-bold px-1 bg-red-600 text-white rounded-full border size-6">{listLatestNotification?.length}</span>
+            <span className="absolute -right-3 -top-1 font-bold px-1 bg-red-600 text-white rounded-full border size-6 flex justify-center">
+              <span>{listLatestNotification?.length}</span>
+            </span>
           </div>
           <Popover
             open={isOpenPopover}
