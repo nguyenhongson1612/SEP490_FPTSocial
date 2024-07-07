@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading;
 
@@ -46,7 +47,7 @@ namespace API.Hub
             _connections = connections;
         }
 
-        public async Task SendReactNotifyService(HubCallerContext context, string notice)
+        public async Task SendNotifyService(HubCallerContext context, string notice)
         {
             HttpContext _httpContext = context.GetHttpContext();
             dynamic routeOb = JsonConvert.DeserializeObject<dynamic>(notice);
@@ -54,7 +55,7 @@ namespace API.Hub
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
             string addMsg = routeOb.AddMsg;
-            Domain.QueryModels.UserProfile sender;
+            //Domain.QueryModels.UserProfile sender;
 
             if (_httpContext == null)
             {
@@ -95,7 +96,7 @@ namespace API.Hub
             {
                 SenderId = senderId,
                 SenderName = senderName,
-                ReciverId = receiverId,
+                //ReciverId = receiverId,
                 SenderAvatar = senderInfo.SenderAvatarURL,
                 Message = msg,
                 Url = url
@@ -112,9 +113,75 @@ namespace API.Hub
 
             //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
-            await _createNotifications.CreateNotitfication(senderId, receiverId, msg, url);
+            await _createNotifications.CreateNotitfication(senderId,receiverId, msg, url);
 
         }
+
+        public async Task SendGroupNotifyService(HubCallerContext context, string notice)
+        {
+            HttpContext _httpContext = context.GetHttpContext();
+            dynamic routeOb = JsonConvert.DeserializeObject<dynamic>(notice);
+            string groupId = routeOb.Receiver;
+            string url = routeOb.Url;
+            string code = routeOb.MsgCode;
+            string addMsg = routeOb.AddMsg;
+            //Domain.QueryModels.UserProfile sender;
+
+            if (_httpContext == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var rawToken = _httpContext.Request.Query["access_token"];
+
+            var path = _httpContext.Request.Path;
+            if (string.IsNullOrEmpty(rawToken) &&
+                (!path.StartsWithSegments("/notificationsHub")))
+            {
+                await _hubContext.Clients.Client(context.ConnectionId).ReceiveNotification($"The  ({context.ConnectionId}) Connected Fail!");
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                await _hubContext.Clients.Client(context.ConnectionId).ReceiveNotification($"The  ({context.ConnectionId}) Connected Fail!");
+            }
+            var senderId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+
+
+
+            var senderInfo = _getNotifications.GetAvatarBySenderId(senderId);
+            var groupMember = _getNotifications.GetGroupMemberByGroupId(groupId);
+
+            string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
+            string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
+            string msg = notificationsMessage + addMsg;
+            NotificationOutDTO notificationOutDTO = new()
+            {
+                SenderId = senderId,
+                SenderName = senderName,
+                //ReciverId = receiverId,
+                SenderAvatar = senderInfo.SenderAvatarURL,
+                Message = msg,
+                Url = url
+
+            };
+            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
+            //await _hubContext.Clients.All.ReceiveNotification(msg, url);
+            //var receiverConnectId = _connections.GetConnections(receiverId);
+            foreach (var receiver in groupMember)
+            {
+                foreach (var connectionId in _connections.GetConnections(receiver.UserId.ToString()))
+                {
+                    await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                    /// [OPTIMIZE] If create oke, i will a new create for group msg to move out create method of for loop
+                    await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msg, url);
+                }
+            }
+           
+
+        }
+
+
         /// <summary>
         /// When the Receiver are connecting
         /// After Notification was created in DB, this method will be trigged and push list notifications to Receiver
