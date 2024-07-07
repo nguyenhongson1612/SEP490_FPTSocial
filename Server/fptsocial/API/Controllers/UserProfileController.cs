@@ -3,10 +3,12 @@ using Application.Commands.UpdateUserCommand;
 using Application.Queries.CheckUserExist;
 using Application.Queries.GetAllFriend;
 using Application.Queries.GetAllFriendOtherProfiel;
+using Application.Queries.GetAllRequestFriend;
 using Application.Queries.GetButtonFriend;
 using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserProfile;
+using Application.Queries.SuggestFriend;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -132,6 +134,28 @@ namespace API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("getallfriendrequest")]
+        public async Task<IActionResult> GetAllFriendRequest()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new GetAllRequestFriendQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
 
         [HttpGet]
         [Route("getallfriendotherprofile")]
@@ -206,5 +230,28 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
+
+        [HttpGet]
+        [Route("suggestionfriend")]
+        public async Task<IActionResult> SuggesstionFriend()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new SuggestionFriendQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
     }
 }

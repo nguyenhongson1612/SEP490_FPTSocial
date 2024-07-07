@@ -44,6 +44,9 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             var listfriendrq = await _context.Friends
                 .Include(x => x.User)
                 .Where(x => (x.FriendId == request.UserId && x.Confirm == true)).ToListAsync();
+            var list = new List<Domain.QueryModels.Friend>();
+            list.AddRange(listfriend);
+            list.AddRange(listfriendrq);
             var listallfriend = new List<Domain.QueryModels.UserProfile>();
             var listreact = new Dictionary<Guid, int?>();
             foreach (var fr in listfriend)
@@ -85,7 +88,7 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                 foreach (var friend in listallfriend)
                 {
                     var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true).ToList();
-                    var mutualfriend = otherfriend.Intersect(listmyfriend);
+                    var mutualfriend = otherfriend.Intersect(list);
                     var frienddto = new GetAllFriendDTO
                     {
                         FriendId = friend.UserId,
