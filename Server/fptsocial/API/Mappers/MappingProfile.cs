@@ -64,6 +64,7 @@ using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.CreateGroupPost;
 using Application.Queries.GetUserNotificationsList;
 using Application.Commands.UpdateNotificationStatus;
+using Application.Commands.UpdateUserPostCommand;
 
 namespace Application.Mappers
 {
@@ -196,6 +197,8 @@ namespace Application.Mappers
 
             CreateMap<Command.CommentPhotoPost, CreateUserCommentPhotoPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.UserPost, UpdateUserPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
             CreateMap<Query.CommentPost, CommentDto>()
