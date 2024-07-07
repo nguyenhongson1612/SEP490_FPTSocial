@@ -1,4 +1,5 @@
 ﻿using API.Hub.SubscribeSqlTableDependencies;
+using Domain.Extensions;
 using System.Configuration;
 
 namespace API.Middlewares
@@ -7,15 +8,18 @@ namespace API.Middlewares
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
+        private readonly SplitString _splitString;
         public NotificationsHostedService(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
+            _splitString = new SplitString();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            string connectionString = _configuration.GetSection("ConnectionStrings").GetSection("SignalConnection").Value;
+
+            string connectionString = _splitString.SplitStringAfterForConnectString(_configuration.GetSection("ConnectionStrings").GetSection("QueryConnection").Value).First();
             using (var scope = _serviceProvider.CreateScope())
             {
                 var notificationsTableDependency = scope.ServiceProvider.GetRequiredService<SubscribeNotificationsTableDependency>();

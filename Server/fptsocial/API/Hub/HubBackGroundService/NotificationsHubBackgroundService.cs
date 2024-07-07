@@ -6,6 +6,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Query;
@@ -25,12 +26,14 @@ namespace API.Hub
     
     public class NotificationsHubBackgroundService : BackgroundService, INotificationsHubBackgroundService
     {
+        const string SEC = ")s%ec!r_e-t?^(";
         const string NORMAL = "Normal";
         private static readonly TimeSpan Period = TimeSpan.FromSeconds(3);
         private readonly ConnectionMapping<string> _connections;
         private readonly ICreateNotifications _createNotifications;
         private readonly IGetNotifications _getNotifications;
         private readonly GuidHelper _helper;
+        private readonly SplitString _splitString;
         private readonly ILogger<NotificationsHubBackgroundService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
@@ -45,6 +48,7 @@ namespace API.Hub
             _getNotifications = getNotifications;
             _hubContext = hubContext;
             _connections = connections;
+            _splitString = new SplitString();
         }
 
         public async Task SendNotifyService(HubCallerContext context, string notice)
@@ -55,7 +59,7 @@ namespace API.Hub
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
             string addMsg = routeOb.AddMsg;
-            //Domain.QueryModels.UserProfile sender;
+            Domain.QueryModels.UserProfile sender;
 
             if (_httpContext == null)
             {
@@ -91,6 +95,7 @@ namespace API.Hub
 
             string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
             string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
+            string msgDB = senderName + SEC + notificationsMessage + addMsg;
             string msg = notificationsMessage + addMsg;
             NotificationOutDTO notificationOutDTO = new()
             {
@@ -113,7 +118,7 @@ namespace API.Hub
 
             //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
-            await _createNotifications.CreateNotitfication(senderId,receiverId, msg, url);
+            await _createNotifications.CreateNotitfication(senderId,receiverId, msgDB, url);
 
         }
 
@@ -154,6 +159,7 @@ namespace API.Hub
 
             string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
             string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
+            string msgDB = senderName + SEC + notificationsMessage + addMsg;
             string msg = notificationsMessage + addMsg;
             NotificationOutDTO notificationOutDTO = new()
             {
@@ -174,7 +180,7 @@ namespace API.Hub
                 {
                     await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
                     /// [OPTIMIZE] If create oke, i will a new create for group msg to move out create method of for loop
-                    await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msg, url);
+                    await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msgDB, url);
                 }
             }
            
@@ -198,17 +204,19 @@ namespace API.Hub
             var receiverConnectId = _connections.GetConnections(userId);
 
             HttpContext _httpContext = context.GetHttpContext();
-            List<Domain.QueryModels.Notification> notice = _getNotifications.GetNotifyByUserId(userId);
+            List<Domain.QueryModels.Notification> rawNotice = _getNotifications.GetNotifyByUserId(userId);
 
-            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notice);
+            foreach (var noti in rawNotice)
+            {
+                noti.NotiMessage = _splitString.SplitStringForNotify(noti.NotiMessage).Last();
+            }
 
+            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(rawNotice);
 
-            //await _hubContext.Clients.User(receiverId).ReceiveNotification(msg, url);
             foreach (var connectionId in receiverConnectId)
             {
                 await _hubContext.Clients.Client(connectionId).listReceiveNotification(jsonNotice);
             }
-
 
         }
 
