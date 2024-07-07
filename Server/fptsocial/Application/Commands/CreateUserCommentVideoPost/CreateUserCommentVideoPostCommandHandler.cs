@@ -35,15 +35,53 @@ namespace Application.Commands.CreateUserCommentVideoPost
 
         public async Task<Result<CreateUserCommentVideoPostCommandResult>> Handle(CreateUserCommentVideoPostCommand request, CancellationToken cancellationToken)
         {
+            // Check for null context
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            if (request.Content == null || request.Content == "")
+
+            // Check if content is null or whitespace
+            if (string.IsNullOrWhiteSpace(request.Content))
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            Domain.CommandModels.CommentVideoPost comment = new Domain.CommandModels.CommentVideoPost
+
+            // Initialize comment level and list number
+            int levelCmt = 1;
+            string listNumber = null;
+
+            // Check if there's a parent comment
+            if (request.ParentCommentId.HasValue)
+            {
+                // Find parent comment in the database
+                var parentComment = await _context.CommentVideoPosts.FindAsync(request.ParentCommentId.Value);
+
+                // If parent comment doesn't exist, throw an error
+                if (parentComment == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.CM02_Parent_Comment_Not_Found);
+                }
+
+                // Determine the level of the new comment based on parent
+                if (parentComment.LevelCmt == 1)
+                {
+                    levelCmt = 2;
+                }
+                else if (parentComment.LevelCmt == 2)
+                {
+                    listNumber = parentComment.CommentVideoPostId.ToString();
+                    levelCmt = 3;
+                }
+                else if (parentComment.LevelCmt == 3)
+                {
+                    listNumber = parentComment.ListNumber;
+                    levelCmt = 3;
+                }
+            }
+
+            // Create new comment with determined level and list number
+            var comment = new Domain.CommandModels.CommentVideoPost
             {
                 CommentVideoPostId = _helper.GenerateNewGuid(),
                 UserPostVideoId = request.UserPostVideoId,
@@ -51,20 +89,27 @@ namespace Application.Commands.CreateUserCommentVideoPost
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
                 IsHide = false,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                LevelCmt = levelCmt,
+                ListNumber = listNumber
             };
-            List<CheckingBadWord.BannedWord> BadWords = _checkContent.Compare2String(comment.Content);
-            if (BadWords.Any())
+
+            // Check for banned words
+            List<CheckingBadWord.BannedWord> badWords = _checkContent.Compare2String(comment.Content);
+            if (badWords.Any())
             {
                 comment.IsHide = true;
             }
+
+            // Add comment to the database and save changes
             await _context.CommentVideoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
+
+            // Map the result and include banned words
             var result = _mapper.Map<CreateUserCommentVideoPostCommandResult>(comment);
-            result.BannedWords = BadWords;
+            result.BannedWords = badWords;
+
             return Result<CreateUserCommentVideoPostCommandResult>.Success(result);
         }
-
-
     }
 }
