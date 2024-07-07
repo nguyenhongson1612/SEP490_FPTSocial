@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Application.Queries.GetCommentByPhotoPostId;
 using Application.Queries.GetOtherUserPost;
+using Application.Commands.UpdateUserPostCommand;
 
 namespace API.Controllers
 {
@@ -156,6 +157,14 @@ namespace API.Controllers
 
         }
 
+        [HttpPost]
+        [Route("updateUserPost")]
+        public async Task<IActionResult> UpdateUserPost(UpdateUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
 
     }
 }

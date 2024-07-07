@@ -86,5 +86,9 @@ namespace Domain.Enums
         GR08_Group_Is_Not_Exist,
         [Description("Group post have bad word")]
         GR09_Group_Post_Have_Bad_Word,
+        [Description("Your post have bad word")]
+        UP01_Post_Have_Bad_Word,
+        [Description("Your post not found")]
+        UP02_Post_Not_Found,
     }
 }
