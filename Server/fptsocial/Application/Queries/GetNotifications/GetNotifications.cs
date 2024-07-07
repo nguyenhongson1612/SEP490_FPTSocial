@@ -85,7 +85,7 @@ namespace Application.Queries.GetNotifications
                 }
                 var notice = _querycontext.Notifications.Where(x => x.UserId == Guid.Parse(userId))
                                                         .OrderByDescending(x => x.CreatedAt)
-                                                        .Take(15)
+                                                        .Take(10)
                                                         .ToList();
                 if (notice == null)
                 {
