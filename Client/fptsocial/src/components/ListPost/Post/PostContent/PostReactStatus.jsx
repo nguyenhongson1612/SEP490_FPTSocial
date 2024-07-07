@@ -1,10 +1,18 @@
 import { IconHeart, IconMessageCircle, IconMoodAngry, IconShare3, IconThumbDownFilled, IconThumbUp, IconThumbUpFilled } from '@tabler/icons-react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { showModalActivePost, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 
 function PostReactStatus({ postData }) {
-
   const dispatch = useDispatch()
+  const [selectedEmoji, setSelectedEmoji] = useState(null);
+
+  const onEmojiClick = (event, emojiObject) => {
+    setSelectedEmoji(emojiObject);
+    // Ở đây bạn có thể xử lý logic lưu trữ phản ứng emoji vào bài post
+    console.log(`Bạn đã chọn emoji: ${emojiObject.emoji}`);
+  };
+
   const handleOpenCurrenPostModal = () => {
     dispatch(showModalActivePost())
     dispatch(updateCurrentActivePost(postData))
@@ -35,6 +43,14 @@ function PostReactStatus({ postData }) {
       <div id="post-react-action"
         className="w-full flex items-center justify-between border-t">
         {/* <a className="flex items-center justify-center hover:bg-fbWhite py-1 rounded-md relative  [&>#test]:hover:!opacity-100 hover:scale-150 basis-1/3" */}
+        {/* <Picker
+          navPosition="none"
+          skinTonePosition={'none'}
+          searchPosition="none"
+          noResultsEmoji
+          previewPosition="none"
+          onEmojiSelect={console.log} /> */}
+
         <a className="flex items-center justify-center hover:bg-fbWhite py-1 rounded-md relative  [&>#test]:hover:!opacity-100 basis-1/3"
         >
           <IconThumbUp stroke={1} />

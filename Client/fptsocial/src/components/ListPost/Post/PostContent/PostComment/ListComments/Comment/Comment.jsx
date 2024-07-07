@@ -33,7 +33,7 @@ function Comment({ comment }) {
       'userPostId': comment?.userPostId,
       'userId': user?.userId,
       'content': content,
-      'parentCommentId': comment?.userId
+      'parentCommentId': comment?.commentId
     }
 
     toast.promise(

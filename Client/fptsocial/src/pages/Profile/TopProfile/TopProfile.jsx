@@ -5,6 +5,7 @@ import { IconEdit, IconUserCheck, IconUserPlus, IconUserX } from '@tabler/icons-
 import { Link } from 'react-router-dom';
 import connectionSignalR from '~/utils/signalRConnection';
 import { Avatar } from '@mui/material';
+import { toast } from 'react-toastify';
 // import Avatar from '~/components/UI/Avatar';
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {

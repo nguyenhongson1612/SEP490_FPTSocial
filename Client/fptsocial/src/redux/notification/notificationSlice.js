@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 export const notificationSlice = createSlice({
   name: 'notification',
   initialState: {
-    latestNotifications: null
+    latestNotifications: null,
   },
   reducers: {
     addLatestNotification: (state, action) => {
