@@ -118,7 +118,7 @@ namespace API.Hub
 
             //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
-            await _createNotifications.CreateNotitfication(senderId,receiverId, msg, url);
+            await _createNotifications.CreateNotitfication(senderId,receiverId, msgDB, url);
 
         }
 
@@ -159,6 +159,7 @@ namespace API.Hub
 
             string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
             string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
+            string msgDB = senderName + SEC + notificationsMessage + addMsg;
             string msg = notificationsMessage + addMsg;
             NotificationOutDTO notificationOutDTO = new()
             {
@@ -179,7 +180,7 @@ namespace API.Hub
                 {
                     await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
                     /// [OPTIMIZE] If create oke, i will a new create for group msg to move out create method of for loop
-                    await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msg, url);
+                    await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msgDB, url);
                 }
             }
            
