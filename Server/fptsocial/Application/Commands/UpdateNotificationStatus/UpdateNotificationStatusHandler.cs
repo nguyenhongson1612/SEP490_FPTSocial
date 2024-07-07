@@ -54,7 +54,18 @@ namespace Application.Commands.UpdateNotificationStatus
             _context.Notifications.Update(updateNotify);
             await _context.SaveChangesAsync();
 
-            var result = _mapper.Map<UpdateNotificationStatusResult>(updateNotify);
+            var result = new UpdateNotificationStatusResult
+            {
+                UserId = notify.UserId,
+                SenderId = notify.SenderId,
+                NotificationTypeId = notify.NotificationTypeId,
+                UserStatusId = notify.UserStatusId,
+                NotificationId = request.NotificationId,
+                NotiMessage = notify.NotiMessage,
+                CreatedAt = notify.CreatedAt,
+                NotifiUrl = notify.NotifiUrl,
+                IsRead = true,
+            };
 
             return Result<UpdateNotificationStatusResult>.Success(result);
         }

@@ -3,18 +3,12 @@ using Application.DTO.NotificationDTO;
 using Application.Hub;
 using Application.Queries.GetNotifications;
 using Core.Helper;
-using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Extensions;
-using Domain.QueryModels;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
-using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
-using System.Threading;
 
 namespace API.Hub
 {
@@ -23,7 +17,7 @@ namespace API.Hub
         NORMAL,
         IMPORTANCE
     }
-    
+
     public class NotificationsHubBackgroundService : BackgroundService, INotificationsHubBackgroundService
     {
         const string SEC = ")s%ec!r_e-t?^(";
@@ -38,6 +32,8 @@ namespace API.Hub
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
         private readonly HubCallerContext _hubCallerContext;
+        private readonly NotificationOutDTO _notificationOutDTO;
+        private readonly List<NotificationOutDTO> _listNotificationOutDTO;
         public NotificationsHubBackgroundService(ILogger<NotificationsHubBackgroundService> logger, IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
             ICreateNotifications createNotifications, IGetNotifications getNotifications, ConnectionMapping<string> connections)
         {
@@ -49,6 +45,8 @@ namespace API.Hub
             _hubContext = hubContext;
             _connections = connections;
             _splitString = new SplitString();
+            _notificationOutDTO = new();
+            _listNotificationOutDTO = new();
         }
 
         public async Task SendNotifyService(HubCallerContext context, string notice)
@@ -118,7 +116,7 @@ namespace API.Hub
 
             //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
 
-            await _createNotifications.CreateNotitfication(senderId,receiverId, msgDB, url);
+            await _createNotifications.CreateNotitfication(senderId, receiverId, msgDB, url);
 
         }
 
@@ -183,7 +181,7 @@ namespace API.Hub
                     await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msgDB, url);
                 }
             }
-           
+
 
         }
 
@@ -205,13 +203,28 @@ namespace API.Hub
 
             HttpContext _httpContext = context.GetHttpContext();
             List<Domain.QueryModels.Notification> rawNotice = _getNotifications.GetNotifyByUserId(userId);
-
             foreach (var noti in rawNotice)
             {
-                noti.NotiMessage = _splitString.SplitStringForNotify(noti.NotiMessage).Last();
-            }
+                if (noti.UserId == noti.SenderId)
+                {
+                    continue;
+                }
+                else
+                {
+                    var senderInfo = _getNotifications.GetAvatarBySenderId(noti.SenderId.ToString());
 
-            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(rawNotice);
+                    string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
+
+                    _notificationOutDTO.SenderId = noti.SenderId.ToString();
+                    _notificationOutDTO.SenderName = senderName;
+                    _notificationOutDTO.SenderAvatar = senderInfo.SenderAvatarURL;
+                    _notificationOutDTO.Message = _splitString.SplitStringForNotify(noti.NotiMessage).Last();
+                    _notificationOutDTO.Url = noti.NotifiUrl;
+                    _listNotificationOutDTO.Add(_notificationOutDTO);
+                } 
+
+            }
+            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(_listNotificationOutDTO);
 
             foreach (var connectionId in receiverConnectId)
             {
@@ -229,7 +242,7 @@ namespace API.Hub
                 DateTime datetime = DateTime.Now;
                 _logger.LogInformation($"excute {1}", nameof(NotificationsHubBackgroundService), datetime);
 
-                
+
             }
         }
         public override Task StartAsync(CancellationToken cancellationToken)
