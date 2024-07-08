@@ -18,10 +18,10 @@ namespace API.Hub.SubscribeSqlTableDependencies
 
         public void SubscribeTableDependency(string connectionString)
         {
-            _notificationCommandTableDependency = new SqlTableDependency<Notification>(connectionString);
-            _notificationCommandTableDependency.OnChanged += TableDependency_OnChanged;
-            _notificationCommandTableDependency.OnError += TableDependency_OnError;
-            _notificationCommandTableDependency.Start();
+        //    _notificationCommandTableDependency = new SqlTableDependency<Notification>(connectionString);
+        //    _notificationCommandTableDependency.OnChanged += TableDependency_OnChanged;
+        //    _notificationCommandTableDependency.OnError += TableDependency_OnError;
+        //    _notificationCommandTableDependency.Start();
         }
 
         private async void TableDependency_OnChanged(object sender, TableDependency.SqlClient.Base.EventArgs.RecordChangedEventArgs<Notification> e)
