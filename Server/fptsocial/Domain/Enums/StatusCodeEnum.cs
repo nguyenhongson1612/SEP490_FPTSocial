@@ -92,5 +92,7 @@ namespace Domain.Enums
         UP01_Post_Have_Bad_Word,
         [Description("Your post not found")]
         UP02_Post_Not_Found,
+        [Description("This account is protected!")]
+        PS01_Profile_Status_Private,
     }
 }
