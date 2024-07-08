@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using Application.Queries.GetCommentByPhotoPostId;
 using Application.Queries.GetOtherUserPost;
 using Application.Commands.UpdateUserPostCommand;
+using Application.Queries.GetUserPostPhoto;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace API.Controllers
 {
@@ -164,6 +166,14 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("getuserpostphoto")]
+        public async Task<IActionResult> GetUserPostPhoto([FromQuery]GetUserPostPhotoQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
 
     }

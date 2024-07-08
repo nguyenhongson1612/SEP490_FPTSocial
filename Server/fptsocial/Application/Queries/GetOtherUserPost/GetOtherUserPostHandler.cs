@@ -39,6 +39,15 @@ namespace Application.Queries.GetOtherUserPost
                 return Result<List<GetOtherUserPostResult>>.Failure("UserId is required.");
             }
 
+            var idprofilestatus = _context.Settings.Where(x => x.SettingName.Contains("Profile Status")).Select(x => x.SettingId).FirstOrDefault();
+            var idpublic = _context.UserStatuses.Where(x => x.StatusName.Contains("Public")).Select(x => x.UserStatusId).FirstOrDefault();
+            var setting = _context.UserSettings.FirstOrDefault(x => x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
+
+            if (setting != null)
+            {
+                throw new ErrorException(StatusCodeEnum.PS01_Profile_Status_Private);
+            }
+
             var isFriend = _context.Friends
                             .FirstOrDefault(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId && x.Confirm == true) 
                             || (x.UserId == request.OtherUserId && x.FriendId == request.UserId && x.Confirm == true));
