@@ -1,6 +1,4 @@
-﻿using Application.Commands.CreateUserCommentVideoPost;
-using Application.Commands.CreateUserGender;
-using Application.Commands.Post;
+﻿using Application.Commands.CreateUserCommentPost;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -9,7 +7,6 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
-using Domain.QueryModels;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -17,9 +14,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.CreateUserCommentPost
+namespace Application.Commands.CreateUserCommentGroupPhotoPost
 {
-    public class CreateUserCommentPostCommandHandler : ICommandHandler<CreateUserCommentPostCommand, CreateUserCommentPostCommandResult>
+    public class CreateUserCommentGroupPhotoPostCommandHandler : ICommandHandler<CreateUserCommentGroupPhotoPostCommand, CreateUserCommentGroupPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly IMapper _mapper;
@@ -27,7 +24,7 @@ namespace Application.Commands.CreateUserCommentPost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentGroupPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -36,15 +33,15 @@ namespace Application.Commands.CreateUserCommentPost
             _checkContent = new CheckingBadWord();
         }
 
-        public async Task<Result<CreateUserCommentPostCommandResult>> Handle(CreateUserCommentPostCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CreateUserCommentGroupPhotoPostCommandResult>> Handle(CreateUserCommentGroupPhotoPostCommand request, CancellationToken cancellationToken)
         {
-            // Check if the context is null
+            // Check if context is null
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            // Check if the request content is null or whitespace
+            // Check if content is null or whitespace
             if (string.IsNullOrWhiteSpace(request.Content))
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
@@ -53,25 +50,26 @@ namespace Application.Commands.CreateUserCommentPost
             int levelCmt = 1;
             string listNumber = null;
 
-            // If the request has a ParentCommentId, find the parent comment
+            // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
             {
-                var parentComment = await _context.CommentPosts.FindAsync(request.ParentCommentId.Value);
+                // Find the parent comment
+                var parentComment = await _context.CommentPhotoGroupPosts.FindAsync(request.ParentCommentId.Value);
 
-                // Check if the parent comment exists
+                // If parent comment doesn't exist, throw error
                 if (parentComment == null || parentComment.IsHide == true)
                 {
                     throw new ErrorException(StatusCodeEnum.CM02_Parent_Comment_Not_Found);
                 }
 
-                // Determine the level of the comment based on the parent comment's level
+                // Determine the level of the new comment based on the parent comment's level
                 if (parentComment.LevelCmt == 1)
                 {
                     levelCmt = 2;
                 }
                 else if (parentComment.LevelCmt == 2)
                 {
-                    listNumber = parentComment.CommentId.ToString();
+                    listNumber = parentComment.CommentPhotoGroupPostId.ToString();
                     levelCmt = 3;
                 }
                 else if (parentComment.LevelCmt == 3)
@@ -81,11 +79,11 @@ namespace Application.Commands.CreateUserCommentPost
                 }
             }
 
-            // Create a new comment
-            Domain.CommandModels.CommentPost comment = new Domain.CommandModels.CommentPost
+            // Create the new comment
+            var comment = new Domain.CommandModels.CommentPhotoGroupPost
             {
-                CommentId = _helper.GenerateNewGuid(),
-                UserPostId = request.UserPostId,
+                CommentPhotoGroupPostId = _helper.GenerateNewGuid(),
+                GroupPostPhotoId = request.GroupPostPhotoId,
                 UserId = request.UserId,
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
@@ -95,26 +93,28 @@ namespace Application.Commands.CreateUserCommentPost
                 ListNumber = listNumber
             };
 
-            // Check for banned words in the content
+            // Check for banned words
             List<CheckingBadWord.BannedWord> badWords = _checkContent.Compare2String(comment.Content);
             if (badWords.Any())
             {
                 comment.IsHide = true;
             }
 
-            // Add the comment to the context and save changes
-            await _context.CommentPosts.AddAsync(comment);
+            // Add comment to the database and save changes
+            await _context.CommentPhotoGroupPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 
-            // Map the comment to the result object
-            var result = _mapper.Map<CreateUserCommentPostCommandResult>(comment);
+            // Prepare the result
+            var result = _mapper.Map<CreateUserCommentGroupPhotoPostCommandResult>(comment);
             result.BannedWords = badWords;
-            if (badWords.Any()) 
+            if (badWords.Any())
             {
                 throw new ErrorException(StatusCodeEnum.CM03_Comment_Contain_Bad_Word);
             }
-            // Return the result
-            return Result<CreateUserCommentPostCommandResult>.Success(result);
+
+            return Result<CreateUserCommentGroupPhotoPostCommandResult>.Success(result);
         }
+
+
     }
 }
