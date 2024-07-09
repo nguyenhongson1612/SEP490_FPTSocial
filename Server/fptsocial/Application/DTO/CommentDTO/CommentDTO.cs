@@ -72,7 +72,6 @@ namespace Application.DTO.CommentDTO
     {
         public Guid UserId { get; set; }
         public string Url { get; set; }
-        public Guid CommentGroupPhotoPostId { get; set; }
         public Guid CommentPhotoGroupPostId { get; set; }
         public Guid GroupPostPhotoId { get; set; }
         public string? UserName { get; set; }
@@ -90,7 +89,6 @@ namespace Application.DTO.CommentDTO
         public Guid UserId { get; set; }
         public string Url { get; set; }
         public Guid CommentGroupVideoPostId { get; set; }
-        public Guid CommentVideoGroupPostId { get; set; }
         public Guid GroupPostVideoId { get; set; }
         public string? UserName { get; set; }
         public string? Content { get; set; }

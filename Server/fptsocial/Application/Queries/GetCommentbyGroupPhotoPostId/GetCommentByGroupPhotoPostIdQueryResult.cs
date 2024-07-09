@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.DTO.CommentDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
 {
     public class GetCommentByGroupPhotoPostIdQueryResult
     {
+        public List<GroupPhotoCommentDto>? Posts { get; set; }
+
     }
 }

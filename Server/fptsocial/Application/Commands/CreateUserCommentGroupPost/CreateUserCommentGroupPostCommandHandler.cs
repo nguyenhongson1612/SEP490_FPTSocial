@@ -17,9 +17,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.CreateUserCommentPost
+namespace Application.Commands.CreateUserCommentGroupPost
 {
-    public class CreateUserCommentPostCommandHandler : ICommandHandler<CreateUserCommentPostCommand, CreateUserCommentPostCommandResult>
+    public class CreateUserCommentGroupPostCommandHandler : ICommandHandler<CreateUserCommentGroupPostCommand, CreateUserCommentGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ namespace Application.Commands.CreateUserCommentPost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentGroupPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -36,7 +36,7 @@ namespace Application.Commands.CreateUserCommentPost
             _checkContent = new CheckingBadWord();
         }
 
-        public async Task<Result<CreateUserCommentPostCommandResult>> Handle(CreateUserCommentPostCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CreateUserCommentGroupPostCommandResult>> Handle(CreateUserCommentGroupPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
             if (_context == null)
@@ -56,7 +56,7 @@ namespace Application.Commands.CreateUserCommentPost
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
-                var parentComment = await _context.CommentPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _context.CommentGroupPosts.FindAsync(request.ParentCommentId.Value);
 
                 // Check if the parent comment exists
                 if (parentComment == null || parentComment.IsHide == true)
@@ -71,7 +71,7 @@ namespace Application.Commands.CreateUserCommentPost
                 }
                 else if (parentComment.LevelCmt == 2)
                 {
-                    listNumber = parentComment.CommentId.ToString();
+                    listNumber = parentComment.CommentGroupPostId.ToString();
                     levelCmt = 3;
                 }
                 else if (parentComment.LevelCmt == 3)
@@ -82,10 +82,10 @@ namespace Application.Commands.CreateUserCommentPost
             }
 
             // Create a new comment
-            Domain.CommandModels.CommentPost comment = new Domain.CommandModels.CommentPost
+            Domain.CommandModels.CommentGroupPost comment = new Domain.CommandModels.CommentGroupPost
             {
-                CommentId = _helper.GenerateNewGuid(),
-                UserPostId = request.UserPostId,
+                CommentGroupPostId = _helper.GenerateNewGuid(),
+                GroupPostId = request.GroupPostId,
                 UserId = request.UserId,
                 Content = request.Content,
                 ParentCommentId = request.ParentCommentId,
@@ -103,18 +103,18 @@ namespace Application.Commands.CreateUserCommentPost
             }
 
             // Add the comment to the context and save changes
-            await _context.CommentPosts.AddAsync(comment);
+            await _context.CommentGroupPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 
             // Map the comment to the result object
-            var result = _mapper.Map<CreateUserCommentPostCommandResult>(comment);
+            var result = _mapper.Map<CreateUserCommentGroupPostCommandResult>(comment);
             result.BannedWords = badWords;
-            if (badWords.Any()) 
+            if(badWords.Any())
             {
                 throw new ErrorException(StatusCodeEnum.CM03_Comment_Contain_Bad_Word);
             }
             // Return the result
-            return Result<CreateUserCommentPostCommandResult>.Success(result);
+            return Result<CreateUserCommentGroupPostCommandResult>.Success(result);
         }
     }
 }

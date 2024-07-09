@@ -58,7 +58,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
                 var parentComment = await _context.CommentVideoPosts.FindAsync(request.ParentCommentId.Value);
 
                 // If parent comment doesn't exist, throw an error
-                if (parentComment == null)
+                if (parentComment == null || parentComment.IsHide == true)
                 {
                     throw new ErrorException(StatusCodeEnum.CM02_Parent_Comment_Not_Found);
                 }
@@ -108,7 +108,10 @@ namespace Application.Commands.CreateUserCommentVideoPost
             // Map the result and include banned words
             var result = _mapper.Map<CreateUserCommentVideoPostCommandResult>(comment);
             result.BannedWords = badWords;
-
+            if (badWords.Any())
+            {
+                throw new ErrorException(StatusCodeEnum.CM03_Comment_Contain_Bad_Word);
+            }
             return Result<CreateUserCommentVideoPostCommandResult>.Success(result);
         }
     }

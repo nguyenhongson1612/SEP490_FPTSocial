@@ -66,6 +66,9 @@ using Application.Queries.GetUserNotificationsList;
 using Application.Commands.UpdateNotificationStatus;
 using Application.Commands.UpdateUserPostCommand;
 using Application.Queries.GetAllReactType;
+using Application.Commands.CreateUserCommentGroupPost;
+using Application.Commands.CreateUserCommentGroupPhotoPost;
+using Application.Commands.CreateUserCommentGroupVideoPost;
 
 namespace Application.Mappers
 {
@@ -238,6 +241,15 @@ namespace Application.Mappers
             .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos))
             .ReverseMap();
             CreateMap<UserPostDTO, GetPostResult>();
+
+            CreateMap<Command.CommentGroupPost, CreateUserCommentGroupPostCommandResult>()
+            .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+
+            CreateMap<Command.CommentPhotoGroupPost, CreateUserCommentGroupPhotoPostCommandResult>()
+            .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+
+            CreateMap<Command.CommentGroupVideoPost, CreateUserCommentGroupVideoPostCommandResult>()
+            .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             //user react
             CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();

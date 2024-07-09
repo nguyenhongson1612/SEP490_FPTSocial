@@ -66,7 +66,7 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
         // vì logic xây dựng cấu trúc phân cấp bình luận là tương tự
         private List<GroupPhotoCommentDto> BuildCommentHierarchy(List<GroupPhotoCommentDto> comments)
         {
-            var commentDict = comments.ToDictionary(c => c.CommentGroupPhotoPostId); // Thay đổi kiểu key
+            var commentDict = comments.ToDictionary(c => c.CommentPhotoGroupPostId); // Thay đổi kiểu key
 
             foreach (var comment in comments)
             {
