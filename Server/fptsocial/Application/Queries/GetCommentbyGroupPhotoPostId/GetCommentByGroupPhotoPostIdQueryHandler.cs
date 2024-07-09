@@ -12,61 +12,61 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Queries.GetCommentByGroupVideoPostId
+namespace Application.Queries.GetCommentbyGroupPhotoPostId
 {
-    public class GetCommentByGroupVideoPostIdQueryHandler : IQueryHandler<GetCommentByGroupVideoPostIdQuery, GetCommentByGroupVideoPostIdQueryResult>
+    public class GetCommentByGroupPhotoPostIdQueryHandler : IQueryHandler<GetCommentByGroupPhotoPostIdQuery, GetCommentByGroupPhotoPostIdQueryResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetCommentByGroupVideoPostIdQueryHandler(fptforumQueryContext context, IMapper mapper)
+        public GetCommentByGroupPhotoPostIdQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<Result<GetCommentByGroupVideoPostIdQueryResult>> Handle(GetCommentByGroupVideoPostIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetCommentByGroupPhotoPostIdQueryResult>> Handle(GetCommentByGroupPhotoPostIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await (from c in _context.CommentGroupVideoPosts // Thay đổi bảng truy vấn
+            var comments = await (from c in _context.CommentPhotoGroupPosts // Thay đổi bảng truy vấn
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.DefaultIfEmpty()
-                                  where c.GroupPostVideoId == request.GroupPostVideoId && c.IsHide == false // Thay đổi điều kiện lọc
+                                  where c.GroupPostPhotoId == request.GroupPostPhotoId && c.IsHide == false // Thay đổi điều kiện lọc
                                   orderby c.CreatedDate ascending
-                                  select new GroupVideoCommentDto // Sử dụng DTO tương ứng cho video comment
+                                  select new GroupPhotoCommentDto // Sử dụng DTO tương ứng cho photo comment
                                   {
                                       UserId = c.UserId,
                                       UserName = c.User.FirstName + " " + c.User.LastName,
                                       Url = a.AvataPhotosUrl,
-                                      GroupPostVideoId = c.GroupPostVideoId, // Thay đổi thuộc tính ID
+                                      GroupPostPhotoId = c.GroupPostPhotoId, // Thay đổi thuộc tính ID
                                       CreatedDate = c.CreatedDate,
                                       Content = c.Content,
                                       IsHide = c.IsHide,
-                                      CommentGroupVideoPostId = c.CommentGroupVideoPostId, // Thay đổi thuộc tính ID
+                                      CommentPhotoGroupPostId = c.CommentPhotoGroupPostId, // Thay đổi thuộc tính ID
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<GroupVideoCommentDto>() // Sử dụng DTO tương ứng cho video comment
+                                      Replies = new List<GroupPhotoCommentDto>() // Sử dụng DTO tương ứng cho photo comment
                                   })
-                            .ToListAsync(cancellationToken);
+                                .ToListAsync(cancellationToken);
 
-            var result = new GetCommentByGroupVideoPostIdQueryResult
+            var result = new GetCommentByGroupPhotoPostIdQueryResult
             {
                 Posts = BuildCommentHierarchy(comments) // Tái sử dụng hàm BuildCommentHierarchy
             };
 
-            return Result<GetCommentByGroupVideoPostIdQueryResult>.Success(result);
+            return Result<GetCommentByGroupPhotoPostIdQueryResult>.Success(result);
         }
 
-        // Hàm BuildCommentHierarchy có thể được tái sử dụng từ lớp GetCommentByGroupPostIdQueryHandler
+        // Hàm BuildCommentHierarchy có thể được tái sử dụng từ lớp GetCommentByGroupVideoPostIdQueryHandler
         // vì logic xây dựng cấu trúc phân cấp bình luận là tương tự
-        private List<GroupVideoCommentDto> BuildCommentHierarchy(List<GroupVideoCommentDto> comments)
+        private List<GroupPhotoCommentDto> BuildCommentHierarchy(List<GroupPhotoCommentDto> comments)
         {
-            var commentDict = comments.ToDictionary(c => c.CommentGroupVideoPostId);
+            var commentDict = comments.ToDictionary(c => c.CommentGroupPhotoPostId); // Thay đổi kiểu key
 
             foreach (var comment in comments)
             {
@@ -83,7 +83,6 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
                 else if (comment.ParentCommentId.HasValue && commentDict.ContainsKey(comment.ParentCommentId.Value))
                 {
                     commentDict[comment.ParentCommentId.Value].Replies.Add(comment); // Thêm vào Replies của comment cha (level 2)
-
                 }
             }
 

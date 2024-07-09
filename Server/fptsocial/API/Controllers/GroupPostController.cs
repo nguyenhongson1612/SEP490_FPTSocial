@@ -1,5 +1,7 @@
 ﻿using Application.Commands.CreateGroupPost;
 using Application.Commands.Post;
+using Application.Queries.GetCommentByGroupPostId;
+using Application.Queries.GetCommentByPostId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +24,15 @@ namespace API.Controllers
         [HttpPost]
         [Route("createGroupPost")]
         public async Task<IActionResult> CreateGroupPost(CreateGroupPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getGroupPostComment")]
+        public async Task<IActionResult> GetGroupPostComment([FromQuery] GetCommentByGroupPostIdQuery command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);

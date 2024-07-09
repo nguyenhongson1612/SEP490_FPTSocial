@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetCommentbyGroupPhotoPostId
 {
-    public class GetCommentByGroupPhotoPostIdQuerry
+    public class GetCommentByGroupPhotoPostIdQueryResult
     {
     }
 }

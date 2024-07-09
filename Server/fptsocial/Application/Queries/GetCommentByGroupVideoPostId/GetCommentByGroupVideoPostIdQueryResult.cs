@@ -9,7 +9,7 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
 {
     public class GetCommentByGroupVideoPostIdQueryResult
     {
-        public List<CommentDto>? Posts { get; set; }
+        public List<GroupVideoCommentDto>? Posts { get; set; }
 
     }
 }
