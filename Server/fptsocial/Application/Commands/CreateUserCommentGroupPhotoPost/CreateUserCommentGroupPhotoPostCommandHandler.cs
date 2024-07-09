@@ -57,7 +57,7 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
                 var parentComment = await _context.CommentPhotoGroupPosts.FindAsync(request.ParentCommentId.Value);
 
                 // If parent comment doesn't exist, throw error
-                if (parentComment == null)
+                if (parentComment == null || parentComment.IsHide == true)
                 {
                     throw new ErrorException(StatusCodeEnum.CM02_Parent_Comment_Not_Found);
                 }
@@ -107,6 +107,10 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
             // Prepare the result
             var result = _mapper.Map<CreateUserCommentGroupPhotoPostCommandResult>(comment);
             result.BannedWords = badWords;
+            if (badWords.Any())
+            {
+                throw new ErrorException(StatusCodeEnum.CM03_Comment_Contain_Bad_Word);
+            }
 
             return Result<CreateUserCommentGroupPhotoPostCommandResult>.Success(result);
         }
