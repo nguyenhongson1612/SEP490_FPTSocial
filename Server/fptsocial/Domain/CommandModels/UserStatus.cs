@@ -11,6 +11,7 @@ namespace Domain.CommandModels
             ContactInfos = new HashSet<ContactInfo>();
             Notifications = new HashSet<Notification>();
             Photos = new HashSet<Photo>();
+            SharePosts = new HashSet<SharePost>();
             UserGenders = new HashSet<UserGender>();
             UserInterests = new HashSet<UserInterest>();
             UserPostPhotos = new HashSet<UserPostPhoto>();
@@ -33,6 +34,7 @@ namespace Domain.CommandModels
         public virtual ICollection<ContactInfo> ContactInfos { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
+        public virtual ICollection<SharePost> SharePosts { get; set; }
         public virtual ICollection<UserGender> UserGenders { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
         public virtual ICollection<UserPostPhoto> UserPostPhotos { get; set; }

@@ -16,6 +16,7 @@ namespace Domain.CommandModels
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public Guid? UserStatusId { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }
@@ -25,5 +26,6 @@ namespace Domain.CommandModels
         public virtual UserPost? UserPost { get; set; }
         public virtual UserPostPhoto? UserPostPhoto { get; set; }
         public virtual UserPostVideo? UserPostVideo { get; set; }
+        public virtual UserStatus? UserStatus { get; set; }
     }
 }

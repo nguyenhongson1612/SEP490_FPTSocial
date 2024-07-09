@@ -1821,6 +1821,11 @@ namespace Domain.QueryModels
                     .WithMany(p => p.SharePosts)
                     .HasForeignKey(d => d.UserPostVideoId)
                     .HasConstraintName("share_post_postvideo_FK");
+
+                entity.HasOne(d => d.UserStatus)
+                    .WithMany(p => p.SharePosts)
+                    .HasForeignKey(d => d.UserStatusId)
+                    .HasConstraintName("fk_share_post_status");
             });
 
             modelBuilder.Entity<UserChat>(entity =>
@@ -2186,7 +2191,7 @@ namespace Domain.QueryModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__79FD19BE");
+                    .HasConstraintName("FK__UserSetti__UserI__21D600EE");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)
