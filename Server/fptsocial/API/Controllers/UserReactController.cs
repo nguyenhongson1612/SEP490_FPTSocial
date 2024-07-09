@@ -1,4 +1,7 @@
 ﻿using Application.Commands.CreateNewReact;
+using Application.Commands.CreateReactCommentUserPost;
+using Application.Commands.CreateReactCommentUserPostPhoto;
+using Application.Commands.CreateReactCommentUserPostVideo;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
@@ -59,6 +62,30 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpPost]
+        [Route("createReactCommentUserPost")]
+        public async Task<IActionResult> CreateReactCommentUserPost(CreateReactCommentUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentUserVideoPost")]
+        public async Task<IActionResult> CreateReactCommentUserVideoPost(CreateReactCommentUserPostVideoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentUserPhotoPost")]
+        public async Task<IActionResult> CreateReactCommentUserPhotoPost(CreateReactCommentUserPostPhotoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
         }
 
         [HttpGet]

@@ -69,6 +69,8 @@ using Application.Queries.GetAllReactType;
 using Application.Commands.CreateUserCommentGroupPost;
 using Application.Commands.CreateUserCommentGroupPhotoPost;
 using Application.Commands.CreateUserCommentGroupVideoPost;
+using Application.Commands.CreateReactCommentUserPost;
+using Application.Commands.CreateReactCommentUserPostVideo;
 
 namespace Application.Mappers
 {
@@ -256,6 +258,9 @@ namespace Application.Mappers
             CreateMap<Command.ReactType, CreateNewReactCommandResult>();
             CreateMap<Command.ReactPhotoPost, CreateReactUserPhotoPostCommandResult>();
             CreateMap<Command.ReactVideoPost, CreateReactUserVideoPostCommandResult>();
+            CreateMap<Command.ReactComment, CreateReactCommentUserPostCommandResult>();
+            CreateMap<Command.ReactVideoPostComment, CreateReactCommentUserPostVideoCommandResult>();
+            CreateMap<Command.ReactPhotoPostComment, CreateReactCommentUserPostPhotoCommandResult>();
             CreateMap<Query.ReactType, GetAllReactTypeQueryResult>();
 
             //Notification
