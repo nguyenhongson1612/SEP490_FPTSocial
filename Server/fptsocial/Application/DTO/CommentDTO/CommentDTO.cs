@@ -51,4 +51,52 @@ namespace Application.DTO.CommentDTO
         public List<CommentPhotoDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
     }
+
+    public class GroupCommentDto
+    {
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public Guid CommentGroupPostId { get; set; }
+        public Guid GroupPostId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<GroupCommentDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
+    }
+
+    public class GroupPhotoCommentDto
+    {
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public Guid CommentPhotoGroupPostId { get; set; }
+        public Guid GroupPostPhotoId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<GroupPhotoCommentDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
+    }
+
+    public class GroupVideoCommentDto
+    {
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public Guid CommentGroupPostId { get; set; }
+        public Guid GroupPostId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<GroupCommentDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
+    }
 }
