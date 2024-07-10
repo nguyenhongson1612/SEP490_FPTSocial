@@ -17,6 +17,7 @@ namespace Domain.QueryModels
         public Guid? SharedToUserId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public Guid? UserStatusId { get; set; }
+        public bool? IsHide { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }
