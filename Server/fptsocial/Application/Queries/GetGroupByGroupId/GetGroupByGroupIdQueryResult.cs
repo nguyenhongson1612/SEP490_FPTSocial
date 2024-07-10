@@ -12,6 +12,7 @@ namespace Application.Queries.GetGroupByGroupId
         public GetGroupByGroupIdQueryResult()
         {
             GroupMember = new List<GroupMemberDTO>();
+            GroupSettings = new List<GroupSettingDTO>();
         }
         public Guid GroupId { get; set; }
         public string? GroupNumber { get; set; }
@@ -22,6 +23,8 @@ namespace Application.Queries.GetGroupByGroupId
         public bool IsJoin { get; set; }
         public bool IsAdmin { get; set; }
         public int MemberCount { get; set; }
+        public DateTime? CreateAt { get; set; }
+        public List<GroupSettingDTO> GroupSettings { get; set; }
         public List<GroupMemberDTO> GroupMember { get; set; }
     }
 }
