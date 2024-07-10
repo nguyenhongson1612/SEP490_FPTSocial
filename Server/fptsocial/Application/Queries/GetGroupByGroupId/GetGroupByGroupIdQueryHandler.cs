@@ -48,6 +48,7 @@ namespace Application.Queries.GetGroupByGroupId
             var memjoin = member?.FirstOrDefault(x => x.UserId == request.UserId);
              
             var admin = member?.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Admin"));
+            var censor = member?.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Censor"));
 
             if (group == null)
             {
@@ -78,6 +79,7 @@ namespace Application.Queries.GetGroupByGroupId
             }
             if(memjoin != null)
             {
+
                 if (memjoin.IsJoined == false)
                 {
                     getgroup.IsJoin = false;
@@ -90,11 +92,19 @@ namespace Application.Queries.GetGroupByGroupId
                     if (admin.UserId == request.UserId)
                     {
                         getgroup.IsAdmin = true;
+                        getgroup.IsCensor = false;
                     }
                     else
                     {
                         getgroup.IsAdmin = false;
+                        if(censor.UserId == request.UserId)
+                        {
+                            getgroup.IsCensor = true;
+                        }
                     }
+
+                    getgroup.IsAdmin = false;
+                    getgroup.IsCensor = false;
                 }
             }
             else
