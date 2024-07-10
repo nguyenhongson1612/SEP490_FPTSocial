@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 function FriendsSideBar({ isRequests, isSuggestions, isFriendList }) {
   return (
     <div className="max-h-[calc(100vh_-_55px)] w-[380px] flex flex-col overflow-y-auto scrollbar-none-track border-r shadow-lg">
-      <div className="ml-3 mt-8 mb-5">
+      <div className="p-3">
         <span className='text-2xl font-bold'>Friends</span>
         <div
           className="flex flex-col items-start mb-8"

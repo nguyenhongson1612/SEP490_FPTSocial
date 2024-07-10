@@ -53,12 +53,12 @@ function RightTopBar() {
                 <div className='font-bold'>Notification</div>
                 <div className='py-2 flex flex-col gap-2'>
                   {
-                    listLatestNotification?.map(notification => (
-                      <Link to={notification?.NotifiUrl} key={notification?.NotificationId} className='flex items-center gap-2'>
-                        <Avatar src='' alt="user-avatar" sx={{ width: '50px', height: '50px' }} />
+                    listLatestNotification?.map((notification, i) => (
+                      <Link to={notification?.Url} key={i} className='flex items-center gap-2'>
+                        <Avatar src={notification?.SenderAvatar} alt="user-avatar" sx={{ width: '50px', height: '50px' }} />
                         <div className='flex flex-col gap-2 w-full'>
                           <div className='flex justify-between items-center'>
-                            <span>{notification?.NotiMessage}</span>
+                            <span><span className='font-bold'>{notification?.SenderName}</span>{notification?.Message}</span>
                             {!notification?.isRead && <div className='size-2 bg-blue-500 rounded-full'></div>}
                           </div>
                           <span className='text-blue-500 font-semibold text-sm'>{compareDateTime(notification?.CreatedAt)}</span>

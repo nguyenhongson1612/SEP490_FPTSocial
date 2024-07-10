@@ -11,7 +11,7 @@ import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
 import { IconEdit, IconFilePlus, IconPhotoPlus, IconSend2 } from '@tabler/icons-react'
 import { useConfirm } from 'material-ui-confirm'
 
-const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos, type, isUpdatePost, listMedia }) => {
+const TipTapUpdatePost = ({ setContent, content, type, listMedia, setListMedia, handleEdit }) => {
   const [isChoseFIle, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isEditMedia, setIsEditMedia] = useState(false)
@@ -49,8 +49,8 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
 
         const type = e?.type?.includes('image') ? 'image' : 'video'
         type == 'image'
-          ? uploadImage({ userId: null, data: fileData }).then(data => setListPhotos(prevListPhoto => [...prevListPhoto, data?.url])).finally(() => setIsLoading(false))
-          : uploadVideo({ userId: null, data: fileData }).then(data => setListVideos(prevListVideo => [...prevListVideo, data?.url])).finally(() => setIsLoading(false))
+          ? uploadImage({ userId: null, data: fileData }).then(data => setListMedia(prev => [...prev, { type: 'image', url: data?.url }])).finally(() => setIsLoading(false))
+          : uploadVideo({ userId: null, data: fileData }).then(data => setListMedia(prev => [...prev, { type: 'video', url: data?.url }])).finally(() => setIsLoading(false))
       })
       setIsLoading(true)
     }).catch(() => { })
@@ -86,9 +86,9 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
     <div className="w-full px-3">
       <div className='max-h-72 overflow-y-auto scrollbar-none-track mb-2'>
         <EditorContent editor={editor} />
-        {isChoseFIle && <div className={`${''} relative border border-gray-300 rounded-md `}>
+        {isChoseFIle || listMedia?.length > 0 && <div className={`${''} relative border border-gray-300 rounded-md `}>
           {
-            listPhotos.length == 0 && listVideos.length == 0 && !isLoading && (
+            listMedia?.length == 0 && !isLoading && (
               <div className='w-full h-[12rem] flex flex-col items-center justify-center text-base font-semibold bg-fbWhite cursor-pointer'
                 onClick={() => document.getElementById('fileInput').click()}
               >
@@ -104,13 +104,13 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
             className='relative grid grid-cols-2 m-2'
           >
             <div className={`absolute inset-0 ${isHoverMedia && 'bg-[rgba(0,0,0,0.2)]'} rounded-md`}>
-              {(listVideos.length !== 0 || listPhotos.length !== 0) && isHoverMedia && (
+              {listMedia !== 0 && isHoverMedia && (
                 <div className='absolute inset-0 flex gap-4 w-fit h-fit text-sm font-semibold left-1 top-1 z-10'>
                   <div
                     className='bg-white px-3 py-1 rounded-md flex gap-1 items-center cursor-pointer hover:bg-slate-100'
                     onClick={(e) => {
                       e.stopPropagation()
-                      setIsEditMedia(!isEditMedia)
+                      handleEdit()
                     }}
                   >
                     <IconEdit />Edit All
@@ -124,30 +124,25 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
                   >
                     <IconFilePlus />Add Photos/Videos
                   </div>
-                  {/* <div className='bg-white p-2 rounded-full flex gap-1 cursor-pointer'
-          onClick={(e) => { e.stopPropagation(); }}
-        ><IconX /></div> */}
                 </div>
               )}
             </div>
 
-            {listPhotos?.map((photo, key) => (
-              <img
-                key={photo}
-                src={photo}
-                className={`${listPhotos.length % 2 !== 0
-                  ? key === 0
-                    ? 'col-span-2'
-                    : 'col-span-1'
-                  : 'col-span-1'} h-full object-cover`}
-              />
-            ))}
-
-            {listVideos?.map((video, key) => (
-              <video
-                key={video}
-                src={video}
-                className={`${listVideos.length % 2 !== 0
+            {listMedia?.map((e, key) => {
+              if (e?.type == 'image')
+                return <img
+                  key={e?.url}
+                  src={e?.url}
+                  className={`${listMedia.length % 2 !== 0
+                    ? key === 0
+                      ? 'col-span-2'
+                      : 'col-span-1'
+                    : 'col-span-1'} h-full object-cover`}
+                />
+              else return <video
+                key={e?.url}
+                src={e?.url}
+                className={`${listMedia.length % 2 !== 0
                   ? key === 0
                     ? 'col-span-2'
                     : 'col-span-1'
@@ -155,7 +150,8 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
                 controls
                 disablePictureInPicture
               />
-            ))}
+            })}
+
             {isLoading && <div className='col-span-2 h-20'><PageLoadingSpinner /></div>}
           </div>
         </div>}
@@ -183,4 +179,4 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
   )
 }
 
-export default Tiptap
+export default TipTapUpdatePost

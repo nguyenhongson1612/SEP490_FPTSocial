@@ -75,6 +75,9 @@ body {
   .scrollbar-none-track:hover::-webkit-scrollbar-thumb{
     background: rgb(242,113,36);
   }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
 
   .img-bg {
     background-image: url('./src/assets/img/alphabuilding.jpg'),

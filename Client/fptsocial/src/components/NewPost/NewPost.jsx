@@ -7,10 +7,11 @@ import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { motion } from 'framer-motion'
-import { createPost, getStatus } from '~/apis'
+import { getStatus } from '~/apis'
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
 import { IconCaretDownFilled, IconChevronLeft, IconX } from '@tabler/icons-react'
-import CurrentUserAvatar from '../UI/CurrentUserAvatar'
+import { createPost } from '~/apis/postApis'
+import UserAvatar from '../UI/UserAvatar'
 
 
 function NewPost() {
@@ -62,7 +63,7 @@ function NewPost() {
         <Link
           to={`/profile?id=${currentUser?.userId}`}
           className=" hover:text-gray-950 flex items-center justify-center gap-3">
-          <CurrentUserAvatar />
+          <UserAvatar />
         </Link>
         <div className="w-[90%] bg-fbWhite rounded-3xl hover:bg-fbWhite-500 cursor-pointer"
           onClick={() => setIsCreate(!isCreate)}
@@ -84,11 +85,8 @@ function NewPost() {
                       <IconX className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsCreate(!isCreate)} />
                     </div>
                     <div className='mx-4'>
-                      <div className='flex items-center h-[40] p-4 gap-2 '>
-                        <img
-                          src={currentUser?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl || './src/assets/img/user_holder.jpg'}
-                          className="rounded-[50%] aspect-square object-cover w-10"
-                        />
+                      <div className='flex items-center h-[40] gap-2 '>
+                        <UserAvatar />
                         <div className='flex flex-col w-full cursor-pointer'>
                           <span className='font-bold'>{user?.firstName + ' ' + user?.lastName}</span>
                           <div

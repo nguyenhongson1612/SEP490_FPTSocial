@@ -1,11 +1,11 @@
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { getAllPost } from '~/apis'
 import FriendRequests from './FriendRequests/FriendRequests'
 import FriendSuggestions from './FriendSuggestions/FriendSuggestions'
 import FriendList from './FriendList/FriendList'
 import FriendsSideBar from './FriendsSideBar/FriendsSideBar'
+import { getAllPost } from '~/apis/postApis'
 
 
 function Friends() {
@@ -24,13 +24,13 @@ function Friends() {
   return (
     <>
       <NavTopBar />
-      <div className='flex h-[calc(100vh_-_55px)] bg-white'>
+      <div className='flex h-[calc(100vh_-_55px)] bg-whites'>
         <FriendsSideBar isFriendList={isFriendList} isRequests={isRequests} isSuggestions={isSuggestions} />
-        {isRequests && <div className='max-h-[calc(100vh_-_55px)]  basis-11/12 md:basis-8/12 lg:basis-6/12 overflow-y-auto scrollbar-none-track'>
-          <FriendRequests />
-        </div>}
-        {isSuggestions && <FriendSuggestions />}
-        {isFriendList && <FriendList />}
+        <div className='flex h-[calc(100vh_-_55px)] bg-fbWhite w-full overflow-y-auto'>
+          {isRequests && <FriendRequests />}
+          {isSuggestions && <FriendSuggestions />}
+          {isFriendList && <FriendList />}
+        </div>
       </div>
     </>
   )

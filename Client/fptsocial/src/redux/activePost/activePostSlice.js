@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   currentActivePost: null,
   isShowModalActivePost: false,
+  isShowUpdatePost: false,
   reloadComment: false
 }
 
@@ -14,12 +15,16 @@ export const activePostSlice = createSlice({
     showModalActivePost: (state) => {
       state.isShowModalActivePost = true
     },
+    showModalUpdatePost: (state) => {
+      state.isShowUpdatePost = true
+    },
     triggerReloadComment: (state) => {
       state.reloadComment = !state.reloadComment
     },
     clearAndHireCurrentActivePost: (state) => {
       state.currentActivePost = null,
-        state.isShowModalActivePost = false
+        state.isShowModalActivePost = false,
+        state.isShowUpdatePost = false
     },
     updateCurrentActivePost: (state, action) => {
       state.currentActivePost = action.payload
@@ -30,6 +35,7 @@ export const activePostSlice = createSlice({
 
 export const {
   showModalActivePost,
+  showModalUpdatePost,
   triggerReloadComment,
   clearAndHireCurrentActivePost,
   updateCurrentActivePost
@@ -40,6 +46,9 @@ export const selectCurrentActivePost = (state) => {
 }
 export const selectIsShowModalActivePost = (state) => {
   return state.activePost.isShowModalActivePost
+}
+export const selectIsShowModalUpdatePost = (state) => {
+  return state.activePost.isShowUpdatePost
 }
 
 export const reLoadComment = (state) => {

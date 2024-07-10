@@ -15,6 +15,8 @@ import Setting from './pages/Settings/Setting'
 import Friends from './pages/Friends/Friends'
 import Groups from './pages/Groups'
 import Group from './pages/Groups/_id'
+import Media from './pages/Media'
+import Post from './pages/Post/_id'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -75,12 +77,17 @@ function App() {
             {/* Home page */}
             <Route path='/homepage' element={<HomePage />} />
 
+            {/* Photo, Video post */}
+            <Route path='/photo/:photoId' element={<Media />} />
+            <Route path='/video/:videoId' element={<Media />} />
+            <Route path='/media/:postId' element={<Media />} />
+            <Route path='/post/:postId' element={<Post />} />
             {/* Profile page */}
             <Route path='/profile' element={<Profile />} />
 
             {/* Friend page */}
             <Route path='/friends' element={<Friends />}>
-              <Route path='' element={<Friends />} />
+              {/* <Route path='' element={<Friends />} /> */}
               <Route path='requests' element={<Friends />} />
               <Route path='suggestions' element={<Friends />} />
               <Route path='list' element={<Friends />} />

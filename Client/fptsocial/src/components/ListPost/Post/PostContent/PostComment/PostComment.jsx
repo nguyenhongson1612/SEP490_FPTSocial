@@ -34,7 +34,7 @@ function PostComment({ comment }) {
 
   return (
     <div className='w-full border-t'>
-      <div>
+      <div className='px-4 py-2'>
         <div id='comment-filter' onClick={handleClick} className='flex font-medium cursor-pointer w-fit'>Most relevent<IconCaretDownFilled /></div>
         <Popover
           id={id}

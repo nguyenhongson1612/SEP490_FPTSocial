@@ -26,3 +26,11 @@ export const compareDateTime = (date) => {
   const timeAgo = serverDate.fromNow()
   return timeAgo
 }
+
+export const handleCoverImg = (coverUrl) => {
+  return coverUrl
+    ? { backgroundImage: `url(${coverUrl})` }
+    : {
+      background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
+    }
+}
