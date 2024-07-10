@@ -1,9 +1,15 @@
 ﻿using Application.Commands.CreateNewReact;
+using Application.Commands.CreateReactCommentUserPost;
+using Application.Commands.CreateReactCommentUserPostPhoto;
+using Application.Commands.CreateReactCommentUserPostVideo;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
 using Application.Queries.GetAllReactType;
+using Application.Queries.GetReactByCommentId;
+using Application.Queries.GetReactByCommentPhotoId;
+using Application.Queries.GetReactByCommentVideoId;
 using Application.Queries.GetReactByPost;
 using Application.Queries.GetUserStatus;
 using MediatR;
@@ -61,6 +67,30 @@ namespace API.Controllers
 
         }
 
+        [HttpPost]
+        [Route("createReactCommentUserPost")]
+        public async Task<IActionResult> CreateReactCommentUserPost(CreateReactCommentUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentUserVideoPost")]
+        public async Task<IActionResult> CreateReactCommentUserVideoPost(CreateReactCommentUserPostVideoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentUserPhotoPost")]
+        public async Task<IActionResult> CreateReactCommentUserPhotoPost(CreateReactCommentUserPostPhotoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
         [HttpGet]
         [Route("getAllReactType")]
         public async Task<IActionResult> GetAllReactType()
@@ -73,6 +103,30 @@ namespace API.Controllers
         [HttpGet]
         [Route("getAllReactByPostId")]
         public async Task<IActionResult> GetAllReactByPostId([FromQuery] GetReactByPostQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentId")]
+        public async Task<IActionResult> GetAllReactByCommentId([FromQuery] GetReactByCommentIdQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentVideoId")]
+        public async Task<IActionResult> GetAllReactByCommentVideoId([FromQuery] GetReactByCommentVideoIdQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentPhotoId")]
+        public async Task<IActionResult> GetAllReactByCommentPhotoId([FromQuery] GetReactByCommentPhotoIdQuery query)
         {
             var res = await _sender.Send(query);
             return Success(res.Value);
