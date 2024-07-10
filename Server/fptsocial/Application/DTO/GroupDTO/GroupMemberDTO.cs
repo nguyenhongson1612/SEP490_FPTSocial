@@ -11,7 +11,7 @@ namespace Application.DTO.GroupDTO
         public Guid GroupId { get; set; }
         public Guid UserId { get; set; }
         public string MemberName { get; set; }
-        public string Avata { get; set; }
+        public string? Avata { get; set; }
         public Guid GroupRoleId { get; set; }
         public string GroupRoleName { get; set; }
     }

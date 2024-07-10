@@ -36,6 +36,9 @@ namespace Application.Queries.GetGroupByGroupId
                                                 .Include(x => x.GroupTagUseds)
                                                 .Include(x=>x.GroupMembers)
                                                 .FirstOrDefaultAsync(x => x.GroupId == request.GroupId);
+            var groupsetting = await _context.GroupSettingUses.Include(x => x.GroupSetting)
+                                                                .Include(x=>x.GroupStatus)
+                                                               .Where(x => x.GroupId == request.GroupId).ToListAsync();
             var member = await _context.GroupMembers
                                     .Where(x => x.GroupId == request.GroupId)
                                     .Include(x => x.GroupRole)
@@ -57,32 +60,52 @@ namespace Application.Queries.GetGroupByGroupId
                 GroupDescription = group.GroupDescription,
                 CoverImage = group.CoverImage,
                 GroupAdmin = admin.User.FirstName + " " + admin.User.LastName,
+                CreateAt = group.CreatedDate,
                 MemberCount = member.Count(),
             };
-            if (isJoin == false)
+            foreach (var st in groupsetting)
             {
-                getgroup.GroupMember = null;
+                var gst = new GroupSettingDTO
+                {
+                    GroupSettingId = st.GroupSettingId,
+                    GroupSettingName = st.GroupSetting.GroupSettingName,
+                    GroupStatusId = st.GroupStatusId,
+                    GroupStatusName = st.GroupStatus.GroupStatusName  
+                };
+                getgroup.GroupSettings.Add(gst);
+            }
+            if (isJoin == false)
+            {   
                 getgroup.IsJoin = false;
             }
             else
             {
                 getgroup.IsJoin = true;
-                foreach(var mem in member)
+                if(admin.UserId == request.UserId)
                 {
-                    var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId);
-                    var gmem = new GroupMemberDTO {
-                        GroupId = mem.GroupId,
-                        UserId = mem.UserId,
-                        MemberName = mem.User.FirstName + " " + mem.User.LastName,
-                        Avata = user.AvataPhotosUrl,
-                        GroupRoleId = mem.GroupRoleId,
-                        GroupRoleName = mem.GroupRole.GroupRoleName
-                    };
-                    getgroup.GroupMember.Add(gmem);
+                    getgroup.IsAdmin = true;
+                }
+                else
+                {
+                    getgroup.IsAdmin = false;
                 }
             }
 
-            var result = new GetGroupByGroupIdQueryResult();
+            foreach (var mem in member)
+            {
+                var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId);
+                var gmem = new GroupMemberDTO
+                {
+                    GroupId = mem.GroupId,
+                    UserId = mem.UserId,
+                    MemberName = mem.User.FirstName + " " + mem.User.LastName,
+                    Avata = user?.AvataPhotosUrl,
+                    GroupRoleId = mem.GroupRoleId,
+                    GroupRoleName = mem.GroupRole.GroupRoleName
+                };
+                getgroup.GroupMember.Add(gmem);
+            }
+            var result = getgroup;
             return Result<GetGroupByGroupIdQueryResult>.Success(result);
         }
     }
