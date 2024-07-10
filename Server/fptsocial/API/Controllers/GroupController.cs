@@ -1,6 +1,9 @@
 ﻿using Application.Commands.CreateGroupCommand;
 using Application.Commands.CreateGroupRole;
+using Application.Commands.JoinGroupCommand;
+using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetGroupByGroupId;
+using Application.Queries.GetGroupByUserId;
 using Application.Queries.GetUserByUserId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -44,7 +47,48 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getgroupbygroupid")]
-        public async Task<IActionResult> GetUserProfleByUserId([FromQuery] GetGroupByGroupIdQuery input)
+        public async Task<IActionResult> GetGroupByGroupId([FromQuery] GetGroupByGroupIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getgroupbyuserid")]
+        public async Task<IActionResult> GetGroupByUserId()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new GetGroupByUserIdQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("requestjoingroup")]
+        public async Task<IActionResult> UpdateProfile(RequestJoinGroupCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
