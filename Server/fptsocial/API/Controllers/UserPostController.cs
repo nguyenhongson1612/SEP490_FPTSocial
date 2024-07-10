@@ -19,6 +19,7 @@ using Application.Queries.GetOtherUserPost;
 using Application.Commands.UpdateUserPostCommand;
 using Application.Queries.GetUserPostPhoto;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Application.Queries.GetUserPostVideo;
 
 namespace API.Controllers
 {
@@ -176,5 +177,12 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("getuserpostvideo")]
+        public async Task<IActionResult> GetUserPostVideo([FromQuery] GetUserPostVideoQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
