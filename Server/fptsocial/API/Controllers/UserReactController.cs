@@ -7,6 +7,9 @@ using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
 using Application.Queries.GetAllReactType;
+using Application.Queries.GetReactByCommentId;
+using Application.Queries.GetReactByCommentPhotoId;
+using Application.Queries.GetReactByCommentVideoId;
 using Application.Queries.GetReactByPost;
 using Application.Queries.GetUserStatus;
 using MediatR;
@@ -100,6 +103,30 @@ namespace API.Controllers
         [HttpGet]
         [Route("getAllReactByPostId")]
         public async Task<IActionResult> GetAllReactByPostId([FromQuery] GetReactByPostQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentId")]
+        public async Task<IActionResult> GetAllReactByCommentId([FromQuery] GetReactByCommentIdQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentVideoId")]
+        public async Task<IActionResult> GetAllReactByCommentVideoId([FromQuery] GetReactByCommentVideoIdQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentPhotoId")]
+        public async Task<IActionResult> GetAllReactByCommentPhotoId([FromQuery] GetReactByCommentPhotoIdQuery query)
         {
             var res = await _sender.Send(query);
             return Success(res.Value);
