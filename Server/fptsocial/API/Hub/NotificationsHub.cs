@@ -99,8 +99,6 @@ namespace Application.Hub
             }
             var userId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
             _connections.Remove(userId, Context.ConnectionId);
-            await Clients.Client(Context.ConnectionId).ReceiveNotification($"The  ({Context.ConnectionId}) disconnected !");
-           // return base.OnDisconnectedAsync(exception);
         }
 
         public async Task OnReconnected()
