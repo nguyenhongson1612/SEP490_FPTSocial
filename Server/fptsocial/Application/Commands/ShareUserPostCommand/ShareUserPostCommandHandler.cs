@@ -61,7 +61,8 @@ namespace Application.Commands.ShareUserPostCommand
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId,
                 CreatedDate = DateTime.Now,
-                UserStatusId = request.UserStatusId
+                UserStatusId = request.UserStatusId,
+                IsHide = false
 
             };
 
@@ -71,6 +72,7 @@ namespace Application.Commands.ShareUserPostCommand
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(sharePost.Content);
             if (haveBadWord.Any())
             {
+                sharePost.IsHide = true;
                 sharePost.Content = MarkBannedWordsInContent(sharePost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }
