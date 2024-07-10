@@ -21,6 +21,7 @@ using Application.Queries.GetUserPostPhoto;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostVideo;
 using Application.Queries.GetUserPostById;
+using Application.Commands.ShareUserPostCommand;
 
 namespace API.Controllers
 {
@@ -101,6 +102,15 @@ namespace API.Controllers
         [HttpPost]
         [Route("createPost")]
         public async Task<IActionResult> CreatePost(CreateUserPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("sharePost")]
+        public async Task<IActionResult> SharePost(ShareUserPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
