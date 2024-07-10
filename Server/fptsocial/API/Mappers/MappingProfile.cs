@@ -71,6 +71,7 @@ using Application.Commands.CreateUserCommentGroupPhotoPost;
 using Application.Commands.CreateUserCommentGroupVideoPost;
 using Application.Commands.CreateReactCommentUserPost;
 using Application.Commands.CreateReactCommentUserPostVideo;
+using Application.Queries.GetGroupStatusForCreate;
 
 namespace Application.Mappers
 {
@@ -252,6 +253,7 @@ namespace Application.Mappers
 
             CreateMap<Command.CommentGroupVideoPost, CreateUserCommentGroupVideoPostCommandResult>()
             .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.GroupStatus, GetGroupStatusForCreateQueryResult>();
 
             //user react
             CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();

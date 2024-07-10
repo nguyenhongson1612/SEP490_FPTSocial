@@ -10,6 +10,7 @@ using Application.Queries.GetAllGroupStatus;
 using Application.Queries.GetAllGroupTag;
 using Application.Queries.GetAllGroupType;
 using Application.Queries.GetGender;
+using Application.Queries.GetGroupStatusForCreate;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -116,6 +117,15 @@ namespace API.Controllers
         [Route("creategroupstatus")]
         public async Task<IActionResult> CreateGroupStatus(CreateGroupStatusCommand input)
         {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getgroupstatusforcreate")]
+        public async Task<IActionResult> GetGroupStatusForCreate()
+        {
+            var input = new GetGroupStatusForCreateQuery();
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
