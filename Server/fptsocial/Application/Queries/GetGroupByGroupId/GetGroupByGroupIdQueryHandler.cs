@@ -44,8 +44,10 @@ namespace Application.Queries.GetGroupByGroupId
                                     .Include(x => x.GroupRole)
                                     .Include(x=>x.User)
                                     .ToListAsync();
-            bool isJoin = member.FirstOrDefault(x => x.UserId == request.UserId).IsJoined;
-            var admin = member.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Admin"));
+            
+            var memjoin = member?.FirstOrDefault(x => x.UserId == request.UserId);
+             
+            var admin = member?.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Admin"));
 
             if (group == null)
             {
@@ -74,22 +76,32 @@ namespace Application.Queries.GetGroupByGroupId
                 };
                 getgroup.GroupSettings.Add(gst);
             }
-            if (isJoin == false)
-            {   
-                getgroup.IsJoin = false;
-            }
-            else
+            if(memjoin != null)
             {
-                getgroup.IsJoin = true;
-                if(admin.UserId == request.UserId)
+                if (memjoin.IsJoined == false)
                 {
-                    getgroup.IsAdmin = true;
+                    getgroup.IsJoin = false;
+                    getgroup.isRequest = false;
                 }
                 else
                 {
-                    getgroup.IsAdmin = false;
+                    getgroup.IsJoin = true;
+                    getgroup.isRequest = false;
+                    if (admin.UserId == request.UserId)
+                    {
+                        getgroup.IsAdmin = true;
+                    }
+                    else
+                    {
+                        getgroup.IsAdmin = false;
+                    }
                 }
             }
+            else
+            {
+                getgroup.isRequest = true;
+            }
+           
 
             foreach (var mem in member)
             {

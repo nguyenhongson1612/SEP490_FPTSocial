@@ -22,6 +22,7 @@ namespace Application.Queries.GetGroupByGroupId
         public string? CoverImage { get; set; }
         public bool IsJoin { get; set; }
         public bool IsAdmin { get; set; }
+        public bool isRequest { get; set; }
         public int MemberCount { get; set; }
         public DateTime? CreateAt { get; set; }
         public List<GroupSettingDTO> GroupSettings { get; set; }
