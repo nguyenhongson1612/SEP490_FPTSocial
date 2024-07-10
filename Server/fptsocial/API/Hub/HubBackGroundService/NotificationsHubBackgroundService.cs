@@ -32,7 +32,6 @@ namespace API.Hub
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
         private readonly HubCallerContext _hubCallerContext;
-        private readonly NotificationOutDTO _notificationOutDTO;
         private readonly List<NotificationOutDTO> _listNotificationOutDTO;
         public NotificationsHubBackgroundService(ILogger<NotificationsHubBackgroundService> logger, IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
             ICreateNotifications createNotifications, IGetNotifications getNotifications, ConnectionMapping<string> connections)
@@ -45,7 +44,6 @@ namespace API.Hub
             _hubContext = hubContext;
             _connections = connections;
             _splitString = new SplitString();
-            _notificationOutDTO = new();
             _listNotificationOutDTO = new();
         }
 
@@ -211,6 +209,7 @@ namespace API.Hub
                 }
                 else
                 {
+                    NotificationOutDTO _notificationOutDTO = new();
                     var senderInfo = _getNotifications.GetAvatarBySenderId(noti.SenderId.ToString());
 
                     string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
@@ -230,7 +229,8 @@ namespace API.Hub
             {
                 await _hubContext.Clients.Client(connectionId).listReceiveNotification(jsonNotice);
             }
-
+            _listNotificationOutDTO.Clear();
+            
         }
 
 

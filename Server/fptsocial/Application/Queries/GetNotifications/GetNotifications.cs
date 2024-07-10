@@ -50,7 +50,7 @@ namespace Application.Queries.GetNotifications
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
                 var user = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
-                var avatarUrl = _querycontext.AvataPhotos.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
+                var avatarUrl = _querycontext.AvataPhotos.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)) && x.IsUsed == true);
                 if (avatarUrl == null)
                 {
                     getAvatarSenderDTO.UserProfile = user;
