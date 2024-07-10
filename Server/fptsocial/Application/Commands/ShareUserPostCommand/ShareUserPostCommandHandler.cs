@@ -43,6 +43,11 @@ namespace Application.Commands.ShareUserPostCommand
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            if (request.UserWhoPostId == request.UserId)
+            {
+                throw new ErrorException(StatusCodeEnum.UP03_Can_Not_Share_Owner_Post);
+            }
+
             Domain.CommandModels.SharePost sharePost = new Domain.CommandModels.SharePost
             {
                 SharePostId = _helper.GenerateNewGuid(),
