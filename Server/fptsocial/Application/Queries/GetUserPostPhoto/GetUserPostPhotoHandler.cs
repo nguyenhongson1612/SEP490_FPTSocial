@@ -47,7 +47,7 @@ namespace Application.Queries.GetUserPostPhoto
                 .FirstOrDefaultAsync(x => x.UserPostPhotoId == request.UserPostPhotoId);
 
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId && x.IsUsed == true);
 
             var result = new GetUserPostPhotoResult {
                 UserPostPhotoId = post.UserPostPhotoId,
