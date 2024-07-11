@@ -20,6 +20,7 @@ using Application.Commands.UpdateUserPostCommand;
 using Application.Queries.GetUserPostPhoto;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostVideo;
+using Application.Queries.GetUserPostById;
 
 namespace API.Controllers
 {
@@ -180,6 +181,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getuserpostvideo")]
         public async Task<IActionResult> GetUserPostVideo([FromQuery] GetUserPostVideoQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getuserpostbyid")]
+        public async Task<IActionResult> GetUserPostById([FromQuery] GetUserPostByIdQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);

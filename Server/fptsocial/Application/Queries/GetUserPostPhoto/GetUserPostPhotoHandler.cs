@@ -45,6 +45,9 @@ namespace Application.Queries.GetUserPostPhoto
                 .Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.UserPostPhotoId == request.UserPostPhotoId);
 
+            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
+
             var result = new GetUserPostPhotoResult {
                 UserPostPhotoId = post.UserPostPhotoId,
                 UserPostId = post.UserPostId,
@@ -59,7 +62,10 @@ namespace Application.Queries.GetUserPostPhoto
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 PostPosition = post.PostPosition,
-                Photo = _mapper.Map<PhotoDTO>(post.Photo)
+                Photo = _mapper.Map<PhotoDTO>(post.Photo),
+                UserId = user.UserId,
+                FullName = user.FirstName + " " + user.LastName,
+                Avatar = _mapper.Map<GetUserAvatar>(avt)
             };
 
             return Result<GetUserPostPhotoResult>.Success(result);
