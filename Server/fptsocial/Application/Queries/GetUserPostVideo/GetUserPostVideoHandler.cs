@@ -46,7 +46,7 @@ namespace Application.Queries.GetUserPostVideo
                 .FirstOrDefaultAsync(x => x.UserPostVideoId == request.UserPostVideoId);
 
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId && x.IsUsed == true);
             var result = new GetUserPostVideoResult
             {
                 UserPostVideoId = post.UserPostVideoId,
