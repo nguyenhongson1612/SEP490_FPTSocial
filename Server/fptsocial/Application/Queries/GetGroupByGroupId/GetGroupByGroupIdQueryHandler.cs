@@ -97,14 +97,13 @@ namespace Application.Queries.GetGroupByGroupId
                     else
                     {
                         getgroup.IsAdmin = false;
-                        if(censor.UserId == request.UserId)
+                        getgroup.IsCensor = false;
+                        if (censor.UserId == request.UserId)
                         {
                             getgroup.IsCensor = true;
                         }
                     }
-
-                    getgroup.IsAdmin = false;
-                    getgroup.IsCensor = false;
+                   
                 }
             }
             else
