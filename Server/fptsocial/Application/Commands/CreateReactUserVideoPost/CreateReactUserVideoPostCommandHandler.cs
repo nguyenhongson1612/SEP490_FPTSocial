@@ -39,14 +39,23 @@ namespace Application.Commands.CreateReactUserVideoPost
             // 1. Kiểm tra phản ứng hiện có
             var existingReact = await _context.ReactVideoPosts
                 .FirstOrDefaultAsync(r => r.UserPostVideoId == request.UserPostVideoId && r.UserId == request.UserId, cancellationToken);
-
+            var postReactCount = await _context.PostReactCounts
+                .FirstOrDefaultAsync(prc => prc.UserPostVideoId == request.UserPostVideoId);
             if (existingReact != null)
             {
                 // 2. Xử lý phản ứng hiện có
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
-                    // Cùng loại phản ứng -> Xóa
                     _context.ReactVideoPosts.Remove(existingReact);
+                    if (postReactCount != null)
+                    {
+                        postReactCount.ReactCount--;
+
+                        if (postReactCount.ReactCount < 0)
+                        {
+                            postReactCount.ReactCount = 0;
+                        }
+                    }
                 }
                 else
                 {
@@ -68,6 +77,10 @@ namespace Application.Commands.CreateReactUserVideoPost
                 };
 
                 await _context.ReactVideoPosts.AddAsync(reactPost);
+                if (postReactCount != null)
+                {
+                    postReactCount.ReactCount++;
+                }
             }
 
             await _context.SaveChangesAsync();
