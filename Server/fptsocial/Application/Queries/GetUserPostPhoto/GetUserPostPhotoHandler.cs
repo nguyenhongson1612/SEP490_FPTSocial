@@ -41,6 +41,7 @@ namespace Application.Queries.GetUserPostPhoto
             }
 
             var post = await _context.UserPostPhotos
+                .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.UserPostPhotoId == request.UserPostPhotoId);
