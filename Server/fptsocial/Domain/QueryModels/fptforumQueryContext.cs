@@ -840,6 +840,11 @@ namespace Domain.QueryModels
                     .HasForeignKey(d => d.GroupPostVideoId)
                     .HasConstraintName("group_share_post_groupvideopost_FK");
 
+                entity.HasOne(d => d.GroupStatus)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.GroupStatusId)
+                    .HasConstraintName("fk_group_share_post_st");
+
                 entity.HasOne(d => d.SharedToUser)
                     .WithMany(p => p.GroupSharePostSharedToUsers)
                     .HasForeignKey(d => d.SharedToUserId)

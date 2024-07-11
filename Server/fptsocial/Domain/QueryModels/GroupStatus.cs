@@ -12,6 +12,7 @@ namespace Domain.QueryModels
             GroupPostVideos = new HashSet<GroupPostVideo>();
             GroupPosts = new HashSet<GroupPost>();
             GroupSettingUses = new HashSet<GroupSettingUse>();
+            GroupSharePosts = new HashSet<GroupSharePost>();
             GroupTagUseds = new HashSet<GroupTagUsed>();
         }
 
@@ -25,6 +26,7 @@ namespace Domain.QueryModels
         public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSettingUse> GroupSettingUses { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<GroupTagUsed> GroupTagUseds { get; set; }
     }
 }

@@ -16,10 +16,13 @@ namespace Domain.CommandModels
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public bool? IsHide { get; set; }
+        public Guid? GroupStatusId { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }
         public virtual GroupPostVideo? GroupPostVideo { get; set; }
+        public virtual GroupStatus? GroupStatus { get; set; }
         public virtual UserProfile? SharedToUser { get; set; }
         public virtual UserProfile User { get; set; } = null!;
         public virtual UserPost? UserPost { get; set; }
