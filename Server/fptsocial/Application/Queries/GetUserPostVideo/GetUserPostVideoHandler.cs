@@ -40,10 +40,13 @@ namespace Application.Queries.GetUserPostVideo
             }
 
             var post = await _context.UserPostVideos
+                .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Video)
                 .FirstOrDefaultAsync(x => x.UserPostVideoId == request.UserPostVideoId);
 
+            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == post.UserPost.UserId);
             var result = new GetUserPostVideoResult
             {
                 UserPostVideoId = post.UserPostVideoId,
@@ -60,7 +63,10 @@ namespace Application.Queries.GetUserPostVideo
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 PostPosition = post.PostPosition,
-                Video = _mapper.Map<VideoDTO>(post.Video)
+                Video = _mapper.Map<VideoDTO>(post.Video),
+                UserId = user.UserId,
+                FullName = user.FirstName + " " + user.LastName,
+                Avatar = _mapper.Map<GetUserAvatar>(avt)
             };
 
             return Result<GetUserPostVideoResult>.Success(result);

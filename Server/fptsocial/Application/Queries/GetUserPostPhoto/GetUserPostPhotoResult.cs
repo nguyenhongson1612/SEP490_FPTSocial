@@ -22,6 +22,8 @@ namespace Application.Queries.GetUserPostPhoto
         public int? PostPosition { get; set; }
 
         public virtual PhotoDTO? Photo { get; set; }
-        
+        public Guid UserId { get; set; }
+        public string? FullName { get; set; }
+        public GetUserAvatar Avatar { get; set; }
     }
 }

@@ -98,5 +98,7 @@ namespace Domain.Enums
         UP02_Post_Not_Found,
         [Description("This account is protected!")]
         PS01_Profile_Status_Private,
+        [Description("Request is null!")]
+        RQ01_Request_Is_Null,
     }
 }

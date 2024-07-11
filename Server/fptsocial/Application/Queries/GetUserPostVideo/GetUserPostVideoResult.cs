@@ -22,5 +22,9 @@ namespace Application.Queries.GetUserPostVideo
         public int? PostPosition { get; set; }
 
         public virtual VideoDTO? Video { get; set; }
+
+        public Guid UserId { get; set; }
+        public string? FullName { get; set; }
+        public GetUserAvatar Avatar { get; set; }
     }
 }
