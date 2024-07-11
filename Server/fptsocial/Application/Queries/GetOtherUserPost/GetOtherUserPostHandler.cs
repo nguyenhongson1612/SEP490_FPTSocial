@@ -41,9 +41,9 @@ namespace Application.Queries.GetOtherUserPost
 
             var idprofilestatus = _context.Settings.Where(x => x.SettingName.Contains("Profile Status")).Select(x => x.SettingId).FirstOrDefault();
             var idpublic = _context.UserStatuses.Where(x => x.StatusName.Contains("Public")).Select(x => x.UserStatusId).FirstOrDefault();
-            var setting = _context.UserSettings.FirstOrDefault(x => x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
+            var setting = _context.UserSettings.FirstOrDefault(x =>x.UserId == request.OtherUserId&& x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
 
-            if (setting != null)
+            if (setting == null)
             {
                 throw new ErrorException(StatusCodeEnum.PS01_Profile_Status_Private);
             }
