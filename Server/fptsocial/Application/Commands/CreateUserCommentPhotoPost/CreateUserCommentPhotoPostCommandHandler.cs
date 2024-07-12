@@ -109,7 +109,7 @@ namespace Application.Commands.CreateUserCommentPhotoPost
 
             if (postReactCount != null)
             {
-                postReactCount.ReactCount++;
+                postReactCount.CommentCount++;
             }
 
             // Prepare the result

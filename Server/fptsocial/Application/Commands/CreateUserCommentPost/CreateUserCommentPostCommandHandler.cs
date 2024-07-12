@@ -110,7 +110,7 @@ namespace Application.Commands.CreateUserCommentPost
 
             if (postReactCount != null)
             {
-                postReactCount.ReactCount++;
+                postReactCount.CommentCount++;
             }
 
             // Map the comment to the result object

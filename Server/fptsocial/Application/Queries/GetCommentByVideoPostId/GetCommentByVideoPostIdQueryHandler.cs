@@ -33,25 +33,27 @@ namespace Application.Queries.GetCommentByVideoPostId
             }
 
             // Lấy danh sách bình luận, kèm thông tin người dùng, ảnh đại diện (nếu có) và sắp xếp
-            var comments = await _context.CommentVideoPosts
-                .Include(cp => cp.User)
-                .Where(x => x.UserPostVideoId == request.UserPostVideoId && x.IsHide == false) // Chỉ lấy bình luận không bị ẩn
-                .OrderBy(c => c.CreatedDate) // Sắp xếp theo ngày tạo (cũ nhất lên trước)
-                .Select(c => new CommentVideoDto
-                {
-                    UserId = c.UserId,
-                    UserName = c.User.FirstName + " " + c.User.LastName,
-                    UserPostVideoId = c.UserPostVideoId,
-                    CreatedDate = c.CreatedDate,
-                    Content = c.Content,
-                    IsHide = c.IsHide,
-                    CommentVideoPostId = c.CommentVideoPostId,
-                    ParentCommentId = c.ParentCommentId,
-                    ListNumber = c.ListNumber, // Giả sử bạn có trường này trong CommentVideoPost
-                    Level = c.LevelCmt, // Giả sử bạn có trường này trong CommentVideoPost
-                    Replies = new List<CommentVideoDto>()
-                })
-                .ToListAsync(cancellationToken);
+            var comments = await (from c in _context.CommentVideoPosts
+                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
+                                  from a in ap.DefaultIfEmpty()
+                                  where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && a.IsUsed == true
+                                  orderby c.CreatedDate ascending
+                                  select new CommentVideoDto
+                                  {
+                                    UserId = c.UserId,
+                                    UserName = c.User.FirstName + " " + c.User.LastName,
+                                    Url = a.AvataPhotosUrl,
+                                    UserPostVideoId = c.UserPostVideoId,
+                                    CreatedDate = c.CreatedDate,
+                                    Content = c.Content,
+                                    IsHide = c.IsHide,
+                                    CommentVideoPostId = c.CommentVideoPostId,
+                                    ParentCommentId = c.ParentCommentId,
+                                    ListNumber = c.ListNumber, // Giả sử bạn có trường này trong CommentVideoPost
+                                    Level = c.LevelCmt, // Giả sử bạn có trường này trong CommentVideoPost
+                                    Replies = new List<CommentVideoDto>()
+                                  })
+                                  .ToListAsync(cancellationToken);
 
             // Xây dựng cấu trúc phân cấp bình luận
             var result = new GetCommentByVideoPostIdQueryResult

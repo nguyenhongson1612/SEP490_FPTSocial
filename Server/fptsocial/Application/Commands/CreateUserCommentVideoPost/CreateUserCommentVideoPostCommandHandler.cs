@@ -110,7 +110,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
 
             if (postReactCount != null)
             {
-                postReactCount.ReactCount++;
+                postReactCount.CommentCount++;
             }
 
             // Map the result and include banned words

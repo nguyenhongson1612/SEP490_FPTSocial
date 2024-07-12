@@ -33,25 +33,30 @@ namespace Application.Queries.GetCommentByPhotoPostId
             }
 
             // Lấy danh sách bình luận, kèm theo thông tin người dùng và ảnh đại diện (nếu có)
-            var comments = await _context.CommentPhotoPosts
-                .Include(cp => cp.User)
-                .Where(x => x.UserPostPhotoId == request.UserPostPhotoId && x.IsHide == false) // Chỉ lấy bình luận không bị ẩn
-                .OrderBy(c => c.CreatedDate) // Sắp xếp theo ngày tạo (giống ví dụ trước)
-                .Select(c => new CommentPhotoDto
-                {
-                    UserId = c.UserId,
-                    UserName = c.User.FirstName + " " + c.User.LastName,
-                    UserPostPhotoId = c.UserPostPhotoId,
-                    CreatedDate = c.CreatedDate,
-                    Content = c.Content,
-                    IsHide = c.IsHide,
-                    CommentPhotoPostId = c.CommentPhotoPostId,
-                    ParentCommentId = c.ParentCommentId,
-                    ListNumber = c.ListNumber, // Thêm trường này (giả sử có trong CommentPhotoPost)
-                    Level = c.LevelCmt,       // Thêm trường này (giả sử có trong CommentPhotoPost)
-                    Replies = new List<CommentPhotoDto>()
-                })
-                .ToListAsync(cancellationToken);
+            var comments = await (from c in _context.CommentPhotoPosts
+                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
+                                  from a in ap.DefaultIfEmpty()
+                                  where c.UserPostPhotoId == request.UserPostPhotoId
+                                        && c.IsHide == false
+                                        && a.IsUsed == true // Lọc ảnh đại diện đang sử dụng
+                                  orderby c.CreatedDate ascending
+                                  select new CommentPhotoDto
+                                  {
+                                      UserId = c.UserId,
+                                      UserName = c.User.FirstName + " " + c.User.LastName, // Lấy tên từ Users
+                                      Url = a.AvataPhotosUrl, // Xử lý trường hợp không có ảnh đại diện
+                                      UserPostPhotoId = c.UserPostPhotoId,
+                                      CreatedDate = c.CreatedDate,
+                                      Content = c.Content,
+                                      IsHide = c.IsHide,
+                                      CommentPhotoPostId = c.CommentPhotoPostId, // Giả sử đây là khóa chính
+                                      ParentCommentId = c.ParentCommentId,
+                                      Level = c.LevelCmt,
+                                      ListNumber = c.ListNumber,
+                                      Replies = new List<CommentPhotoDto>() // Khởi tạo danh sách phản hồi
+                                  })
+                     .ToListAsync(cancellationToken);
+
 
             // Xây dựng cấu trúc phân cấp bình luận
             var result = new GetCommentByPhotoPostIdQueryResult

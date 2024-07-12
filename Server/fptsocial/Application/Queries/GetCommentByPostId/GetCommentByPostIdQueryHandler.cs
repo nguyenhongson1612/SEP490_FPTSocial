@@ -39,7 +39,7 @@ namespace Application.Queries.GetCommentByPostId
             var comments = await (from c in _context.CommentPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.DefaultIfEmpty()
-                                  where c.UserPostId == request.UserPostId && c.IsHide == false
+                                  where c.UserPostId == request.UserPostId && c.IsHide == false && a.IsUsed == true
                                   orderby c.CreatedDate ascending
                                   select new CommentDto
                                   {
