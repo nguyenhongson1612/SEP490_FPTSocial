@@ -16,7 +16,7 @@ namespace Application.Commands.CreateGroupPost
         public string? GroupPostNumber { get; set; }
         public string GroupStatusId { get; set; } = null!;
         public bool? IsHide { get; set; }
-        public List<CheckingBadWord.BannedWord> BannedWords { get; set; } = new List<CheckingBadWord.BannedWord>();
+        public List<CheckingBadWord.BannedWord>? BannedWords { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

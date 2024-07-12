@@ -108,7 +108,7 @@ namespace Application.Commands.CreateGroupPost
                         GroupPostId = groupPost.GroupPostId,
                         GroupPhotoId = photoId,
                         Content = string.Empty,
-                        GroupPostPhotoNumber = (numberPost + 1).ToString(),
+                        GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                         GroupStatusId = groupPost.GroupStatusId,
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
@@ -117,7 +117,7 @@ namespace Application.Commands.CreateGroupPost
                     };
                     await _context.GroupPostPhotos.AddAsync(groupPostPhoto);
                     await _context.SaveChangesAsync();
-
+                    postPosition++;
 
                     Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
@@ -140,7 +140,7 @@ namespace Application.Commands.CreateGroupPost
                         GroupPostId = groupPost.GroupPostId,
                         GroupVideoId = videoId,
                         Content = string.Empty,
-                        GroupPostVideoNumber = (numberPost + 1).ToString(),
+                        GroupPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                         GroupStatusId = groupPost.GroupStatusId,
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
@@ -149,6 +149,7 @@ namespace Application.Commands.CreateGroupPost
                     };
                     await _context.GroupPostVideos.AddAsync(groupPostVideo);
                     await _context.SaveChangesAsync();
+                    postPosition++;
 
                     Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
