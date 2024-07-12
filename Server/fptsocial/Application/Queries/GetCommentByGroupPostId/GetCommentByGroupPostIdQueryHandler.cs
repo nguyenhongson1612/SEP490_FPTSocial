@@ -34,8 +34,8 @@ namespace Application.Queries.GetCommentByGroupPostId
 
             var comments = await (from c in _context.CommentGroupPosts
                                     join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
-                                    from a in ap.DefaultIfEmpty()
-                                    where c.GroupPostId == request.GroupPostId && c.IsHide == false && a.IsUsed == true
+                                    from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
+                                    where c.GroupPostId == request.GroupPostId && c.IsHide == false
                                   orderby c.CreatedDate ascending
                                     select new GroupCommentDto
                                     {

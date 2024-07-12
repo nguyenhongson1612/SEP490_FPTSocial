@@ -35,10 +35,9 @@ namespace Application.Queries.GetCommentByPhotoPostId
             // Lấy danh sách bình luận, kèm theo thông tin người dùng và ảnh đại diện (nếu có)
             var comments = await (from c in _context.CommentPhotoPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
-                                  from a in ap.DefaultIfEmpty()
+                                  from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.UserPostPhotoId == request.UserPostPhotoId
                                         && c.IsHide == false
-                                        && a.IsUsed == true // Lọc ảnh đại diện đang sử dụng
                                   orderby c.CreatedDate ascending
                                   select new CommentPhotoDto
                                   {
