@@ -18,6 +18,30 @@ namespace Application.DTO.ReactDTO
         public string? AvataUrl { get; set; }
     }
 
+    public class ReactPhotoPostDTO
+    {
+        public Guid ReactPhotoPostId { get; set; }
+        public Guid UserPostPhotoId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
+    public class ReactVideoPostDTO
+    {
+        public Guid ReactVideoPostId { get; set; }
+        public Guid UserPostVideoId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
     public class ReactCommentDTO
     {
         public Guid ReactCommentId { get; set; }
