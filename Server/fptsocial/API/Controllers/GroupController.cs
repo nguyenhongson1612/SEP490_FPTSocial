@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CreateGroupCommand;
 using Application.Commands.CreateGroupRole;
+using Application.Commands.InvatedFriendToGroup;
 using Application.Commands.JoinGroupCommand;
 using Application.Commands.RequestJoinGroupStatus;
 using Application.Commands.UpdateUserCommand;
@@ -144,6 +145,26 @@ namespace API.Controllers
                 return BadRequest();
             }
             input.ManagerId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("InvatedFriend")]
+        public async Task<IActionResult> InvatedFriendToJoin(InvatedMemberCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
