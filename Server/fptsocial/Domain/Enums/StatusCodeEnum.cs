@@ -93,6 +93,8 @@ namespace Domain.Enums
         [Description("You can not join this group")]
         GR10_Group_Joined,
         [Description("Your post have bad word")]
+        GR11_Not_Permission,
+        [Description("You have not permission in group")]
         UP01_Post_Have_Bad_Word,
         [Description("Your post not found")]
         UP02_Post_Not_Found,

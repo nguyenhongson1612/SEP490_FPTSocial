@@ -114,7 +114,7 @@ namespace Application.Queries.GetGroupByGroupId
 
             foreach (var mem in member)
             {
-                var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId);
+                var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId && x.IsUsed == true);
                 var gmem = new GroupMemberDTO
                 {
                     GroupId = mem.GroupId,
