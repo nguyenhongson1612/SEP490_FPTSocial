@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Application.Queries.GetGroupPostByGroupId
@@ -38,15 +39,17 @@ namespace Application.Queries.GetGroupPostByGroupId
             }
 
             var groupPost = await _context.GroupPosts
-                            .Include(x => x.GroupPhoto)
-                            .Include(x => x.GroupVideo)
-                            .Include(x => x.GroupPostPhotos)
-                                .ThenInclude(x => x.GroupPhoto)
-                                .ThenInclude(x => x.Group)
-                            .Include(x => x.GroupPostVideos)
-                                .ThenInclude(x => x.GroupVideo)
-                                .ThenInclude(x => x.Group)
-                            .ToListAsync(cancellationToken);
+                                    .Include(x => x.GroupPhoto)
+                                    .Include(x => x.GroupVideo)
+                                    .Include(x => x.GroupPostPhotos)
+                                        .ThenInclude(gpp => gpp.GroupPhoto)
+                                        .ThenInclude(gp => gp.Group)
+                                    .Include(x => x.GroupPostVideos)
+                                        .ThenInclude(gpv => gpv.GroupVideo)
+                                        .ThenInclude(gv => gv.Group)
+                                    .Where(x => x.GroupPostPhotos.Any(gpp => gpp.GroupPhoto.Group.GroupId == request.GroupId)
+                                            || x.GroupPostVideos.Any(gpv => gpv.GroupVideo.Group.GroupId == request.GroupId))
+                                    .ToListAsync(cancellationToken);
 
             var result = groupPost.Select(x => new GetGroupPostByGroupIdResult {
                 GroupPostId = x.GroupPostId,
