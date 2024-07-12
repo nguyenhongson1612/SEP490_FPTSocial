@@ -110,7 +110,7 @@ namespace Application.Commands.Post
                         UserPostId = userPost.UserPostId,
                         PhotoId = photoId,
                         Content = string.Empty,
-                        UserPostPhotoNumber = (numberPost + 1).ToString(),
+                        UserPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                         UserStatusId = userPost.UserStatusId,
                         IsHide = userPost.IsHide,
                         CreatedAt = DateTime.Now,
@@ -119,6 +119,7 @@ namespace Application.Commands.Post
                     };
                     await _context.UserPostPhotos.AddAsync(userPostPhoto);
                     await _context.SaveChangesAsync();
+                    postPosition++;
 
                     Domain.CommandModels.PostReactCount photoPostReactCount = new Domain.CommandModels.PostReactCount
                     {
@@ -142,7 +143,7 @@ namespace Application.Commands.Post
                         UserPostId = userPost.UserPostId,
                         VideoId = videoId,
                         Content = string.Empty,
-                        UserPostVideoNumber = (numberPost + 1).ToString(),
+                        UserPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                         UserStatusId = userPost.UserStatusId,
                         IsHide = userPost.IsHide,
                         CreatedAt = DateTime.Now,
@@ -151,6 +152,7 @@ namespace Application.Commands.Post
                     };
                     await _context.UserPostVideos.AddAsync(userPostVideo);
                     await _context.SaveChangesAsync();
+                    postPosition++;
 
                     Domain.CommandModels.PostReactCount videoPostReactCount = new Domain.CommandModels.PostReactCount
                     {
