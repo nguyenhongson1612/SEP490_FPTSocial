@@ -72,6 +72,8 @@ using Application.Commands.CreateUserCommentGroupVideoPost;
 using Application.Commands.CreateReactCommentUserPost;
 using Application.Commands.CreateReactCommentUserPostVideo;
 using Application.Queries.GetGroupStatusForCreate;
+using Application.DTO.GroupPostDTO;
+using Application.DTO.GroupFPTDTO;
 
 namespace Application.Mappers
 {
@@ -268,6 +270,13 @@ namespace Application.Mappers
             //Notification
             CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
             CreateMap<Query.Notification, UpdateNotificationStatusResult>();
+
+            //GroupPost
+            CreateMap<GroupPostPhotoDTO, GroupPostPhoto>();
+            CreateMap<GroupPhotoDTO, GroupPhoto>();
+            CreateMap<GroupPostVideoDTO, GroupPostVideo>();
+            CreateMap<GroupVideoDTO, GroupVideo>();
+            CreateMap<GroupFPTDTO, GroupFpt>();
         }
     }
 }

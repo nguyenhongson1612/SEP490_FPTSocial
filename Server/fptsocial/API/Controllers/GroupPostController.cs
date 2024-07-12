@@ -91,5 +91,13 @@ namespace API.Controllers
             return Success(res.Value);
 
         }
+
+        [HttpGet]
+        [Route("getGroupPostByGroupId")]
+        public async Task<IActionResult> GetGroupPostByGroupId([FromQuery] GetCommentByGroupPostIdQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
