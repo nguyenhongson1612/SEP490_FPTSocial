@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using static Application.Services.CheckingBadWord;
@@ -85,6 +86,18 @@ namespace Application.Commands.Post
                 await _context.SaveChangesAsync();
             }
 
+            Domain.CommandModels.PostReactCount postReactCount = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = _helper.GenerateNewGuid(),
+                UserPostId = userPost.UserPostId,
+                ReactCount = 0,
+                CommentCount = 0,
+                ShareCount = 0,
+                CreateAt = DateTime.Now
+            };
+            await _context.PostReactCounts.AddAsync(postReactCount);
+            await _context.SaveChangesAsync();
+
             if (numberPost > 1)
             {
                 int postPosition = 0;
@@ -106,6 +119,18 @@ namespace Application.Commands.Post
                     };
                     await _context.UserPostPhotos.AddAsync(userPostPhoto);
                     await _context.SaveChangesAsync();
+
+                    Domain.CommandModels.PostReactCount photoPostReactCount = new Domain.CommandModels.PostReactCount
+                    {
+                        PostReactCountId = _helper.GenerateNewGuid(),
+                        UserPostPhotoId = userPostPhoto.UserPostPhotoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                        CreateAt = DateTime.Now
+                    };
+                    await _context.PostReactCounts.AddAsync(photoPostReactCount);
+                    await _context.SaveChangesAsync();
                 }
 
                 foreach (var video in videos)
@@ -125,6 +150,18 @@ namespace Application.Commands.Post
                         PostPosition = postPosition + 1
                     };
                     await _context.UserPostVideos.AddAsync(userPostVideo);
+                    await _context.SaveChangesAsync();
+
+                    Domain.CommandModels.PostReactCount videoPostReactCount = new Domain.CommandModels.PostReactCount
+                    {
+                        PostReactCountId = _helper.GenerateNewGuid(),
+                        UserPostVideoId = userPostVideo.UserPostVideoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                        CreateAt = DateTime.Now
+                    };
+                    await _context.PostReactCounts.AddAsync(videoPostReactCount);
                     await _context.SaveChangesAsync();
 
                 }

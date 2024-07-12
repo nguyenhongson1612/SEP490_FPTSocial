@@ -39,6 +39,8 @@ namespace Application.Commands.CreateReactUserPhotoPost
             // 1. Kiểm tra phản ứng hiện có
             var existingReact = await _context.ReactPhotoPosts
                 .FirstOrDefaultAsync(r => r.UserPostPhotoId == request.UserPostPhotoId && r.UserId == request.UserId, cancellationToken);
+            var postReactCount = await _context.PostReactCounts
+                .FirstOrDefaultAsync(prc => prc.UserPostPhotoId == request.UserPostPhotoId);
 
             if (existingReact != null)
             {
@@ -47,6 +49,15 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 {
                     // Cùng loại phản ứng -> Xóa
                     _context.ReactPhotoPosts.Remove(existingReact);
+                    if (postReactCount != null)
+                    {
+                        postReactCount.ReactCount--;
+
+                        if (postReactCount.ReactCount < 0)
+                        {
+                            postReactCount.ReactCount = 0;
+                        }
+                    }
                 }
                 else
                 {
@@ -68,6 +79,10 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 };
 
                 await _context.ReactPhotoPosts.AddAsync(reactPost);
+                if (postReactCount != null)
+                {
+                    postReactCount.ReactCount++;
+                }
             }
 
             await _context.SaveChangesAsync();

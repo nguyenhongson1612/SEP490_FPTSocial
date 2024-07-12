@@ -10,6 +10,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,8 @@ namespace Application.Commands.CreateUserCommentPost
 
             int levelCmt = 1;
             string listNumber = null;
-
+            var postReactCount = await _context.PostReactCounts
+                .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
@@ -105,6 +107,11 @@ namespace Application.Commands.CreateUserCommentPost
             // Add the comment to the context and save changes
             await _context.CommentPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
+
+            if (postReactCount != null)
+            {
+                postReactCount.CommentCount++;
+            }
 
             // Map the comment to the result object
             var result = _mapper.Map<CreateUserCommentPostCommandResult>(comment);

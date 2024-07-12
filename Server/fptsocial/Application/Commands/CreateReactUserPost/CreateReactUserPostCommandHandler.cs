@@ -39,6 +39,12 @@ namespace Application.Commands.CreateReactUserPost
             // 1. Check for Existing Reaction
             var existingReact = await _context.ReactPosts
                 .FirstOrDefaultAsync(r => r.UserPostId == request.UserPostId && r.UserId == request.UserId, cancellationToken);
+            var postReactCount = await _context.PostReactCounts
+                .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
+            if (postReactCount == null) 
+            { 
+                
+            }
             Domain.CommandModels.ReactPost reactPost = new Domain.CommandModels.ReactPost();
             if (existingReact != null)
             {
@@ -47,6 +53,15 @@ namespace Application.Commands.CreateReactUserPost
                 {
                     // User clicked the same react type again -> Remove it
                     _context.ReactPosts.Remove(existingReact);
+                    if (postReactCount != null)
+                    {
+                        postReactCount.ReactCount--;
+
+                        if (postReactCount.ReactCount < 0)
+                        {
+                            postReactCount.ReactCount = 0; 
+                        }
+                    }
                 }
                 else
                 {
@@ -68,6 +83,10 @@ namespace Application.Commands.CreateReactUserPost
                 };
 
                 await _context.ReactPosts.AddAsync(reactPost);
+                if (postReactCount != null)
+                {
+                    postReactCount.ReactCount++;
+                }
             }
 
             await _context.SaveChangesAsync();

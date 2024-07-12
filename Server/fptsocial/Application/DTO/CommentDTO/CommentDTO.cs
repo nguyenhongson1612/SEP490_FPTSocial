@@ -25,6 +25,7 @@ namespace Application.DTO.CommentDTO
     public class CommentVideoDto
     {
         public Guid UserId { get; set; }
+        public string Url { get; set; }
         public Guid CommentVideoPostId { get; set; }
         public Guid UserPostVideoId { get; set; }
         public string? UserName { get; set; }
@@ -40,6 +41,7 @@ namespace Application.DTO.CommentDTO
     public class CommentPhotoDto
     {
         public Guid UserId { get; set; }
+        public string Url { get; set; }
         public Guid CommentPhotoPostId { get; set; }
         public Guid UserPostPhotoId { get; set; }
         public string? UserName { get; set; }

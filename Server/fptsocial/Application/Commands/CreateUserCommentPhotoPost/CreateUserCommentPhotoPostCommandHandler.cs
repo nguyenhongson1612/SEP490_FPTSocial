@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,8 @@ namespace Application.Commands.CreateUserCommentPhotoPost
 
             int levelCmt = 1;
             string listNumber = null;
+            var postReactCount = await _context.PostReactCounts
+                .FirstOrDefaultAsync(prc => prc.UserPostPhotoId == request.UserPostPhotoId);
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
@@ -103,6 +106,11 @@ namespace Application.Commands.CreateUserCommentPhotoPost
             // Add comment to the database and save changes
             await _context.CommentPhotoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
+
+            if (postReactCount != null)
+            {
+                postReactCount.CommentCount++;
+            }
 
             // Prepare the result
             var result = _mapper.Map<CreateUserCommentPhotoPostCommandResult>(comment);

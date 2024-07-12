@@ -122,7 +122,6 @@ namespace Application.Commands.CreateGroupPost
                     Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
                         GroupPostReactCountId = _helper.GenerateNewGuid(),
-                        GroupPostId = groupPost.GroupPostId,
                         GroupPostPhotoId = groupPostPhoto.GroupPostPhotoId,
                         ReactCount = 0,
                         CommentCount = 0,
@@ -154,7 +153,6 @@ namespace Application.Commands.CreateGroupPost
                     Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
                         GroupPostReactCountId = _helper.GenerateNewGuid(),
-                        GroupPostId = groupPost.GroupPostId,
                         GroupPostVideoId = groupPostVideo.GroupPostVideoId,
                         ReactCount = 0,
                         CommentCount = 0,
