@@ -1,9 +1,11 @@
 ﻿using Application.Commands.CreateGroupCommand;
 using Application.Commands.CreateGroupRole;
 using Application.Commands.JoinGroupCommand;
+using Application.Commands.RequestJoinGroupStatus;
 using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetGroupByGroupId;
 using Application.Queries.GetGroupByUserId;
+using Application.Queries.GetListRequestjoinGroup;
 using Application.Queries.GetUserByUserId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -88,7 +90,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("requestjoingroup")]
-        public async Task<IActionResult> UpdateProfile(RequestJoinGroupCommand input)
+        public async Task<IActionResult> RequestJoinToGroup(RequestJoinGroupCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
@@ -106,5 +108,44 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("getrequestjoin")]
+        public async Task<IActionResult> GetRequestJoinGroup([FromQuery] GetListRequestJoinGroupQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("memberjoinstatus")]
+        public async Task<IActionResult> MemberJoinStatus(RequestJoinStatusCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.ManagerId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
