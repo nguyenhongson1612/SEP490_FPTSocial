@@ -72,7 +72,7 @@ namespace Application.Queries.GetOtherUserPost
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains(x.UserStatusId))
+                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains(x.UserStatusId) && x.IsHide != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
