@@ -18,6 +18,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers
 {
@@ -106,6 +108,18 @@ namespace API.Controllers
         [Route("getAllReactByPostId")]
         public async Task<IActionResult> GetAllReactByPostId([FromQuery] GetReactByPostQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();     
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -114,6 +128,18 @@ namespace API.Controllers
         [Route("getAllReactByCommentId")]
         public async Task<IActionResult> GetAllReactByCommentId([FromQuery] GetReactByCommentIdQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -122,6 +148,18 @@ namespace API.Controllers
         [Route("getAllReactByCommentVideoId")]
         public async Task<IActionResult> GetAllReactByCommentVideoId([FromQuery] GetReactByCommentVideoIdQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -130,6 +168,18 @@ namespace API.Controllers
         [Route("getAllReactByCommentPhotoId")]
         public async Task<IActionResult> GetAllReactByCommentPhotoId([FromQuery] GetReactByCommentPhotoIdQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -138,6 +188,18 @@ namespace API.Controllers
         [Route("getAllReactByPhotoPostId")]
         public async Task<IActionResult> GetAllReactByPhotoPostId([FromQuery] GetReactByPhotoPostQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -146,8 +208,21 @@ namespace API.Controllers
         [Route("getAllReactByVideoPostId")]
         public async Task<IActionResult> GetAllReactByVideoPostId([FromQuery] GetReactByVideoPostQuery query)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
+        //=================DocHere=============================== 
     }
 }

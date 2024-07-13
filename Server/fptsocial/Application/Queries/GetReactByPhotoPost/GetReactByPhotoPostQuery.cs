@@ -10,5 +10,6 @@ namespace Application.Queries.GetReactByPhotoPost
     public class GetReactByPhotoPostQuery : IQuery< GetReactByPhotoPostQueryResult>
     {
         public Guid UserPostPhotoId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

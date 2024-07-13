@@ -10,5 +10,6 @@ namespace Application.Queries.GetReactByVideoPost
     public class GetReactByVideoPostQuery : IQuery<GetReactByVideoPostQueryResult>
     {
         public Guid UserPostVideoId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

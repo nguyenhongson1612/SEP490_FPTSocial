@@ -33,6 +33,8 @@ namespace Application.Queries.GetReactByPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            bool isReact = false;
+
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from react in _context.ReactPosts
                                         join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
@@ -52,6 +54,12 @@ namespace Application.Queries.GetReactByPost
                                         }
                                     ).ToListAsync(cancellationToken);
 
+            var checkReact = await (_context.ReactPosts.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
+            if (checkReact != null)
+            {
+                isReact = true;
+            }
+
             // 2. Calculate Sum of Reactions
             var sumOfReacts = listUserReact.Count;
 
@@ -59,7 +67,8 @@ namespace Application.Queries.GetReactByPost
             var result = new GetReactByPostQueryResult
             {
                 SumOfReact = sumOfReacts,
-                ListUserReact = listUserReact
+                ListUserReact = listUserReact,
+                IsReact = isReact
             };
 
             return Result<GetReactByPostQueryResult>.Success(result);

@@ -15,6 +15,5 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
         public Guid UserId { get; set; }
         public Guid ReactTypeId { get; set; }
         public Guid CommentVideoPostId { get; set; }
-        public DateTime CreatedDate { get; set; }
     }
 }

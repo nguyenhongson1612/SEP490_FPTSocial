@@ -32,7 +32,7 @@ namespace Application.Queries.GetReactByVideoPost
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-
+            bool isReact = false;
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from react in _context.ReactVideoPosts
                                         join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
@@ -52,6 +52,11 @@ namespace Application.Queries.GetReactByVideoPost
                                         }
                                     ).ToListAsync(cancellationToken);
 
+            var checkReact = await (_context.ReactVideoPosts.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
+            if (checkReact != null)
+            {
+                isReact = true;
+            }
             // 2. Calculate Sum of Reactions
             var sumOfReacts = listUserReact.Count;
 
@@ -59,7 +64,8 @@ namespace Application.Queries.GetReactByVideoPost
             var result = new GetReactByVideoPostQueryResult
             {
                 SumOfReact = sumOfReacts,
-                ListUserReact = listUserReact
+                ListUserReact = listUserReact,
+                IsReact = isReact
             };
 
             return Result<GetReactByVideoPostQueryResult>.Success(result);

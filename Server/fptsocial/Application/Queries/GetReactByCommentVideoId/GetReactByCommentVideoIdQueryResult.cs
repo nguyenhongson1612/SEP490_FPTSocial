@@ -10,6 +10,7 @@ namespace Application.Queries.GetReactByCommentVideoId
     public class GetReactByCommentVideoIdQueryResult
     {
         public int SumOfReact { get; set; }
+        public bool? IsReact { get; set; }
         public List<ReactCommentVideoDTO>? ListCommentReact { get; set; }
         public List<ReactTypeCountDTO>? ListReact { get; set;}
     }

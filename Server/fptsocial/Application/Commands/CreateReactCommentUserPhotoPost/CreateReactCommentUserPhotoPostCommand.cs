@@ -16,6 +16,5 @@ namespace Application.Commands.CreateReactCommentUserPostPhoto
         public Guid UserId { get; set; }
         public Guid ReactTypeId { get; set; }
         public Guid CommentPhotoPostId { get; set; }
-        public DateTime CreatedDate { get; set; }
     }
 }
