@@ -22,6 +22,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostVideo;
 using Application.Queries.GetUserPostById;
 using Application.Commands.ShareUserPostCommand;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace API.Controllers
 {
@@ -102,15 +103,6 @@ namespace API.Controllers
         [HttpPost]
         [Route("createPost")]
         public async Task<IActionResult> CreatePost(CreateUserPostCommand command)
-        {
-            var res = await _sender.Send(command);
-            return Success(res.Value);
-
-        }
-
-        [HttpPost]
-        [Route("sharePost")]
-        public async Task<IActionResult> SharePost(ShareUserPostCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
@@ -205,5 +197,27 @@ namespace API.Controllers
         }
 
         //=================DocHere===============================
+
+        [HttpPost]
+        [Route("sharePost")]
+        public async Task<IActionResult> SharePost(ShareUserPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
     }
 }

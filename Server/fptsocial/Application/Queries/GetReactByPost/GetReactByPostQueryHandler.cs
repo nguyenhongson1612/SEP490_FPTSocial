@@ -54,8 +54,9 @@ namespace Application.Queries.GetReactByPost
                                         }
                                     ).ToListAsync(cancellationToken);
 
-            var checkReact = await (_context.ReactPosts.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
-            if (checkReact != null)
+            var checkReact = await (_context.ReactPosts.Where(x => x.UserId == request.UserId && x.UserPostId == request.UserPostId)).ToListAsync(cancellationToken);
+
+            if (checkReact.Count() != 0)
             {
                 isReact = true;
             }

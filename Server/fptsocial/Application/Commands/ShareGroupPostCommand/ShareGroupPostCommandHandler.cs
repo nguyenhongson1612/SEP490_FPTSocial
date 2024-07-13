@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using static Application.Services.CheckingBadWord;
 using Core.Helper;
 using Microsoft.EntityFrameworkCore.Query;
+using System.Net.WebSockets;
 
 namespace Application.Commands.ShareGroupPostCommand
 {
@@ -42,6 +43,31 @@ namespace Application.Commands.ShareGroupPostCommand
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            //var groupPost = await _context.GroupPosts
+            //                    .Include(up => up.GroupPostPhotos)
+            //                    .Include(up => up.GroupPostVideos)
+            //                    .FirstOrDefaultAsync(up => up.GroupPostId == request.GroupPostId, cancellationToken);
+
+            //if (groupPost == null)
+            //{
+            //    throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); 
+            //}
+
+            //if (groupPost.UserId == request.UserId)
+            //{
+            //    throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
+            //}
+
+            //if (request.UserPostPhotoId.HasValue && !groupPost.GroupPostPhotos.Any(p => p.GroupPostPhotoId == request.UserPostPhotoId))
+            //{
+            //    throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
+            //}
+
+            //if (request.UserPostVideoId.HasValue && !groupPost.GroupPostVideos.Any(v => v.GroupPostVideoId == request.UserPostVideoId))
+            //{
+            //    throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
+            //}
+
             Domain.CommandModels.GroupSharePost sharePost = new Domain.CommandModels.GroupSharePost
             {
                 GroupSharePostId = _helper.GenerateNewGuid(),
@@ -52,6 +78,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId, 
                 CreatedDate = DateTime.Now,
+                IsHide = false
             };
 
             _context.GroupSharePosts.Add(sharePost);
@@ -60,6 +87,7 @@ namespace Application.Commands.ShareGroupPostCommand
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(sharePost.Content);
             if (haveBadWord.Any())
             {
+                sharePost.IsBanned = true;
                 sharePost.Content = MarkBannedWordsInContent(sharePost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }

@@ -64,8 +64,8 @@ namespace Application.Queries.GetReactByCommentVideoId
                                        NumberReact = g.Count()
                                    }).ToListAsync(cancellationToken);
 
-            var checkReact = await (_context.ReactVideoPostComments.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
-            if (checkReact != null)
+            var checkReact = await (_context.ReactVideoPostComments.Where(x => x.UserId == request.UserId && x.CommentVideoPostId == request.CommentVideoPostId)).ToListAsync(cancellationToken);
+            if (checkReact.Count() != 0)
             {
                 isReact = true;
             }

@@ -9,6 +9,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -43,9 +44,30 @@ namespace Application.Commands.ShareUserPostCommand
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            if (request.UserWhoPostId == request.UserId)
+            var userPost = await _context.UserPosts
+                                .Include(up => up.UserPostPhotos) 
+                                .Include(up => up.UserPostVideos) 
+                                .FirstOrDefaultAsync(up => up.UserPostId == request.UserPostId, cancellationToken);
+
+            if (userPost == null)
             {
-                throw new ErrorException(StatusCodeEnum.UP03_Can_Not_Share_Owner_Post);
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); // Or a more suitable error code
+            }
+
+            if (userPost.UserId == request.UserId)
+            {
+                throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
+            }
+
+            // Additional checks for photo and video ownership (if IDs are provided)
+            if (request.UserPostPhotoId.HasValue && !userPost.UserPostPhotos.Any(p => p.UserPostPhotoId == request.UserPostPhotoId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
+            }
+
+            if (request.UserPostVideoId.HasValue && !userPost.UserPostVideos.Any(v => v.UserPostVideoId == request.UserPostVideoId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
             }
 
             Domain.CommandModels.SharePost sharePost = new Domain.CommandModels.SharePost
@@ -72,7 +94,7 @@ namespace Application.Commands.ShareUserPostCommand
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(sharePost.Content);
             if (haveBadWord.Any())
             {
-                sharePost.IsHide = true;
+                sharePost.IsBanned = true;
                 sharePost.Content = MarkBannedWordsInContent(sharePost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }

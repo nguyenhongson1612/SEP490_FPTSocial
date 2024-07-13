@@ -64,8 +64,8 @@ namespace Application.Queries.GetReactByCommentPhotoId
                                        NumberReact = g.Count()
                                    }).ToListAsync(cancellationToken);
 
-            var checkReact = await (_querycontext.ReactPhotoPostComments.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
-            if (checkReact != null)
+            var checkReact = await (_querycontext.ReactPhotoPostComments.Where(x => x.UserId == request.UserId && x.CommentPhotoPostId == request.CommentPhotoPostId)).ToListAsync(cancellationToken);
+            if (checkReact.Count() != 0)
             {
                 isReact = true;
             }

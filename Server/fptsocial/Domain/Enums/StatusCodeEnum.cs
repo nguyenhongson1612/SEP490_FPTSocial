@@ -105,7 +105,7 @@ namespace Domain.Enums
         [Description("Access denied!")]
         UP03_Not_Authorized,
         [Description("Can't share owner post")]
-        UP03_Can_Not_Share_Owner_Post,
+        UP04_Can_Not_Share_Owner_Post,
         [Description("This account is protected!")]
         PS01_Profile_Status_Private,
         [Description("Request is null!")]
