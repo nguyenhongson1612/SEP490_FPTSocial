@@ -38,7 +38,7 @@ namespace Application.Queries.GetReactByCommentVideoId
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from reactComment in _context.ReactVideoPostComments
                                        join avata in _context.AvataPhotos on reactComment.UserId equals avata.UserId into avataGroup
-                                       from avata in avataGroup.DefaultIfEmpty()
+                                       from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty()
                                        where reactComment.CommentVideoPostId == request.CommentVideoPostId
                                        group new { reactComment, avata } by reactComment.ReactVideoPostCommentId into g
                                        select new ReactCommentVideoDTO
@@ -62,7 +62,9 @@ namespace Application.Queries.GetReactByCommentVideoId
                                        ReactTypeId = g.Key,
                                        ReactTypeName = g.FirstOrDefault().ReactType.ReactTypeName,
                                        NumberReact = g.Count()
-                                   }).ToListAsync(cancellationToken);
+                                   })
+                                   .OrderByDescending(dto => dto.NumberReact)
+                                   .ToListAsync(cancellationToken);
 
             var checkReact = await (_context.ReactVideoPostComments.Where(x => x.UserId == request.UserId && x.CommentVideoPostId == request.CommentVideoPostId)).ToListAsync(cancellationToken);
             if (checkReact.Count() != 0)

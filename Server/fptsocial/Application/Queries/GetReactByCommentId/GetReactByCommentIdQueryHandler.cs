@@ -40,7 +40,7 @@ namespace Application.Queries.GetReactByCommentId
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from reactComment in _context.ReactComments
                                        join avata in _context.AvataPhotos on reactComment.UserId equals avata.UserId into avataGroup
-                                       from avata in avataGroup.DefaultIfEmpty()
+                                       from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty()
                                        where reactComment.CommentId == request.CommentId
                                        group new { reactComment, avata } by reactComment.ReactCommentId into g
                                        select new ReactCommentDTO
@@ -64,7 +64,9 @@ namespace Application.Queries.GetReactByCommentId
                                        ReactTypeId = g.Key,
                                        ReactTypeName = g.FirstOrDefault().ReactType.ReactTypeName,
                                        NumberReact = g.Count()
-                                   }).ToListAsync(cancellationToken);
+                                   })
+                                   .OrderByDescending(dto => dto.NumberReact)
+                                   .ToListAsync(cancellationToken);
 
             var checkReact = await (_context.ReactComments.Where(x => x.UserId == request.UserId && x.CommentId == request.CommentId)).ToListAsync(cancellationToken);
             if (checkReact.Count() != 0)

@@ -12,5 +12,6 @@ namespace Application.Queries.GetReactByPost
         public int SumOfReact {  get; set; }
         public bool? IsReact { get; set; }
         public List<ReactPostDTO>? ListUserReact { get; set; }
+        public List<ReactTypeCountDTO>? ListReact { get; set; }
     }
 }
