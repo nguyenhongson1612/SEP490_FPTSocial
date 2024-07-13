@@ -22,7 +22,6 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostVideo;
 using Application.Queries.GetUserPostById;
 using Application.Commands.ShareUserPostCommand;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace API.Controllers
 {
