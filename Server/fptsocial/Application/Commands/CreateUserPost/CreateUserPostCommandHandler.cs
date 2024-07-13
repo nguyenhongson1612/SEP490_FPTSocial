@@ -65,7 +65,8 @@ namespace Application.Commands.Post
                 IsHide = false,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                NumberPost = numberPost
+                NumberPost = numberPost,
+                IsBanned = false,
             };
             if (PhotoIdSingle != Guid.Empty)
             {
@@ -81,7 +82,7 @@ namespace Application.Commands.Post
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(userPost.Content);
             if (haveBadWord.Any())
             {
-                userPost.IsHide = true;
+                userPost.IsBanned = true;
                 userPost.Content = MarkBannedWordsInContent(userPost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }
