@@ -25,6 +25,7 @@ namespace Domain.QueryModels
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual GroupPhoto GroupPhoto { get; set; } = null!;
         public virtual GroupPost GroupPost { get; set; } = null!;

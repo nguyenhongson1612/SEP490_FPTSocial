@@ -18,6 +18,9 @@ namespace Domain.CommandModels
         public DateTime? CreatedDate { get; set; }
         public bool? IsHide { get; set; }
         public Guid? GroupStatusId { get; set; }
+        public DateTime? CreateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }

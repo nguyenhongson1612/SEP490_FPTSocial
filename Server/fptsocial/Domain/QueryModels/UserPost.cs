@@ -31,6 +31,7 @@ namespace Domain.QueryModels
         public Guid? PhotoId { get; set; }
         public Guid? VideoId { get; set; }
         public int? NumberPost { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual Photo? Photo { get; set; }
         public virtual UserProfile User { get; set; } = null!;

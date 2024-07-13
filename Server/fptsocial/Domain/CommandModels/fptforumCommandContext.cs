@@ -823,7 +823,11 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.Content).HasColumnType("ntext");
 
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.GroupSharePosts)
@@ -1785,6 +1789,8 @@ namespace Domain.CommandModels
                 entity.Property(e => e.Content).HasColumnType("ntext");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.SharePosts)

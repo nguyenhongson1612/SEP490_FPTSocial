@@ -25,6 +25,7 @@ namespace Domain.CommandModels
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual Photo Photo { get; set; } = null!;
         public virtual UserPost UserPost { get; set; } = null!;
