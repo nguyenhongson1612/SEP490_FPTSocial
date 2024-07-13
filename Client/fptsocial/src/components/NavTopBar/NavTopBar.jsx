@@ -6,8 +6,10 @@ import connectionSignalR from '~/utils/signalRConnection'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { addLatestNotification } from '~/redux/notification/notificationSlice'
+import { addLatestNotification } from '~/redux/notification/notificationSlice'
 
 function NavTopBar() {
+  // const newNotification = useSelector(selectLatestNotification)
   // const newNotification = useSelector(selectLatestNotification)
   const dispatch = useDispatch()
 
@@ -20,6 +22,8 @@ function NavTopBar() {
           console.log('SignalR connect successfully')
           connectionSignalR.on('ReceiveNotification', message => {
             // console.log('mes', message)
+            if (!message.includes('connected success!'))
+              toast.success('You have a new notification')
             if (!message.includes('connected success!'))
               toast.success('You have a new notification')
           })
@@ -48,6 +52,9 @@ function NavTopBar() {
     // }
   }, [])
 
+  // useEffect(() => {
+  //   // newNotification && toast.success('You have a new notification')
+  // }, [newNotification])
   // useEffect(() => {
   //   // newNotification && toast.success('You have a new notification')
   // }, [newNotification])
