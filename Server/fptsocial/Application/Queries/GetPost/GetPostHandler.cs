@@ -67,7 +67,7 @@ namespace Application.Queries.GetPost
 
             var posts = await _context.UserPosts
                 .Where(p => friendUserIds.Contains(p.UserId) &&
-                            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId))
+                            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true)
                 .Include(p => p.Photo)
                 .Include(p => p.Video)
                 .Include(p => p.UserPostPhotos)

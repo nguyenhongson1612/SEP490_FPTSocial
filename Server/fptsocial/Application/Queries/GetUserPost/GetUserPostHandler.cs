@@ -46,7 +46,7 @@ namespace Application.Queries.GetUserPost
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.UserId)
+                .Where(x => x.UserId == request.UserId && x.IsHide != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 

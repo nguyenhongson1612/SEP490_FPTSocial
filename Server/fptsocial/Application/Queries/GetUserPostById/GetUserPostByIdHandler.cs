@@ -46,7 +46,7 @@ namespace Application.Queries.GetUserPostById
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos)
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserPostId == request.UserPostId)
+                .Where(x => x.UserPostId == request.UserPostId && x.IsHide != true)
                 .FirstOrDefaultAsync(cancellationToken);
 
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == userPost.UserId);
