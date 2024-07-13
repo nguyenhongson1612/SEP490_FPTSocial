@@ -77,7 +77,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupPostPhotoId = request.GroupPostPhotoId,
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId, 
-                GroupStatusId = request.GroupStatusId
+                GroupStatusId = request.GroupStatusId,
                 CreatedDate = DateTime.Now,
                 IsHide = false
             };
