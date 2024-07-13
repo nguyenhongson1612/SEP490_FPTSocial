@@ -12,6 +12,7 @@ namespace Application.Commands.CreateReactUserPost
         public Guid UserPostId { get; set; }
         public Guid ReactTypeId { get; set; }
         public Guid UserId { get; set; }
+        public bool? IsReact { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }

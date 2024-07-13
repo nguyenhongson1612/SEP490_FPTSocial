@@ -10,5 +10,6 @@ namespace Application.Queries.GetReactByPost
     public class GetReactByPostQuery : IQuery<GetReactByPostQueryResult>
     {
         public Guid UserPostId { get; set; }
+        public Guid UserId { get; set; }
     }
 }

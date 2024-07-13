@@ -10,6 +10,7 @@ namespace Application.Queries.GetReactByPhotoPost
     public class GetReactByPhotoPostQueryResult
     {
         public int SumOfReact {  get; set; }
+        public bool? IsReact { get; set; }
         public List<ReactPhotoPostDTO>? ListUserReact { get; set; }
     }
 }

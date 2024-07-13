@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -48,6 +49,11 @@ namespace Application.Commands.UpdateUserPostCommand
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
 
+            if(request.UserId != userPost.UserId)
+            {
+                throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
+            }
+
             var photos = request.Photos ?? new List<string>();
             var videos = request.Videos ?? new List<string>();
 
@@ -63,6 +69,34 @@ namespace Application.Commands.UpdateUserPostCommand
 
             var newPhotos = photos.Except(existingPhotoUrls).ToList();
             var newVideos = videos.Except(existingVideoUrls).ToList();
+
+            var photosToDelete = existingPhotoUrls.Except(photos).ToList();
+            var videosToDelete = existingVideoUrls.Except(videos).ToList();
+
+            foreach (var photoUrl in photosToDelete)
+            {
+                var photoToDelete = await _context.Photos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
+                if (photoToDelete != null)
+                {
+                    _context.Photos.Remove(photoToDelete);
+                    // Xóa các UserPostPhoto liên quan
+                    var userPostPhotosToDelete = await _context.UserPostPhotos.Where(upp => upp.PhotoId == photoToDelete.PhotoId).ToListAsync();
+                    _context.UserPostPhotos.RemoveRange(userPostPhotosToDelete);
+                }
+            }
+
+            foreach (var videoUrl in videosToDelete)
+            {
+                var videoToDelete = await _context.Videos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
+                if (videoToDelete != null)
+                {
+                    _context.Videos.Remove(videoToDelete);
+                    // Xóa các UserPostVideo liên quan
+                    var userPostVideosToDelete = await _context.UserPostVideos.Where(upv => upv.VideoId == videoToDelete.VideoId).ToListAsync();
+                    _context.UserPostVideos.RemoveRange(userPostVideosToDelete);
+                }
+            }
+            await _context.SaveChangesAsync();
 
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;

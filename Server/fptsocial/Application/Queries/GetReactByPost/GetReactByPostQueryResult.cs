@@ -10,6 +10,7 @@ namespace Application.Queries.GetReactByPost
     public class GetReactByPostQueryResult
     {
         public int SumOfReact {  get; set; }
+        public bool? IsReact { get; set; }
         public List<ReactPostDTO>? ListUserReact { get; set; }
     }
 }

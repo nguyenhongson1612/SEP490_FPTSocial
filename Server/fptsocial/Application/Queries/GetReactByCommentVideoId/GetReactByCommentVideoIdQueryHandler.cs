@@ -18,15 +18,13 @@ namespace Application.Queries.GetReactByCommentVideoId
 {
     public class GetReactByCommentVideoIdQueryHandler : IQueryHandler<GetReactByCommentVideoIdQuery, GetReactByCommentVideoIdQueryResult>
     {
-        private readonly fptforumCommandContext _context;
-        private readonly fptforumQueryContext _querycontext;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public GetReactByCommentVideoIdQueryHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public GetReactByCommentVideoIdQueryHandler(fptforumQueryContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
-            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -36,7 +34,7 @@ namespace Application.Queries.GetReactByCommentVideoId
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-
+            bool isReact = false;
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from reactComment in _context.ReactVideoPostComments
                                        join avata in _context.AvataPhotos on reactComment.UserId equals avata.UserId into avataGroup
@@ -65,6 +63,13 @@ namespace Application.Queries.GetReactByCommentVideoId
                                        ReactTypeName = g.FirstOrDefault().ReactType.ReactTypeName,
                                        NumberReact = g.Count()
                                    }).ToListAsync(cancellationToken);
+
+            var checkReact = await (_context.ReactVideoPostComments.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
+            if (checkReact != null)
+            {
+                isReact = true;
+            }
+
             // 2. Calculate Sum of Reactions
             var sumOfReacts = listUserReact.Count;
 
@@ -73,7 +78,8 @@ namespace Application.Queries.GetReactByCommentVideoId
             {
                 SumOfReact = sumOfReacts,
                 ListCommentReact = listUserReact,
-                ListReact = listReact
+                ListReact = listReact,
+                IsReact = isReact
             };
 
             return Result<GetReactByCommentVideoIdQueryResult>.Success(result);

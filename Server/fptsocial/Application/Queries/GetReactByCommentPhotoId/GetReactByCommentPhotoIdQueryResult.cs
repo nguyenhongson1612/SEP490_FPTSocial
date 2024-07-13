@@ -10,6 +10,7 @@ namespace Application.Queries.GetReactByCommentPhotoId
     public class GetReactByCommentPhotoIdQueryResult
     {
         public int SumOfReact { get; set; }
+        public bool? IsReact { get; set; }
         public List<ReactCommentPhotoDTO>? ListCommentReact { get; set; }
         public List<ReactTypeCountDTO>? ListReact { get; set;}
     }
