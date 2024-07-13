@@ -52,8 +52,8 @@ namespace Application.Queries.GetReactByVideoPost
                                         }
                                     ).ToListAsync(cancellationToken);
 
-            var checkReact = await (_context.ReactVideoPosts.Where(x => x.UserId == request.UserId)).ToListAsync(cancellationToken);
-            if (checkReact != null)
+            var checkReact = await (_context.ReactVideoPosts.Where(x => x.UserId == request.UserId && x.UserPostVideoId == request.UserPostVideoId)).ToListAsync(cancellationToken);
+            if (checkReact.Count() != 0)
             {
                 isReact = true;
             }
