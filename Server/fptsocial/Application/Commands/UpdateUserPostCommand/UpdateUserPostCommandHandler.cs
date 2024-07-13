@@ -139,7 +139,7 @@ namespace Application.Commands.UpdateUserPostCommand
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(userPost.Content);
             if (haveBadWord.Any())
             {
-                userPost.IsHide = true;
+                userPost.IsBanned = true;
                 userPost.Content = MarkBannedWordsInContent(userPost.Content, haveBadWord);
             }
 
