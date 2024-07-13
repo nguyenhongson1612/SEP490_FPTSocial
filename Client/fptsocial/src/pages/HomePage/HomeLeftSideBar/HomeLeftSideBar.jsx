@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import CurrentUserAvatar from '~/components/UI/CurrentUserAvatar'
+import CurrentUserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
 function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {

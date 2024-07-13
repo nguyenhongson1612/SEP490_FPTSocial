@@ -3,40 +3,45 @@ import { IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { commentPost, getComment } from '~/apis/postApis'
-import Post from '~/components/ListPost/Post/Post'
+import { commentPost, getComment, getUserPostById } from '~/apis/postApis'
+import { getAllReactType } from '~/apis/reactApis'
+// import Post from '~/components/ListPost/Post/Post'
 import PostComment from '~/components/ListPost/Post/PostContent/PostComment/PostComment'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
+import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import Tiptap from '~/components/TitTap/TitTap'
 import CurrentUserAvatar from '~/components/UI/UserAvatar'
 import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment } from '~/redux/activePost/activePostSlice'
+import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
-function ActivePost() {
-  const isShowActivePost = useSelector(selectIsShowModalActivePost)
-  const currentActivePost = useSelector(selectCurrentActivePost)
+function Post() {
+  const { postId } = useParams()
   const dispatch = useDispatch()
-
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
-  const user = useSelector(selectCurrentUser)
+  const currentUser = useSelector(selectCurrentUser)
   const [listPhotos, setListPhotos] = useState([])
   const [listVideos, setListVideos] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
+  const [postData, setPostData] = useState({})
 
   useEffect(() => {
-    isShowActivePost && getComment(currentActivePost?.userPostId).then(data => setListComment(data?.posts))
-  }, [isShowActivePost, reloadComment])
+    getUserPostById(postId).then(data => { setPostData(data), setContent(data?.content) })
+    getComment(postId).then(data => setListComment(data?.posts))
+    getAllReactType().then(data => dispatch(addListReactType(data)))
+  }, [reloadComment])
   // console.log(currentActivePost)
   const handleCommentPost = () => {
     const submitData = {
-      'userPostId': currentActivePost?.userPostId,
-      'userId': user?.userId,
+      'userPostId': postId,
+      'userId': currentUser?.userId,
       'content': content,
       'parentCommentId': null
     }
@@ -45,34 +50,21 @@ function ActivePost() {
       { pending: 'Updating is in progress...' }
     ).then(() => {
       toast.success('Commented')
-    }).finally(() => { dispatch(triggerReloadComment()), setContent('') })
+    })
 
   }
 
   return (
     <>
-      <Modal
-        open={isShowActivePost}
-        onClose={() => dispatch(clearAndHireCurrentActivePost())}
-      >
-        <div className='flex flex-col items-center gap-3 w-[95%] sm:w-[600px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
-        h-[90%] bg-white border-gray-300 shadow-md rounded-md'>
-          <div id='post-detail-author'
-            className='h-[60px] w-full flex justify-between items-center px-4'>
-            <div></div>
-            <span className='font-bold font-sans text-xl'>
-              {(currentActivePost?.fullName?.split(/\s+/)[0] || currentActivePost?.fullName)}&apos; Post
-            </span>
-            <div className='cursor-pointer' onClick={() => dispatch(clearAndHireCurrentActivePost())}>
-              <IconX className='text-white bg-orangeFpt rounded-full' />
-            </div>
-          </div>
+      <NavTopBar />
+      <div className="flex justify-center bg-fbWhite">
+        <div className='flex flex-col items-center gap-3 w-[95%] sm:w-[500px] bg-white shadow-md rounded-lg mt-4'>
           <div
-            className="w-full h-[80%] flex flex-col items-center gap-2 border p-4  overflow-y-auto scrollbar-none-track">
-            <PostTitle postData={currentActivePost} />
-            <PostContents postData={currentActivePost} />
-            <PostMedia postData={currentActivePost} />
-            <PostReactStatus postData={currentActivePost} />
+            className="w-full flex flex-col items-center gap-2 border overflow-y-auto overflow-x-clip scrollbar-none-track">
+            <PostTitle postData={postData} />
+            <PostContents postData={postData} />
+            <PostMedia postData={postData} />
+            <PostReactStatus postData={postData} />
             <PostComment comment={listComment} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
@@ -90,9 +82,10 @@ function ActivePost() {
             </div>
           </form>
         </div>
-      </Modal>
+      </div>
+
     </>
   )
 }
 
-export default ActivePost
+export default Post

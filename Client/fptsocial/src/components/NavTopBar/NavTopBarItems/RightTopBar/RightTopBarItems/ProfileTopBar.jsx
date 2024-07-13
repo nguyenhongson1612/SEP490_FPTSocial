@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { logoutCurrentUser, selectCurrentUser } from '~/redux/user/userSlice'
 import { useAuth } from 'oidc-react'
 import { toast } from 'react-toastify'
-import CurrentUserAvatar from '~/components/UI/CurrentUserAvatar'
+import CurrentUserAvatar from '~/components/UI/UserAvatar'
 import { Popover } from '@mui/material'
 
 function ProfileTopBar() {

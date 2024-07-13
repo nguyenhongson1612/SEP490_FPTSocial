@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId, getOtherUserPost, getStatus, getUserPostByUserId } from '~/apis'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
@@ -8,6 +7,9 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Modal } from '@mui/material'
+import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId } from '~/apis'
+import { getOtherUserPost, getUserPostByUserId } from '~/apis/postApis'
+import { selectIsReload } from '~/redux/ui/uiSlice'
 
 function Profile() {
   const [update, setUpdate] = useState(false)
@@ -18,6 +20,7 @@ function Profile() {
   const [listFriend, setListFriend] = useState([])
 
   const currentUser = useSelector(selectCurrentUser)
+  const isReload = useSelector(selectIsReload)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const currentUserId = currentUser?.userId
@@ -37,7 +40,7 @@ function Profile() {
       getOtherUserPost(paramUserId).then((data) => setListPost(data))
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
-  }, [paramUserId])
+  }, [paramUserId, isReload])
 
   useEffect(() => {
     userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)
@@ -51,7 +54,6 @@ function Profile() {
         <div className="">
           <TopProfile listFriend={listFriend} setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} user={userProfile} currentUser={currentUser} buttonProfile={buttonProfile} forceUpdate={forceUpdate} />
           <ContentProfile listPost={listPost} user={userProfile} />
-
         </div>
         <Modal
           open={isOpenModalUpdateProfile}

@@ -9,11 +9,12 @@ import { Controller, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 // import { BiChevronDown } from 'react-icons/bi';
 // import { AiOutlineSearch } from 'react-icons/ai';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { createGroup, getGroupType, getStatus, uploadImage } from '~/apis'
+import { getStatus, uploadImage } from '~/apis'
+import { createGroup, getGroupStatusForCreate, getGroupType } from '~/apis/groupApis'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import CurrentUserAvatar from '~/components/UI/CurrentUserAvatar'
+import CurrentUserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE, singleFileValidator } from '~/utils/validators'
 
@@ -22,6 +23,7 @@ function GroupCreate() {
   const [listGroupType, setListGroupType] = useState([])
   const currentUser = useSelector(selectCurrentUser)
   const [coverImage, setCoverImage] = useState(null)
+  const navigate = useNavigate()
 
   const { register, setValue, clearErrors, control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -35,7 +37,7 @@ function GroupCreate() {
     }
 
   useEffect(() => {
-    getStatus().then(data => setListStatus(data))
+    getGroupStatusForCreate().then(data => setListStatus(data))
     getGroupType().then(data => setListGroupType(data))
   }, [])
 
@@ -53,8 +55,9 @@ function GroupCreate() {
       createGroup(groupSubmittedData),
       { pending: 'Create group is in progress...' }
     ).then(
-      () => {
+      (data) => {
         toast.success('Group created successfully')
+        navigate(`/groups/${data?.groupId}`)
       }
     )
   }
@@ -152,8 +155,8 @@ function GroupCreate() {
                       value={field.value || ''}
                     >
                       {listStatus?.map(status => (
-                        <MenuItem value={status?.userStatusId} key={status?.userStatusId}>
-                          {status?.statusName}
+                        <MenuItem value={status?.groupStatusId} key={status?.groupStatusId}>
+                          {status?.groupStatusName}
                         </MenuItem>
                       ))}
                     </Select>

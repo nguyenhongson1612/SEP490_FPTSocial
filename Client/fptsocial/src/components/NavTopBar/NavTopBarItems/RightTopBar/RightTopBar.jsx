@@ -35,7 +35,9 @@ function RightTopBar() {
           className="mr-2">
           <div className="flex items-center relative cursor-pointer" onClick={handleClick} ref={notificationRef}>
             <IconBell className='size-10 p-2 text-white bg-[#F27125] rounded-full' />
-            <span className="absolute -right-3 text-center -top-1 font-bold px-1 bg-red-600 text-white rounded-full border size-6">{listLatestNotification?.length}</span>
+            <span className="absolute -right-3 -top-1 font-bold px-1 bg-red-600 text-white rounded-full border size-6 flex justify-center">
+              <span>{listLatestNotification?.length}</span>
+            </span>
           </div>
           <Popover
             open={isOpenPopover}
@@ -51,12 +53,12 @@ function RightTopBar() {
                 <div className='font-bold'>Notification</div>
                 <div className='py-2 flex flex-col gap-2'>
                   {
-                    listLatestNotification?.map(notification => (
-                      <Link to={notification?.NotifiUrl} key={notification?.NotificationId} className='flex items-center gap-2'>
-                        <Avatar src='' alt="user-avatar" sx={{ width: '50px', height: '50px' }} />
+                    listLatestNotification?.map((notification, i) => (
+                      <Link to={notification?.Url} key={i} className='flex items-center gap-2'>
+                        <Avatar src={notification?.SenderAvatar} alt="user-avatar" sx={{ width: '50px', height: '50px' }} />
                         <div className='flex flex-col gap-2 w-full'>
                           <div className='flex justify-between items-center'>
-                            <span>{notification?.NotiMessage}</span>
+                            <span><span className='font-bold'>{notification?.SenderName}</span>{notification?.Message}</span>
                             {!notification?.isRead && <div className='size-2 bg-blue-500 rounded-full'></div>}
                           </div>
                           <span className='text-blue-500 font-semibold text-sm'>{compareDateTime(notification?.CreatedAt)}</span>

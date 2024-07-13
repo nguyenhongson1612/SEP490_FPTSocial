@@ -1,21 +1,24 @@
 import ListPost from '~/components/ListPost/ListPost'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import GroupSideBar from './GroupSideBar/GroupSideBar'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import GroupCreate from './GroupCreate/GroupCreate'
 import { useEffect, useState } from 'react'
-import { getAllFriend, getAllFriendOtherProfile, getAllPost, getButtonFriend, getOtherUserByUserId, getOtherUserPost, getUserPostByUserId, sendFriend, updateFriendStatus } from '~/apis'
+import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId, sendFriend, updateFriendStatus } from '~/apis'
 import { useConfirm } from 'material-ui-confirm'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import { IconArticle, IconCake, IconChevronDown, IconChevronUp, IconEdit, IconFriends, IconHeartFilled, IconHomeFilled, IconManFilled, IconPhoto, IconStack, IconUser, IconUserCheck, IconUserCircle, IconUserPlus, IconUserX } from '@tabler/icons-react'
-import { Box, Modal, Tab } from '@mui/material'
+import { IconArticle, IconCake, IconChevronDown, IconChevronUp, IconEdit, IconFriends, IconHeartFilled, IconHomeFilled, IconManFilled, IconPhoto, IconPlus, IconStack, IconUser, IconUserCheck, IconUserCircle, IconUserPlus, IconUserX } from '@tabler/icons-react'
+import { Box, Button, Modal, Tab } from '@mui/material'
 import ContentProfile from '../Profile/ContentProfile/ContentProfile'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import ProfilePosts from '../Profile/ContentProfile/ProfilePosts'
 import About from '../Profile/ContentProfile/About'
 import NewPost from '~/components/NewPost/NewPost'
 import GroupAvatar from '~/components/UI/GroupAvatar'
+import { getGroupByGroupId } from '~/apis/groupApis'
+import { handleCoverImg } from '~/utils/formatters'
+import UserAvatar from '~/components/UI/UserAvatar'
 
 
 function Group() {
@@ -33,24 +36,27 @@ function Group() {
   const currentUserId = currentUser?.userId
   const paramUserId = searchParams.get('id')
 
+  const { groupId } = useParams()
+  const [group, setGroup] = useState({})
+
+  useEffect(() => {
+    getGroupByGroupId(groupId).then(data => setGroup(data))
+  }, [groupId])
+
   const [value, setValue] = useState('1')
   const [value2, setValue2] = useState('manage')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
-
+  console.log(group);
   const forceUpdate = () => setUpdate(!update)
   useEffect(() => {
 
   }, [paramUserId])
 
-  const coverImage = currentUser?.coverImage;
-  const backgroundStyle = coverImage
-    ? { backgroundImage: `url(${coverImage})` }
-    : {
-      background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
-    }
+  // const coverImage = currentUser?.coverImage;
+  const backgroundStyle = handleCoverImg(group?.coverImage)
 
   const handleResponse = (data_) => {
     const data = {
@@ -85,11 +91,11 @@ function Group() {
             </div>
             <div className='flex flex-col font-bold'>
               <span>
-                group name
+                {group?.groupName}
               </span>
               <div className='flex text-gray-500 text-sm gap-2'>
                 <span className='font-thin'>private .</span>
-                <span className=''>1 member</span>
+                <span className=''>{group?.memberCount} member</span>
               </div>
             </div>
           </div>
@@ -156,7 +162,6 @@ function Group() {
                           )
                         }
                       </div>
-
                     </div>
                   </div>
                 </TabPanel>
@@ -172,8 +177,8 @@ function Group() {
             >
               <div
                 id="holderCover"
-                className="w-full lg:w-[940px] aspect-[74/27] rounded-md bg-cover bg-center bg-no-repeat bg-[url(https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png)]"
-              // style={backgroundStyle}
+                className="w-full lg:w-[940px] aspect-[74/27] rounded-md bg-cover bg-center bg-no-repeat"
+                style={backgroundStyle}
               >
               </div>
               <div id=''
@@ -183,37 +188,23 @@ function Group() {
                   <div id='name-friend'
                     className='w-full flex flex-col items-center lg:items-start justify-end mb-4 gap-1 px-4'
                   >
-                    <span className='text-gray-900 font-bold text-3xl'>{'Group abc'}</span>
+                    <span className='text-gray-900 font-bold text-3xl'>{group?.groupName}</span>
                     <div className='flex gap-3'>
-                      <span className='text-gray-500 font-bold'>Private group.</span>
-                      <span className='text-gray-500 font-bold'>1 member</span>
+                      <span className='text-gray-500 font-bold'>{group?.groupSettings?.find(e => e?.groupSettingName?.toLowerCase() == 'group status')?.groupStatusName}.</span>
+                      <span className='text-gray-500 font-bold'>{group?.memberCount} member</span>
                     </div>
                     <div className="flex w-full justify-between items-center">
                       <div className='flex items-center [&>img:not(:first-child)]:-ml-4'>
-                        <Link to={''} >
-                          <img
-                            src={'https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png'}
-                            className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-                          />
-                        </Link>
-                        <Link to={''} >
-                          <img
-                            src={'https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png'}
-                            className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-                          />
-                        </Link>
-                        <Link to={''} >
-                          <img
-                            src={'https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png'}
-                            className="rounded-[50%] aspect-square object-cover w-10 border-2 border-white"
-                          />
-                        </Link>
-
+                        {group?.groupMember?.map(member => (
+                          <Link to={''} key={member?.userId}>
+                            <UserAvatar isOther={true} avatarSrc={member?.avata} />
+                          </Link>
+                        ))}
                       </div>
                       <div>
-                        <div>
-                          button
-                        </div>
+                        <Button variant="contained" size="medium" startIcon={<IconPlus />}>
+                          Invite
+                        </Button>
                       </div>
                     </div>
 
@@ -251,7 +242,7 @@ function Group() {
                         id='info'
                         className='w-full sm:w-[500px] lg:basis-3/12 h-fit bg-white mt-8 rounded-md shadow-md'>
                         <div className='flex flex-col p-4 gap-3'>
-                          <h3 className='text-xl font-bold'>Profile</h3>
+                          <h3 className='text-xl font-bold'>About</h3>
                           <div className='flex gap-1'><IconUser stroke={2} color='#c8d3e1' /><span className='font-semibold'>a</span></div>
                           <div className='flex gap-1'><IconHomeFilled stroke={2} color='#c8d3e1' /><span>Lives in&nbsp;</span><span className='font-semibold'>c</span></div>
                           <div className='flex gap-1'><IconManFilled stroke={2} color='#c8d3e1' />Gender&nbsp;&nbsp;<span className='font-semibold'>d</span></div>

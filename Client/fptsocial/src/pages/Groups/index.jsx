@@ -4,7 +4,7 @@ import GroupSideBar from './GroupSideBar/GroupSideBar'
 import { useLocation } from 'react-router-dom'
 import GroupCreate from './GroupCreate/GroupCreate'
 import { useEffect, useState } from 'react'
-import { getAllPost } from '~/apis'
+import { getAllPost } from '~/apis/postApis'
 
 
 function Groups() {

@@ -5,10 +5,12 @@ import RightTopBar from './NavTopBarItems/RightTopBar/RightTopBar'
 import connectionSignalR from '~/utils/signalRConnection'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { addLatestNotification, selectLatestNotification } from '~/redux/notification/notificationSlice'
+import { addLatestNotification } from '~/redux/notification/notificationSlice'
+import { addLatestNotification } from '~/redux/notification/notificationSlice'
 
 function NavTopBar() {
-  const [newNotification, setNewNotification] = useState(null)
+  // const newNotification = useSelector(selectLatestNotification)
+  // const newNotification = useSelector(selectLatestNotification)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -20,9 +22,13 @@ function NavTopBar() {
           console.log('SignalR connect successfully')
           connectionSignalR.on('ReceiveNotification', message => {
             // console.log('mes', message)
-            setNewNotification(JSON.parse(message))
+            if (!message.includes('connected success!'))
+              toast.success('You have a new notification')
+            if (!message.includes('connected success!'))
+              toast.success('You have a new notification')
           })
           connectionSignalR.on('listReceiveNotification', message => {
+            // console.log('mes lis', message, Object.keys(JSON.parse(message)).length)
             dispatch(addLatestNotification(JSON.parse(message)))
           })
         } catch (err) {
@@ -46,19 +52,24 @@ function NavTopBar() {
     // }
   }, [])
 
-  useEffect(() => {
-    newNotification && toast.success('You have a new notification')
-  }, [newNotification])
+  // useEffect(() => {
+  //   // newNotification && toast.success('You have a new notification')
+  // }, [newNotification])
+  // useEffect(() => {
+  //   // newNotification && toast.success('You have a new notification')
+  // }, [newNotification])
 
   return (
-    <div className="relative h-[55px] w-full flex items-center bg-white border-b shadow-gray-300 shadow-sm">
-      <div
-        className="mx-3 flex w-full justify-evenly xs:justify-between items-center">
-        <LeftTopBar />
-        <RightTopBar />
+    <>
+      <div className="fixed top-0 h-[55px] w-full flex items-center bg-white border-b shadow-gray-300 shadow-sm z-50">
+        <div
+          className="mx-3 flex w-full justify-evenly xs:justify-between items-center">
+          <LeftTopBar />
+          <RightTopBar />
+        </div>
       </div>
-    </div>
-
+      <div className="h-[55px]" />
+    </>
   )
 }
 

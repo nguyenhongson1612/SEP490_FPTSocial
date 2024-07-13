@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage'
 import { activePostReducer } from './activePost/activePostSlice'
 import { uiStateReducer } from './ui/uiSlice'
 import { notificationReducer } from './notification/notificationSlice'
+import { sideDataReducer } from './sideData/sideDataSlice'
 
 const rootPersistConfig = {
   key: 'root',
@@ -17,7 +18,8 @@ const reducers = combineReducers({
   user: userReducer,
   activePost: activePostReducer,
   uiState: uiStateReducer,
-  notification: notificationReducer
+  notification: notificationReducer,
+  sideData: sideDataReducer
 })
 const persistedReducers = persistReducer(rootPersistConfig, reducers)
 
