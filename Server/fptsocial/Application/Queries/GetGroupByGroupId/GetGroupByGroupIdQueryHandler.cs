@@ -82,12 +82,12 @@ namespace Application.Queries.GetGroupByGroupId
                 if (memjoin.IsJoined == false)
                 {
                     getgroup.IsJoin = false;
-                    getgroup.isRequest = false;
+                    getgroup.isRequest = true;
                 }
                 else
                 {
                     getgroup.IsJoin = true;
-                    getgroup.isRequest = true;
+                    getgroup.isRequest = false;
                     if (admin.UserId == request.UserId)
                     {
                         getgroup.IsAdmin = true;
