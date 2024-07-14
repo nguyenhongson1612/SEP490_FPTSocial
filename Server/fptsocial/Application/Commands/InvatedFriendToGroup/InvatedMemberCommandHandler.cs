@@ -37,9 +37,8 @@ namespace Application.Commands.InvatedFriendToGroup
             var censor = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Censor"));
             var member = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Member"));
             var getrole = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId);
-            if (getrole.GroupRoleId != admin.GroupRoleId
-                    || getrole.GroupRoleId != censor.GroupRoleId
-                    || getrole.GroupRoleId != member.GroupRoleId)
+            var IsJoin = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleId == getrole.GroupRoleId);
+            if (IsJoin == null)
             {
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }
