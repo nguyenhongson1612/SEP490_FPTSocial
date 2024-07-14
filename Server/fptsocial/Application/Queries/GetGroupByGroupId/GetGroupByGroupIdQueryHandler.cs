@@ -64,7 +64,6 @@ namespace Application.Queries.GetGroupByGroupId
                 CoverImage = group.CoverImage,
                 GroupAdmin = admin.User.FirstName + " " + admin.User.LastName,
                 CreateAt = group.CreatedDate,
-                MemberCount = member.Count(),
             };
             foreach (var st in groupsetting)
             {
@@ -88,7 +87,7 @@ namespace Application.Queries.GetGroupByGroupId
                 else
                 {
                     getgroup.IsJoin = true;
-                    getgroup.isRequest = false;
+                    getgroup.isRequest = true;
                     if (admin.UserId == request.UserId)
                     {
                         getgroup.IsAdmin = true;
@@ -129,6 +128,7 @@ namespace Application.Queries.GetGroupByGroupId
                     getgroup.GroupMember.Add(gmem);
                 } 
             }
+            getgroup.MemberCount = getgroup.GroupMember.Count;
             var result = getgroup;
             return Result<GetGroupByGroupIdQueryResult>.Success(result);
         }
