@@ -1,6 +1,5 @@
-import axios from 'axios'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
-import { API_ROOT, API_ROOT_FAKE_DATA } from '~/utils/constants'
+import { API_ROOT } from '~/utils/constants'
 // export const getAllPost = async () => {
 //   const response = await authorizedAxiosInstance.get(`${API_ROOT_FAKE_DATA}/products`)
 //   return response.data

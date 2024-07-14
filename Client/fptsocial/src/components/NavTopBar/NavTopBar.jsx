@@ -23,8 +23,6 @@ function NavTopBar() {
             // console.log('mes', message)
             if (!message.includes('connected success!'))
               toast.success('You have a new notification')
-            if (!message.includes('connected success!'))
-              toast.success('You have a new notification')
           })
           connectionSignalR.on('listReceiveNotification', message => {
             // console.log('mes lis', message, Object.keys(JSON.parse(message)).length)

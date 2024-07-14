@@ -1,13 +1,13 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
-import { Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup } from '@mui/material'
-import { IconArticle } from '@tabler/icons-react'
+import { Button, FormControl, FormControlLabel, IconButton, Modal, Radio, RadioGroup } from '@mui/material'
+import { IconArticle, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { getStatus } from '~/apis'
-import { commentPhotoPost, commentPost, commentVideoPost, getComment, getPhotoComment, getUserPostById, getUserPostPhoto, getUserPostVideo, getVideoComment } from '~/apis/postApis'
+import { commentPhotoPost, commentPost, commentVideoPost, getChildPostById, getComment, getPhotoComment, getUserPostById, getVideoComment } from '~/apis/postApis'
 import PostComment from '~/components/ListPost/Post/PostContent/PostComment/PostComment'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
@@ -23,10 +23,10 @@ function Media() {
   const { photoId, videoId, postId } = useParams()
   const location = useLocation()
   const isPhoto = location.pathname?.includes('/photo')
+  const isVideo = location.pathname?.includes('/video')
   const isPostMedia = location.pathname?.includes('/media')
 
-  const [photo, setPhoto] = useState({})
-  const [video, setVideo] = useState({})
+  const [subPost, setSubPost] = useState({})
   const [postMedia, setPostMedia] = useState({})
 
   const [content, setContent] = useState('')
@@ -45,32 +45,28 @@ function Media() {
   })
 
   useEffect(() => {
-    if (isPhoto) {
-      getUserPostPhoto(photoId).then(data => { setPhoto(data), setContent(data?.content) })
-      getPhotoComment(photoId).then(data => setListComment(data?.posts))
-    }
-    else if (isPostMedia) {
+    if (isPostMedia) {
       getUserPostById(postId).then(data => { setPostMedia(data), setContent(data?.content) })
       getComment(postId).then(data => setListComment(data?.posts))
     }
     else {
-      getUserPostVideo(videoId).then(data => { setVideo(data), setContent(data?.content) })
-      getVideoComment(videoId).then(data => setListComment(data?.posts))
+      getChildPostById(videoId || photoId).then(data => { setSubPost(data), setContent(data?.content) })
+      isPhoto ? getPhotoComment(photoId).then(data => setListComment(data?.posts))
+        : isVideo && getVideoComment(videoId).then(data => setListComment(data?.posts))
     }
     getStatus().then(data => setListStatus(data))
     getAllReactType().then(data => dispatch(addListReactType(data)))
-  }, [reloadComment, isPhoto, photoId, videoId])
+  }, [reloadComment, isPhoto, photoId, videoId, postId])
 
   useEffect(() => {
-    if (isPhoto) setIsYourPost(currentUser?.userId == photo?.userId)
-    else if (isPostMedia) setIsYourPost(currentUser?.userId == postMedia?.userId)
-    else setIsYourPost(currentUser?.userId == video?.userId)
-  }, [isPhoto, isPostMedia, photo, video, postMedia])
+    if (isPostMedia) setIsYourPost(currentUser?.userId == postMedia?.userId)
+    else setIsYourPost(currentUser?.userId == subPost?.userId)
+  }, [isPhoto, isPostMedia, subPost, postMedia])
 
   const handleCommentPost = () => {
     const submitData = isPhoto ?
       {
-        'userPostPhotoId': photo?.userPostPhotoId,
+        'userPostPhotoId': subPost?.userPostMediaId,
         'userId': currentUser?.userId,
         'content': content,
         'parentCommentId': null
@@ -82,7 +78,7 @@ function Media() {
         'parentCommentId': null
       }
         : {
-          'userPostVideoId': video?.userPostVideoId,
+          'userPostVideoId': subPost?.userPostMediaId,
           'userId': currentUser?.userId,
           'content': content,
           'parentCommentId': null
@@ -100,7 +96,7 @@ function Media() {
     <>
       <NavTopBar />
       <div className='flex flex-col lg:flex-row h-[calc(100vh_-_55px)]'>
-        <div className='max-lg:h-1/2 lg:basis-8/12 bg-black flex justify-center'>
+        <div className='max-lg:h-1/2 lg:basis-8/12 bg-black flex justify-center relative'>
           {isPostMedia
             ? postMedia?.photo
               ? <img
@@ -114,19 +110,27 @@ function Media() {
                 disablePictureInPicture
               />
             : isPhoto
-
               ? <img
-                src={photo?.photo?.photoUrl}
+                src={subPost?.photo?.photoUrl}
                 className='object-contain'
               />
               : <video
-                src={video?.video?.videoUrl}
+                src={subPost?.video?.videoUrl}
                 className='object-contain'
                 controls
                 disablePictureInPicture
               />
           }
-
+          <Link to={subPost?.previousType?.toLowerCase() == 'photo' ? `/photo/${subPost?.previousId}` : `/video/${subPost?.previousId}`}
+            className='absolute left-2 top-1/2 -translate-y-1/2 text-orangeFpt bg-white hover:bg-orange-100 rounded-full flex justify-center items-center'
+          >
+            <IconChevronLeft className='size-9' />
+          </Link>
+          <Link to={subPost?.nextType?.toLowerCase() == 'photo' ? `/photo/${subPost?.nextId}` : `/video/${subPost?.nextId}`}
+            className='absolute right-2 top-1/2 -translate-y-1/2 text-orangeFpt bg-white hover:bg-orange-100 rounded-full flex justify-center items-center'
+          >
+            <IconChevronRight className='size-9' />
+          </Link>
         </div>
         <div className='max-lg:h-1/2 lg:basis-4/12 overflow-y-auto overflow-x-clip no-scrollbar'>
           <div className='h-[80%] overflow-y-auto scrollbar-none-track overflow-x-clip'>
@@ -134,10 +138,10 @@ function Media() {
               !postId &&
               <div className="flex flex-wrap items-center justify-between border-b px-4 pt-4 pb-3">
                 <span className="text-sm text-gray-500 flex items-center gap-1"><IconArticle />This photo is from a post</span>
-                <Link to={`/post/${photo?.userPostId || video?.userPostId}`} className="font-semibold text-sm">View post</Link>
+                <Link to={`/post/${subPost?.userPostId}`} className="font-semibold text-sm">View post</Link>
               </div>
             }
-            <PostTitle postData={isPostMedia ? postMedia : isPhoto ? photo : video} isYourPost={isYourPost} listStatus={listStatus} />
+            <PostTitle postData={isPostMedia ? postMedia : subPost} isYourPost={isYourPost} listStatus={listStatus} />
             {
               isPostMedia
                 ? <PostContents postData={postMedia} />
@@ -146,8 +150,7 @@ function Media() {
                   {isYourPost && <Button variant="contained">Edit</Button>}
                 </div>
             }
-
-            <PostReactStatus postData={isPostMedia ? postMedia : isPhoto ? photo : video} />
+            <PostReactStatus postData={isPostMedia ? postMedia : subPost} />
             <PostComment comment={listComment} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='pb-4 pt-2 border-t w-full flex gap-2 px-4'>

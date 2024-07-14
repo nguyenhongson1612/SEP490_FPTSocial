@@ -6,6 +6,7 @@ import { activePostReducer } from './activePost/activePostSlice'
 import { uiStateReducer } from './ui/uiSlice'
 import { notificationReducer } from './notification/notificationSlice'
 import { sideDataReducer } from './sideData/sideDataSlice'
+import { activeGroupReducer } from './activeGroup/activeGroupSlice'
 
 const rootPersistConfig = {
   key: 'root',
@@ -17,6 +18,7 @@ const rootPersistConfig = {
 const reducers = combineReducers({
   user: userReducer,
   activePost: activePostReducer,
+  activeGroup: activeGroupReducer,
   uiState: uiStateReducer,
   notification: notificationReducer,
   sideData: sideDataReducer

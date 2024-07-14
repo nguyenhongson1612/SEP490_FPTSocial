@@ -1,10 +1,12 @@
-
-function GroupAvatar() {
+function GroupAvatar({ avatarSrc, size = 10 }) {
   return (
     <img
-      src={'https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png'}
+      src={avatarSrc}
       alt="group-img"
-      className="rounded-md aspect-square object-cover w-10 border border-gray-300"
+      className="rounded-md aspect-square object-cover border border-gray-300"
+      style={{
+        height: `${size / 4}rem`, width: `${size / 4}rem`
+      }}
     />
   )
 }

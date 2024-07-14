@@ -17,6 +17,7 @@ import Groups from './pages/Groups'
 import Group from './pages/Groups/_id'
 import Media from './pages/Media'
 import Post from './pages/Post/_id'
+import GroupRequest from './pages/Groups/GroupManage/GroupRequest'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -79,8 +80,8 @@ function App() {
 
             {/* Photo, Video post */}
             <Route path='/photo/:photoId' element={<Media />} />
-            <Route path='/video/:videoId' element={<Media />} />
             <Route path='/media/:postId' element={<Media />} />
+            <Route path='/video/:videoId' element={<Media />} />
             <Route path='/post/:postId' element={<Post />} />
             {/* Profile page */}
             <Route path='/profile' element={<Profile />} />
@@ -100,7 +101,10 @@ function App() {
               <Route path='joins' element={<Groups />} />
               <Route path='create' element={<Groups />} />
             </Route>
-            <Route path='/groups/:groupId' element={<Group />} />
+            <Route path='/groups/:groupId' element={<Group />} >
+              <Route path='member-requests' element={<Group />} />
+              <Route path='member-manage' element={<Group />} />
+            </Route>
           </Route>
 
           {/* Auth */}

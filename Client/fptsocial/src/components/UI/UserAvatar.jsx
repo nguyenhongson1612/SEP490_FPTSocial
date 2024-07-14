@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import avatarHolder from '~/assets/img/avatar_holder.png'
 
 function UserAvatar({ avatarSrc, size = '2.5', isOther = false }) {
   const currentUser = useSelector(selectCurrentUser)
@@ -11,7 +12,7 @@ function UserAvatar({ avatarSrc, size = '2.5', isOther = false }) {
 
   return (
     <img
-      src={avatarUrl || '../src/assets/img/avatar_holder.png'}
+      src={avatarUrl || avatarHolder}
       alt="avatar"
       className="rounded-[50%] aspect-square object-cover border border-gray-300"
       style={{

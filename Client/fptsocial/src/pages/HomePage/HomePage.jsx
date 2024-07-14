@@ -10,6 +10,7 @@ import NewPost from '~/components/NewPost/NewPost'
 import { selectIsShowHomeLeftSideBar } from '~/redux/ui/uiSlice'
 import InfiniteScroll from '~/components/IntersectionObserver/InfiniteScroll'
 import { getAllPost } from '~/apis/postApis'
+import { POST_TYPES } from '~/utils/constants'
 
 function HomePage() {
   const user = useSelector(selectCurrentUser)
@@ -47,7 +48,7 @@ function HomePage() {
           !isShowHomeLeftSideBar && <>
             <div className='h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-6/12 overflow-y-auto scrollbar-none-track
               flex flex-col items-center gap-4'>
-              <NewPost />
+              <NewPost type={POST_TYPES.MAIN_POST} />
               {/* {!listPost && <PageLoadingSpinner />} */}
               <InfiniteScroll
                 // className="w-[800px] mx-auto my-10"
