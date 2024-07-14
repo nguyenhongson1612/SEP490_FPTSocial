@@ -10,9 +10,12 @@ namespace Domain.QueryModels
         public Guid GroupRoleId { get; set; }
         public bool IsJoined { get; set; }
         public DateTime? JoinedDate { get; set; }
+        public bool? IsInvated { get; set; }
+        public Guid? InvatedBy { get; set; }
 
         public virtual GroupFpt Group { get; set; } = null!;
         public virtual GroupRole GroupRole { get; set; } = null!;
+        public virtual UserProfile? InvatedByNavigation { get; set; }
         public virtual UserProfile User { get; set; } = null!;
     }
 }

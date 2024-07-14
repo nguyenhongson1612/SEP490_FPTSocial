@@ -98,6 +98,8 @@ namespace Domain.Enums
         GR12_Is_Request,
         [Description("You can not invated this user to join group")]
         GR13_Can_Not_Invated,
+        [Description("You can not cancel request to join group")]
+        GR14_Can_Not_Cancel_Request,
         [Description("Your post have bad word")]
         UP01_Post_Have_Bad_Word,
         [Description("Your post not found")]

@@ -586,8 +586,13 @@ namespace Domain.CommandModels
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_role_FK");
 
+                entity.HasOne(d => d.InvatedByNavigation)
+                    .WithMany(p => p.GroupMemberInvatedByNavigations)
+                    .HasForeignKey(d => d.InvatedBy)
+                    .HasConstraintName("fk_invated_group");
+
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.GroupMembers)
+                    .WithMany(p => p.GroupMemberUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("group_user_FK");
