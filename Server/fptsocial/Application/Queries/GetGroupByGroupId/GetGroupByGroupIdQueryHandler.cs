@@ -114,17 +114,20 @@ namespace Application.Queries.GetGroupByGroupId
 
             foreach (var mem in member)
             {
-                var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId && x.IsUsed == true);
-                var gmem = new GroupMemberDTO
+                if(mem.IsJoined == true)
                 {
-                    GroupId = mem.GroupId,
-                    UserId = mem.UserId,
-                    MemberName = mem.User.FirstName + " " + mem.User.LastName,
-                    Avata = user?.AvataPhotosUrl,
-                    GroupRoleId = mem.GroupRoleId,
-                    GroupRoleName = mem.GroupRole.GroupRoleName
-                };
-                getgroup.GroupMember.Add(gmem);
+                    var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId && x.IsUsed == true);
+                    var gmem = new GroupMemberDTO
+                    {
+                        GroupId = mem.GroupId,
+                        UserId = mem.UserId,
+                        MemberName = mem.User.FirstName + " " + mem.User.LastName,
+                        Avata = user?.AvataPhotosUrl,
+                        GroupRoleId = mem.GroupRoleId,
+                        GroupRoleName = mem.GroupRole.GroupRoleName
+                    };
+                    getgroup.GroupMember.Add(gmem);
+                } 
             }
             var result = getgroup;
             return Result<GetGroupByGroupIdQueryResult>.Success(result);
