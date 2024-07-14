@@ -100,6 +100,8 @@ namespace Domain.Enums
         GR13_Can_Not_Invated,
         [Description("You can not cancel request to join group")]
         GR14_Can_Not_Cancel_Request,
+        [Description("You can not out this group")]
+        GR15_Can_Not_Out_Group,
         [Description("Your post have bad word")]
         UP01_Post_Have_Bad_Word,
         [Description("Your post not found")]
