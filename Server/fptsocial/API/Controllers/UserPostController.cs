@@ -209,6 +209,8 @@ namespace API.Controllers
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
+        }
+
         [HttpPost]
         [Route("updatePhotoPost")]
         public async Task<IActionResult> UpdatePhotoPost(UpdateUserPhotoPostCommand command)
