@@ -150,7 +150,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("InvatedFriend")]
+        [Route("invatedfriend")]
         public async Task<IActionResult> InvatedFriendToJoin(InvatedMemberCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
