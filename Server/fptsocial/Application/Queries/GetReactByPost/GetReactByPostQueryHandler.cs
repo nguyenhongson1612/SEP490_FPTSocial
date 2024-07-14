@@ -38,7 +38,7 @@ namespace Application.Queries.GetReactByPost
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from react in _context.ReactPosts
                                         join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
-                                        from avata in avataGroup.DefaultIfEmpty() // Left join
+                                        from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
                                         where react.UserPostId == request.UserPostId
                                         orderby react.CreatedDate descending
                                         select new ReactPostDTO
@@ -53,6 +53,18 @@ namespace Application.Queries.GetReactByPost
                                             AvataUrl = avata != null ? avata.AvataPhotosUrl : null
                                         }
                                     ).ToListAsync(cancellationToken);
+
+            var listReact = await (from reactComment in _context.ReactPosts
+                                   where reactComment.UserPostId == request.UserPostId
+                                   group reactComment by new { reactComment.ReactTypeId, reactComment.ReactType.ReactTypeName } into g // Group by ID and Name
+                                   select new ReactTypeCountDTO // Use your existing DTO
+                                   {
+                                       ReactTypeId = g.Key.ReactTypeId,    // Access the grouped keys
+                                       ReactTypeName = g.Key.ReactTypeName,
+                                       NumberReact = g.Count()                   // Maintain consistent naming
+                                   })
+                                    .OrderByDescending(dto => dto.NumberReact)   // Sort by Count (not NumberReact)
+                                    .ToListAsync(cancellationToken);
 
             var checkReact = await (_context.ReactPosts.Where(x => x.UserId == request.UserId && x.UserPostId == request.UserPostId)).ToListAsync(cancellationToken);
 
@@ -69,7 +81,8 @@ namespace Application.Queries.GetReactByPost
             {
                 SumOfReact = sumOfReacts,
                 ListUserReact = listUserReact,
-                IsReact = isReact
+                IsReact = isReact,
+                ListReact = listReact
             };
 
             return Result<GetReactByPostQueryResult>.Success(result);

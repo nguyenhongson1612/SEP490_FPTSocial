@@ -36,7 +36,7 @@ namespace Application.Queries.GetReactByVideoPost
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from react in _context.ReactVideoPosts
                                         join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
-                                        from avata in avataGroup.DefaultIfEmpty() // Left join
+                                        from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
                                         where react.UserPostVideoId == request.UserPostVideoId
                                         orderby react.CreatedDate descending
                                         select new ReactVideoPostDTO

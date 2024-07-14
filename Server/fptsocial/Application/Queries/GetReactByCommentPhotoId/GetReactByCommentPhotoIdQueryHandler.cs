@@ -38,7 +38,7 @@ namespace Application.Queries.GetReactByCommentPhotoId
             // 1. Fetch Reactions and Include Related Data
             var listUserReact = await (from reactComment in _querycontext.ReactPhotoPostComments
                                        join avata in _querycontext.AvataPhotos on reactComment.UserId equals avata.UserId into avataGroup
-                                       from avata in avataGroup.DefaultIfEmpty()
+                                       from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty()
                                        where reactComment.CommentPhotoPostId == request.CommentPhotoPostId
                                        group new { reactComment, avata } by reactComment.ReactPhotoPostCommentId into g
                                        select new ReactCommentPhotoDTO

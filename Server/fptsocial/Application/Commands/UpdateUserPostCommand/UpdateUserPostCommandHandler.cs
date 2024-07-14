@@ -73,15 +73,20 @@ namespace Application.Commands.UpdateUserPostCommand
             var photosToDelete = existingPhotoUrls.Except(photos).ToList();
             var videosToDelete = existingVideoUrls.Except(videos).ToList();
 
+            
             foreach (var photoUrl in photosToDelete)
             {
                 var photoToDelete = await _context.Photos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
                 if (photoToDelete != null)
                 {
-                    _context.Photos.Remove(photoToDelete);
-                    // Xóa các UserPostPhoto liên quan
-                    var userPostPhotosToDelete = await _context.UserPostPhotos.Where(upp => upp.PhotoId == photoToDelete.PhotoId).ToListAsync();
-                    _context.UserPostPhotos.RemoveRange(userPostPhotosToDelete);
+                    var userPostPhotosToHide = await _context.UserPostPhotos
+                        .Where(upp => upp.PhotoId == photoToDelete.PhotoId)
+                        .ToListAsync();
+
+                    foreach (var userPostPhoto in userPostPhotosToHide)
+                    {
+                        userPostPhoto.IsHide = true; // Mark as hidden instead of deleting
+                    }
                 }
             }
 
@@ -90,13 +95,18 @@ namespace Application.Commands.UpdateUserPostCommand
                 var videoToDelete = await _context.Videos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
                 if (videoToDelete != null)
                 {
-                    _context.Videos.Remove(videoToDelete);
-                    // Xóa các UserPostVideo liên quan
-                    var userPostVideosToDelete = await _context.UserPostVideos.Where(upv => upv.VideoId == videoToDelete.VideoId).ToListAsync();
-                    _context.UserPostVideos.RemoveRange(userPostVideosToDelete);
+                    var userPostVideosToHide = await _context.UserPostVideos
+                        .Where(upv => upv.VideoId == videoToDelete.VideoId)
+                        .ToListAsync();
+
+                    foreach (var userPostVideo in userPostVideosToHide)
+                    {
+                        userPostVideo.IsHide = true; // Mark as hidden instead of deleting
+                    }
                 }
             }
-            await _context.SaveChangesAsync();
+
+            await _context.SaveChangesAsync(); // Save the changes to the database
 
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
@@ -129,7 +139,7 @@ namespace Application.Commands.UpdateUserPostCommand
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(userPost.Content);
             if (haveBadWord.Any())
             {
-                userPost.IsHide = true;
+                userPost.IsBanned = true;
                 userPost.Content = MarkBannedWordsInContent(userPost.Content, haveBadWord);
             }
 
@@ -137,7 +147,10 @@ namespace Application.Commands.UpdateUserPostCommand
 
             if (numberPost > 1)
             {
-                int postPosition = 0;
+                int postPosition = Math.Max(
+                    _context.UserPostPhotos.Where(upp => upp.UserPostId == userPost.UserPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
+                    _context.UserPostVideos.Where(upv => upv.UserPostId == userPost.UserPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
+                );
 
                 if (newPhotos.Any())
                 {
@@ -150,7 +163,7 @@ namespace Application.Commands.UpdateUserPostCommand
                             UserPostId = userPost.UserPostId,
                             PhotoId = photoId,
                             Content = string.Empty,
-                            UserPostPhotoNumber = (numberPost + 1).ToString(),
+                            UserPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-",""),
                             UserStatusId = userPost.UserStatusId,
                             IsHide = userPost.IsHide,
                             CreatedAt = DateTime.Now,
@@ -159,6 +172,7 @@ namespace Application.Commands.UpdateUserPostCommand
                         };
                         await _context.UserPostPhotos.AddAsync(userPostPhoto);
                         await _context.SaveChangesAsync();
+                        postPosition++;
                     }
                 }
 
@@ -173,7 +187,7 @@ namespace Application.Commands.UpdateUserPostCommand
                             UserPostId = userPost.UserPostId,
                             VideoId = videoId,
                             Content = string.Empty,
-                            UserPostVideoNumber = (numberPost + 1).ToString(),
+                            UserPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                             UserStatusId = userPost.UserStatusId,
                             IsHide = userPost.IsHide,
                             CreatedAt = DateTime.Now,
@@ -182,6 +196,7 @@ namespace Application.Commands.UpdateUserPostCommand
                         };
                         await _context.UserPostVideos.AddAsync(userPostVideo);
                         await _context.SaveChangesAsync();
+                        postPosition++;
                     }
                 }
             }
