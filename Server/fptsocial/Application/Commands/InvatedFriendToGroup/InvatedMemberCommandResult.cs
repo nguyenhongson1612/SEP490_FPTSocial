@@ -8,8 +8,12 @@ namespace Application.Commands.InvatedFriendToGroup
 {
     public class InvatedMemberCommandResult
     {
+        public InvatedMemberCommandResult()
+        {
+            MemberId = new List<Guid>();
+        }
         public string Message { get; set; }
-        public Guid MemberId { get; set; }
+        public List<Guid> MemberId { get; set; }
         public bool Invated { get; set; }
     }
 }

@@ -37,35 +37,44 @@ namespace Application.Commands.InvatedFriendToGroup
             var censor = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Censor"));
             var member = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Member"));
             var getrole = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId);
-            var memjoin = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.UserId == request.MemberId && x.GroupId == request.GroupId);
-            var friend = await _querycontext.Friends.FirstOrDefaultAsync(x => x.Confirm == true &&
-                                                                            ((x.UserId == request.UserId && x.FriendId == request.MemberId)
-                                                                            || (x.UserId == request.MemberId && x.FriendId == request.UserId)));
-            if (getrole.GroupRoleId != admin.GroupRoleId || getrole.GroupRoleId != censor.GroupRoleId)
+            if (getrole.GroupRoleId != admin.GroupRoleId
+                    || getrole.GroupRoleId != censor.GroupRoleId
+                    || getrole.GroupRoleId != member.GroupRoleId)
             {
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }
-            if(memjoin != null)
-            {
-                throw new ErrorException(StatusCodeEnum.GR12_Is_Request);
 
-            }
-            if(friend == null)
-            {
-                throw new ErrorException(StatusCodeEnum.GR13_Can_Not_Invated);
-            }
             var result = new InvatedMemberCommandResult();
-            var requestJoin = new Domain.CommandModels.GroupMember
-            {
-                GroupId = request.GroupId,
-                UserId = (Guid)request.MemberId,
-                GroupRoleId = member.GroupRoleId,
-                IsJoined = false,
-                JoinedDate = DateTime.Now,
 
-            };
-            await _context.GroupMembers.AddAsync(requestJoin);
-            await _context.SaveChangesAsync();
+            foreach(var invated in request.MemberId)
+            {
+                var memjoin = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.UserId == invated && x.GroupId == request.GroupId);
+                var friend = await _querycontext.Friends.FirstOrDefaultAsync(x => x.Confirm == true &&
+                                                                                ((x.UserId == request.UserId && x.FriendId == invated)
+                                                                                || (x.UserId == invated && x.FriendId == request.UserId)));
+                if (memjoin != null)
+                {
+                    throw new ErrorException(StatusCodeEnum.GR12_Is_Request);
+
+                }
+                if (friend == null)
+                {
+                    throw new ErrorException(StatusCodeEnum.GR13_Can_Not_Invated);
+                }
+
+                var requestJoin = new Domain.CommandModels.GroupMember
+                {
+                    GroupId = request.GroupId,
+                    UserId = invated,
+                    GroupRoleId = member.GroupRoleId,
+                    IsJoined = false,
+                    JoinedDate = DateTime.Now,
+
+                };
+                await _context.GroupMembers.AddAsync(requestJoin);
+                await _context.SaveChangesAsync();
+            }
+            
             result.Message = "Invated friend join to group success!";
             result.Invated = true;
             result.MemberId = request.MemberId;
