@@ -56,6 +56,8 @@ namespace Application.Commands.RequestJoinGroupStatus
                     GroupRoleId = memjoin.GroupRoleId,
                     UserId = memjoin.UserId,
                     IsJoined = true,
+                    IsInvated = memjoin.IsInvated,
+                    InvatedBy = memjoin.InvatedBy,
                     JoinedDate = memjoin.JoinedDate
                 };
                 _context.GroupMembers.Update(newmemjoin);
@@ -68,6 +70,8 @@ namespace Application.Commands.RequestJoinGroupStatus
                     GroupRoleId = memjoin.GroupRoleId,
                     UserId = memjoin.UserId,
                     IsJoined = false,
+                    IsInvated = memjoin.IsInvated,
+                    InvatedBy = memjoin.InvatedBy,
                     JoinedDate = memjoin.JoinedDate
                 };
                 _context.GroupMembers.Remove(newmemjoin);

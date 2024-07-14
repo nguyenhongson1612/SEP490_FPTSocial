@@ -49,6 +49,8 @@ namespace Application.Commands.JoinGroupCommand
                 GroupId = request.GroupId,
                 UserId = (Guid)request.UserId,
                 GroupRoleId = grouprole.GroupRoleId,
+                IsInvated = false,
+                InvatedBy = null,
                 JoinedDate = DateTime.Now,
                 
             };

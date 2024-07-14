@@ -67,6 +67,8 @@ namespace Application.Commands.InvatedFriendToGroup
                     UserId = invated,
                     GroupRoleId = member.GroupRoleId,
                     IsJoined = false,
+                    IsInvated = true,
+                    InvatedBy = request.UserId,
                     JoinedDate = DateTime.Now,
 
                 };
