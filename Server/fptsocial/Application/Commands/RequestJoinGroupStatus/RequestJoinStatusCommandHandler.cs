@@ -38,7 +38,12 @@ namespace Application.Commands.RequestJoinGroupStatus
             var member = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Member"));
             var getrole = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.ManagerId);
             var memjoin = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId);
-            if (getrole.GroupRoleId != admin.GroupRoleId || getrole.GroupRoleId != censor.GroupRoleId)
+            var role = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleId == getrole.GroupRoleId);
+            if (role == null)
+            {
+                throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
+            }
+            if (role.GroupRoleName.Equals("Member"))
             {
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }

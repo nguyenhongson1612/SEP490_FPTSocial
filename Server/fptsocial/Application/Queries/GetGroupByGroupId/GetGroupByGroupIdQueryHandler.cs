@@ -82,7 +82,7 @@ namespace Application.Queries.GetGroupByGroupId
                 if (memjoin.IsJoined == false)
                 {
                     getgroup.IsJoin = false;
-                    getgroup.isRequest = false;
+                    getgroup.isRequest = true;
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace Application.Queries.GetGroupByGroupId
             else
             {
                 getgroup.IsJoin = false;
-                getgroup.isRequest = true;
+                getgroup.isRequest = false;
             }
            
 
