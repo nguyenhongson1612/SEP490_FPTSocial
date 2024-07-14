@@ -75,6 +75,8 @@ using Application.Queries.GetGroupStatusForCreate;
 using Application.DTO.GroupPostDTO;
 using Application.DTO.GroupFPTDTO;
 using Application.Commands.ShareUserPostCommand;
+using Application.Commands.UpdateUserPhotoPost;
+using Application.Commands.UpdateUserVideoPost;
 
 namespace Application.Mappers
 {
@@ -208,6 +210,10 @@ namespace Application.Mappers
             CreateMap<Command.CommentPhotoPost, CreateUserCommentPhotoPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Command.UserPost, UpdateUserPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.UserPostPhoto, UpdateUserPhotoPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.UserPostVideo, UpdateUserVideoPostCommandResult>()
                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();

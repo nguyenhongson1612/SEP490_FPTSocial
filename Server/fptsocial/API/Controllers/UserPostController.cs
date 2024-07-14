@@ -21,6 +21,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostById;
 using Application.Commands.ShareUserPostCommand;
 using Application.Queries.GetChildPost;
+using Application.Commands.UpdateUserPhotoPost;
+using Application.Commands.UpdateUserVideoPost;
 
 namespace API.Controllers
 {
@@ -207,6 +209,46 @@ namespace API.Controllers
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
+        [HttpPost]
+        [Route("updatePhotoPost")]
+        public async Task<IActionResult> UpdatePhotoPost(UpdateUserPhotoPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("updateVideoPost")]
+        public async Task<IActionResult> UpdateVideoPost(UpdateUserVideoPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
         }
 
     }
