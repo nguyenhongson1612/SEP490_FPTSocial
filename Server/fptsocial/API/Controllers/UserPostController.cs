@@ -22,6 +22,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostVideo;
 using Application.Queries.GetUserPostById;
 using Application.Commands.ShareUserPostCommand;
+using Application.Queries.GetChildPost;
 
 namespace API.Controllers
 {
@@ -172,22 +173,6 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("getuserpostphoto")]
-        public async Task<IActionResult> GetUserPostPhoto([FromQuery]GetUserPostPhotoQuery input)
-        {
-            var res = await _sender.Send(input);
-            return Success(res.Value);
-        }
-
-        [HttpGet]
-        [Route("getuserpostvideo")]
-        public async Task<IActionResult> GetUserPostVideo([FromQuery] GetUserPostVideoQuery input)
-        {
-            var res = await _sender.Send(input);
-            return Success(res.Value);
-        }
-
-        [HttpGet]
         [Route("getuserpostbyid")]
         public async Task<IActionResult> GetUserPostById([FromQuery] GetUserPostByIdQuery input)
         {
@@ -216,6 +201,14 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("getChildPostById")]
+        public async Task<IActionResult> GetChildPostById([FromQuery] GetChildPostQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
 
     }
