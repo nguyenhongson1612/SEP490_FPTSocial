@@ -36,7 +36,12 @@ namespace Application.Queries.GetListRequestjoinGroup
             var censor = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Censor"));
             var getrole = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId);
             var groupmember = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos).Where(x => x.GroupId == request.GroupId && x.IsJoined == false).ToListAsync();
-            if(getrole.GroupRoleId != admin.GroupRoleId || getrole.GroupRoleId != censor.GroupRoleId)
+            var isjoin = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleId == getrole.GroupRoleId);
+            if (isjoin == null)
+            {
+                throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
+            }
+            if (isjoin.GroupRoleName.Equals("Member"))
             {
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }
