@@ -57,9 +57,9 @@ namespace Application.Queries.GetListRequestjoinGroup
                         UserName = mem.User.FirstName + " " + mem.User.LastName,
                        
                     };
-                    if(mem.User.AvataPhotos != null)
+                    if(mem.User.AvataPhotos.Count > 0)
                     {
-                        memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                        memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
                     }
                     else
                     {
