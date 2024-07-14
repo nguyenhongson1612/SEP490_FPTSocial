@@ -107,6 +107,7 @@ namespace Application.Queries.GetGroupByGroupId
             }
             else
             {
+                getgroup.IsJoin = false;
                 getgroup.isRequest = true;
             }
            
