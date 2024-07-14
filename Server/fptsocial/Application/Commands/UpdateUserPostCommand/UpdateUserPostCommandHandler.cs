@@ -125,6 +125,7 @@ namespace Application.Commands.UpdateUserPostCommand
             userPost.UserStatusId = request.UserStatusId;
             userPost.UpdatedAt = DateTime.Now;
             userPost.NumberPost = numberPost;
+            userPost.IsBanned = false;
 
             if (PhotoIdSingle != Guid.Empty)
             {

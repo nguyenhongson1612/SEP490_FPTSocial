@@ -41,10 +41,7 @@ namespace Application.Commands.CreateReactUserPost
                 .FirstOrDefaultAsync(r => r.UserPostId == request.UserPostId && r.UserId == request.UserId, cancellationToken);
             var postReactCount = await _context.PostReactCounts
                 .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
-            if (postReactCount == null) 
-            { 
-                
-            }
+
             Domain.CommandModels.ReactPost reactPost = new Domain.CommandModels.ReactPost();
             if (existingReact != null)
             {

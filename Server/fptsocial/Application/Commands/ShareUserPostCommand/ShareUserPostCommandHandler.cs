@@ -88,6 +88,24 @@ namespace Application.Commands.ShareUserPostCommand
 
             };
 
+            var countUserPost = _context.PostReactCounts.Where(x => x.UserPostId == request.UserPostId
+                                                            || x.UserPostPhotoId == request.UserPostPhotoId
+                                                            || x.UserPostVideoId == request.UserPostVideoId).FirstOrDefault();
+
+            if (countUserPost != null)
+            {
+                countUserPost.ShareCount++;
+            }
+
+            var countGroupPost = _context.GroupPostReactCounts.Where(x => x.GroupPostId == request.UserPostId
+                                                                  || x.GroupPostPhotoId == request.UserPostPhotoId
+                                                                  || x.GroupPostVideoId == request.UserPostVideoId).FirstOrDefault();
+
+            if (countGroupPost != null)
+            {
+                countGroupPost.ShareCount++;
+            }
+
             _context.SharePosts.Add(sharePost);
             _context.SaveChanges();
 
