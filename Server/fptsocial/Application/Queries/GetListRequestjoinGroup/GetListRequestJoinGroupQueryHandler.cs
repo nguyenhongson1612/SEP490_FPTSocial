@@ -47,15 +47,23 @@ namespace Application.Queries.GetListRequestjoinGroup
             }
 
             var result = new GetListRequestJoinGroupQueryResult();
-            foreach(var mem in groupmember)
+            if(groupmember != null)
             {
-                var memdto = new RequestJoinGroupDTO {
-                    UserId = mem.UserId,
-                    UserName = mem.User.FirstName + " " + mem.User.LastName,
-                    UserAvata = mem.User.AvataPhotos.FirstOrDefault(x=>x.IsUsed==true).AvataPhotosUrl,
-                };
-                result.requestJoinGroups.Add(memdto);
-            }
+                foreach (var mem in groupmember)
+                {
+                    var memdto = new RequestJoinGroupDTO
+                    {
+                        UserId = mem.UserId,
+                        UserName = mem.User.FirstName + " " + mem.User.LastName,
+                       
+                    };
+                    if(mem.User.AvataPhotos != null)
+                    {
+                        memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                    }
+                    result.requestJoinGroups.Add(memdto);
+                }
+            }  
             return Result<GetListRequestJoinGroupQueryResult>.Success(result);
         }
     }
