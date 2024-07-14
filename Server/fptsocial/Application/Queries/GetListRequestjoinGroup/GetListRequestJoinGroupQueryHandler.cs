@@ -61,6 +61,10 @@ namespace Application.Queries.GetListRequestjoinGroup
                     {
                         memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
                     }
+                    else
+                    {
+                        memdto.UserAvata = null;
+                    }
                     result.requestJoinGroups.Add(memdto);
                 }
             }  
