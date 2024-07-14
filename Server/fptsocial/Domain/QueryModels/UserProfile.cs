@@ -24,7 +24,8 @@ namespace Domain.QueryModels
             GroupFpts = new HashSet<GroupFpt>();
             GroupInvitationInviteds = new HashSet<GroupInvitation>();
             GroupInvitationInviters = new HashSet<GroupInvitation>();
-            GroupMembers = new HashSet<GroupMember>();
+            GroupMemberInvatedByNavigations = new HashSet<GroupMember>();
+            GroupMemberUsers = new HashSet<GroupMember>();
             GroupPosts = new HashSet<GroupPost>();
             GroupSharePostSharedToUsers = new HashSet<GroupSharePost>();
             GroupSharePostUsers = new HashSet<GroupSharePost>();
@@ -106,7 +107,8 @@ namespace Domain.QueryModels
         public virtual ICollection<GroupFpt> GroupFpts { get; set; }
         public virtual ICollection<GroupInvitation> GroupInvitationInviteds { get; set; }
         public virtual ICollection<GroupInvitation> GroupInvitationInviters { get; set; }
-        public virtual ICollection<GroupMember> GroupMembers { get; set; }
+        public virtual ICollection<GroupMember> GroupMemberInvatedByNavigations { get; set; }
+        public virtual ICollection<GroupMember> GroupMemberUsers { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePostSharedToUsers { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePostUsers { get; set; }
