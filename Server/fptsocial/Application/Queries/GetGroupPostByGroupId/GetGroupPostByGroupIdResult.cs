@@ -23,11 +23,12 @@ namespace Application.Queries.GetGroupPostByGroupId
         public Guid? GroupPhotoId { get; set; }
         public Guid? GroupVideoId { get; set; }
         public int? NumberPost { get; set; }
+        public bool? IsBanned { get; set; }
 
-        public virtual GroupPhotoDTO GroupPhoto { get; set; }
-        public virtual GroupVideoDTO GroupVideo { get; set; }
-        public virtual ICollection<GroupPostPhotoDTO> GroupPostPhoto { get; set; }
-        public virtual ICollection<GroupPostVideoDTO> GroupPostVideo { get; set; }
+        public virtual GroupPhotoDTO? GroupPhoto { get; set; }
+        public virtual GroupVideoDTO? GroupVideo { get; set; }
+        public virtual ICollection<GroupPostPhotoDTO>? GroupPostPhoto { get; set; }
+        public virtual ICollection<GroupPostVideoDTO>? GroupPostVideo { get; set; }
         public virtual GetUserAvatar Avata { get; set; } = null!;
         public string? FullName { get; set; }
     }

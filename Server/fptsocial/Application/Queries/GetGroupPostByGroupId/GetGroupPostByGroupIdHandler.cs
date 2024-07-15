@@ -39,16 +39,13 @@ namespace Application.Queries.GetGroupPostByGroupId
             }
 
             var groupPost = await _context.GroupPosts
-                                    .Include(x => x.GroupPhoto)
+                                  .Include(x => x.GroupPhoto)
                                     .Include(x => x.GroupVideo)
                                     .Include(x => x.GroupPostPhotos)
-                                        .ThenInclude(gpp => gpp.GroupPhoto)
-                                        .ThenInclude(gp => gp.Group)
+                                        .ThenInclude(x => x.GroupPhoto)
                                     .Include(x => x.GroupPostVideos)
-                                        .ThenInclude(gpv => gpv.GroupVideo)
-                                        .ThenInclude(gv => gv.Group)
-                                    .Where(x => x.GroupPostPhotos.Any(gpp => gpp.GroupPhoto.Group.GroupId == request.GroupId)
-                                            || x.GroupPostVideos.Any(gpv => gpv.GroupVideo.Group.GroupId == request.GroupId))
+                                        .ThenInclude(x => x.GroupVideo)
+                                    .Where(x => x.GroupId == request.GroupId)
                                     .ToListAsync(cancellationToken);
 
             var result = groupPost.Select(x => new GetGroupPostByGroupIdResult {
@@ -63,11 +60,12 @@ namespace Application.Queries.GetGroupPostByGroupId
                 GroupPhotoId = x.GroupPhotoId,
                 GroupVideoId = x.GroupVideoId,
                 NumberPost = x.NumberPost,
+                IsBanned = x.IsBanned,
                 GroupPhoto = _mapper.Map<GroupPhotoDTO>(x.GroupPhoto),
                 GroupVideo = _mapper.Map<GroupVideoDTO>(x.GroupVideo),
                 GroupPostPhoto = _mapper.Map<List<GroupPostPhotoDTO>>(x.GroupPostPhotos),
                 GroupPostVideo = _mapper.Map<List<GroupPostVideoDTO>>(x.GroupPostVideos),
-            });
+            }).ToList();
             return Result<List<GetGroupPostByGroupIdResult>>.Success(result);
         }
     }

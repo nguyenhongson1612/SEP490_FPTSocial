@@ -57,7 +57,7 @@ namespace Application.Queries.GetChildPost
                 .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Photo)
-                .Where(x => x.UserPostId == userPostId)
+                .Where(x => x.UserPostId == userPostId && x.IsHide != true)
                 .ToListAsync(cancellationToken);
 
             foreach (var photo in userPostPhoto)
@@ -92,7 +92,7 @@ namespace Application.Queries.GetChildPost
                 .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Video)
-                .Where(x => x.UserPostId == userPostId)
+                .Where(x => x.UserPostId == userPostId && x.IsHide != true)
                 .ToListAsync(cancellationToken);
 
             foreach (var video in userPostVideo)
