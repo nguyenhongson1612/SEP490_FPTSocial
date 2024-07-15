@@ -88,19 +88,25 @@ namespace Application.Queries.GetGroupByGroupId
                 {
                     getgroup.IsJoin = true;
                     getgroup.isRequest = false;
-                    if (admin.UserId == request.UserId)
+                    if(admin != null)
                     {
-                        getgroup.IsAdmin = true;
-                        getgroup.IsCensor = false;
+                        if (admin.UserId == request.UserId)
+                        {
+                            getgroup.IsAdmin = true;
+                            getgroup.IsCensor = false;
+                        }
                     }
                     else
                     {
                         getgroup.IsAdmin = false;
                         getgroup.IsCensor = false;
-                        if (censor.UserId == request.UserId)
+                        if(censor != null)
                         {
-                            getgroup.IsCensor = true;
-                        }
+                            if (censor.UserId == request.UserId)
+                            {
+                                getgroup.IsCensor = true;
+                            }
+                        }   
                     }
                    
                 }

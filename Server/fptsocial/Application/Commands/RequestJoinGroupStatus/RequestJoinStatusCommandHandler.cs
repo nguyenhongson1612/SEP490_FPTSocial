@@ -76,7 +76,7 @@ namespace Application.Commands.RequestJoinGroupStatus
                 };
                 _context.GroupMembers.Remove(newmemjoin);
             }
-
+            await _context.SaveChangesAsync();
             result.Message = "Accept Join!";
             result.IsJoin = request.IsJoin;
             result.UserId = memjoin.UserId;
