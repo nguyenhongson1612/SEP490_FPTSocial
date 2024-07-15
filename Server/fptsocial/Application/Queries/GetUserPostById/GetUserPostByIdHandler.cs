@@ -49,7 +49,7 @@ namespace Application.Queries.GetUserPostById
                 .Where(x => x.UserPostId == request.UserPostId && x.IsHide != true)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == userPost.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == userPost.UserId && x.IsUsed == true);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == userPost.UserId);
             var result = new GetUserPostByIdResult
             {
