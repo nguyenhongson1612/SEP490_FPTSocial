@@ -42,9 +42,9 @@ namespace Application.Queries.GetUserPost
             var userPosts = await _context.UserPosts
                 .Include(x => x.Photo)
                 .Include(x => x.Video)
-                .Include(x => x.UserPostPhotos)
+                .Include(x => x.UserPostPhotos.Where(x => x.IsHide != true))
                     .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideos)
+                .Include(x => x.UserPostVideos.Where(x => x.IsHide != true))
                     .ThenInclude(x => x.Video)
                 .Where(x => x.UserId == request.UserId && x.IsHide != true)
                 .OrderByDescending(x => x.CreatedAt)
