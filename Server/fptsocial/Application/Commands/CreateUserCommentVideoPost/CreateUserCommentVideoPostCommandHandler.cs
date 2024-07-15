@@ -51,8 +51,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
             // Initialize comment level and list number
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.PostReactCounts
-                .FirstOrDefaultAsync(prc => prc.UserPostVideoId == request.UserPostVideoId);
+            var postReactCount = await _context.PostReactCounts.Where(prc => prc.UserPostVideoId == request.UserPostVideoId).FirstOrDefaultAsync();
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
@@ -104,14 +103,14 @@ namespace Application.Commands.CreateUserCommentVideoPost
                 comment.IsHide = true;
             }
 
-            // Add comment to the database and save changes
-            await _context.CommentVideoPosts.AddAsync(comment);
-            await _context.SaveChangesAsync();
-
             if (postReactCount != null)
             {
                 postReactCount.CommentCount++;
             }
+
+            // Add comment to the database and save changes
+            await _context.CommentVideoPosts.AddAsync(comment);
+            await _context.SaveChangesAsync();
 
             // Map the result and include banned words
             var result = _mapper.Map<CreateUserCommentVideoPostCommandResult>(comment);

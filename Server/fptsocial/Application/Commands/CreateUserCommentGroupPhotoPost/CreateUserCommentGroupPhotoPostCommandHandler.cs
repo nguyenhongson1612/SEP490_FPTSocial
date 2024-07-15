@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,7 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
 
             int levelCmt = 1;
             string listNumber = null;
+            var postReactCount = await _context.GroupPostReactCounts.Where(prc => prc.GroupPostPhotoId == request.GroupPostPhotoId).FirstOrDefaultAsync();
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
@@ -98,6 +100,11 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
             if (badWords.Any())
             {
                 comment.IsHide = true;
+            }
+
+            if (postReactCount != null)
+            {
+                postReactCount.CommentCount++;
             }
 
             // Add comment to the database and save changes
