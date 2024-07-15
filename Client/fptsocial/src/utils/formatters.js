@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify'
 import parse from 'html-react-parser'
 import moment from 'moment'
 
-//prevent spam slick call api
+//prevent spam click call api
 export const interceptorLoadingElements = (calling) => {
   const elements = document.querySelectorAll('.interceptor-loading')
   for (let i = 0; i < elements.length; i++) {

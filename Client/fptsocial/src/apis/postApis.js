@@ -1,13 +1,8 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
-export const getUserPostPhoto = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostphoto?UserPostPhotoId=${id}`)
-  return response.data?.data
-}
-
-export const getUserPostVideo = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostvideo?UserPostVideoId=${id}`)
+export const getChildPostById = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getChildPostById?UserPostMediaId=${id}`)
   return response.data?.data
 }
 

@@ -4,57 +4,84 @@ import { Link, useNavigate } from 'react-router-dom'
 import Tiptap from '../TitTap/TitTap'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import { motion } from 'framer-motion'
 import { getStatus } from '~/apis'
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
-import { IconCaretDownFilled, IconChevronLeft, IconX } from '@tabler/icons-react'
+import { IconCaretDownFilled, IconX } from '@tabler/icons-react'
 import { createPost } from '~/apis/postApis'
 import UserAvatar from '../UI/UserAvatar'
+import { POST_TYPES } from '~/utils/constants'
+import { createGroupPost } from '~/apis/groupPostApis'
+import { triggerReload } from '~/redux/ui/uiSlice'
+import StatusSelect from './StatusSelect'
+import { getGroupStatusForCreate } from '~/apis/groupApis'
 
 
-function NewPost() {
+function NewPost({ type, groupId }) {
   const [isCreate, setIsCreate] = useState(false)
   const [isChosePostAudience, setIsChosePostAudience] = useState(false)
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
-  const user = useSelector(selectCurrentUser)
+  const currentUser = useSelector(selectCurrentUser)
   const [listPhotos, setListPhotos] = useState([])
   const [listVideos, setListVideos] = useState([])
   const [listStatus, setListStatus] = useState([])
-  const [choseStatus, setChoseStatus] = useState({})
+  const [choseStatus, setChoseStatus] = useState()
+  const dispatch = useDispatch()
+
+  const handleSelectAudience = () => setIsChosePostAudience(!isChosePostAudience)
+  const handleSelectStatus = e => { setChoseStatus(JSON.parse(e.target.value)) }
 
   useEffect(() => {
-    getStatus().then(data => setListStatus(data))
+    if (type === POST_TYPES.MAIN_POST) {
+      getStatus().then(data => setListStatus(data))
+    } else if (type === POST_TYPES.MAIN_GROUP_POST) {
+      getGroupStatusForCreate().then(data => setListStatus(data))
+    }
   }, [])
+
   useEffect(() => {
-    setChoseStatus(listStatus?.find(e => e.statusName.toLowerCase() == 'public')?.userStatusId)
+    setChoseStatus(listStatus?.find(e => {
+      if (type === POST_TYPES.MAIN_POST)
+        return e?.statusName?.toLowerCase() == 'public'
+      else if (type === POST_TYPES.MAIN_GROUP_POST)
+        return e?.groupStatusName?.toLowerCase() == 'public'
+    }))
   }, [listStatus])
+
   const navigate = useNavigate()
   const submitPost = () => {
-    console.log(content)
-    console.log(listPhotos, listVideos);
-    console.log(choseStatus)
-    const submitCreatePostData = {
-
-      'userId': user?.userId,
-      'content': content,
-      'userStatusId': choseStatus,
-      'photos': listPhotos,
-      'videos': listVideos
+    let submitData = {}
+    if (type === POST_TYPES.MAIN_POST) {
+      submitData = {
+        'userId': currentUser?.userId,
+        'content': content,
+        'userStatusId': choseStatus?.userStatusId,
+        'photos': listPhotos,
+        'videos': listVideos
+      }
+    } else if (type == POST_TYPES.MAIN_GROUP_POST) {
+      submitData = {
+        'userId': currentUser?.userId,
+        'groupId': groupId,
+        'content': content,
+        'groupStatusId': choseStatus?.groupStatusId,
+        'photos': listPhotos,
+        'videos': listVideos
+      }
     }
+
     toast.promise(
-      createPost(submitCreatePostData),
+      type === POST_TYPES.MAIN_POST
+        ? createPost(submitData)
+        : createGroupPost(submitData)
+      ,
       { pending: 'Created is in progress...' }
     ).then(() => {
-      navigate('/')
+      dispatch(triggerReload())
       toast.success('Create post successfully')
     })
   }
-
-  const currentUser = useSelector(selectCurrentUser)
-
   return (
     <div id="new-post"
       className="w-full sm:w-[500px] flex flex-col mt-8 gap-2 border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
@@ -68,7 +95,7 @@ function NewPost() {
         <div className="w-[90%] bg-fbWhite rounded-3xl hover:bg-fbWhite-500 cursor-pointer"
           onClick={() => setIsCreate(!isCreate)}
         >
-          <p className="px-3 py-3 max-sm:text-sm font-medium text-gray-500">What&apos;s on your mind, {user?.firstName + ' ' + user?.lastName}?</p>
+          <p className="px-3 py-3 max-sm:text-sm font-medium text-gray-500">What&apos;s on your mind, {currentUser?.firstName + ' ' + currentUser?.lastName}?</p>
         </div>
       </div>
 
@@ -88,12 +115,15 @@ function NewPost() {
                       <div className='flex items-center h-[40] gap-2 '>
                         <UserAvatar />
                         <div className='flex flex-col w-full cursor-pointer'>
-                          <span className='font-bold'>{user?.firstName + ' ' + user?.lastName}</span>
+                          <span className='font-bold'>{currentUser?.firstName + ' ' + currentUser?.lastName}</span>
                           <div
                             onClick={() => setIsChosePostAudience(!isChosePostAudience)}
                             className='flex items-center gap-1 text-xs text-white font-bold py-1 px-2 bg-orangeFpt w-fit rounded-lg'>
                             {/* <FaLock /> */}
-                            <span className=''>{listStatus?.find(e => e.userStatusId == choseStatus)?.statusName}</span>
+                            <span className=''>{type === POST_TYPES.MAIN_POST
+                              ? choseStatus?.userStatusName
+                              : choseStatus?.groupStatusName}
+                            </span>
                             <IconCaretDownFilled className='size-4' />
                           </div>
                         </div>
@@ -124,52 +154,8 @@ function NewPost() {
                   </div >
                 </form >
               ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className='flex flex-col'>
-                    <div className='h-[60px]  flex justify-between items-center px-5 border-b '>
-                      <IconChevronLeft className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => setIsChosePostAudience(!isChosePostAudience)} />
-                      <span className='text-2xl font-bold'>Post Audience</span>
-                      <span></span>
-                    </div>
-
-                    <div className='px-4 pb-10 ' >
-                      <div>
-                        <div className='font-bold '>Who can see your post?</div>
-                        <div className='text-sm'>
-                          Your post will show up in Feed, on your profile and in search results.<br /><br />
-                          Your default audience is set to Public, but you can change the audience of this specific post.
-                        </div>
-                      </div>
-                      <div>
-                        <FormControl>
-                          <FormLabel id="demo-radio-buttons-group-label">Status</FormLabel>
-                          <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            value={choseStatus}
-                            onChange={e => setChoseStatus(e.target.value)}
-                            name="radio-buttons-group"
-                          >
-                            {listStatus?.map((status) => (
-                              <FormControlLabel key={status.userStatusId} value={status.userStatusId} control={<Radio />} label={status.statusName} />
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                      </div>
-                    </div >
-
-                    {/* <div className='py-4 flex justify-center items-center'>
-                      <button className='h-9 w-full  mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
-                      >
-                        Done
-                      </button>
-                    </div> */}
-                  </div >
-                </motion.div>
-
+                <StatusSelect handleSelectAudience={handleSelectAudience} handleSelectStatus={handleSelectStatus}
+                  listStatus={listStatus} selectedStatus={choseStatus} type={type} />
               )}
             </div >
           </div >

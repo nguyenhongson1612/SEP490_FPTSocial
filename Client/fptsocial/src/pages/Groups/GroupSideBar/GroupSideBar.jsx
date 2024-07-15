@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function GroupSideBar() {
+function GroupSideBar({ listPersonalGroup }) {
   return (
     <div className="max-h-[calc(100vh_-_55px)] w-[380px] flex flex-col overflow-y-auto scrollbar-none-track border-r-2 shadow-xl bg-white">
       <div className="ml-3 mt-8 mb-5">
@@ -41,49 +41,37 @@ function GroupSideBar() {
         <div id="group-owner"
           className="flex flex-col items-start gap-4 mb-5"
         >
-          <p className="text-gray-500">Group Admin</p>
-          <Link to={'/groups/123'} className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
-              className="rounded-md aspect-square object-cover w-10"
-            />
+          <span className="text-gray-500">Groups you manage</span>
+          {
+            listPersonalGroup?.listGroupAdmin?.map(e => (
+              <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
+                <img
+                  src={e?.coverImage}
+                  alt="group-img"
+                  className="rounded-md aspect-square object-cover w-10"
+                />
+                <span className="font-semibold text-gray-900">{e?.groupName}</span>
+              </Link>
+            ))
+          }
 
-            <span className="font-semibold text-gray-900">New Feeds</span>
-          </Link>
         </div>
         <div id="group-joins"
           className="flex flex-col items-start gap-4 mb-5"
         >
-          <p className="text-gray-500">Group Joined</p>
-          <a className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
-              className="rounded-md aspect-square object-cover w-10"
-            />
-
-            <span className="font-semibold text-gray-900">New Feeds</span>
-          </a>
-
-          <a className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
-              className="rounded-md aspect-square object-cover w-10"
-            />
-
-            <span className="font-semibold text-gray-900">New Feeds</span>
-          </a>
-          <a className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              alt="group-img"
-              className="rounded-md aspect-square object-cover w-10"
-            />
-
-            <span className="font-semibold text-gray-900">New Feeds</span>
-          </a>
+          <span className="text-gray-500">Groups you joint</span>
+          {
+            listPersonalGroup?.listGroupMember?.map(e => (
+              <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer">
+                <img
+                  src={e?.coverImage}
+                  alt="group-img"
+                  className="rounded-md aspect-square object-cover w-10"
+                />
+                <span className="font-semibold text-gray-900">{e?.groupName}</span>
+              </Link>
+            ))
+          }
         </div>
       </div>
 

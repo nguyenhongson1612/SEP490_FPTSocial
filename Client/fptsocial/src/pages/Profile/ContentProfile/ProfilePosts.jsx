@@ -1,6 +1,7 @@
 import { IconCake, IconHeartFilled, IconHomeFilled, IconManFilled, IconUser } from '@tabler/icons-react'
 import ListPost from '~/components/ListPost/ListPost'
 import NewPost from '~/components/NewPost/NewPost'
+import { POST_TYPES } from '~/utils/constants'
 
 function ProfilePosts({ listPost, user }) {
   return (
@@ -19,7 +20,7 @@ function ProfilePosts({ listPost, user }) {
         </div>
       </div>
       <div className=' flex flex-col gap-3'>
-        <NewPost />
+        <NewPost type={POST_TYPES.MAIN_POST} />
         <ListPost listPost={listPost} />
       </div>
     </div >

@@ -11,7 +11,6 @@ import likeEmoji from '~/assets/img/emojis/like.png'
 import angryEmoji from '~/assets/img/emojis/angry.png'
 
 function PostReactStatus({ postData }) {
-  console.log('🚀 ~ PostReactStatus ~ postData:', postData)
   const [reload, setReload] = useState(false)
   // console.log(postData);
   const listReact = useSelector(selectListReactType)
@@ -21,8 +20,8 @@ function PostReactStatus({ postData }) {
 
   const handleGetReact = async () => {
     const response = await (
-      postData?.userPostPhotoId ? getAllReactByPhotoPostId(postData?.userPostPhotoId)
-        : postData?.userPostVideoId ? getAllReactByVideoPostId(postData?.userPostVideoId)
+      postData?.mediaType?.toLowerCase() == 'photo' ? getAllReactByPhotoPostId(postData?.userPostMediaId)
+        : postData?.mediaType?.toLowerCase() == 'video' ? getAllReactByVideoPostId(postData?.userPostMediaId)
           : postData?.userPostId && getAllReactByPostId(postData?.userPostId)
     )
     setPostReact(response)
@@ -81,9 +80,6 @@ function PostReactStatus({ postData }) {
         className="w-full flex items-center justify-between py-1">
         <div className="flex items-center gap-1"
         >
-          {/* {
-            postReact?.
-          } */}
           <img className='size-6' src={likeEmoji} />
           <span className="text-sm font-thin text-gray-500">{postReact?.sumOfReact}</span>
         </div >
