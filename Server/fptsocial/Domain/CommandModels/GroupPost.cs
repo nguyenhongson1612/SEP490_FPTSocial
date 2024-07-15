@@ -30,7 +30,9 @@ namespace Domain.CommandModels
         public Guid? GroupVideoId { get; set; }
         public int? NumberPost { get; set; }
         public bool? IsBanned { get; set; }
+        public Guid? GroupId { get; set; }
 
+        public virtual GroupFpt? Group { get; set; }
         public virtual GroupPhoto? GroupPhoto { get; set; }
         public virtual GroupStatus GroupStatus { get; set; } = null!;
         public virtual GroupVideo? GroupVideo { get; set; }

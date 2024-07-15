@@ -647,6 +647,11 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupPosts)
+                    .HasForeignKey(d => d.GroupId)
+                    .HasConstraintName("fk_group_group_post");
+
                 entity.HasOne(d => d.GroupPhoto)
                     .WithMany(p => p.GroupPosts)
                     .HasForeignKey(d => d.GroupPhotoId)
@@ -685,6 +690,11 @@ namespace Domain.CommandModels
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupPostPhotos)
+                    .HasForeignKey(d => d.GroupId)
+                    .HasConstraintName("fk_group_group_post_photo");
 
                 entity.HasOne(d => d.GroupPhoto)
                     .WithMany(p => p.GroupPostPhotos)
@@ -742,6 +752,11 @@ namespace Domain.CommandModels
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupPostVideos)
+                    .HasForeignKey(d => d.GroupId)
+                    .HasConstraintName("fk_group_group_post_video");
 
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.GroupPostVideos)

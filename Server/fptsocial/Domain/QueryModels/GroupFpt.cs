@@ -10,6 +10,9 @@ namespace Domain.QueryModels
             GroupInvitations = new HashSet<GroupInvitation>();
             GroupMembers = new HashSet<GroupMember>();
             GroupPhotos = new HashSet<GroupPhoto>();
+            GroupPostPhotos = new HashSet<GroupPostPhoto>();
+            GroupPostVideos = new HashSet<GroupPostVideo>();
+            GroupPosts = new HashSet<GroupPost>();
             GroupSettingUses = new HashSet<GroupSettingUse>();
             GroupTagUseds = new HashSet<GroupTagUsed>();
             GroupVideos = new HashSet<GroupVideo>();
@@ -33,6 +36,9 @@ namespace Domain.QueryModels
         public virtual ICollection<GroupInvitation> GroupInvitations { get; set; }
         public virtual ICollection<GroupMember> GroupMembers { get; set; }
         public virtual ICollection<GroupPhoto> GroupPhotos { get; set; }
+        public virtual ICollection<GroupPostPhoto> GroupPostPhotos { get; set; }
+        public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
+        public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSettingUse> GroupSettingUses { get; set; }
         public virtual ICollection<GroupTagUsed> GroupTagUseds { get; set; }
         public virtual ICollection<GroupVideo> GroupVideos { get; set; }
