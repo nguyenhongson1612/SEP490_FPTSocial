@@ -58,6 +58,7 @@ namespace Application.Commands.CreateGroupPost
                 GroupPostId = _helper.GenerateNewGuid(),
                 UserId = request.UserId,
                 Content = request.Content,
+                GroupId = request.GroupId,
                 GroupPostNumber = DateTime.Now.ToString("ddMMyyHHmmss") + request.UserId.ToString().Replace("-", ""),
                 GroupStatusId = request.GroupStatusId,
                 IsHide = false,
