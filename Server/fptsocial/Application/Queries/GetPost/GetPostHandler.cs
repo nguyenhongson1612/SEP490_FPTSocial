@@ -70,9 +70,9 @@ namespace Application.Queries.GetPost
                             (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true)
                 .Include(p => p.Photo)
                 .Include(p => p.Video)
-                .Include(p => p.UserPostPhotos)
+                .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true))
                     .ThenInclude(upp => upp.Photo)
-                .Include(p => p.UserPostVideos)
+                .Include(p => p.UserPostVideos.Where(x => x.IsHide != true))
                     .ThenInclude(upv => upv.Video)
                 .ToListAsync(cancellationToken);
 
