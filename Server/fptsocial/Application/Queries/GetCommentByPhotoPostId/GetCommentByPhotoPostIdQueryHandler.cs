@@ -90,8 +90,6 @@ namespace Application.Queries.GetCommentByPhotoPostId
 
             return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
         }
-
-
     }
 
 }
