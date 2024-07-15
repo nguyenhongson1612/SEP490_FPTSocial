@@ -50,7 +50,7 @@ namespace Application.Queries.GetUserPost
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.IsUsed == true);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var result = userPosts.Select(userPost => new GetUserPostResult
             {
