@@ -70,6 +70,7 @@ namespace Application.Commands.UpdateCommentUserPost
                     comment.IsHide = true;
                 }
             }
+            await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentUserPostCommandResult>(comment);
             result.BannedWords = bannedWords;
             if (bannedWords.Any())
