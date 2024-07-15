@@ -129,19 +129,23 @@ namespace Application.Queries.GetChildPost
                 if (i > 0)
                 {
                     combinedResults[i].PreviousId = combinedResults[i - 1].UserPostMediaId;
+                    combinedResults[i].PreviousType = combinedResults[i - 1].MediaType;
                 }
                 else
                 {
                     combinedResults[i].PreviousId = combinedResults[combinedResults.Count - 1].UserPostMediaId;
+                    combinedResults[i].PreviousType = combinedResults[combinedResults.Count - 1].MediaType;
                 }
 
                 if (i < combinedResults.Count - 1)
                 {
                     combinedResults[i].NextId = combinedResults[i + 1].UserPostMediaId;
+                    combinedResults[i].NextType = combinedResults[i + 1].MediaType;
                 }
                 else
                 {
                     combinedResults[i].NextId = combinedResults[0].UserPostMediaId;
+                    combinedResults[i].NextType = combinedResults[0].MediaType;
                 }
             }
 

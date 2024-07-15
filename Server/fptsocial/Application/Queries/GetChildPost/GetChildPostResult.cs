@@ -31,6 +31,8 @@ namespace Application.Queries.GetChildPost
         public GetUserAvatar Avatar { get; set; }
 
         public Guid? PreviousId { get; set; }
+        public string? PreviousType { get; set; }
         public Guid? NextId { get; set; }
+        public string? NextType { get; set; }
     }
 }
