@@ -291,9 +291,9 @@ namespace Application.Mappers
 
             //GroupPost
             CreateMap<GroupPostPhotoDTO, GroupPostPhoto>();
-            CreateMap<GroupPhotoDTO, GroupPhoto>();
+            CreateMap<GroupPhotoDTO, GroupPhoto>().ReverseMap();
             CreateMap<GroupPostVideoDTO, GroupPostVideo>();
-            CreateMap<GroupVideoDTO, GroupVideo>();
+            CreateMap<GroupVideoDTO, GroupVideo>().ReverseMap();
             CreateMap<GroupFPTDTO, GroupFpt>();
         }
     }

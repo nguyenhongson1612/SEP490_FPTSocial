@@ -43,12 +43,12 @@ namespace Application.Queries.GetGroupPostByGroupId
             var groupPost = await _context.GroupPosts
                                     .Include(x => x.GroupPhoto)
                                     .Include(x => x.GroupVideo)
-                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true))
+                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupPhoto)
-                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true))
+                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
                                     .Include(x => x.Group)
-                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true)
+                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true)
                                     .ToListAsync(cancellationToken);
 
             var result = groupPost.Select(x => new GetGroupPostByGroupIdResult
@@ -67,8 +67,33 @@ namespace Application.Queries.GetGroupPostByGroupId
                 IsBanned = x.IsBanned,
                 GroupPhoto = _mapper.Map<GroupPhotoDTO>(x.GroupPhoto),
                 GroupVideo = _mapper.Map<GroupVideoDTO>(x.GroupVideo),
-                GroupPostPhoto = _mapper.Map<List<GroupPostPhotoDTO>>(x.GroupPostPhotos),
-                GroupPostVideo = _mapper.Map<List<GroupPostVideoDTO>>(x.GroupPostVideos),
+                GroupPostPhoto = x.GroupPostPhotos?.Select(upp => new GroupPostPhotoDTO {
+                    GroupPostPhotoId = upp.GroupPostPhotoId,
+                    GroupPostId = upp.GroupPostId,
+                    Content = upp.Content,
+                    GroupPhotoId = upp.GroupPhotoId,
+                    GroupStatusId = upp.GroupStatusId,
+                    GroupPostPhotoNumber = upp.GroupPostPhotoNumber,
+                    IsHide = upp.IsHide,
+                    CreatedAt = upp.CreatedAt,
+                    UpdatedAt = upp.UpdatedAt,
+                    PostPosition = upp.PostPosition,
+                    GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto)
+                }).ToList(),
+                GroupPostVideo = x.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
+                {
+                    GroupPostVideoId = upp.GroupPostVideoId,
+                    GroupPostId = upp.GroupPostId,
+                    Content = upp.Content,
+                    GroupVideoId = upp.GroupVideoId,
+                    GroupStatusId = upp.GroupStatusId,
+                    GroupPostVideoNumber = upp.GroupPostVideoNumber,
+                    IsHide = upp.IsHide,
+                    CreatedAt = upp.CreatedAt,
+                    UpdatedAt = upp.UpdatedAt,
+                    PostPosition = upp.PostPosition,
+                    GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo)
+                }).ToList(),
                 GroupId = x.GroupId,
                 GroupName = x.Group.GroupName,
                 GroupCorverImage = x.Group.CoverImage
