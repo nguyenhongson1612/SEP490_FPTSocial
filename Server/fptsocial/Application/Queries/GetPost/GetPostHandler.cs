@@ -127,7 +127,8 @@ namespace Application.Queries.GetPost
                         {
                             ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
                             CommentNumber = _context.CommentPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                            ShareNumber = _context.SharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
+                            ShareNumber = _context.SharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId) +
+                                        _context.GroupSharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
                         },
                     }).ToList(),
                     UserPostVideos = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
@@ -147,7 +148,8 @@ namespace Application.Queries.GetPost
                         {
                             ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
                             CommentNumber = _context.CommentVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                            ShareNumber = _context.SharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
+                            ShareNumber = _context.SharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId) +
+                                        _context.GroupSharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
                         },
                     }).ToList(),
                     EdgeRank = 0,

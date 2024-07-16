@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.DTO.ReactDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,5 +21,6 @@ namespace Application.DTO.GroupPostDTO
         public int? PostPosition { get; set; }
         public bool? IsBanned { get; set; }
         public virtual GroupPhotoDTO GroupPhoto { get; set; } = null!;
+        public ReactCount ReactCount { get; set; }
     }
 }

@@ -80,6 +80,7 @@ using Application.Commands.UpdateUserVideoPost;
 using Application.Commands.UpdateCommentUserPost;
 using Application.Commands.UpdateCommentUserPhotoPost;
 using Application.Commands.UpdateCommentUserVideoPost;
+using Application.DTO.GroupDTO;
 
 namespace Application.Mappers
 {
@@ -290,11 +291,12 @@ namespace Application.Mappers
             CreateMap<Query.Notification, UpdateNotificationStatusResult>();
 
             //GroupPost
-            CreateMap<GroupPostPhotoDTO, GroupPostPhoto>();
             CreateMap<GroupPhotoDTO, GroupPhoto>().ReverseMap();
-            CreateMap<GroupPostVideoDTO, GroupPostVideo>();
+            CreateMap<GroupPostPhotoDTO, GroupPostPhoto>();
             CreateMap<GroupVideoDTO, GroupVideo>().ReverseMap();
+            CreateMap<GroupPostVideoDTO, GroupPostVideo>();
             CreateMap<GroupFPTDTO, GroupFpt>();
+            CreateMap<GetGroupStatusDTO, GroupStatus>();
         }
     }
 }
