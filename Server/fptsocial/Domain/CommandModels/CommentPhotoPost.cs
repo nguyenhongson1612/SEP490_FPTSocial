@@ -20,6 +20,7 @@ namespace Domain.CommandModels
         public int? LevelCmt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual UserProfile User { get; set; } = null!;
         public virtual UserPostPhoto UserPostPhoto { get; set; } = null!;

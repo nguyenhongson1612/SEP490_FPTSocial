@@ -20,6 +20,7 @@ namespace Domain.QueryModels
         public int? LevelCmt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public bool? IsBanned { get; set; }
 
         public virtual GroupPostVideo GroupPostVideo { get; set; } = null!;
         public virtual UserProfile User { get; set; } = null!;
