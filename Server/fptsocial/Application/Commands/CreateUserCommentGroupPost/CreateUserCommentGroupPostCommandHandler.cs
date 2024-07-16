@@ -10,6 +10,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,7 @@ namespace Application.Commands.CreateUserCommentGroupPost
 
             int levelCmt = 1;
             string listNumber = null;
+            var postReactCount = await _context.GroupPostReactCounts.Where(prc => prc.GroupPostId == request.GroupPostId).FirstOrDefaultAsync();
 
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
@@ -100,6 +102,11 @@ namespace Application.Commands.CreateUserCommentGroupPost
             if (badWords.Any())
             {
                 comment.IsHide = true;
+            }
+
+            if (postReactCount != null)
+            {
+                postReactCount.CommentCount++;
             }
 
             // Add the comment to the context and save changes

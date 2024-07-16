@@ -53,8 +53,7 @@ namespace Application.Commands.CreateUserCommentPost
 
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.PostReactCounts
-                .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
+            var postReactCount = await _context.PostReactCounts.Where(prc => prc.UserPostId == request.UserPostId).FirstOrDefaultAsync();
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
@@ -104,14 +103,14 @@ namespace Application.Commands.CreateUserCommentPost
                 comment.IsHide = true;
             }
 
-            // Add the comment to the context and save changes
-            await _context.CommentPosts.AddAsync(comment);
-            await _context.SaveChangesAsync();
-
             if (postReactCount != null)
             {
                 postReactCount.CommentCount++;
             }
+
+            // Add the comment to the context and save changes
+            await _context.CommentPosts.AddAsync(comment);
+            await _context.SaveChangesAsync();
 
             // Map the comment to the result object
             var result = _mapper.Map<CreateUserCommentPostCommandResult>(comment);

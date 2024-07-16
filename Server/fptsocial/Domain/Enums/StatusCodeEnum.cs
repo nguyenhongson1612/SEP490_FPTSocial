@@ -78,6 +78,8 @@ namespace Domain.Enums
         CM02_Parent_Comment_Not_Found,
         [Description("Your comment contain bad word")]
         CM03_Comment_Contain_Bad_Word,
+        [Description("Your comment not found")]
+        CM04_Comment_Not_Found,
         [Description("Group type is existed")]
         GR04_Group_Type_Existed,
         [Description("Group status is existed")]

@@ -77,6 +77,9 @@ using Application.DTO.GroupFPTDTO;
 using Application.Commands.ShareUserPostCommand;
 using Application.Commands.UpdateUserPhotoPost;
 using Application.Commands.UpdateUserVideoPost;
+using Application.Commands.UpdateCommentUserPost;
+using Application.Commands.UpdateCommentUserPhotoPost;
+using Application.Commands.UpdateCommentUserVideoPost;
 
 namespace Application.Mappers
 {
@@ -206,7 +209,7 @@ namespace Application.Mappers
 
             CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
-
+            
             CreateMap<Command.CommentPhotoPost, CreateUserCommentPhotoPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Command.UserPost, UpdateUserPostCommandResult>()
@@ -265,6 +268,12 @@ namespace Application.Mappers
             CreateMap<Query.GroupStatus, GetGroupStatusForCreateQueryResult>();
 
             CreateMap<Command.SharePost, ShareUserPostCommandResult>();
+            CreateMap<Command.CommentPost, UpdateCommentUserPostCommandResult>()
+            .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.CommentPhotoPost, UpdateCommentUserPhotoPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.CommentVideoPost, UpdateCommentUserVideoPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             //user react
             CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();
