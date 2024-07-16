@@ -5,6 +5,7 @@ using Application.Commands.CreateUserCommentGroupVideoPost;
 using Application.Commands.CreateUserCommentPhotoPost;
 using Application.Commands.CreateUserCommentVideoPost;
 using Application.Commands.Post;
+using Application.Queries.GetChildGroupPost;
 using Application.Queries.GetCommentbyGroupPhotoPostId;
 using Application.Queries.GetCommentByGroupPostId;
 using Application.Queries.GetCommentByGroupVideoPostId;
@@ -105,6 +106,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getGroupPostByGroupPostId")]
         public async Task<IActionResult> GetGroupPostByGroupPostId([FromQuery] GetGroupPostByGroupPostIdQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getChildGroupPost")]
+        public async Task<IActionResult> GetChildGroupPost([FromQuery] GetChildGroupPostQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);

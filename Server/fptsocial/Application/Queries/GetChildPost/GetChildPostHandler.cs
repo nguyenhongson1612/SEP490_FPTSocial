@@ -4,6 +4,7 @@ using Application.DTO.UserPostVideoDTO;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -84,7 +85,14 @@ namespace Application.Queries.GetChildPost
                     Photo = _mapper.Map<PhotoDTO>(photo.Photo),
                     UserId = user.UserId,
                     FullName = user.FirstName + " " + user.LastName,
-                    Avatar = _mapper.Map<GetUserAvatar>(avt)
+                    Avatar = _mapper.Map<GetUserAvatar>(avt),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId),
+                        CommentNumber = _context.ReactPhotoPostComments.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId) +
+                                        _context.SharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId)
+                    }
                 });
             }
 
@@ -119,7 +127,14 @@ namespace Application.Queries.GetChildPost
                     Video = _mapper.Map<VideoDTO>(video.Video),
                     UserId = user.UserId,
                     FullName = user.FirstName + " " + user.LastName,
-                    Avatar = _mapper.Map<GetUserAvatar>(avt)
+                    Avatar = _mapper.Map<GetUserAvatar>(avt),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == video.UserPostVideoId),
+                        CommentNumber = _context.ReactVideoPostComments.Count(x => x.UserPostVideoId == video.UserPostVideoId),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId) +
+                                        _context.SharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId)
+                    }
                 });
             }
 

@@ -1,6 +1,8 @@
 ﻿using Application.DTO.CommentDTO;
 using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupDTO;
 using Application.DTO.GroupPostDTO;
+using Application.DTO.ReactDTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ namespace Application.Queries.GetGroupPostByGroupId
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? GroupPostNumber { get; set; }
-        public Guid GroupStatusId { get; set; }
+        public GetGroupStatusDTO GroupStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? UpdatedAt { get; set; }
@@ -34,5 +36,6 @@ namespace Application.Queries.GetGroupPostByGroupId
         public Guid? GroupId { get; set; }
         public string? GroupName { get; set; }
         public string? GroupCorverImage { get; set; }
+        public ReactCount ReactCount { get; set; }
     }
 }
