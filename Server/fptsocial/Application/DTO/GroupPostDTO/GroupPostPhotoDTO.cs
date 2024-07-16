@@ -18,7 +18,7 @@ namespace Application.DTO.GroupPostDTO
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
-
+        public bool? IsBanned { get; set; }
         public virtual GroupPhotoDTO GroupPhoto { get; set; } = null!;
     }
 }
