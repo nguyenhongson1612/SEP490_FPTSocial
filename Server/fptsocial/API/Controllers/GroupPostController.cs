@@ -10,6 +10,7 @@ using Application.Queries.GetCommentByGroupPostId;
 using Application.Queries.GetCommentByGroupVideoPostId;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
+using Application.Queries.GetGroupPostByGroupPostId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -96,6 +97,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getGroupPostByGroupId")]
         public async Task<IActionResult> GetGroupPostByGroupId([FromQuery] GetGroupPostByGroupIdQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getGroupPostByGroupPostId")]
+        public async Task<IActionResult> GetGroupPostByGroupPostId([FromQuery] GetGroupPostByGroupPostIdQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
