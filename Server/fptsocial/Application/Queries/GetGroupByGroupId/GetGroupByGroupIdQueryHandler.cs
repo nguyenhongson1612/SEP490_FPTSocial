@@ -40,7 +40,7 @@ namespace Application.Queries.GetGroupByGroupId
                                                                 .Include(x=>x.GroupStatus)
                                                                .Where(x => x.GroupId == request.GroupId).ToListAsync();
             var member = await _context.GroupMembers
-                                    .Where(x => x.GroupId == request.GroupId)
+                                    .Where(x => x.GroupId == request.GroupId && x.IsJoined == true)
                                     .Include(x => x.GroupRole)
                                     .Include(x=>x.User)
                                     .ToListAsync();
