@@ -85,7 +85,13 @@ namespace Application.Queries.GetUserPost
                     CreatedAt = upp.CreatedAt,
                     UpdatedAt = upp.UpdatedAt,
                     PostPosition = upp.PostPosition,
-                    Photo = _mapper.Map<PhotoDTO>(upp.Photo)
+                    Photo = _mapper.Map<PhotoDTO>(upp.Photo),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
+                        CommentNumber = _context.CommentPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
+                        ShareNumber = _context.SharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
+                    },
                 }).ToList(),
                 UserPostVideos = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
                 {
@@ -99,10 +105,22 @@ namespace Application.Queries.GetUserPost
                     CreatedAt = upp.CreatedAt,
                     UpdatedAt = upp.UpdatedAt,
                     PostPosition = upp.PostPosition,
-                    Video = _mapper.Map<VideoDTO>(upp.Video)
+                    Video = _mapper.Map<VideoDTO>(upp.Video),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
+                        CommentNumber = _context.CommentVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
+                        ShareNumber = _context.SharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
+                    },
                 }).ToList(),
                 Avatar = _mapper.Map<GetUserAvatar>(avt),
-                FullName = user.FirstName + " " + user.LastName
+                FullName = user.FirstName + " " + user.LastName,
+                ReactCount = new DTO.ReactDTO.ReactCount
+                {
+                    ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
+                    CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.CommentCount).FirstOrDefault(),
+                    ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ShareCount).FirstOrDefault(),
+                }
             }).ToList();
 
             return Result<List<GetUserPostResult>>.Success(result);
