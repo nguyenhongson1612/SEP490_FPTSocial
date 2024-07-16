@@ -5,6 +5,7 @@ using Application.Queries.GetAllFriend;
 using Application.Queries.GetAllFriendOtherProfiel;
 using Application.Queries.GetAllRequestFriend;
 using Application.Queries.GetButtonFriend;
+using Application.Queries.GetInvatedJoinGroup;
 using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserProfile;
@@ -253,5 +254,26 @@ namespace API.Controllers
 
         }
 
+        [HttpGet]
+        [Route("getinvatedgroup")]
+        public async Task<IActionResult> GetInvatedJoinToGroup()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new GetInvatedJoinGroupQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
     }
 }
