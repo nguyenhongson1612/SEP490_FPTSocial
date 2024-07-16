@@ -104,6 +104,8 @@ namespace Domain.Enums
         GR14_Can_Not_Cancel_Request,
         [Description("You can not out this group")]
         GR15_Can_Not_Out_Group,
+        [Description("User is not exist in this group")]
+        GR16_User_Not_Exist_In_Group,
         [Description("Your post have bad word")]
         UP01_Post_Have_Bad_Word,
         [Description("Your post not found")]
