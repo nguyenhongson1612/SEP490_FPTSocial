@@ -1,4 +1,5 @@
-﻿using Application.DTO.GroupPostDTO;
+﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupPostDTO;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
@@ -6,6 +7,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace Application.Queries.GetGroupPostByGroupId
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
 
-        public GetGroupPostByGroupIdHandler (fptforumQueryContext context, IMapper mapper)
+        public GetGroupPostByGroupIdHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -39,16 +41,18 @@ namespace Application.Queries.GetGroupPostByGroupId
             }
 
             var groupPost = await _context.GroupPosts
-                                  .Include(x => x.GroupPhoto)
+                                    .Include(x => x.GroupPhoto)
                                     .Include(x => x.GroupVideo)
-                                    .Include(x => x.GroupPostPhotos)
+                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true))
                                         .ThenInclude(x => x.GroupPhoto)
-                                    .Include(x => x.GroupPostVideos)
+                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true))
                                         .ThenInclude(x => x.GroupVideo)
-                                    .Where(x => x.GroupId == request.GroupId)
+                                    .Include(x => x.Group)
+                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true)
                                     .ToListAsync(cancellationToken);
 
-            var result = groupPost.Select(x => new GetGroupPostByGroupIdResult {
+            var result = groupPost.Select(x => new GetGroupPostByGroupIdResult
+            {
                 GroupPostId = x.GroupPostId,
                 UserId = x.UserId,
                 Content = x.Content,
@@ -65,7 +69,18 @@ namespace Application.Queries.GetGroupPostByGroupId
                 GroupVideo = _mapper.Map<GroupVideoDTO>(x.GroupVideo),
                 GroupPostPhoto = _mapper.Map<List<GroupPostPhotoDTO>>(x.GroupPostPhotos),
                 GroupPostVideo = _mapper.Map<List<GroupPostVideoDTO>>(x.GroupPostVideos),
+                GroupId = x.GroupId,
+                GroupName = x.Group.GroupName,
+                GroupCorverImage = x.Group.CoverImage
             }).ToList();
+
+            foreach (var item in result)
+            {
+                var avt = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+                var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserId);
+                item.UserAvata = _mapper.Map<GetUserAvatar>(avt);
+                item.UserName = user.FirstName + " " + user.LastName;
+            }
             return Result<List<GetGroupPostByGroupIdResult>>.Success(result);
         }
     }

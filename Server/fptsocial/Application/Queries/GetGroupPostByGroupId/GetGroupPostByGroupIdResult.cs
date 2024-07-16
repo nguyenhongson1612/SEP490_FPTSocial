@@ -29,7 +29,10 @@ namespace Application.Queries.GetGroupPostByGroupId
         public virtual GroupVideoDTO? GroupVideo { get; set; }
         public virtual ICollection<GroupPostPhotoDTO>? GroupPostPhoto { get; set; }
         public virtual ICollection<GroupPostVideoDTO>? GroupPostVideo { get; set; }
-        public virtual GetUserAvatar Avata { get; set; } = null!;
-        public string? FullName { get; set; }
+        public virtual GetUserAvatar UserAvata { get; set; } = null!;
+        public string? UserName { get; set; }
+        public Guid? GroupId { get; set; }
+        public string? GroupName { get; set; }
+        public string? GroupCorverImage { get; set; }
     }
 }
