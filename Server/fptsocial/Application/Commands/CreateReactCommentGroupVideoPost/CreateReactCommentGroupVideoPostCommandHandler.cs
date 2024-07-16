@@ -39,7 +39,7 @@ namespace Application.Commands.CreateReactCommentGroupVideoPost
             }
 
             // Lấy thông tin comment
-            var comment = await _querycontext.ReactGroupVideoPostComments.FirstOrDefaultAsync(c => c.CommentGroupVideoPostId == request.CommentGroupVideoPostId, cancellationToken);
+            var comment = await _querycontext.CommentGroupVideoPosts.FirstOrDefaultAsync(c => c.CommentGroupVideoPostId == request.CommentGroupVideoPostId, cancellationToken);
             if (comment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);

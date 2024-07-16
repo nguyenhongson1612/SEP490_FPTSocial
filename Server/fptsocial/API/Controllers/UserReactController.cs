@@ -1,7 +1,13 @@
 ﻿using Application.Commands.CreateNewReact;
+using Application.Commands.CreateReactCommentGroupPost;
+using Application.Commands.CreateReactCommentGroupPostPhoto;
+using Application.Commands.CreateReactCommentGroupVideoPost;
 using Application.Commands.CreateReactCommentUserPost;
 using Application.Commands.CreateReactCommentUserPostPhoto;
 using Application.Commands.CreateReactCommentUserPostVideo;
+using Application.Commands.CreateReactGroupPhotoPost;
+using Application.Commands.CreateReactGroupPost;
+using Application.Commands.CreateReactGroupVideoPost;
 using Application.Commands.CreateReactUserPhotoPost;
 using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
@@ -224,5 +230,56 @@ namespace API.Controllers
             return Success(res.Value);
         }
         //=================DocHere=============================== 
+
+        [HttpPost]
+        [Route("createReactGroupPost")]
+        public async Task<IActionResult> CreateReactGroupPost(CreateReactGroupPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("createReactGroupPhotoPost")]
+        public async Task<IActionResult> CreateReactGroupPhotoPost(CreateReactGroupPhotoPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("createReactGroupVideoPost")]
+        public async Task<IActionResult> CreateReactVideoPost(CreateReactGroupVideoPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("createReactCommentGroupPost")]
+        public async Task<IActionResult> CreateReactCommentGroupPost(CreateReactCommentGroupPostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentGroupVideoPost")]
+        public async Task<IActionResult> CreateReactCommentGroupVideoPost(CreateReactCommentGroupPostVideoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentGroupPhotoPost")]
+        public async Task<IActionResult> CreateReactCommentUserPhotoPost(CreateReactCommentGroupPostPhotoCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
     }
 }
