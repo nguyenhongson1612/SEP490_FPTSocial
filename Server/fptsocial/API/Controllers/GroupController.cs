@@ -5,10 +5,13 @@ using Application.Commands.InvatedFriendToGroup;
 using Application.Commands.JoinGroupCommand;
 using Application.Commands.RemoveToGroup;
 using Application.Commands.RequestJoinGroupStatus;
+using Application.Commands.UpdateGroupSetting;
 using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetGroupByGroupId;
 using Application.Queries.GetGroupByUserId;
+using Application.Queries.GetGroupSettingByGroupId;
 using Application.Queries.GetListFriendToInvate;
+using Application.Queries.GetListMemberRole;
 using Application.Queries.GetListRequestjoinGroup;
 using Application.Queries.GetUserByUserId;
 using MediatR;
@@ -215,6 +218,66 @@ namespace API.Controllers
         [HttpGet]
         [Route("getlistfriendinvated")]
         public async Task<IActionResult> GetListFriendToInvated([FromQuery] GetListFriendToInvateQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getgroupsettingbyid")]
+        public async Task<IActionResult> GetGroupSettingById([FromQuery] GetGroupSettingByGroupIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updategroupsetting")]
+        public async Task<IActionResult> UpdateGroupSetting(UpdateGroupSettingCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getlistmemberrole")]
+        public async Task<IActionResult> GetListMemberWithMemberRole([FromQuery] GetListMemberRoleQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
