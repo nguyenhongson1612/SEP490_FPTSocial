@@ -31,13 +31,13 @@ function Profile() {
     if (currentUserId === paramUserId) {
       setUserProfile(currentUser)
       getAllFriend().then(data => setListFriend(data))
-      getUserPostByUserId().then((data) => setListPost(data))
+      getUserPostByUserId().then((data) => setListPost(data?.result))
     }
     else {
       getOtherUserByUserId({ userId: currentUserId, viewUserId: paramUserId })
         .then(res => setUserProfile(res))
         .catch(() => navigate('/notavailable'))
-      getOtherUserPost(paramUserId).then((data) => setListPost(data))
+      getOtherUserPost(paramUserId).then((data) => setListPost(data?.result))
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
   }, [paramUserId, isReload])

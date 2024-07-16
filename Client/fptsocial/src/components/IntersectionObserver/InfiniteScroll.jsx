@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
+import { IconMoodSurprised } from '@tabler/icons-react'
 
 const InfiniteScroll = ({
   children,
@@ -13,7 +14,7 @@ const InfiniteScroll = ({
     if (hasMore) {
       const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          fetchMore()
+          hasMore && fetchMore()
         }
       })
 
@@ -28,10 +29,18 @@ const InfiniteScroll = ({
       }
     }
   }, [hasMore])
+
   return (
     <div className={className}>
       {children}
-      {hasMore ? <div ref={pageEndRef}><PageLoadingSpinner /></div> : endMessage}
+      <div ref={pageEndRef} className='my-4 flex justify-center'>
+        {hasMore ? <div className=''><PageLoadingSpinner /></div>
+          : <div className='font-semibold text-orangeFpt flex '>
+            {endMessage}
+          </div>
+        }
+      </div>
+
     </div>
   )
 }

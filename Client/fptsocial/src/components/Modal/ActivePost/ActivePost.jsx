@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { commentPost, getComment } from '~/apis/postApis'
+import { commentGroupPost, commentGroupSharePost, getGroupPostComment, getGroupSharePostComment } from '~/apis/groupPostApis'
+import { commentPost, commentSharePost, getComment, getSharePostComment } from '~/apis/postApis'
 import Post from '~/components/ListPost/Post/Post'
 import PostComment from '~/components/ListPost/Post/PostContent/PostComment/PostComment'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
@@ -13,13 +14,24 @@ import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactSta
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
 import CurrentUserAvatar from '~/components/UI/UserAvatar'
-import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment } from '~/redux/activePost/activePostSlice'
+import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
+import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
 function ActivePost() {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
+  const currentActiveListPost = useSelector(selectCurrentActiveListPost)
+  const postReactStatus = useSelector(selectPostReactStatus)
+  const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
+  const postType = currentActivePost?.postType
+  const isProfile = postType == POST_TYPES.PROFILE_POST
+  const isShare = postType == POST_TYPES.SHARE_POST
+  const isGroup = postType == POST_TYPES.GROUP_POST
+  const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
+  const isYourPost = currentActivePost?.userId == currentUser?.userId
 
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
@@ -29,24 +41,86 @@ function ActivePost() {
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
 
+  let postShareType = ''
+  let postShareData = ''
+  if (currentActivePost?.isShare) {
+    if (currentActivePost?.userPostShareId) {
+      postShareType = POST_TYPES.PROFILE_POST
+      postShareData = { ...currentActivePost?.userPostShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    } else if (currentActivePost?.userPostVideoShareId) {
+      postShareType = POST_TYPES.VIDEO_POST
+      postShareData = { ...currentActivePost?.userPostVideoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    } else if (currentActivePost?.userPostPhotoShareId) {
+      postShareType = POST_TYPES.PHOTO_POST
+      postShareData = { ...currentActivePost?.userPostPhotoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    } else if (currentActivePost?.groupPostShareId) {
+      postShareType = POST_TYPES.GROUP_SHARE_POST
+      postShareData = { ...currentActivePost?.groupPostShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    } else if (currentActivePost?.groupPostPhotoShareId) {
+      postShareType = POST_TYPES.GROUP_PHOTO_POST
+      postShareData = { ...currentActivePost?.groupPostPhotoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    } else {
+      postShareType = POST_TYPES.GROUP_VIDEO_POST
+      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+    }
+  }
+
   useEffect(() => {
-    isShowActivePost && getComment(currentActivePost?.userPostId).then(data => setListComment(data?.posts))
-  }, [isShowActivePost, reloadComment])
+    isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId).then(data => setListComment(data?.posts))
+      : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId).then(data => setListComment(data?.posts))
+        : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId).then(data => setListComment(data?.posts))
+          : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId).then(data => setListComment(data?.posts))
+  }, [reloadComment])
   // console.log(currentActivePost)
   const handleCommentPost = () => {
-    const submitData = {
-      'userPostId': currentActivePost?.userPostId,
+    const submitData = isProfile ? {
+      'userPostId': currentActivePost?.userPostId || currentActivePost?.postId,
       'userId': user?.userId,
       'content': content,
       'parentCommentId': null
     }
+      : isShare ? {
+        'sharePostId': currentActivePost?.sharePostId || currentActivePost?.postId,
+        'userId': user?.userId,
+        'content': content,
+        'parentCommentId': null
+      }
+        : isGroup ? {
+          'groupPostId': currentActivePost?.groupPostId || currentActivePost?.postId,
+          'userId': user?.userId,
+          'content': content,
+          'parentCommentId': null
+        }
+          : isGroupShare && {
+            'groupSharePostId': currentActivePost?.groupSharePostId || currentActivePost?.postId,
+            'userId': user?.userId,
+            'content': content,
+            'parentCommentId': null
+          }
     toast.promise(
-      commentPost(submitData),
-      { pending: 'Updating is in progress...' }
+      (isProfile ? commentPost(submitData)
+        : isShare ? commentSharePost(submitData)
+          : isGroup ? commentGroupPost(submitData)
+            : isGroupShare && commentGroupSharePost(submitData)),
+      { pending: 'Posting...' }
     ).then(() => {
       toast.success('Commented')
-    }).finally(() => { dispatch(triggerReloadComment()), setContent('') })
-
+    }).then(() => { dispatch(triggerReloadComment()), setContent('') })
+      .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber + 1 } })))
+      .then(() => {
+        const updatedPosts = currentActiveListPost.map(post =>
+          post.postId === currentActivePost.postId
+            ? {
+              ...currentActivePost,
+              reactCount: {
+                ...currentActivePost.reactCount,
+                commentNumber: currentActivePost.reactCount.commentNumber + 1
+              }
+            }
+            : post
+        );
+        dispatch(updateCurrentActiveListPost(updatedPosts));
+      })
   }
 
   return (
@@ -60,8 +134,8 @@ function ActivePost() {
           <div id='post-detail-author'
             className='h-[60px] w-full flex justify-between items-center px-4'>
             <div></div>
-            <span className='font-bold font-sans text-xl'>
-              {(currentActivePost?.fullName?.split(/\s+/)[0] || currentActivePost?.fullName)}&apos; Post
+            <span className='font-bold font-sans text-xl capitalize'>
+              {(currentActivePost?.userName || currentActivePost?.fullName)}&apos; Post
             </span>
             <div className='cursor-pointer' onClick={() => dispatch(clearAndHireCurrentActivePost())}>
               <IconX className='text-white bg-orangeFpt rounded-full' />
@@ -69,11 +143,21 @@ function ActivePost() {
           </div>
           <div
             className="w-full h-[80%] flex flex-col items-center gap-2 border p-4  overflow-y-auto scrollbar-none-track">
-            <PostTitle postData={currentActivePost} />
-            <PostContents postData={currentActivePost} />
-            <PostMedia postData={currentActivePost} />
-            <PostReactStatus postData={currentActivePost} />
-            <PostComment comment={listComment} />
+            <PostTitle postData={currentActivePost} postType={postType} isYourPost={isYourPost} />
+            <PostContents postData={currentActivePost} postType={postType} />
+            {
+              currentActivePost?.isShare && <div
+                id='media-share'
+                className='w-[90%] border p-1 rounded-md mb-2'>
+                <PostMedia postData={postShareData} postType={postShareType} />
+                <PostTitle postData={postShareData} isYourPost={false} postType={postShareType} />
+                <PostContents postData={postShareData} postType={postShareType} />
+              </div>
+            }
+            {!currentActivePost?.isShare && <PostMedia postData={currentActivePost} postType={postType} />}
+            {/* <PostMedia postData={currentActivePost} postType={postType} /> */}
+            <PostReactStatus postData={currentActivePost} postType={postType} postReact={postReactStatus} />
+            <PostComment comment={listComment} postType={postType} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
             <CurrentUserAvatar />
@@ -85,7 +169,7 @@ function ActivePost() {
                 setListPhotos={setListPhotos}
                 listVideos={listVideos}
                 setListVideos={setListVideos}
-                type={'comment'}
+                editorType={EDITOR_TYPE.COMMENT}
               />
             </div>
           </form>

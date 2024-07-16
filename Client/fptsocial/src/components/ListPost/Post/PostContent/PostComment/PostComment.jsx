@@ -8,7 +8,7 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { IconCaretDownFilled } from '@tabler/icons-react'
 import { Popover, Typography } from '@mui/material'
 
-function PostComment({ comment }) {
+function PostComment({ comment, postType }) {
   const [isCreate, setIsCreate] = useState(false)
   const [isChosePostAudience, setIsChosePostAudience] = useState(false)
   const { handleSubmit } = useForm()
@@ -23,14 +23,14 @@ function PostComment({ comment }) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
-  };
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const open = Boolean(anchorEl)
+  const id = open ? 'simple-popover' : undefined
 
   return (
     <div className='w-full border-t'>
@@ -51,7 +51,7 @@ function PostComment({ comment }) {
             <span>All comment</span>
           </div>
         </Popover>
-        <ListComments comment={comment} />
+        <ListComments comment={comment} postType={postType} />
       </div>
     </div>
   )

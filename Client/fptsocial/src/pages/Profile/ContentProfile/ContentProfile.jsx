@@ -4,6 +4,7 @@ import { Box, Tab, Tabs } from '@mui/material'
 import { IconArticle, IconFriends, IconPhoto, IconUserCircle } from '@tabler/icons-react'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { useState } from 'react'
+import FriendProfile from './FriendProfile'
 
 
 function ContentProfile({ listPost, user }) {
@@ -39,7 +40,7 @@ function ContentProfile({ listPost, user }) {
           <TabPanel value="2">
             <About user={user} />
           </TabPanel>
-          <TabPanel value="3">Item Three</TabPanel>
+          <TabPanel value="3"><FriendProfile user={user} /></TabPanel>
           <TabPanel value="4">Item Three</TabPanel>
         </TabContext>
       </Box>

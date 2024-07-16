@@ -91,10 +91,10 @@ function FirstTimeLogin() {
     // console.log(initialSubmitData)
     toast.promise(
       createByLogin(initialSubmitData),
-      { pending: 'Created is in progress...' }
+      { pending: 'Creating...' }
     ).then(() => {
       navigate('/')
-      toast.success('Account updated successfully')
+      toast.success('Account created!')
     })
   }
 

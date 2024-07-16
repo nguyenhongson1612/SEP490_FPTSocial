@@ -6,19 +6,22 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { commentPost, getComment, getUserPostById } from '~/apis/postApis'
-import { getAllReactType } from '~/apis/reactApis'
+import { getAllReactByPostId, getAllReactType } from '~/apis/reactApis'
 // import Post from '~/components/ListPost/Post/Post'
 import PostComment from '~/components/ListPost/Post/PostContent/PostComment/PostComment'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
+import Report from '~/components/Modal/Report/Report'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import Tiptap from '~/components/TitTap/TitTap'
 import CurrentUserAvatar from '~/components/UI/UserAvatar'
-import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment } from '~/redux/activePost/activePostSlice'
+import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
 function Post() {
   const { postId } = useParams()
@@ -26,18 +29,28 @@ function Post() {
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
   const currentUser = useSelector(selectCurrentUser)
+  const isShowModalReport = useSelector(selectIsOpenReport)
+  const currentActivePost = useSelector(selectCurrentActivePost)
   const [listPhotos, setListPhotos] = useState([])
   const [listVideos, setListVideos] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
-  const [postData, setPostData] = useState({})
+  const postType = POST_TYPES.PROFILE_POST
 
   useEffect(() => {
-    getUserPostById(postId).then(data => { setPostData(data), setContent(data?.content) })
+    (async () => {
+      getAllReactType().then(data => dispatch(addListReactType(data)))
+      const postData = await getUserPostById(postId)
+      const postReact = await getAllReactByPostId(postId)
+      dispatch(updateCurrentActivePost({ ...postData, postReactStatus: postReact }))
+    })()
+  }, [])
+
+  useEffect(() => {
     getComment(postId).then(data => setListComment(data?.posts))
-    getAllReactType().then(data => dispatch(addListReactType(data)))
   }, [reloadComment])
-  // console.log(currentActivePost)
+
+  console.log(currentActivePost)
   const handleCommentPost = () => {
     const submitData = {
       'userPostId': postId,
@@ -57,15 +70,16 @@ function Post() {
   return (
     <>
       <NavTopBar />
+      {isShowModalReport && <Report />}
       <div className="flex justify-center bg-fbWhite">
         <div className='flex flex-col items-center gap-3 w-[95%] sm:w-[500px] bg-white shadow-md rounded-lg mt-4'>
           <div
             className="w-full flex flex-col items-center gap-2 border overflow-y-auto overflow-x-clip scrollbar-none-track">
-            <PostTitle postData={postData} />
-            <PostContents postData={postData} />
-            <PostMedia postData={postData} />
-            <PostReactStatus postData={postData} />
-            <PostComment comment={listComment} />
+            <PostTitle postData={currentActivePost} postType={postType} />
+            <PostContents postData={currentActivePost} postType={postType} />
+            <PostMedia postData={currentActivePost} postType={postType} />
+            <PostReactStatus postData={currentActivePost} postType={postType} />
+            <PostComment comment={listComment} postType={postType} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
             <CurrentUserAvatar />
@@ -77,7 +91,7 @@ function Post() {
                 setListPhotos={setListPhotos}
                 listVideos={listVideos}
                 setListVideos={setListVideos}
-                type={'comment'}
+                editorType={EDITOR_TYPE.COMMENT}
               />
             </div>
           </form>

@@ -104,6 +104,9 @@ function App() {
             <Route path='/groups/:groupId' element={<Group />} >
               <Route path='member-requests' element={<Group />} />
               <Route path='member-manage' element={<Group />} />
+              <Route path='settings' element={<Group />} />
+              <Route path='pending-posts' element={<Group />} />
+              <Route path='post/:postId' element={<Group />} />
             </Route>
           </Route>
 

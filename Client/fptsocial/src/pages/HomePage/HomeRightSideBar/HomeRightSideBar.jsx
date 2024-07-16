@@ -13,7 +13,7 @@ function HomeRightSideBar() {
   }, [])
 
   return (
-    <div className="max-h-[calc(100vh_-_55px)] w-[380px] hidden lg:!flex flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
+    <div className="h-[calc(100vh_-_55px)] w-[380px] hidden lg:!flex flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold">
 
       <div className="ml-3 mt-8 mb-5">
         <div id="people"

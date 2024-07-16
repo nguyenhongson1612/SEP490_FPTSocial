@@ -1,24 +1,33 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Box, Button, Checkbox, FormControlLabel, Modal, Tab } from '@mui/material'
-import { IconPlus, IconSearch, IconUsersPlus, IconX } from '@tabler/icons-react'
+import { Box, Button, Checkbox, FormControlLabel, Menu, MenuItem, Modal, Tab } from '@mui/material'
+import { IconDoorExit, IconDotsVertical, IconMessageReport, IconPlus, IconSearch, IconUsersPlus, IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { getAllFriend } from '~/apis'
-import { cancelRequestJoin, invitesFriend, requestJoinGroup } from '~/apis/groupApis'
+import { cancelRequestJoin, getListFriendInvited, invitesFriend, leftGroup, requestJoinGroup } from '~/apis/groupApis'
 import UserAvatar from '~/components/UI/UserAvatar'
-import { selectIsReload, triggerReload } from '~/redux/ui/uiSlice'
+import { triggerReload } from '~/redux/ui/uiSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { handleCoverImg } from '~/utils/formatters'
 import GroupHomeDiscussions from './GroupHomeDiscussions/GroupHomeDiscussions'
-import { getGroupPostByGroupId } from '~/apis/groupPostApis'
+import { getGroupPostByGroupId, getGroupPostByGroupPostId } from '~/apis/groupPostApis'
+import { useConfirm } from 'material-ui-confirm'
+import AutoCompleteSearch from '~/components/Search/AutoCompleteSearch'
+import SearchInGroup from './Search/SearchInGroup'
+import { addReport, openModalReport } from '~/redux/report/reportSlice'
+import { REPORT_TYPES } from '~/utils/constants'
 
 function GroupHome({ group }) {
   const currentUser = useSelector(selectCurrentUser)
   const [listFriend, setListFriend] = useState([])
   const [listPost, setListPost] = useState([])
-  const isReload = useSelector(selectIsReload)
+  const location = useLocation()
+  const isPostDetail = /^\/groups\/[a-zA-Z0-9-]+\/post\/[a-zA-Z0-9-]+\/?$/.test(location.pathname)
+  const { postId } = useParams()
+
+
   const { register, watch, getValues, setValue, control, handleSubmit, formState: { errors } } = useForm()
 
   const [open, setOpen] = useState(false)
@@ -26,9 +35,18 @@ function GroupHome({ group }) {
   const handleClose = () => setOpen(false)
   const dispatch = useDispatch()
 
+  const [anchorEl2, setAnchorEl2] = useState(null)
+  const open2 = Boolean(anchorEl2)
+  const handleClick2 = (event) => {
+    setAnchorEl2(event.currentTarget)
+  }
+  const handleClose2 = () => {
+    setAnchorEl2(null)
+  }
   useEffect(() => {
-    getAllFriend().then(data => setListFriend(data?.allFriend))
-    getGroupPostByGroupId(group?.groupId).then(data => setListPost(data))
+    getListFriendInvited(group?.groupId).then(data => setListFriend(data))
+    group?.groupId && (
+      isPostDetail && getGroupPostByGroupPostId(postId).then(data => setListPost([data])))
   }, [group])
 
   const [groupContentTabs, setGroupContentTabs] = useState('discussion')
@@ -60,7 +78,7 @@ function GroupHome({ group }) {
 
   const handleRequestJointGroup = () => {
     const submitData = {
-      'userId': null,
+      'userId': currentUser?.userId,
       'groupId': group?.groupId
     }
     requestJoinGroup(submitData).then(() => dispatch(triggerReload()))
@@ -73,9 +91,34 @@ function GroupHome({ group }) {
     cancelRequestJoin(submitData).then(() => dispatch(triggerReload()))
   }
   const backgroundStyle = handleCoverImg(group?.coverImage)
+  const confirmFile = useConfirm()
+  const handleLeaveGroup = () => {
+    confirmFile({
+      title: (
+        <div className='flex flex-col gap-2'>
+          <div className='font-bold text-[#d22e2e]'>Warning: Leaving Group?</div>
+          <div className='text-sm'>
+            All content, settings, and members associated with this group will be permanently removed. This includes any posts, files, calendar events, and other data created within the group.<br />
+            Once the group is deleted, there is no way to recover it or its contents<br />
+            <span className='text-[#d22e2e] font-bold'>Do you still want to permanently leave the group?</span>
+          </div>
+        </div>
+      ),
+      description: (''),
+      confirmationButtonProps: { color: 'error', variant: 'contained' },
+      confirmationText: 'Leave',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      const submitData = {
+        'userId': currentUser?.userId,
+        'groupId': group?.groupId,
+      }
+      leftGroup(submitData).then(() => dispatch(triggerReload()))
+    }).catch(() => { })
+  }
 
   return (
-    <div className="relative overflow-y-auto w-full">
+    <div className="relative overflow-y-auto overflow-x-hidden w-full">
       <div className="">
         <div id='top-profile'
           className='bg-white shadow-md w-full flex flex-col items-center'
@@ -107,19 +150,50 @@ function GroupHome({ group }) {
                     ))}
                   </div>
                   <div>
-                    {
-                      group?.isJoin
-                        ? <Button className='interceptor-loading' variant="contained" size="medium" startIcon={<IconPlus />} onClick={handleOpen}>
-                          Invite
-                        </Button>
-                        : group?.isRequest
-                          ? <Button className='interceptor-loading' variant="contained" color="warning" size="medium" startIcon={<IconUsersPlus />} onClick={handleCancelRequestJoinGroup}>
-                            Cancel request
-                          </Button>
-                          : <Button className='interceptor-loading' variant="contained" color="success" size="medium" startIcon={<IconUsersPlus />} onClick={handleRequestJointGroup}>
-                            Join
-                          </Button>
-                    }
+                    <div className='flex gap-3 h-[40px]'>
+                      {
+                        group?.isJoin
+                          ? <div className='flex gap-2'>
+                            <Button className='interceptor-loading' variant="contained" size="medium" startIcon={<IconPlus />} onClick={handleOpen}>
+                              Invite
+                            </Button>
+                            <Button className='interceptor-loading' variant="contained" size="medium" startIcon={<IconDoorExit />} color='warning'
+                              onClick={handleLeaveGroup}>
+                              Leave
+                            </Button>
+                          </div>
+                          : group?.isRequest
+                            ? <Button className='interceptor-loading' variant="contained" color="warning" size="medium" startIcon={<IconUsersPlus />} onClick={handleCancelRequestJoinGroup}>
+                              Cancel request
+                            </Button>
+                            : <Button className='interceptor-loading' variant="contained" color="success" size="medium" startIcon={<IconUsersPlus />} onClick={handleRequestJointGroup}>
+                              Join
+                            </Button>
+                      }
+                      <div
+                        className="rounded-md size-[40px] flex justify-center items-center bg-fbWhite cursor-pointer p-2"
+                        onClick={handleClick2}
+                      ><IconDotsVertical /></div>
+                      <Menu
+                        anchorEl={anchorEl2}
+                        id="account-menu"
+                        open={open2}
+                        onClose={handleClose2}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            dispatch(addReport({ reportData: group, reportType: REPORT_TYPES.PROFILE }))
+                            dispatch(openModalReport())
+                            handleClose2()
+                          }}
+                          sx={{ gap: '5px' }}>
+                          <IconMessageReport /> Report
+                        </MenuItem>
+
+                      </Menu>
+                    </div>
 
                     <Modal
                       open={open}
@@ -139,6 +213,7 @@ function GroupHome({ group }) {
                                 onClick={handleClose}
                                 className='bg-orangeFpt text-white rounded-full  cursor-pointer hover:bg-orange-700' />
                             </div>
+
                             <div className='md:max-h-[350px] flex overflow-y-auto scrollbar-none-track'>
                               <div className='flex items-center h-[40] py-2 gap-2 basis-8/12'>
                                 <div className='flex flex-col gap-2 w-full px-2'>
@@ -224,10 +299,11 @@ function GroupHome({ group }) {
         </div>
         <div
           id='content-profile'
-          className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'
+          className='flex items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'
         >
           <Box sx={{
             width: '100%',
+            minHeight: '500px',
             typography: 'body1',
             '.MuiTabs-flexContainer': { backgroundColor: 'white', display: 'flex', justifyContent: 'center' },
             '.MuiButtonBase-root': { display: 'flex', justifyContent: 'center' }
@@ -241,16 +317,18 @@ function GroupHome({ group }) {
                   <Tab iconPosition="start" label="Members" value="members" />
                   <Tab iconPosition="start" label="Events" value="events" />
                   <Tab iconPosition="start" label="Media" value="media" />
+                  <Tab iconPosition="start" label={<IconSearch />} value="search" />
                 </TabList>
               </div>
               <TabPanel value="discussion">
-                <GroupHomeDiscussions group={group} listPost={listPost} />
+                <GroupHomeDiscussions group={group} listPost={listPost} isPostDetail={isPostDetail} />
               </TabPanel>
               <TabPanel value="members">
                 {/* <About user={currentUser} /> */}
               </TabPanel>
               <TabPanel value="events">Item Three</TabPanel>
               <TabPanel value="media">Item Three</TabPanel>
+              <TabPanel value="search"><SearchInGroup /></TabPanel>
             </TabContext>
           </Box>
         </div>

@@ -7,7 +7,7 @@ function FriendSuggestions() {
   const [listSuggestedFriend, setListSuggestedFriend] = useState([])
   useEffect(() => {
     suggestionFriend().then(data => setListSuggestedFriend(data?.allFriend))
-  })
+  }, [])
 
   return (
     <div className='w-full'>

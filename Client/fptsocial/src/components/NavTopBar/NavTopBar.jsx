@@ -22,7 +22,7 @@ function NavTopBar() {
           connectionSignalR.on('ReceiveNotification', message => {
             // console.log('mes', message)
             if (!message.includes('connected success!'))
-              toast.success('You have a new notification')
+              toast.info('You have a new notification', { position: 'top-right' })
           })
           connectionSignalR.on('listReceiveNotification', message => {
             // console.log('mes lis', message, Object.keys(JSON.parse(message)).length)
