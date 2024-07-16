@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetInvatedJoinGroup
 {
-    public class GetInvatedJoinGroupQueryHandler : IQueryHandler<GetInvatedJoinGroupQuery, List<GetInvatedJoinGroupQueryResult>
+    public class GetInvatedJoinGroupQueryHandler : IQueryHandler<GetInvatedJoinGroupQuery, List<GetInvatedJoinGroupQueryResult>>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
