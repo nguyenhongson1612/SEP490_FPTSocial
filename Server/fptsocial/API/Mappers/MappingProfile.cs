@@ -81,6 +81,12 @@ using Application.Commands.UpdateCommentUserPost;
 using Application.Commands.UpdateCommentUserPhotoPost;
 using Application.Commands.UpdateCommentUserVideoPost;
 using Application.DTO.GroupDTO;
+using Application.Commands.CreateReactGroupPost;
+using Application.Commands.CreateReactGroupVideoPost;
+using Application.Commands.CreateReactGroupPhotoPost;
+using Application.Commands.CreateReactCommentGroupPostPhoto;
+using Application.Commands.CreateReactCommentGroupPost;
+using Application.Commands.CreateReactCommentGroupVideoPost;
 
 namespace Application.Mappers
 {
@@ -207,6 +213,13 @@ namespace Application.Mappers
             CreateMap<Query.GroupSetting, GetAllGroupSettingQueryResult>();
             CreateMap<Command.UserPost, CreateUserPostCommandResult>()
                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Command.ReactGroupPost, CreateReactGroupPostCommandResult>();
+            CreateMap<Command.ReactGroupVideoPost, CreateReactGroupVideoPostCommandResult>();
+            CreateMap<Command.ReactGroupPhotoPost, CreateReactGroupPhotoPostCommandResult>();
+            CreateMap<Command.ReactGroupVideoPostComment, CreateReactCommentGroupPostVideoCommandResult>();
+            CreateMap<Command.ReactGroupPhotoPostComment, CreateReactCommentGroupPostPhotoCommandResult>();
+            CreateMap<Command.ReactGroupCommentPost, CreateReactCommentGroupPostCommandResult>();
+
 
             CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
