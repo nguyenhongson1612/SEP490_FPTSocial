@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.DTO.ReactDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace Application.DTO.UserPostPhotoDTO
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
         public virtual PhotoDTO Photo { get; set; } = null!;
+        public ReactCount ReactCount { get; set; }
     }
 
 }

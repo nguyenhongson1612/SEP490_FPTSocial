@@ -1,4 +1,5 @@
 ﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.ReactDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using Domain.QueryModels;
@@ -31,6 +32,7 @@ namespace Application.Queries.GetPost
         public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
         public virtual GetUserAvatar? Avatar { get; set; }
         public string? FullName { get; set; }
+        public ReactCount ReactCount { get; set; }
         public double? EdgeRank { get; set; }
 
     }
