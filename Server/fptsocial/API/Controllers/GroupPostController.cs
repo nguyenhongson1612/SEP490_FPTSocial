@@ -16,6 +16,8 @@ using Application.Commands.CreateUserCommentGroupVideoPost;
 using Application.Commands.CreateUserCommentPhotoPost;
 using Application.Commands.CreateUserCommentVideoPost;
 using Application.Commands.Post;
+using Application.Commands.ShareGroupPostCommand;
+using Application.Commands.ShareUserPostCommand;
 using Application.Queries.GetChildGroupPost;
 using Application.Queries.GetCommentbyGroupPhotoPostId;
 using Application.Queries.GetCommentByGroupPostId;
@@ -27,6 +29,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers
 {
@@ -129,6 +133,26 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
-        
+
+        [HttpPost]
+        [Route("shareGroupPost")]
+        public async Task<IActionResult> ShareGroupPost(ShareGroupPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
     }
 }
