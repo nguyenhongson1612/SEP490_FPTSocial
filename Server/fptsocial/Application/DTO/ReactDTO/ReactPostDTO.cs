@@ -81,6 +81,81 @@ namespace Application.DTO.ReactDTO
         public string AvataUrl { get; set; }
     }
 
+    public class ReactGroupPostDTO
+    {
+        public Guid ReactGroupPostId { get; set; }
+        public Guid GroupPostId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
+    public class ReactGroupPhotoPostDTO
+    {
+        public Guid ReactGroupPhotoPostId { get; set; }
+        public Guid GroupPostPhotoId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
+    public class ReactGroupVideoPostDTO
+    {
+        public Guid ReactGroupVideoPostId { get; set; }
+        public Guid GroupPostVideoId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
+    public class ReactGroupCommentDTO
+    {
+        public Guid ReactGroupCommentPostId { get; set; }
+        public Guid GroupPostId { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactTypeName { get; set; }
+        public Guid CommentGroupPostId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string AvataUrl { get; set; }
+    }
+
+    public class ReactGroupCommentPhotoDTO
+    {
+        public Guid ReactPhotoPostCommentId { get; set; }
+        public Guid GroupPostPhotoId { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactTypeName { get; set; }
+        public Guid CommentPhotoGroupPostId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string AvataUrl { get; set; }
+    }
+
+    public class ReactGroupCommentVideoDTO
+    {
+        public Guid ReactGroupVideoCommentId { get; set; }
+        public Guid GroupPostVideoId { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactTypeName { get; set; }
+        public Guid CommentGroupVideoPostId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string AvataUrl { get; set; }
+    }
+
     public class ReactTypeCountDTO
     {
         public Guid ReactTypeId { get; set; }
