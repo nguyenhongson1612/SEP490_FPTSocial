@@ -13,9 +13,15 @@ using Application.Commands.CreateReactUserPost;
 using Application.Commands.CreateReactUserVideoPost;
 using Application.Commands.Post;
 using Application.Queries.GetAllReactType;
+using Application.Queries.GetReactByCommentGroupPhotoId;
+using Application.Queries.GetReactByCommentGroupPostId;
+using Application.Queries.GetReactByCommentGroupVideoId;
 using Application.Queries.GetReactByCommentId;
 using Application.Queries.GetReactByCommentPhotoId;
 using Application.Queries.GetReactByCommentVideoId;
+using Application.Queries.GetReactByGroupPhotoPost;
+using Application.Queries.GetReactByGroupPost;
+using Application.Queries.GetReactByGroupVideoPost;
 using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
 using Application.Queries.GetReactByVideoPost;
@@ -279,6 +285,126 @@ namespace API.Controllers
         public async Task<IActionResult> CreateReactCommentUserPhotoPost(CreateReactCommentGroupPostPhotoCommand command)
         {
             var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupCommentId")]
+        public async Task<IActionResult> GetAllReactByGroupCommentId([FromQuery] GetReactByCommentGroupPostIdQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupCommentVideoId")]
+        public async Task<IActionResult> GetAllReactByGroupCommentVideoId([FromQuery] GetReactByCommentGroupVideoIdQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupCommentPhotoId")]
+        public async Task<IActionResult> GetAllReactByGroupCommentPhotoId([FromQuery] GetReactByCommentGroupPhotoIdQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupPostId")]
+        public async Task<IActionResult> GetAllReactByGroupPostId([FromQuery] GetReactByGroupPostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupPhotoPostId")]
+        public async Task<IActionResult> GetAllReactByGroupPhotoPostId([FromQuery] GetReactByGroupPhotoPostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupVideoPostId")]
+        public async Task<IActionResult> GetAllReactByGroupVideoPostId([FromQuery] GetReactByGroupVideoPostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
             return Success(res.Value);
         }
     }
