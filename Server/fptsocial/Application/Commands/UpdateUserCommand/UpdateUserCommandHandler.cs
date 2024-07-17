@@ -110,7 +110,7 @@ namespace Application.Commands.UpdateUserCommand
                     var updaterelationship = new Domain.CommandModels.UserRelationship
                     {
                         UserRelationshipId = userrelationship.UserRelationshipId,
-                        RelationshipId = request.UserRelationship.RelationshipId,
+                        RelationshipId = (Guid)request.UserRelationship.RelationshipId,
                         UserId = userprofile.UserId,
                         UserStatusId = (Guid)request.UserRelationship.UserStatusId,
                         CreatedAt = userrelationship.CreatedAt,
@@ -123,7 +123,7 @@ namespace Application.Commands.UpdateUserCommand
                     var updaterelationship = new Domain.CommandModels.UserRelationship
                     {
                         UserRelationshipId = _helper.GenerateNewGuid(),
-                        RelationshipId = request.UserRelationship.RelationshipId,
+                        RelationshipId = (Guid)request.UserRelationship.RelationshipId,
                         UserId = userprofile.UserId,
                         UserStatusId = (Guid)request.UserRelationship.UserStatusId,
                         CreatedAt = DateTime.Now,

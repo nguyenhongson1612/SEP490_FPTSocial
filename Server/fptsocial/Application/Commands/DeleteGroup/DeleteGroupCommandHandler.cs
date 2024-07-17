@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.Commands.UpdateGroupInfor;
+using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
 using Domain.CommandModels;
@@ -12,38 +13,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.UpdateGroupInfor
+namespace Application.Commands.DeleteGroup
 {
-    public class UpdateGroupCommandHandler : ICommandHandler<UpdateGroupCommand, UpdateGroupCommandResult>
+    public class DeleteGroupCommandHandler : ICommandHandler<DeleteGroupCommand, DeleteGroupCommandResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
 
 
-        public UpdateGroupCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public DeleteGroupCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
 
         }
-
-        public async Task<Result<UpdateGroupCommandResult>> Handle(UpdateGroupCommand request, CancellationToken cancellationToken)
+        public async Task<Result<DeleteGroupCommandResult>> Handle(DeleteGroupCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var result = new UpdateGroupCommandResult();
+            var result = new DeleteGroupCommandResult();
             var grouprole = await _querycontext.GroupMembers.Include(x => x.GroupRole)
                .FirstOrDefaultAsync(x => x.UserId == request.UserId
                                     && x.GroupId == request.GroupId);
             var group = await _querycontext.GroupFpts.FirstOrDefaultAsync(x => x.GroupId == request.GroupId);
-            var groupstauts = await _querycontext.GroupStatuses.ToListAsync();
-            
+
             if (grouprole.GroupRole.GroupRoleName.Equals("Admin"))
             {
-    
-                if(group != null)
+
+                if (group != null)
                 {
                     if (group.IsDelete == true)
                     {
@@ -53,29 +52,28 @@ namespace Application.Commands.UpdateGroupInfor
                     {
                         GroupId = request.GroupId,
                         GroupNumber = group.GroupNumber,
-                        GroupName = request.GroupName,
-                        GroupDescription = request.Description,
-                        GroupTypeId = (Guid)request.GroupTypeId,
+                        GroupName = group.GroupName,
+                        GroupDescription = group.GroupDescription,
+                        GroupTypeId = group.GroupTypeId,
                         CreatedById = group.CreatedById,
-                        CoverImage = request.CoverImage,
-                        GroupStatusId = request.GroupStatusId,
+                        CoverImage = group.CoverImage,
+                        GroupStatusId = group.GroupStatusId,
                         CreatedDate = group.CreatedDate,
-                        UpdateAt = DateTime.Now,
-                        IsDelete = group.IsDelete
+                        UpdateAt = group.UpdateAt,
+                        IsDelete = true
                     };
                     _context.GroupFpts.Update(newgroup);
-                    result.Message = "Update Success!";
-                    result.GroupId = request.GroupId;
-                    result.GroupName = newgroup.GroupName;
+                    result.Message = "Delete Group Success!";
+                    result.IsDelete = true;
                     await _context.SaveChangesAsync();
-                }  
+                }
             }
             else
             {
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }
 
-            return Result<UpdateGroupCommandResult>.Success(result);
+            return Result<DeleteGroupCommandResult>.Success(result);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Application.Commands.CancleRequestJoinToGroup;
 using Application.Commands.CreateGroupCommand;
 using Application.Commands.CreateGroupRole;
+using Application.Commands.DeleteGroup;
 using Application.Commands.InvatedFriendToGroup;
 using Application.Commands.JoinGroupCommand;
 using Application.Commands.RemoveToGroup;
 using Application.Commands.RequestJoinGroupStatus;
+using Application.Commands.UpdateGroupInfor;
 using Application.Commands.UpdateGroupSetting;
 using Application.Commands.UpdateRoleMember;
 using Application.Commands.UpdateUserCommand;
@@ -299,6 +301,47 @@ namespace API.Controllers
         [HttpPost]
         [Route("updateorremovemember")]
         public async Task<IActionResult> UpdateOrRemoveMember(UpdateRoleMemberCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [HttpPost]
+        [Route("updategroupinformation")]
+        public async Task<IActionResult> UpdateGroupInformation(UpdateGroupCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("deletegroup")]
+        public async Task<IActionResult> DeleteGroup(DeleteGroupCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))

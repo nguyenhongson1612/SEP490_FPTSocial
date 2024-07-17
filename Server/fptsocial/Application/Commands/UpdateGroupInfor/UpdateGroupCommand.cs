@@ -11,7 +11,7 @@ namespace Application.Commands.UpdateGroupInfor
     {
         public Guid? UserId { get; set; }
         public Guid GroupId { get; set; }
-        public string? GroupName { get; set; }
+        public string GroupName { get; set; }
         public string? Description { get; set; }
         public Guid? GroupTypeId { get; set; }
         public string? CoverImage { get; set; }
