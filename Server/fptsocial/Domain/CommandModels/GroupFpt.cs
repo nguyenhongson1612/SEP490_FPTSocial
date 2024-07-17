@@ -29,6 +29,7 @@ namespace Domain.CommandModels
         public Guid GroupTypeId { get; set; }
         public string? CoverImage { get; set; }
         public Guid? GroupStatusId { get; set; }
+        public bool? IsDelete { get; set; }
 
         public virtual UserProfile CreatedBy { get; set; } = null!;
         public virtual GroupStatus? GroupStatus { get; set; }

@@ -20,6 +20,7 @@ namespace Domain.CommandModels
         public virtual DbSet<AvataPhoto> AvataPhotos { get; set; } = null!;
         public virtual DbSet<BlockType> BlockTypes { get; set; } = null!;
         public virtual DbSet<BlockUser> BlockUsers { get; set; } = null!;
+        public virtual DbSet<Client> Clients { get; set; } = null!;
         public virtual DbSet<CommentGroupPost> CommentGroupPosts { get; set; } = null!;
         public virtual DbSet<CommentGroupVideoPost> CommentGroupVideoPosts { get; set; } = null!;
         public virtual DbSet<CommentPhotoGroupPost> CommentPhotoGroupPosts { get; set; } = null!;
@@ -82,6 +83,7 @@ namespace Domain.CommandModels
         public virtual DbSet<UserChat> UserChats { get; set; } = null!;
         public virtual DbSet<UserChatMessage> UserChatMessages { get; set; } = null!;
         public virtual DbSet<UserChatWithUser> UserChatWithUsers { get; set; } = null!;
+        public virtual DbSet<UserClientPermission> UserClientPermissions { get; set; } = null!;
         public virtual DbSet<UserGender> UserGenders { get; set; } = null!;
         public virtual DbSet<UserInterest> UserInterests { get; set; } = null!;
         public virtual DbSet<UserPost> UserPosts { get; set; } = null!;
@@ -177,6 +179,23 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserIsBlockedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("is_blocked_user_FK");
+            });
+
+            modelBuilder.Entity<Client>(entity =>
+            {
+                entity.ToTable("Client");
+
+                entity.Property(e => e.ClientName)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ClientUrl)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CommentGroupPost>(entity =>
@@ -1922,6 +1941,27 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserChatId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("with_user_chat_FK");
+            });
+
+            modelBuilder.Entity<UserClientPermission>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("UserClientPermission");
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Client)
+                    .WithMany()
+                    .HasForeignKey(d => d.ClientId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_client_permission");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_permission");
             });
 
             modelBuilder.Entity<UserGender>(entity =>

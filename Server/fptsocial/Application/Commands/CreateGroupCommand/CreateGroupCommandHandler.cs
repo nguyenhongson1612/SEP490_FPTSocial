@@ -57,7 +57,7 @@ namespace Application.Commands.CreateGroupCommand
             }
             var newgroup = new Domain.CommandModels.GroupFpt {
                 GroupId = _helper.GenerateNewGuid(),
-                GroupNumber = user.UserNumber + _helper.GenerateNewGuid().ToString(),
+                GroupNumber = user.UserNumber?.ToLower() + _helper.GenerateNewGuid().ToString(),
                 GroupName= request.GroupName,
                 GroupDescription = request.GroupDescription,
                 CreatedById = (Guid)request.CreatedById,
@@ -65,6 +65,7 @@ namespace Application.Commands.CreateGroupCommand
                 CreatedDate = DateTime.Now,
                 GroupTypeId = request.GroupTypeId,
                 GroupStatusId = request.UserStatusId,
+                IsDelete = false,
             };
             await _context.GroupFpts.AddAsync(newgroup);
 

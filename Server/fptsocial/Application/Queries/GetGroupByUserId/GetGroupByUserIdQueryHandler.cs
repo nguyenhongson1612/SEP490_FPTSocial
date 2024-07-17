@@ -37,27 +37,31 @@ namespace Application.Queries.GetGroupByUserId
             {
                 foreach (var group in listgroup)
                 {
-                    if ((group.GroupRoleId == (listrole.FirstOrDefault(x => x.GroupRoleName.Equals("Admin")).GroupRoleId))
-                        || (group.GroupRoleId == (listrole.FirstOrDefault(x => x.GroupRoleName.Equals("Censor")).GroupRoleId)))
+                    if(group.Group.IsDelete == false)
                     {
-                        var gr = new GetGroupByUserIdDTO
+                        if ((group.GroupRoleId == (listrole.FirstOrDefault(x => x.GroupRoleName.Equals("Admin")).GroupRoleId))
+                       || (group.GroupRoleId == (listrole.FirstOrDefault(x => x.GroupRoleName.Equals("Censor")).GroupRoleId)))
                         {
-                            GroupId = group.GroupId,
-                            GroupName = group.Group.GroupName,
-                            CoverImage = group.Group.CoverImage
-                        };
-                        result.ListGroupAdmin.Add(gr);
-                    }
-                    else
-                    {
-                        var gr = new GetGroupByUserIdDTO
+                            var gr = new GetGroupByUserIdDTO
+                            {
+                                GroupId = group.GroupId,
+                                GroupName = group.Group.GroupName,
+                                CoverImage = group.Group.CoverImage
+                            };
+                            result.ListGroupAdmin.Add(gr);
+                        }
+                        else
                         {
-                            GroupId = group.GroupId,
-                            GroupName = group.Group.GroupName,
-                            CoverImage = group.Group.CoverImage
-                        };
-                        result.ListGroupMember.Add(gr);
+                            var gr = new GetGroupByUserIdDTO
+                            {
+                                GroupId = group.GroupId,
+                                GroupName = group.Group.GroupName,
+                                CoverImage = group.Group.CoverImage
+                            };
+                            result.ListGroupMember.Add(gr);
+                        }
                     }
+                   
                 }
             }
             return Result<GetGroupByUserIdQueryResult>.Success(result);
