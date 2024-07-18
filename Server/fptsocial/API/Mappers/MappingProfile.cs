@@ -310,6 +310,7 @@ namespace Application.Mappers
             CreateMap<GroupPostVideoDTO, GroupPostVideo>();
             CreateMap<GroupFPTDTO, GroupFpt>();
             CreateMap<GetGroupStatusDTO, GroupStatus>();
+            CreateMap<GroupPostDTO, GroupPost>().ReverseMap();
         }
     }
 }
