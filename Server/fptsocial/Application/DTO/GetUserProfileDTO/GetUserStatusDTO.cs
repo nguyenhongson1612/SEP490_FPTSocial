@@ -8,7 +8,7 @@ namespace Application.DTO.GetUserProfileDTO
 {
     public class GetUserStatusDTO
     {
-        public Guid UserStatusId { get; set; }
+        public Guid? UserStatusId { get; set; }
         public string UserStatusName { get; set; }
     }
 
