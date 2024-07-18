@@ -1,7 +1,6 @@
 ﻿using Application.DTO.GetUserProfileDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
-using Application.Queries.GetOtherUserPost;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
