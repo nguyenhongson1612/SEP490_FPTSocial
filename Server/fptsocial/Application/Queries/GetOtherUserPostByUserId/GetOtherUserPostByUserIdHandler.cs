@@ -149,23 +149,33 @@ namespace Application.Queries.GetOtherUserPostByUserId
             var sharePosts = await _context.SharePosts
                 .Include(x => x.UserStatus)
                 .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostPhotos)
+                        .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostVideos)
+                        .ThenInclude(x => x.Video)
                 .Include(x => x.UserPostPhoto)
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideo)
                     .ThenInclude(x => x.Video)
                 .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostPhotos)
+                        .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostVideos)
+                        .ThenInclude(x => x.GroupVideo)
                 .Include(x => x.GroupPostPhoto)
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
+                .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
                 .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync(cancellationToken);
 
             foreach (var item in sharePosts)
             {
-                var userShare = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserId);
-                var avtShare = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+                var userShare = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserSharedId);
+                var avtShare = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
                 combine.Add(new GetOtherUserPostByUserIdResult
                 {
                     PostId = item.SharePostId,
