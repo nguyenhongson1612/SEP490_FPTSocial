@@ -57,6 +57,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
         public virtual GroupPostPhotoDTO? GroupPostPhotoShare { get; set; }
         public virtual GroupPostVideoDTO? GroupPostVideoShare { get; set; }
         public virtual string? UserNameShare { get; set; }
+        public virtual GetUserAvatar? UserAvatarShare { get; set; }
 
         public virtual string? UserName { get; set; }
         public virtual GetUserAvatar? UserAvatar { get; set; }

@@ -165,6 +165,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
             foreach (var item in sharePosts)
             {
                 var userShare = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserId);
+                var avtShare = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
                 combine.Add(new GetOtherUserPostByUserIdResult
                 {
                     PostId = item.SharePostId,
@@ -189,6 +190,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
                     UserNameShare = userShare.FirstName + " " + userShare.LastName,
+                    UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
                     UserName = user.FirstName + " " + user.LastName,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
