@@ -1,5 +1,6 @@
 ﻿using Application.Queries.GetFriendyName;
 using Application.Queries.GetGroupByGroupId;
+using Application.Queries.SearchFunction;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,26 @@ namespace API.Controllers
         [HttpGet]
         [Route("searchfriendbyname")]
         public async Task<IActionResult> GetGroupByGroupId([FromQuery] GetFriendByNameQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("searchAll")]
+        public async Task<IActionResult> GetInforByContent([FromQuery] SearchFunctionQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))

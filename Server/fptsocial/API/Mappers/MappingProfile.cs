@@ -138,9 +138,18 @@ namespace Application.Mappers
             CreateMap<UpdateUserCommand, Query.UserProfile>();
             CreateMap<Query.UserPost, GetUserPostResult>();
             CreateMap<UserPostPhoto, UserPostPhotoDTO>();
-            CreateMap<Photo, PhotoDTO>();
+            CreateMap<Photo, PhotoDTO>().ReverseMap();
             CreateMap<UserPostVideo, UserPostVideoDTO>();
-            CreateMap<Video, VideoDTO>();
+            CreateMap<Video, VideoDTO>().ReverseMap();
+
+            // Định nghĩa ánh xạ cho Domain.CommandModels.Photo
+            CreateMap<Domain.CommandModels.Photo, PhotoDTO>();
+
+            // Định nghĩa ánh xạ cho Photo nếu cần
+            CreateMap<Query.Photo, PhotoDTO>();
+            CreateMap<AvataPhoto, GetUserAvatar>();
+            CreateMap<Domain.CommandModels.AvataPhoto, GetUserAvatar>();
+
 
 
             CreateMap<Command.Gender, CreateGenderCommandResult>();
