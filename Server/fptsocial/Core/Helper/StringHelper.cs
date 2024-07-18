@@ -8,9 +8,10 @@ namespace Core.Helper
 {
     public class StringHelper
     {
-        public static string GenerateRandomString()
+        public  string[] SplitString(string stringRoot)
         {
-            return null;
+            var array = stringRoot.Split(" ");
+            return array;
         }
     }
 }

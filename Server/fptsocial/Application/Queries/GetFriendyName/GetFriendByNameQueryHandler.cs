@@ -20,10 +20,12 @@ namespace Application.Queries.GetFriendyName
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
-        public GetFriendByNameQueryHandler(fptforumQueryContext context, IMapper mapper)
+        private readonly StringHelper _stringHelper;
+        public GetFriendByNameQueryHandler(fptforumQueryContext context, IMapper mapper, StringHelper stringHelper)
         {
             _context = context;
             _mapper = mapper;
+            _stringHelper = stringHelper;
         }
         public async Task<Result<GetFriendByNameQueryResult>> Handle(GetFriendByNameQuery request, CancellationToken cancellationToken)
         {
@@ -31,7 +33,8 @@ namespace Application.Queries.GetFriendyName
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var normalizedSearchString = request.FindName.RemoveDiacriticVnm();
+            var normalizedSearchString = request.FindName.RemoveDiacritics();
+            var searchWords = normalizedSearchString.SplitIntoWords();
             var friendrequest = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
             var friendconfirm = await _context.Friends.Include(x => x.User).Where(x => x.FriendId == request.UserId && x.Confirm == true).ToListAsync();
             var list = new List<Domain.QueryModels.Friend>();
@@ -81,15 +84,38 @@ namespace Application.Queries.GetFriendyName
                 var firstSearch = listfrienddto.Where(x => x.FriendName.Contains(request.FindName));
                 result.getFriendByName.AddRange(firstSearch);
                 var secondSearch = listfrienddto.Select(friend => new
-                {
-                    Friend = friend,
-                    NormalizedName = friend.FriendName.RemoveDiacriticVnm().ToLower()
-                }).Where(friend => friend.NormalizedName.Contains(normalizedSearchString))
-                  .OrderByDescending(friend => friend.NormalizedName.Equals(normalizedSearchString))
-                  .ThenBy(friend => friend.NormalizedName.StartsWith(normalizedSearchString))
-                  .ThenBy(friend => friend.NormalizedName)
-                  .Select(friend => friend.Friend)
-                  .ToList();
+                                            {
+                                                Friend = friend,
+                                                NormalizedName = friend.FriendName.RemoveDiacritics().ToLower(),
+                                                NameWords = friend.FriendName.RemoveDiacritics().ToLower().SplitIntoWords(),
+                                                Permutations = friend.FriendName.RemoveDiacritics().ToLower().SplitIntoWords().GetAllPermutations()
+                                            })
+                                    .Select(friend => new
+                                            {
+                                                friend.Friend,
+                                                friend.NormalizedName,
+                                                friend.NameWords,
+                                                friend.Permutations,
+                                                ExactMatch = friend.NormalizedName.Equals(normalizedSearchString),
+                                                NoDiacriticsMatch = friend.NormalizedName == normalizedSearchString,
+                                                ReverseNameMatch = string.Join(" ", friend.NameWords.Reverse()) == normalizedSearchString,
+                                                ReverseNoDiacriticsMatch = string.Join(" ", friend.NameWords.Reverse()) == normalizedSearchString,
+                                                PermutationMatch = friend.Permutations.Contains(normalizedSearchString),
+                                                ContainsMostWords = searchWords.Count(word => friend.NameWords.Contains(word)),
+                                                ContainsAnyWords = searchWords.All(word => friend.NameWords.Contains(word)),
+                                                SubstringMatch = searchWords.Any(word => friend.NormalizedName.Contains(word))
+                                            })
+                                    .OrderByDescending(f => f.ExactMatch)
+                                    .ThenByDescending(f => f.NoDiacriticsMatch)
+                                    .ThenByDescending(f => f.ReverseNameMatch)
+                                    .ThenByDescending(f => f.ReverseNoDiacriticsMatch)
+                                    .ThenByDescending(f => f.PermutationMatch)
+                                    .ThenByDescending(f => f.ContainsMostWords)
+                                    .ThenByDescending(f => f.ContainsAnyWords)
+                                    .ThenByDescending(f => f.SubstringMatch)
+                                    .ThenBy(f => f.NormalizedName)
+                                    .Select(f => f.Friend)
+                                    .ToList();
                 result.getFriendByName.AddRange(secondSearch);
                 //result.getFriendByName.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }
