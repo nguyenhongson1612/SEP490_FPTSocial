@@ -14,6 +14,7 @@ namespace Domain.CommandModels
             GroupPostVideos = new HashSet<GroupPostVideo>();
             GroupPosts = new HashSet<GroupPost>();
             GroupSettingUses = new HashSet<GroupSettingUse>();
+            GroupSharePosts = new HashSet<GroupSharePost>();
             GroupTagUseds = new HashSet<GroupTagUsed>();
             GroupVideos = new HashSet<GroupVideo>();
             ReportProfiles = new HashSet<ReportProfile>();
@@ -41,6 +42,7 @@ namespace Domain.CommandModels
         public virtual ICollection<GroupPostVideo> GroupPostVideos { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSettingUse> GroupSettingUses { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<GroupTagUsed> GroupTagUseds { get; set; }
         public virtual ICollection<GroupVideo> GroupVideos { get; set; }
         public virtual ICollection<ReportProfile> ReportProfiles { get; set; }

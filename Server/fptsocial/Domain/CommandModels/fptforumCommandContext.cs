@@ -868,6 +868,11 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupSharePosts)
+                    .HasForeignKey(d => d.GroupId)
+                    .HasConstraintName("fk_group_share_post_group");
+
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.GroupSharePosts)
                     .HasForeignKey(d => d.GroupPostId)
@@ -913,6 +918,11 @@ namespace Domain.CommandModels
                     .WithMany(p => p.GroupSharePosts)
                     .HasForeignKey(d => d.UserPostVideoId)
                     .HasConstraintName("group_share_post_postvideo_FK");
+
+                entity.HasOne(d => d.UserShared)
+                    .WithMany(p => p.GroupSharePostUserShareds)
+                    .HasForeignKey(d => d.UserSharedId)
+                    .HasConstraintName("fk_group_share_post_user");
             });
 
             modelBuilder.Entity<GroupStatus>(entity =>
@@ -1871,6 +1881,11 @@ namespace Domain.CommandModels
                     .WithMany(p => p.SharePosts)
                     .HasForeignKey(d => d.UserPostVideoId)
                     .HasConstraintName("share_post_postvideo_FK");
+
+                entity.HasOne(d => d.UserShared)
+                    .WithMany(p => p.SharePostUserShareds)
+                    .HasForeignKey(d => d.UserSharedId)
+                    .HasConstraintName("fk_user_share_post_user");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.SharePosts)

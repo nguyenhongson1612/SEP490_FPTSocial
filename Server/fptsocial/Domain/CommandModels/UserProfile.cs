@@ -28,6 +28,7 @@ namespace Domain.CommandModels
             GroupMemberUsers = new HashSet<GroupMember>();
             GroupPosts = new HashSet<GroupPost>();
             GroupSharePostSharedToUsers = new HashSet<GroupSharePost>();
+            GroupSharePostUserShareds = new HashSet<GroupSharePost>();
             GroupSharePostUsers = new HashSet<GroupSharePost>();
             NotificationSenders = new HashSet<Notification>();
             NotificationUsers = new HashSet<Notification>();
@@ -53,6 +54,7 @@ namespace Domain.CommandModels
             ReportProfileUsers = new HashSet<ReportProfile>();
             ReportUserChats = new HashSet<ReportUserChat>();
             SharePostSharedToUsers = new HashSet<SharePost>();
+            SharePostUserShareds = new HashSet<SharePost>();
             SharePostUsers = new HashSet<SharePost>();
             UserChatMessages = new HashSet<UserChatMessage>();
             UserChatWithUsers = new HashSet<UserChatWithUser>();
@@ -111,6 +113,7 @@ namespace Domain.CommandModels
         public virtual ICollection<GroupMember> GroupMemberUsers { get; set; }
         public virtual ICollection<GroupPost> GroupPosts { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePostSharedToUsers { get; set; }
+        public virtual ICollection<GroupSharePost> GroupSharePostUserShareds { get; set; }
         public virtual ICollection<GroupSharePost> GroupSharePostUsers { get; set; }
         public virtual ICollection<Notification> NotificationSenders { get; set; }
         public virtual ICollection<Notification> NotificationUsers { get; set; }
@@ -136,6 +139,7 @@ namespace Domain.CommandModels
         public virtual ICollection<ReportProfile> ReportProfileUsers { get; set; }
         public virtual ICollection<ReportUserChat> ReportUserChats { get; set; }
         public virtual ICollection<SharePost> SharePostSharedToUsers { get; set; }
+        public virtual ICollection<SharePost> SharePostUserShareds { get; set; }
         public virtual ICollection<SharePost> SharePostUsers { get; set; }
         public virtual ICollection<UserChatMessage> UserChatMessages { get; set; }
         public virtual ICollection<UserChatWithUser> UserChatWithUsers { get; set; }

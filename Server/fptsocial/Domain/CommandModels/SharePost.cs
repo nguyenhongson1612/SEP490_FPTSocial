@@ -20,6 +20,7 @@ namespace Domain.CommandModels
         public bool? IsHide { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool? IsBanned { get; set; }
+        public Guid? UserSharedId { get; set; }
 
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }
@@ -29,6 +30,7 @@ namespace Domain.CommandModels
         public virtual UserPost? UserPost { get; set; }
         public virtual UserPostPhoto? UserPostPhoto { get; set; }
         public virtual UserPostVideo? UserPostVideo { get; set; }
+        public virtual UserProfile? UserShared { get; set; }
         public virtual UserStatus? UserStatus { get; set; }
     }
 }

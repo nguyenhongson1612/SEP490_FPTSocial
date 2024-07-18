@@ -21,7 +21,10 @@ namespace Domain.QueryModels
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool? IsBanned { get; set; }
+        public Guid? GroupId { get; set; }
+        public Guid? UserSharedId { get; set; }
 
+        public virtual GroupFpt? Group { get; set; }
         public virtual GroupPost? GroupPost { get; set; }
         public virtual GroupPostPhoto? GroupPostPhoto { get; set; }
         public virtual GroupPostVideo? GroupPostVideo { get; set; }
@@ -31,5 +34,6 @@ namespace Domain.QueryModels
         public virtual UserPost? UserPost { get; set; }
         public virtual UserPostPhoto? UserPostPhoto { get; set; }
         public virtual UserPostVideo? UserPostVideo { get; set; }
+        public virtual UserProfile? UserShared { get; set; }
     }
 }
