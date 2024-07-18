@@ -45,14 +45,14 @@ namespace Application.Commands.ShareUserPostCommand
             }
 
             var userPost = await _context.UserPosts
-                                .Include(up => up.UserPostPhotos) 
-                                .Include(up => up.UserPostVideos) 
+                                .Include(up => up.UserPostPhotos)
+                                .Include(up => up.UserPostVideos)
                                 .FirstOrDefaultAsync(up => up.UserPostId == request.UserPostId, cancellationToken);
 
-            if (userPost == null)
-            {
-                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); // Or a more suitable error code
-            }
+            //if (userPost == null)
+            //{
+            //    throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); // Or a more suitable error code
+            //}
 
             if (userPost.UserId == request.UserId)
             {
@@ -88,22 +88,29 @@ namespace Application.Commands.ShareUserPostCommand
 
             };
 
-            var countUserPost = _context.PostReactCounts.Where(x => x.UserPostId == request.UserPostId
-                                                            || x.UserPostPhotoId == request.UserPostPhotoId
-                                                            || x.UserPostVideoId == request.UserPostVideoId).FirstOrDefault();
+            var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>
+                                (x.UserPostId == request.UserPostId && x.UserPostPhotoId == null && x.UserPostVideoId == null) ||
+                                (x.UserPostPhotoId == request.UserPostPhotoId && x.UserPostId == null && x.UserPostVideoId == null) ||
+                                (x.UserPostVideoId == request.UserPostVideoId && x.UserPostId == null && x.UserPostPhotoId == null)
+                                );
 
             if (countUserPost != null)
             {
                 countUserPost.ShareCount++;
+                _context.SaveChanges();
             }
 
-            var countGroupPost = _context.GroupPostReactCounts.Where(x => x.GroupPostId == request.UserPostId
-                                                                  || x.GroupPostPhotoId == request.UserPostPhotoId
-                                                                  || x.GroupPostVideoId == request.UserPostVideoId).FirstOrDefault();
+            var countGroupPost = _context.GroupPostReactCounts.FirstOrDefault(x =>
+                                (x.GroupPostId == request.GroupPostId && x.GroupPostPhotoId == null && x.GroupPostVideoId == null) ||
+                                (x.GroupPostPhotoId == request.GroupPostPhotoId && x.GroupPostId == null && x.GroupPostVideoId == null) ||
+                                (x.GroupPostVideoId == request.GroupPostVideoId && x.GroupPostId == null && x.GroupPostPhotoId == null)
+                                );
+
 
             if (countGroupPost != null)
             {
                 countGroupPost.ShareCount++;
+                _context.SaveChanges();
             }
 
             _context.SharePosts.Add(sharePost);
