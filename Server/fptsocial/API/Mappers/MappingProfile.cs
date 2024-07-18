@@ -87,6 +87,9 @@ using Application.Commands.CreateReactGroupPhotoPost;
 using Application.Commands.CreateReactCommentGroupPostPhoto;
 using Application.Commands.CreateReactCommentGroupPost;
 using Application.Commands.CreateReactCommentGroupVideoPost;
+using Application.Commands.UpdateGroupPostCommand;
+using Application.Commands.UpdateGroupPhotoPostCommand;
+using Application.Commands.UpdateGroupVideoPostCommand;
 
 namespace Application.Mappers
 {
@@ -258,6 +261,9 @@ namespace Application.Mappers
                 .ForMember(dest => dest.UserPostPhotos, opt => opt.MapFrom(src => src.UserPostPhotos))
                 .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos));
             CreateMap<Command.GroupPost, CreateGroupPostCommandResult>();
+            CreateMap<Command.GroupPost, UpdateGroupPostCommandResult>();
+            CreateMap<Command.GroupPostVideo, UpdateGroupVideoPostCommandResult>();
+            CreateMap<Command.GroupPostPhoto, UpdateGroupPhotoPostCommandResult>();
 
             CreateMap<UserPost, UserPostDTO>()
             .ForMember(dest => dest.UserPostId, opt => opt.MapFrom(src => src.UserPostId))
