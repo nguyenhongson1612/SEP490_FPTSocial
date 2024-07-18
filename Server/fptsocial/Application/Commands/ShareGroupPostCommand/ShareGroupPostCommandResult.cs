@@ -20,6 +20,7 @@ namespace Application.Commands.ShareGroupPostCommand
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
         public List<CheckingBadWord.BannedWord>? BannedWords { get; set; }
+        public Guid? UserSharedId { get; set; }
 
     }
 }

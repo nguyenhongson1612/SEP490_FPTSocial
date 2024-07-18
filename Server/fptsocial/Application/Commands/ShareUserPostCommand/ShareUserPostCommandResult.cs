@@ -22,5 +22,6 @@ namespace Application.Commands.ShareUserPostCommand
         public DateTime? CreatedDate { get; set; }
         public Guid? UserStatusId { get; set; }
         public List<CheckingBadWord.BannedWord>? BannedWords { get; set; }
+        public Guid? UserSharedId { get; set; }
     }
 }

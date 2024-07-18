@@ -84,8 +84,9 @@ namespace Application.Commands.ShareUserPostCommand
                 SharedToUserId = request.SharedToUserId,
                 CreatedDate = DateTime.Now,
                 UserStatusId = request.UserStatusId,
-                IsHide = false
-
+                IsHide = false,
+                IsBanned = false,
+                UserSharedId = request.UserSharedId,
             };
 
             var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>
