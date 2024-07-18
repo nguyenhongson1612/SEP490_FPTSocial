@@ -45,6 +45,7 @@ namespace Application.Queries.GetUserPost
             List<GetUserPostResult> combine = new List<GetUserPostResult>();
 
             var userPosts = await _context.UserPosts
+                .AsNoTracking()
                 .Include(x => x.UserStatus)
                 .Include(x => x.Photo)
                 .Include(x => x.Video)
@@ -53,14 +54,19 @@ namespace Application.Queries.GetUserPost
                 .Include(x => x.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                     .ThenInclude(x => x.Video)
                 .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
-                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.IsUsed == true);
-            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-
+            var user = await _context.UserProfiles
+                .Where(x => x.UserId == request.UserId)
+                .Select(x => x.FirstName+ " " + x.LastName)
+                .FirstOrDefaultAsync(cancellationToken);
+            
             foreach (var item in userPosts)
             {
+                var react = await _context.PostReactCounts
+                .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId);
+
                 combine.Add(new GetUserPostResult
                 {
                     PostId = item.UserPostId,
@@ -110,18 +116,19 @@ namespace Application.Queries.GetUserPost
                         PostPosition = upp.PostPosition,
                         Video = _mapper.Map<VideoDTO>(upp.Video),
                     }).ToList(),
-                    UserName = user.FirstName + " " + user.LastName,
+                    UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
-                        CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.CommentCount).FirstOrDefault(),
-                        ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.ShareCount).FirstOrDefault(),
+                        ReactNumber = react?.ReactCount ?? null,
+                        CommentNumber = react?.CommentCount ?? null,
+                        ShareNumber = react?.ShareCount ?? null,
                     }
                 });
             }
 
             var sharePosts = await _context.SharePosts
+                .AsNoTracking()
                 .Include(x => x.UserStatus)
                 .Include(x => x.UserPost)
                     .ThenInclude(x => x.UserPostPhotos)
@@ -144,13 +151,17 @@ namespace Application.Queries.GetUserPost
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
                 .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
-                .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync(cancellationToken);
 
             foreach (var item in sharePosts)
             {
-                var userShare = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserSharedId);
-                var avtShare = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+                var userShare = await _context.UserProfiles
+                    .Where(x => x.UserId == item.UserSharedId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                var avtShare = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+
                 combine.Add(new GetUserPostResult
                 {
                     PostId = item.SharePostId,
@@ -174,9 +185,9 @@ namespace Application.Queries.GetUserPost
                     UserPostShare = _mapper.Map<UserPostDTO>(item.UserPost),
                     UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
-                    UserNameShare = userShare.FirstName + " " + userShare.LastName,
+                    UserNameShare = userShare,
                     UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
-                    UserName = user.FirstName + " " + user.LastName,
+                    UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
                     {
@@ -185,9 +196,9 @@ namespace Application.Queries.GetUserPost
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.ReactCount).FirstOrDefault(),
-                        CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.CommentCount).FirstOrDefault(),
-                        ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.ShareCount).FirstOrDefault(),
+                        ReactNumber = await _context.ReactPosts.CountAsync(x => x.UserPostId == item.SharePostId),
+                        CommentNumber = await _context.CommentPosts.CountAsync(x => x.UserPostId == item.SharePostId),
+                        ShareNumber = await _context.SharePosts.CountAsync(x => x.UserPostId == item.SharePostId),
                     }
                 });
             }
