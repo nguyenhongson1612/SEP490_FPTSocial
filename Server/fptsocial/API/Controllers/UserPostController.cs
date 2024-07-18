@@ -15,7 +15,6 @@ using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Application.Queries.GetCommentByPhotoPostId;
-using Application.Queries.GetOtherUserPost;
 using Application.Commands.UpdateUserPostCommand;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Application.Queries.GetUserPostById;
@@ -47,26 +46,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetUserPostByUserId()
         {
             var input = new GetUserPostQuery();
-            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            if (string.IsNullOrEmpty(rawToken))
-            {
-                return BadRequest();
-            }
-            var handle = new JwtSecurityTokenHandler();
-            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
-            if (jsontoken == null)
-            {
-                return BadRequest();
-            }
-            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
-            var res = await _sender.Send(input);
-            return Success(res.Value);
-        }
-
-        [HttpGet]
-        [Route("getotheruserpost")]
-        public async Task<IActionResult> GetOtherUserPost([FromQuery]GetOtherUserPostQuery input)
-        {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
