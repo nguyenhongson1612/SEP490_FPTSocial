@@ -1,6 +1,9 @@
 ﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupPostDTO;
+using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
+using Application.Queries.GetOtherUserPostByUserId;
 using Application.Queries.GetUserByUserId;
 using AutoMapper;
 using Core.CQRS;
@@ -21,7 +24,7 @@ namespace Application.Queries.GetUserPost
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
-        List<GetUserPostResult> userPosts = new List<GetUserPostResult>();
+
         public GetUserPostHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
@@ -34,98 +37,151 @@ namespace Application.Queries.GetUserPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            if (request.UserId == null)
+            if (request == null)
             {
-                return Result<List<GetUserPostResult>>.Failure("UserId is required.");
+                throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
+            List<GetUserPostResult> combine = new List<GetUserPostResult>();
+
             var userPosts = await _context.UserPosts
+                .Include(x => x.UserStatus)
                 .Include(x => x.Photo)
                 .Include(x => x.Video)
-                .Include(x => x.UserPostPhotos.Where(x => x.IsHide != true))
+                .Include(x => x.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
                     .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideos.Where(x => x.IsHide != true))
+                .Include(x => x.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.UserId && x.IsHide != true)
+                .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.IsUsed == true);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-            var result = userPosts.Select(userPost => new GetUserPostResult
-            {
-                UserPostId = userPost.UserPostId,
-                UserId = userPost.UserId,
-                Content = userPost.Content,
-                UserPostNumber = userPost.UserPostNumber,
-                UserStatus = new GetUserStatusDTO
-                {
-                    UserStatusId = userPost.UserStatusId,
-                    UserStatusName = _context.UserStatuses.Where(x => x.UserStatusId == userPost.UserStatusId).Select(x => x.StatusName).FirstOrDefault()
-                },
-                IsAvataPost = userPost.IsAvataPost,
-                IsCoverPhotoPost = userPost.IsCoverPhotoPost,
-                IsHide = userPost.IsHide,
-                CreatedAt = userPost.CreatedAt,
-                UpdatedAt = userPost.UpdatedAt,
-                PhotoId = userPost.PhotoId,
-                VideoId = userPost.VideoId,
-                NumberPost = userPost.NumberPost,
-                Photo = _mapper.Map<PhotoDTO>(userPost.Photo),
-                Video = _mapper.Map<VideoDTO>(userPost.Video),
-                UserPostPhotos = userPost.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
-                {
-                    UserPostPhotoId = upp.UserPostPhotoId,
-                    UserPostId = upp.UserPostId,
-                    PhotoId = upp.PhotoId,
-                    Content = upp.Content,
-                    UserPostPhotoNumber = upp.UserPostPhotoNumber,
-                    UserStatusId = upp.UserStatusId,
-                    IsHide = upp.IsHide,
-                    CreatedAt = upp.CreatedAt,
-                    UpdatedAt = upp.UpdatedAt,
-                    PostPosition = upp.PostPosition,
-                    Photo = _mapper.Map<PhotoDTO>(upp.Photo),
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                        CommentNumber = _context.CommentPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                        ShareNumber = _context.SharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId) +
-                                        _context.GroupSharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                    },
-                }).ToList(),
-                UserPostVideos = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
-                {
-                    UserPostVideoId = upp.UserPostVideoId,
-                    UserPostId = upp.UserPostId,
-                    VideoId = upp.VideoId,
-                    Content = upp.Content,
-                    UserPostVideoNumber = upp.UserPostVideoNumber,
-                    UserStatusId = upp.UserStatusId,
-                    IsHide = upp.IsHide,
-                    CreatedAt = upp.CreatedAt,
-                    UpdatedAt = upp.UpdatedAt,
-                    PostPosition = upp.PostPosition,
-                    Video = _mapper.Map<VideoDTO>(upp.Video),
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                        CommentNumber = _context.CommentVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                        ShareNumber = _context.SharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId) +
-                                        _context.GroupSharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                    },
-                }).ToList(),
-                Avatar = _mapper.Map<GetUserAvatar>(avt),
-                FullName = user.FirstName + " " + user.LastName,
-                ReactCount = new DTO.ReactDTO.ReactCount
-                {
-                    ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
-                    CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.CommentCount).FirstOrDefault(),
-                    ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ShareCount).FirstOrDefault(),
-                }
-            }).ToList();
 
-            return Result<List<GetUserPostResult>>.Success(result);
+            foreach (var item in userPosts)
+            {
+                combine.Add(new GetUserPostResult
+                {
+                    PostId = item.UserPostId,
+                    UserId = item.UserId,
+                    Content = item.Content,
+                    UserPostNumber = item.UserPostNumber,
+                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
+                    {
+                        UserStatusId = item.UserStatusId,
+                        UserStatusName = item.UserStatus.StatusName
+                    },
+                    IsAvataPost = item.IsAvataPost,
+                    IsHide = item.IsHide,
+                    IsBanned = item.IsBanned,
+                    IsShare = false,
+                    CreatedAt = item.CreatedAt,
+                    UpdateAt = item.UpdatedAt,
+                    PhotoId = item.PhotoId,
+                    VideoId = item.VideoId,
+                    Photo = _mapper.Map<PhotoDTO>(item.Photo),
+                    Video = _mapper.Map<VideoDTO>(item.Video),
+                    UserPostPhoto = item.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
+                    {
+                        UserPostPhotoId = upp.UserPostPhotoId,
+                        UserPostId = upp.UserPostId,
+                        PhotoId = upp.PhotoId,
+                        Content = upp.Content,
+                        UserPostPhotoNumber = upp.UserPostPhotoNumber,
+                        UserStatusId = upp.UserStatusId,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        Photo = _mapper.Map<PhotoDTO>(upp.Photo),
+                    }).ToList(),
+                    UserPostVideo = item.UserPostVideos?.Select(upp => new UserPostVideoDTO
+                    {
+                        UserPostVideoId = upp.UserPostVideoId,
+                        UserPostId = upp.UserPostId,
+                        VideoId = upp.VideoId,
+                        Content = upp.Content,
+                        UserPostVideoNumber = upp.UserPostVideoNumber,
+                        UserStatusId = upp.UserStatusId,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        Video = _mapper.Map<VideoDTO>(upp.Video),
+                    }).ToList(),
+                    UserName = user.FirstName + " " + user.LastName,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(avt),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
+                        CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.CommentCount).FirstOrDefault(),
+                        ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.UserPostId).Select(x => x.ShareCount).FirstOrDefault(),
+                    }
+                });
+            }
+
+            var sharePosts = await _context.SharePosts
+                .Include(x => x.UserStatus)
+                .Include(x => x.UserPost)
+                .Include(x => x.UserPostPhoto)
+                    .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPostVideo)
+                    .ThenInclude(x => x.Video)
+                .Include(x => x.GroupPost)
+                .Include(x => x.GroupPostPhoto)
+                    .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPostVideo)
+                    .ThenInclude(x => x.GroupVideo)
+                .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync(cancellationToken);
+
+            foreach (var item in sharePosts)
+            {
+                var userShare = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserId);
+                combine.Add(new GetUserPostResult
+                {
+                    PostId = item.SharePostId,
+                    UserId = item.UserId,
+                    Content = item.Content,
+                    UserPostShareId = item.UserPostId,
+                    UserPostPhotoShareId = item.UserPostPhotoId,
+                    UserPostVideoShareId = item.UserPostVideoId,
+                    GroupPostShareId = item.GroupPostId,
+                    GroupPostPhotoShareId = item.GroupPostPhotoId,
+                    GroupPostVideoShareId = item.GroupPostVideoId,
+                    SharedToUserId = item.SharedToUserId,
+                    CreatedAt = item.CreatedDate,
+                    UpdateAt = item.UpdateDate,
+                    IsHide = item.IsHide,
+                    IsBanned = item.IsBanned,
+                    IsShare = true,
+                    GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
+                    GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
+                    GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
+                    UserPostShare = _mapper.Map<UserPostDTO>(item.UserPost),
+                    UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
+                    UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
+                    UserNameShare = userShare.FirstName + " " + userShare.LastName,
+                    UserName = user.FirstName + " " + user.LastName,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(avt),
+                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
+                    {
+                        UserStatusId = item.UserStatusId,
+                        UserStatusName = item.UserStatus.StatusName
+                    },
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.ReactCount).FirstOrDefault(),
+                        CommentNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.CommentCount).FirstOrDefault(),
+                        ShareNumber = _context.PostReactCounts.Where(x => x.UserPostId == item.SharePostId).Select(x => x.ShareCount).FirstOrDefault(),
+                    }
+                });
+            }
+
+            combine = combine.OrderByDescending(x => x.CreatedAt).ToList();
+            return Result<List<GetUserPostResult>>.Success(combine);
         }
 
     }

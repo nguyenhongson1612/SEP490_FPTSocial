@@ -158,7 +158,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true)
+                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
                 .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync(cancellationToken);
 
