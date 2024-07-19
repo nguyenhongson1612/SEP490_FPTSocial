@@ -55,7 +55,9 @@ namespace Application.Queries.GetListMemberRole
                             UserId = item.UserId,
                             GroupId = request.GroupId,
                             MemberName = item.User.FirstName + " " + item.User.LastName,
-                            Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                            Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                            GroupRoleId = item.GroupRoleId,
+                            GroupRoleName = item.GroupRole.GroupRoleName
                         };
                         if (item.GroupRole.GroupRoleName.Equals("Admin"))
                         { 
@@ -85,7 +87,9 @@ namespace Application.Queries.GetListMemberRole
                                 UserId = item.UserId,
                                 GroupId = request.GroupId,
                                 MemberName = item.User.FirstName + " " + item.User.LastName,
-                                Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                                Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                                GroupRoleId = item.GroupRoleId,
+                                GroupRoleName = item.GroupRole.GroupRoleName
                             };
                             result.GroupMember.Add(mem);
                         }
