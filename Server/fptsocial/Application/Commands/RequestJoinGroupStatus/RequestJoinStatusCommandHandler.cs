@@ -64,17 +64,22 @@ namespace Application.Commands.RequestJoinGroupStatus
             }
             else
             {
-                var newmemjoin = new Domain.CommandModels.GroupMember
+                var joinrequest = await _querycontext.GroupMembers
+                    .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId && x.IsJoined ==false);
+                if(joinrequest != null)
                 {
-                    GroupId = memjoin.GroupId,
-                    GroupRoleId = memjoin.GroupRoleId,
-                    UserId = memjoin.UserId,
-                    IsJoined = false,
-                    IsInvated = memjoin.IsInvated,
-                    InvatedBy = memjoin.InvatedBy,
-                    JoinedDate = memjoin.JoinedDate
-                };
-                _context.GroupMembers.Remove(newmemjoin);
+                    var newmemjoin = new Domain.CommandModels.GroupMember
+                    {
+                        GroupId = memjoin.GroupId,
+                        GroupRoleId = memjoin.GroupRoleId,
+                        UserId = memjoin.UserId,
+                        IsJoined = false,
+                        IsInvated = memjoin.IsInvated,
+                        InvatedBy = memjoin.InvatedBy,
+                        JoinedDate = memjoin.JoinedDate
+                    };
+                    _context.GroupMembers.Remove(newmemjoin);
+                }
             }
             await _context.SaveChangesAsync();
             result.Message = "Accept Join!";
