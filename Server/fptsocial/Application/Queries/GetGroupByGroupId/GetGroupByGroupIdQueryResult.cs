@@ -20,6 +20,8 @@ namespace Application.Queries.GetGroupByGroupId
         public string GroupDescription { get; set; } = null!;
         public string GroupAdmin { get; set; }
         public string? CoverImage { get; set; }
+        public Guid GroupTypeId { get; set; }
+        public string? GroupTypeName { get; set; }
         public bool IsJoin { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsCensor { get; set; }

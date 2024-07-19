@@ -67,6 +67,8 @@ namespace Application.Queries.GetGroupByGroupId
                 GroupDescription = group.GroupDescription,
                 CoverImage = group.CoverImage,
                 GroupAdmin = admin.User.FirstName + " " + admin.User.LastName,
+                GroupTypeId = group.GroupTypeId,
+                GroupTypeName = group.GroupType.GroupTypeName,
                 CreateAt = group.CreatedDate,
             };
             foreach (var st in groupsetting)
