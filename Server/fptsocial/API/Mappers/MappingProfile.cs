@@ -255,11 +255,7 @@ namespace Application.Mappers
             CreateMap<Command.GroupStatus, CreateGroupStatusCommandResult>();
             CreateMap<Query.GroupStatus, GetGroupStatusQueryResult>();
             CreateMap<Command.GroupFpt, CreateGroupCommandResult>();
-            CreateMap<Query.UserPost, GetPostResult>()
-                .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => src.Photo))
-                .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Video))
-                .ForMember(dest => dest.UserPostPhotos, opt => opt.MapFrom(src => src.UserPostPhotos))
-                .ForMember(dest => dest.UserPostVideos, opt => opt.MapFrom(src => src.UserPostVideos));
+            
             CreateMap<Command.GroupPost, CreateGroupPostCommandResult>();
             CreateMap<Command.GroupPost, UpdateGroupPostCommandResult>();
             CreateMap<Command.GroupPostVideo, UpdateGroupVideoPostCommandResult>();
