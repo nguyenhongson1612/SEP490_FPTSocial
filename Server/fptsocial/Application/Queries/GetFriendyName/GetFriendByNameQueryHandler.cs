@@ -20,13 +20,10 @@ namespace Application.Queries.GetFriendyName
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
-        private readonly StringHelper _stringHelper;
-        public GetFriendByNameQueryHandler(fptforumQueryContext context, IMapper mapper, StringHelper stringHelper)
+        public GetFriendByNameQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
-            _mapper = mapper;
-            _stringHelper = stringHelper;
-        }
+            _mapper = mapper;        }
         public async Task<Result<GetFriendByNameQueryResult>> Handle(GetFriendByNameQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
