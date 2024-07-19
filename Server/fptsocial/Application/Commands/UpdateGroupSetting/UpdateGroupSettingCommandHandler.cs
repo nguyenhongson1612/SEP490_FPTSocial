@@ -35,23 +35,29 @@ namespace Application.Commands.UpdateGroupSetting
             var grouprole = await _querycontext.GroupMembers.Include(x => x.GroupRole)
                 .FirstOrDefaultAsync(x => x.UserId == request.UserId
                                      && x.GroupId == request.GroupId);
-            var groupsetting = await _querycontext.GroupSettingUses.Where(x => x.GroupId == request.GroupId).ToListAsync();
+       
 
             if (grouprole.GroupRole.GroupRoleName.Equals("Admin"))
             {
-                foreach (var item in groupsetting)
+               if(request.updateSettingDTOs?.Count > 0)
                 {
-                    var newsetting = new Domain.CommandModels.GroupSettingUse
+                    foreach (var item in request.updateSettingDTOs)
                     {
-                        GroupId = request.GroupId,
-                        GroupSettingId = request.GroupSettingId,
-                        GroupStatusId = request.GroupStatusId,
-                        CreatedAt = item.CreatedAt,
-                        UpdatedAt = DateTime.Now
-                    };
-                    _context.GroupSettingUses.Update(newsetting);
+                        var groupsetting = await _querycontext.GroupSettingUses
+                            .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.GroupSettingId == item.UserSettingId);
+                        var newsetting = new Domain.CommandModels.GroupSettingUse
+                        {
+                            GroupId = request.GroupId,
+                            GroupSettingId = item.UserSettingId,
+                            GroupStatusId = item.UserStatusId,
+                            CreatedAt = groupsetting?.CreatedAt,
+                            UpdatedAt = DateTime.Now
+                        };
+                        _context.GroupSettingUses.Update(newsetting);
+                        await _context.SaveChangesAsync();
+                    }
                 }
-                await _context.SaveChangesAsync();
+               
             }
             else
             {
