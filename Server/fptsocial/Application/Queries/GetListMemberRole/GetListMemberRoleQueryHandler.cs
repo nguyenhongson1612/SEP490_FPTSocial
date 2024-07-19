@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.DTO.GroupDTO;
+using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
 using Domain.Enums;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetListMemberRole
 {
-    public class GetListMemberRoleQueryHandler : IQueryHandler<GetListMemberRoleQuery, List<GetListMemberRoleQueryResult>>
+    public class GetListMemberRoleQueryHandler : IQueryHandler<GetListMemberRoleQuery, GetListMemberRoleQueryResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -23,36 +24,70 @@ namespace Application.Queries.GetListMemberRole
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<List<GetListMemberRoleQueryResult>>> Handle(GetListMemberRoleQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetListMemberRoleQueryResult>> Handle(GetListMemberRoleQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var result = new List<GetListMemberRoleQueryResult>();
+            var result = new GetListMemberRoleQueryResult();
+       
+            var joined = await _context.GroupMembers
+                .Include(x=>x.GroupRole)
+                .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId);
             var member = await _context.GroupMembers
-                                   .Where(x => x.GroupId == request.GroupId && x.IsJoined == true)
-                                   .Include(x => x.GroupRole)
-                                   .Include(x => x.User)
-                                   .ToListAsync();
-            var joined = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos)
-                .Include(x=>x.GroupRole).FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId);
+              .Where(x => x.GroupId == request.GroupId && x.IsJoined == true)
+              .Include(x => x.GroupRole)
+              .Include(x => x.User)
+              .ThenInclude(x => x.AvataPhotos)
+              .ToListAsync();
 
             if (joined.GroupRole.GroupRoleName.Equals("Admin"))
+            {
+
+                if (member != null)
+                {
+                    foreach (var item in member)
+                    {
+                        var mem = new GroupMemberDTO
+                        {
+                            UserId = item.UserId,
+                            GroupId = request.GroupId,
+                            MemberName = item.User.FirstName + " " + item.User.LastName,
+                            Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                        };
+                        if (item.GroupRole.GroupRoleName.Equals("Admin"))
+                        { 
+                            result.GroupAdmin.Add(mem);
+                        }
+                        if (item.GroupRole.GroupRoleName.Equals("Censor"))
+                        {    
+                            result.GroupMangager.Add(mem);
+                        }
+                        if (item.GroupRole.GroupRoleName.Equals("Member"))
+                        {
+                            result.GroupMember.Add(mem);
+                        }
+                    }
+                }
+            }
+            else if(joined.GroupRole.GroupRoleName.Equals("Censor"))
             {
                 if (member != null)
                 {
                     foreach (var item in member)
                     {
-                        if (!item.GroupRole.GroupRoleName.Equals("Admin"))
+                        if (item.GroupRole.GroupRoleName.Equals("Member"))
                         {
-                            var mem = new GetListMemberRoleQueryResult {
-                                MemberId = item.UserId,
+                            var mem = new GroupMemberDTO
+                            {
+                                UserId = item.UserId,
+                                GroupId = request.GroupId,
                                 MemberName = item.User.FirstName + " " + item.User.LastName,
-                                MemberAvata = item.User.AvataPhotos.FirstOrDefault(x=>x.IsUsed == true)?.AvataPhotosUrl
+                                Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
                             };
-                            result.Add(mem);
+                            result.GroupMember.Add(mem);
                         }
                     }
                 }
@@ -62,7 +97,7 @@ namespace Application.Queries.GetListMemberRole
                 throw new ErrorException(StatusCodeEnum.GR11_Not_Permission);
             }
 
-            return Result<List<GetListMemberRoleQueryResult>>.Success(result);
+            return Result<GetListMemberRoleQueryResult>.Success(result);
         }
     }
 }
