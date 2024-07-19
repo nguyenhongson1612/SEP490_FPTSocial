@@ -12,10 +12,10 @@ namespace Application.Commands.UpdateGroupSetting
     {
         public UpdateGroupSettingCommand()
         {
-            updateSettingDTOs = new List<UpdateSettingDTO>();
+            updateSettingDTOs = new List<UpdateGroupSettingDTO>();
         }
         public Guid? UserId { get; set; }
         public Guid GroupId { get; set; }
-        public List<UpdateSettingDTO> updateSettingDTOs { get; set; }
+        public List<UpdateGroupSettingDTO> updateSettingDTOs { get; set; }
     }
 }

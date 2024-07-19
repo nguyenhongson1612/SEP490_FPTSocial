@@ -44,12 +44,12 @@ namespace Application.Commands.UpdateGroupSetting
                     foreach (var item in request.updateSettingDTOs)
                     {
                         var groupsetting = await _querycontext.GroupSettingUses
-                            .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.GroupSettingId == item.UserSettingId);
+                            .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.GroupSettingId == item.SettingId);
                         var newsetting = new Domain.CommandModels.GroupSettingUse
                         {
                             GroupId = request.GroupId,
-                            GroupSettingId = item.UserSettingId,
-                            GroupStatusId = item.UserStatusId,
+                            GroupSettingId = item.SettingId,
+                            GroupStatusId = item.GroupStatusId,
                             CreatedAt = groupsetting?.CreatedAt,
                             UpdatedAt = DateTime.Now
                         };
