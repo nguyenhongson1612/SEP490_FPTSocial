@@ -160,7 +160,7 @@ namespace Application.Queries.SearchFunction
 
             // Lấy các bài viết theo điều kiện trạng thái mà không chuẩn hóa nội dung
             var posts = await _context.UserPosts
-                                      .Where(p => p.IsBanned == false)
+                                      .Where(p => p.IsBanned == false && p.IsHide == false)
                                       //.Where(p => friendUserIds.Contains(p.UserId) &&
                                       //            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) &&
                                       //            p.IsHide != true)
