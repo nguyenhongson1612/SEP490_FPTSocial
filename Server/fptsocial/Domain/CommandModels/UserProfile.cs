@@ -87,6 +87,8 @@ namespace Domain.CommandModels
         public DateTime? UpdatedAt { get; set; }
         public string? Campus { get; set; }
 
+        public string FullName => $"{FirstName} {LastName}";
+
         public virtual Role Role { get; set; } = null!;
         public virtual UserStatus UserStatus { get; set; } = null!;
         public virtual ContactInfo? ContactInfo { get; set; }

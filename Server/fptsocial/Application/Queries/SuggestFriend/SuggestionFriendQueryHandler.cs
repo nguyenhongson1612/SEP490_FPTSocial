@@ -3,6 +3,7 @@ using Application.Queries.GetAllFriend;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -40,63 +41,94 @@ namespace Application.Queries.SuggestFriend
                 .Select(x => x.UserId == request.UserId ? x.FriendId : x.UserId)
                 .ToListAsync();
 
-            var potentialFriends = new Dictionary<Guid, (int mutualFriends, int? reactCount)>();
-
-            foreach (var friendId in userFriends)
+            var result = new SuggestionFriendQueryResult();
+            if (userFriends?.Count > 0)
             {
-                var friendsOfFriend = await _context.Friends
-                    .Where(x => (x.UserId == friendId || x.FriendId == friendId) && x.Confirm == true)
-                    .Select(x => x.UserId == friendId ? x.FriendId : x.UserId)
-                    .ToListAsync();
-
-                foreach (var fofId in friendsOfFriend)
+                var potentialFriends = new Dictionary<Guid, (int mutualFriends, int? reactCount)>();
+                foreach (var friendId in userFriends)
                 {
-                    if (fofId != request.UserId && !userFriends.Contains(fofId))
-                    {
-                        if (potentialFriends.ContainsKey(fofId))
-                        {
-                            potentialFriends[fofId] = (potentialFriends[fofId].mutualFriends + 1, potentialFriends[fofId].reactCount);
-                        }
-                        else
-                        {
-                            var reactCount = await _context.Friends
-                                .Where(x => (x.UserId == fofId && x.FriendId == request.UserId) || (x.UserId == request.UserId && x.FriendId == fofId))
-                                .Select(x => x.ReactCount)
-                                .FirstOrDefaultAsync();
+                    var friendsOfFriend = await _context.Friends
+                        .Where(x => (x.UserId == friendId || x.FriendId == friendId) && x.Confirm == true)
+                        .Select(x => x.UserId == friendId ? x.FriendId : x.UserId)
+                        .ToListAsync();
 
-                            potentialFriends[fofId] = (1, reactCount);
+                    foreach (var fofId in friendsOfFriend)
+                    {
+                        if (fofId != request.UserId && !userFriends.Contains(fofId))
+                        {
+                            if (potentialFriends.ContainsKey(fofId))
+                            {
+                                potentialFriends[fofId] = (potentialFriends[fofId].mutualFriends + 1, potentialFriends[fofId].reactCount);
+                            }
+                            else
+                            {
+                                var reactCount = await _context.Friends
+                                    .Where(x => (x.UserId == fofId && x.FriendId == request.UserId) || (x.UserId == request.UserId && x.FriendId == fofId))
+                                    .Select(x => x.ReactCount)
+                                    .FirstOrDefaultAsync();
+
+                                potentialFriends[fofId] = (1, reactCount);
+                            }
                         }
                     }
                 }
+
+                var sortedPotentialFriends = potentialFriends
+                    .OrderByDescending(x => (x.Value.mutualFriends + (x.Value.reactCount ?? 0)))
+                    .Take(10)
+                    .Select(x => x.Key)
+                    .ToList();
+
+              
+                foreach (var friendId in sortedPotentialFriends)
+                {
+                    var friendProfile = await _context.UserProfiles
+                        .Include(x=>x.AvataPhotos)
+                        .Where(x => x.UserId == friendId)
+                        .FirstOrDefaultAsync();
+
+                    if (friendProfile != null)
+                    {
+                        var friendDTO = new GetAllFriendDTO
+                        {
+                            FriendId = friendProfile.UserId,
+                            FriendName = $"{friendProfile.FirstName} {friendProfile.LastName}",
+                            MutualFriends = potentialFriends[friendId].mutualFriends,
+                            ReactCount = potentialFriends[friendId].reactCount,
+                            Avata = friendProfile.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                            // Add other fields if needed
+                        };
+                        result.AllFriend.Add(friendDTO);
+                    }
+                }
+                result.Count = result.AllFriend.Count;
             }
-
-            var sortedPotentialFriends = potentialFriends
-                .OrderByDescending(x => (x.Value.mutualFriends + (x.Value.reactCount ?? 0)))
-                .Take(10)
-                .Select(x => x.Key)
-                .ToList();
-
-            var result = new SuggestionFriendQueryResult();
-            foreach (var friendId in sortedPotentialFriends)
+            else
             {
-                var friendProfile = await _context.UserProfiles
-                    .Where(x => x.UserId == friendId)
-                    .FirstOrDefaultAsync();
-
-                if (friendProfile != null)
+                var current = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+                var user = await _context.UserProfiles.Include(x=>x.AvataPhotos)
+                    .Where(x => x.Campus == current.Campus && x.HomeTown == current.HomeTown && x.IsActive == true).ToListAsync();
+                int i = 0;
+                foreach (var item in user)
                 {
                     var friendDTO = new GetAllFriendDTO
                     {
-                        FriendId = friendProfile.UserId,
-                        FriendName = $"{friendProfile.FirstName} {friendProfile.LastName}",
-                        MutualFriends = potentialFriends[friendId].mutualFriends,
-                        ReactCount = potentialFriends[friendId].reactCount,
-                        // Add other fields if needed
+                        FriendId = item.UserId,
+                        FriendName = $"{item.FirstName} {item.LastName}",
+                        Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                        MutualFriends = 0,
+                        ReactCount = 0
                     };
                     result.AllFriend.Add(friendDTO);
+                    i++;
+                    if(i  == 20)
+                    {
+                        break;
+                    }
                 }
+                result.Count = result.AllFriend.Count;
             }
-            result.Count = result.AllFriend.Count;
+           
 
             return Result<SuggestionFriendQueryResult>.Success(result);
         }
