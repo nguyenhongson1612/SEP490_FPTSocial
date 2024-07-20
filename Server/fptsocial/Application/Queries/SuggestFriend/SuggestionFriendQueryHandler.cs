@@ -107,7 +107,7 @@ namespace Application.Queries.SuggestFriend
             {
                 var current = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
                 var user = await _context.UserProfiles.Include(x=>x.AvataPhotos)
-                    .Where(x => x.Campus == current.Campus && x.HomeTown == current.HomeTown && x.IsActive == true).ToListAsync();
+                    .Where(x => x.Campus == current.Campus && x.HomeTown == current.HomeTown && x.IsActive == true && x.UserId != current.UserId).ToListAsync();
                 int i = 0;
                 foreach (var item in user)
                 {
