@@ -1,84 +1,63 @@
-﻿using AutoMapper;
-using Core.CQRS.Query;
+﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupDTO;
+using Application.DTO.GroupPostDTO;
+using Application.DTO.UserPostDTO;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
+using Application.Queries.GetPost;
+using AutoMapper;
 using Core.CQRS;
+using Core.CQRS.Query;
+using Core.Helper;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Application.DTO.UserPostDTO;
-using Core.Helper;
-using Application.DTO.GetUserProfileDTO;
-using Application.DTO.UserPostPhotoDTO;
-using Application.DTO.UserPostVideoDTO;
-using System.Runtime.Intrinsics.X86;
-using Domain.CommandModels;
-using Application.DTO.GroupDTO;
-using Application.DTO.GroupPostDTO;
-using Application.Queries.GetUserPost;
 
-namespace Application.Queries.GetPost
+namespace Application.Queries.GetBannedPostByUserId
 {
-    public class GetPostHandler : IQueryHandler<GetPostQuery, List<GetPostResult>>
+    public class GetBannedPostByUserIdHandler : IQueryHandler<GetBannedPostByUserIdQuery, List<GetBannedPostByUserIdResult>>
     {
-        private readonly fptforumQueryContext _context;
-        private readonly IMapper _mapper;
+        public readonly fptforumQueryContext _context;
+        public readonly IMapper _mapper;
 
-        public GetPostHandler(fptforumQueryContext context, IMapper mapper)
+        public GetBannedPostByUserIdHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<Result<List<GetPostResult>>> Handle(GetPostQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<GetBannedPostByUserIdResult>>> Handle(GetBannedPostByUserIdQuery request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if(_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            if (request == null)
+            if(request == null)
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
-            if (request.Page <= 0)
-            {
-                return Result<List<GetPostResult>>.Failure("Page number must be greater than 0");
-            }
-
-            // Retrieve the list of friend UserIds
-            var friendUserIds = await _context.Friends
-                                              .Where(f => (f.UserId == request.UserId || f.FriendId == request.UserId) && f.Confirm == true)
-                                              .Select(f => f.UserId == request.UserId ? f.FriendId : f.UserId)
-                                              .ToListAsync(cancellationToken);
-
-            var userStatuses = await _context.UserStatuses
-                                              .Where(x => x.StatusName == "Public" || x.StatusName == "Friend")
-                                              .ToListAsync(cancellationToken);
-
-            var statusPublic = userStatuses.FirstOrDefault(x => x.StatusName == "Public");
-            var statusFriend = userStatuses.FirstOrDefault(x => x.StatusName == "Friend");
+            List<GetBannedPostByUserIdResult> combinePost = new List<GetBannedPostByUserIdResult>();
 
             var posts = await _context.UserPosts
                 .AsNoTracking()
                 .Include(p => p.UserStatus)
                 .Include(p => p.Photo)
                 .Include(p => p.Video)
-                .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
+                .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned == true))
                     .ThenInclude(upp => upp.Photo)
-                .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
+                .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned == true))
                     .ThenInclude(upv => upv.Video)
-                .Where(p => friendUserIds.Contains(p.UserId) &&
-                            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true && p.IsBanned != true)
+                .Where(p => p.UserId == request.UserId && p.IsHide != true && p.IsBanned == true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
-
-            List<GetPostResult> combinePost = new List<GetPostResult>();
 
             foreach (var item in posts)
             {
@@ -90,7 +69,7 @@ namespace Application.Queries.GetPost
                 var reactCounts = _context.PostReactCounts
                                         .FirstOrDefault(x => x.UserPostId == item.UserPostId);
 
-                combinePost.Add(new GetPostResult
+                combinePost.Add(new GetBannedPostByUserIdResult
                 {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -145,54 +124,27 @@ namespace Application.Queries.GetPost
                         UserStatusId = item.UserStatusId,
                         UserStatusName = item.UserStatus.StatusName,
                     },
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = reactCounts?.ReactCount ?? 0,
-                        CommentNumber = reactCounts?.CommentCount ?? 0,
-                        ShareNumber = reactCounts?.ShareCount ?? 0,
-                    },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCounts?.ReactCount ?? 0, reactCounts?.CommentCount ?? 0, reactCounts?.ShareCount ?? 0, item?.CreatedAt ?? DateTime.Now)
                 });
             }
 
-            // Lấy ra id của setting Group Status
-            var groupStatus = await _context.GroupSettings
-                                    .Where(x => x.GroupSettingName.Contains("Group Status"))
-                                    .Select(x => x.GroupSettingId)
-                                    .FirstOrDefaultAsync(cancellationToken);
-
-            // Lấy ra id của GroupStatuc ở Public
-            var groupStatusPublicId = await _context.GroupStatuses
-                                    .Where(x => x.GroupStatusName.Contains("Public"))
-                                    .Select(x => x.GroupStatusId)
-                                    .FirstOrDefaultAsync (cancellationToken);
-
-            // Lấy ra những group mà friend join nhưng ở chế độ public
-            var groupStatusPublic = await _context.GroupSettingUses
-                                    .Where(x => x.GroupSettingId == groupStatus && x.GroupStatusId == groupStatusPublicId)
-                                    .Select(x => x.GroupId)
-                                    .ToListAsync(cancellationToken);
-
-            // Lấy ra id của những group mà user đã join hoặc là của những friend đã join nhưng ở chế độ public
             var groupMemberIds = await _context.GroupMembers
-                                    .Where(x => x.UserId == request.UserId || (friendUserIds.Contains(x.UserId) && groupStatusPublic.Contains(x.GroupId)))
+                                    .Where(x => x.UserId == request.UserId )
                                     .Select(x => x.GroupId)
                                     .ToListAsync(cancellationToken);
 
-            // Truy vấn bảng GroupPost theo những thông tin cần tìm kiếm
             var groupPost = await _context.GroupPosts
                                     .Include(x => x.GroupStatus)
                                     .Include(x => x.Group)
                                     .Include(x => x.GroupPhoto)
                                     .Include(x => x.GroupVideo)
-                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
+                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true && x.IsBanned == true))
                                         .ThenInclude(x => x.GroupPhoto)
-                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
+                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned == true))
                                         .ThenInclude(x => x.GroupVideo)
-                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned != true))
+                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned == true))
                                     .ToListAsync();
 
-            foreach(var item  in groupPost)
+            foreach (var item in groupPost)
             {
                 var user = _context.UserProfiles.Where(x => x.UserId == item.UserId)
                                                 .Select(x => x.FirstName + " " + x.LastName)
@@ -201,7 +153,8 @@ namespace Application.Queries.GetPost
 
                 var groupreactCounts = _context.PostReactCounts
                                         .FirstOrDefault(x => x.UserPostId == item.GroupPostId);
-                combinePost.Add(new GetPostResult { 
+                combinePost.Add(new GetBannedPostByUserIdResult
+                {
                     PostId = item.GroupPostId,
                     UserId = item.UserId,
                     Content = item.Content,
@@ -212,7 +165,8 @@ namespace Application.Queries.GetPost
                     IsShare = false,
                     IsGroupPost = true,
                     GroupPostNumber = item.GroupPostNumber,
-                    GroupStatus = new GetGroupStatusDTO {
+                    GroupStatus = new GetGroupStatusDTO
+                    {
                         GroupStatusId = item.GroupStatusId,
                         GroupStatusName = item.GroupStatus.GroupStatusName,
                     },
@@ -232,13 +186,6 @@ namespace Application.Queries.GetPost
                         UpdatedAt = upp.UpdatedAt,
                         PostPosition = upp.PostPosition,
                         GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactGroupPhotoPosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                            CommentNumber = _context.ReactGroupPhotoPostComments.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                            ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId)
-                        }
                     }).ToList(),
                     GroupPostVideo = item.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
                     {
@@ -253,25 +200,12 @@ namespace Application.Queries.GetPost
                         UpdatedAt = upp.UpdatedAt,
                         PostPosition = upp.PostPosition,
                         GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                            CommentNumber = _context.ReactGroupVideoPostComments.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                            ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId)
-                        }
                     }).ToList(),
                     GroupId = item.GroupId,
                     GroupName = item.Group.GroupName,
                     GroupCorverImage = item.Group.CoverImage,
                     UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
-                    ReactCount = new DTO.ReactDTO.ReactCount {
-                        ReactNumber = groupreactCounts?.ReactCount ?? 0,
-                        CommentNumber = groupreactCounts?.CommentCount ?? 0,
-                        ShareNumber = groupreactCounts?.ShareCount ?? 0,
-                    },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(groupreactCounts?.ReactCount ?? 0, groupreactCounts?.CommentCount ?? 0, groupreactCounts?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
                 });
             }
 
@@ -298,8 +232,7 @@ namespace Application.Queries.GetPost
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(p => friendUserIds.Contains(p.UserId) &&
-                            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true && p.IsBanned != true)
+                .Where(p => p.UserId == request.UserId && p.IsHide != true && p.IsBanned == true)
                 .ToListAsync(cancellationToken);
 
             foreach (var item in sharePosts)
@@ -321,7 +254,7 @@ namespace Application.Queries.GetPost
                 var commentNumber = _context.CommentPosts.Count(x => x.UserPostId == item.SharePostId);
                 var shareNumber = _context.SharePosts.Count(x => x.UserPostId == item.SharePostId);
 
-                combinePost.Add(new GetPostResult
+                combinePost.Add(new GetBannedPostByUserIdResult
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -354,28 +287,14 @@ namespace Application.Queries.GetPost
                         UserStatusId = item.UserStatusId,
                         UserStatusName = item.UserStatus.StatusName
                     },
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber =  reactNumber,
-                        CommentNumber =  commentNumber,
-                        ShareNumber =  shareNumber,
-                    },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, shareNumber, item.CreatedDate ?? DateTime.Now)
                 });
             }
 
             combinePost = combinePost
-                            .OrderByDescending(x => x.EdgeRank)
-                            .ThenByDescending(x => x.CreatedAt)
-                            .Skip((request.Page - 1) * request.PageSize)
-                            .Take(request.PageSize)
+                            .OrderByDescending(x => x.CreatedAt)
                             .ToList();
 
-
-            return Result<List<GetPostResult>>.Success(combinePost);
+            return Result<List<GetBannedPostByUserIdResult>>.Success(combinePost);
         }
-
-
     }
-
 }

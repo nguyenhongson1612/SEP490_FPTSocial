@@ -30,6 +30,8 @@ using Application.Commands.DeleteUserPost;
 using Application.Commands.DeleteCommentUserPost;
 using Application.Commands.DeleteCommentUserPhotoPost;
 using Application.Commands.DeleteCommentUserVideoPost;
+using Application.Queries.GetFriendyName;
+using Application.Queries.GetBannedPostByUserId;
 
 namespace API.Controllers
 {
@@ -387,6 +389,27 @@ namespace API.Controllers
         [Route("getotheruserpostbyuserid")]
         public async Task<IActionResult> GetOtherUserPostByUserId([FromQuery] GetOtherUserPostByUserIdQuery input)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getBannedPostByUserId")]
+        public async Task<IActionResult> GetBannedPostByUserId()
+        {
+            var input = new GetBannedPostByUserIdQuery();
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
