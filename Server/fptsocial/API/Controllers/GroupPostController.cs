@@ -15,6 +15,11 @@ using Application.Commands.CreateUserCommentGroupPost;
 using Application.Commands.CreateUserCommentGroupVideoPost;
 using Application.Commands.CreateUserCommentPhotoPost;
 using Application.Commands.CreateUserCommentVideoPost;
+using Application.Commands.DeleteCommentGroupPhotoPost;
+using Application.Commands.DeleteCommentGroupPost;
+using Application.Commands.DeleteCommentGroupVideoPost;
+using Application.Commands.DeleteCommentUserPost;
+using Application.Commands.DeleteGroupPost;
 using Application.Commands.Post;
 using Application.Commands.ShareGroupPostCommand;
 using Application.Commands.ShareUserPostCommand;
@@ -219,6 +224,86 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("deleteCommentGroupPost")]
+        public async Task<IActionResult> DeleteCommentGroupPost([FromQuery] DeleteCommentGroupPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("deleteCommentGroupPhotoPost")]
+        public async Task<IActionResult> DeleteCommentGroupPhotoPost([FromQuery] DeleteCommentGroupPhotoPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("deleteCommentGroupVideoPost")]
+        public async Task<IActionResult> DeleteCommentGroupVideoPost([FromQuery] DeleteCommentGroupVideoPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("deleteGroupPost")]
+        public async Task<IActionResult> DeleteGroupPost([FromQuery] DeleteGroupPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
     }
 }

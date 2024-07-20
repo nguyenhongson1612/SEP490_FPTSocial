@@ -125,8 +125,7 @@ namespace Application.Queries.SearchFunction
 
             // Lọc và ánh xạ kết quả sau khi đã lấy dữ liệu
             var result = filteredUsers
-                .Where(x => NormalizeString(x.UserProfile.FirstName).Contains(normalizedSearchContent) ||
-                            NormalizeString(x.UserProfile.LastName).Contains(normalizedSearchContent))
+                .Where(x => NormalizeString(x.UserProfile.FirstName + " " + x.UserProfile.LastName).Contains(normalizedSearchContent))
                 .Select(x => new UserDTO
                 {
                     UserName = x.UserProfile.FirstName + " " + x.UserProfile.LastName,
@@ -265,9 +264,6 @@ namespace Application.Queries.SearchFunction
 
             return result;
         }
-
-
-
 
         static string NormalizeString(string input)
         {
