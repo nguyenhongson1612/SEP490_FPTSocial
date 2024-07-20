@@ -79,6 +79,7 @@ namespace Domain.QueryModels
         public Guid RoleId { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+        public string FullName => $"{FirstName} {LastName}";
         public string? Email { get; set; }
         public string? FeId { get; set; }
         public DateTime BirthDay { get; set; }
