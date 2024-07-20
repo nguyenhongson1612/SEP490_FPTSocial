@@ -16,6 +16,7 @@ using Application.Queries.GetGroupSettingByGroupId;
 using Application.Queries.GetListFriendToInvate;
 using Application.Queries.GetListMemberRole;
 using Application.Queries.GetListRequestjoinGroup;
+using Application.Queries.GetMemberInGroup;
 using Application.Queries.GetUserByUserId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -342,6 +343,26 @@ namespace API.Controllers
         [HttpPost]
         [Route("deletegroup")]
         public async Task<IActionResult> DeleteGroup(DeleteGroupCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getlistmemberingroup")]
+        public async Task<IActionResult> GetListMemberInGroup([FromQuery] GetMemberInGroupQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))

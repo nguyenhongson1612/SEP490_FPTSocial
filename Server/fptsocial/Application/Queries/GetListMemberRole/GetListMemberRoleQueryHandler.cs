@@ -46,7 +46,7 @@ namespace Application.Queries.GetListMemberRole
             if (joined.GroupRole.GroupRoleName.Equals("Admin"))
             {
 
-                if (member != null)
+                if (member?.Count > 0)
                 {
                     foreach (var item in member)
                     {
