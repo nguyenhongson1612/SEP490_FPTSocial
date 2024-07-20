@@ -85,6 +85,7 @@ namespace Domain.QueryModels
         public string? AboutMe { get; set; }
         public string? HomeTown { get; set; }
         public string? CoverImage { get; set; }
+        public string FullName => $"{FirstName} {LastName}";
         public string? UserNumber { get; set; }
         public bool IsFirstTimeLogin { get; set; }
         public Guid UserStatusId { get; set; }
