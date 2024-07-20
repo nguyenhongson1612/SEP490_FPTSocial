@@ -8,7 +8,9 @@ namespace Domain.CommandModels
         public int ClientId { get; set; }
         public Guid UserId { get; set; }
         public DateTime? CreateAt { get; set; }
+        public Guid? AdminId { get; set; }
 
+        public virtual AdminProfile? Admin { get; set; }
         public virtual Client Client { get; set; } = null!;
         public virtual UserProfile User { get; set; } = null!;
     }

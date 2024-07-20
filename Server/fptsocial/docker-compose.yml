@@ -15,7 +15,7 @@ services:
     depends_on:
       - "sql"
     ports:
-      - "44329:44329"
+      - "44320:44329"
   sql:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
     container_name: sql_server2022

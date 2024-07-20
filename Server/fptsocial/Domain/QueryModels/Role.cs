@@ -7,6 +7,7 @@ namespace Domain.QueryModels
     {
         public Role()
         {
+            AdminProfiles = new HashSet<AdminProfile>();
             UserProfiles = new HashSet<UserProfile>();
         }
 
@@ -15,6 +16,7 @@ namespace Domain.QueryModels
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public virtual ICollection<AdminProfile> AdminProfiles { get; set; }
         public virtual ICollection<UserProfile> UserProfiles { get; set; }
     }
 }

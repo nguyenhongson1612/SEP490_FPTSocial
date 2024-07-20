@@ -22,7 +22,7 @@ namespace Domain.QueryModels
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         public bool? IsHide { get; set; }
         public Guid? GroupStatusId { get; set; }
         public DateTime? UpdateDate { get; set; }

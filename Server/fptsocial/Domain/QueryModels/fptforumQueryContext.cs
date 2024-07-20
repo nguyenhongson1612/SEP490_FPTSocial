@@ -17,6 +17,7 @@ namespace Domain.QueryModels
         {
         }
 
+        public virtual DbSet<AdminProfile> AdminProfiles { get; set; } = null!;
         public virtual DbSet<AvataPhoto> AvataPhotos { get; set; } = null!;
         public virtual DbSet<BlockType> BlockTypes { get; set; } = null!;
         public virtual DbSet<BlockUser> BlockUsers { get; set; } = null!;
@@ -922,7 +923,7 @@ namespace Domain.QueryModels
 
                 entity.Property(e => e.Content).HasColumnType("ntext");
 
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -2157,6 +2158,11 @@ namespace Domain.QueryModels
                 entity.ToTable("UserClientPermission");
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Admin)
+                    .WithMany()
+                    .HasForeignKey(d => d.AdminId)
+                    .HasConstraintName("fk_admin_client");
 
                 entity.HasOne(d => d.Client)
                     .WithMany()
