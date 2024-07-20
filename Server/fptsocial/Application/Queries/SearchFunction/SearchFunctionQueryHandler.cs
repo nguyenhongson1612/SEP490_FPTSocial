@@ -189,7 +189,7 @@ namespace Application.Queries.SearchFunction
 
                 return new GetPostResult
                 {
-                    UserPostId = userPost.UserPostId,
+                    PostId = userPost.UserPostId,
                     UserId = userPost.UserId,
                     Content = userPost.Content,
                     UserPostNumber = userPost.UserPostNumber,
@@ -202,13 +202,13 @@ namespace Application.Queries.SearchFunction
                     IsCoverPhotoPost = userPost.IsCoverPhotoPost,
                     IsHide = userPost.IsHide,
                     CreatedAt = userPost.CreatedAt,
-                    UpdatedAt = userPost.UpdatedAt,
+                    UpdateAt = userPost.UpdatedAt,
                     PhotoId = userPost.PhotoId,
                     VideoId = userPost.VideoId,
                     NumberPost = userPost.NumberPost,
                     Photo = _mapper.Map<PhotoDTO>(userPost.Photo),
                     Video = _mapper.Map<VideoDTO>(userPost.Video),
-                    UserPostPhotos = userPost.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
+                    UserPostPhoto = userPost.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
                     {
                         UserPostPhotoId = upp.UserPostPhotoId,
                         UserPostId = upp.UserPostId,
@@ -229,7 +229,7 @@ namespace Application.Queries.SearchFunction
                                         _context.GroupSharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
                         },
                     }).ToList(),
-                    UserPostVideos = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
+                    UserPostVideo = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
                     {
                         UserPostVideoId = upp.UserPostVideoId,
                         UserPostId = upp.UserPostId,
@@ -251,8 +251,8 @@ namespace Application.Queries.SearchFunction
                         },
                     }).ToList(),
                     EdgeRank = 0,
-                    Avatar = _mapper.Map<GetUserAvatar>(avatar),
-                    FullName = user != null ? $"{user.FirstName} {user.LastName}" : null,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
+                    UserName = user != null ? $"{user.FirstName} {user.LastName}" : null,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = counts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
