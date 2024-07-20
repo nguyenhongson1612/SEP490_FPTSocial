@@ -97,7 +97,7 @@ namespace Application.Queries.GetFriendyName
                     };
                     if (friend.AvataPhotos.Count > 0)
                     {
-                        frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                        frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
                     }
                     listfrienddto.Add(frienddto);
                     //result.getFriendByName.Add(frienddto);
