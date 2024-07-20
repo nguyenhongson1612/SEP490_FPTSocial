@@ -28,23 +28,19 @@ namespace API.Hub
         private readonly IGetNotifications _getNotifications;
         private readonly GuidHelper _helper;
         private readonly SplitString _splitString;
-        private readonly ILogger<NotificationsHubBackgroundService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
         private readonly HubCallerContext _hubCallerContext;
-        private readonly List<NotificationOutDTO> _listNotificationOutDTO;
-        public NotificationsHubBackgroundService(ILogger<NotificationsHubBackgroundService> logger, IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
+        public NotificationsHubBackgroundService(IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
             ICreateNotifications createNotifications, IGetNotifications getNotifications, ConnectionMapping<string> connections)
         {
             _helper = new GuidHelper();
-            _logger = logger;
             _configuration = configuration;
             _createNotifications = createNotifications;
             _getNotifications = getNotifications;
             _hubContext = hubContext;
             _connections = connections;
             _splitString = new SplitString();
-            _listNotificationOutDTO = new();
         }
 
         public async Task SendNotifyService(HubCallerContext context, string notice)
@@ -55,7 +51,8 @@ namespace API.Hub
             string url = routeOb.Url;
             string code = routeOb.MsgCode;
             string addMsg = routeOb.AddMsg;
-            Domain.QueryModels.UserProfile sender;
+            string actionId = routeOb.ActionId;
+            string msgDB;
 
             if (_httpContext == null)
             {
@@ -76,46 +73,66 @@ namespace API.Hub
                 await _hubContext.Clients.Client(context.ConnectionId).ReceiveNotification($"The  ({context.ConnectionId}) Connected Fail!");
             }
             var senderId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
-
-
-            //using (fptforumQueryContext _querycontext = new fptforumQueryContext())
-            //{
-            //    sender = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
-
-            //    if (sender == null)
-            //    {
-            //        throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-            //    }
-            //}
-            var senderInfo = _getNotifications.GetAvatarBySenderId(senderId);
-
-            string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
-            string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
-            string msgDB = senderName + SEC + notificationsMessage + addMsg;
-            string msg = notificationsMessage + addMsg;
-            NotificationOutDTO notificationOutDTO = new()
+            if (senderId != receiverId)
             {
-                SenderId = senderId,
-                SenderName = senderName,
-                //ReciverId = receiverId,
-                SenderAvatar = senderInfo.SenderAvatarURL,
-                Message = msg,
-                Url = url
+                var senderInfo = _getNotifications.GetAvatarBySenderId(senderId);
 
-            };
-            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
-            //await _hubContext.Clients.All.ReceiveNotification(msg, url);
-            //var receiverConnectId = _connections.GetConnections(receiverId);
-            foreach (var connectionId in _connections.GetConnections(receiverId))
-            {
-                await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
+                string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
+                if(actionId == null)
+                {
+                    msgDB = senderName + SEC + notificationsMessage + addMsg;
+                    string msg = notificationsMessage + addMsg;
+                    NotificationOutDTO notificationOutDTO = new()
+                    {
+                        SenderId = senderId,
+                        SenderName = senderName,
+                        //ReciverId = receiverId,
+                        SenderAvatar = senderInfo.SenderAvatarURL,
+                        Message = msg,
+                        Url = url
+
+                    };
+                    string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
+
+                    foreach (var connectionId in _connections.GetConnections(receiverId))
+                    {
+                        await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                    }
+
+                    await _createNotifications.CreateNotitfication(senderId, receiverId, msgDB, url);
+                }
+                else
+                {
+                    msgDB = senderName + SEC + actionId + SEC + notificationsMessage + addMsg;
+                    bool isExist = _getNotifications.IsNotifyExist(senderId, msgDB);
+                    if (!isExist) 
+                    {
+                        string msg = notificationsMessage + addMsg;
+                        NotificationOutDTO notificationOutDTO = new()
+                        {
+                            SenderId = senderId,
+                            SenderName = senderName,
+                            //ReciverId = receiverId,
+                            SenderAvatar = senderInfo.SenderAvatarURL,
+                            Message = msg,
+                            Url = url
+
+                        };
+                        string jsonNotice = System.Text.Json.JsonSerializer.Serialize(notificationOutDTO);
+
+                        foreach (var connectionId in _connections.GetConnections(receiverId))
+                        {
+                            await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                        }
+
+                        await _createNotifications.CreateNotitfication(senderId, receiverId, msgDB, url);
+                    }
+
+                }
+                
+
             }
-
-
-            //await _hubContext.Clients.All.ReceiveNotification(jsonNotice);
-
-            await _createNotifications.CreateNotitfication(senderId, receiverId, msgDB, url);
-
         }
 
         public async Task SendGroupNotifyService(HubCallerContext context, string notice)
@@ -172,9 +189,13 @@ namespace API.Hub
             //var receiverConnectId = _connections.GetConnections(receiverId);
             foreach (var receiver in groupMember)
             {
-                foreach (var connectionId in _connections.GetConnections(receiver.UserId.ToString()))
+                if (receiver.UserId != Guid.Parse(senderId))
                 {
-                    await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+                    foreach (var connectionId in _connections.GetConnections(receiver.UserId.ToString()))
+                    {
+                        await _hubContext.Clients.Client(connectionId).ReceiveNotification(jsonNotice);
+
+                    }
                     /// [OPTIMIZE] If create oke, i will a new create for group msg to move out create method of for loop
                     await _createNotifications.CreateNotitfication(senderId, receiver.UserId.ToString(), msgDB, url);
                 }
@@ -200,36 +221,13 @@ namespace API.Hub
             var receiverConnectId = _connections.GetConnections(userId);
 
             HttpContext _httpContext = context.GetHttpContext();
-            List<Domain.QueryModels.Notification> rawNotice = _getNotifications.GetNotifyByUserId(userId);
-            foreach (var noti in rawNotice)
-            {
-                if (noti.UserId == noti.SenderId)
-                {
-                    continue;
-                }
-                else
-                {
-                    NotificationOutDTO _notificationOutDTO = new();
-                    var senderInfo = _getNotifications.GetAvatarBySenderId(noti.SenderId.ToString());
-
-                    string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
-
-                    _notificationOutDTO.SenderId = noti.SenderId.ToString();
-                    _notificationOutDTO.SenderName = senderName;
-                    _notificationOutDTO.SenderAvatar = senderInfo.SenderAvatarURL;
-                    _notificationOutDTO.Message = _splitString.SplitStringForNotify(noti.NotiMessage).Last();
-                    _notificationOutDTO.Url = noti.NotifiUrl;
-                    _listNotificationOutDTO.Add(_notificationOutDTO);
-                } 
-
-            }
-            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(_listNotificationOutDTO);
+            List<NotificationOutDTO> rawNotice = _getNotifications.GetNotifyByUserIds(userId);
+            string jsonNotice = System.Text.Json.JsonSerializer.Serialize(rawNotice);
 
             foreach (var connectionId in receiverConnectId)
             {
                 await _hubContext.Clients.Client(connectionId).listReceiveNotification(jsonNotice);
             }
-            _listNotificationOutDTO.Clear();
             
         }
 
@@ -240,8 +238,6 @@ namespace API.Hub
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
                 DateTime datetime = DateTime.Now;
-                _logger.LogInformation($"excute {1}", nameof(NotificationsHubBackgroundService), datetime);
-
 
             }
         }
