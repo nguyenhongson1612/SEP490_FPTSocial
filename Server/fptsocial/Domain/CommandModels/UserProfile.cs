@@ -11,10 +11,12 @@ namespace Domain.CommandModels
             BlockUserUserIsBlockeds = new HashSet<BlockUser>();
             BlockUserUsers = new HashSet<BlockUser>();
             CommentGroupPosts = new HashSet<CommentGroupPost>();
+            CommentGroupSharePosts = new HashSet<CommentGroupSharePost>();
             CommentGroupVideoPosts = new HashSet<CommentGroupVideoPost>();
             CommentPhotoGroupPosts = new HashSet<CommentPhotoGroupPost>();
             CommentPhotoPosts = new HashSet<CommentPhotoPost>();
             CommentPosts = new HashSet<CommentPost>();
+            CommentSharePosts = new HashSet<CommentSharePost>();
             CommentVideoPosts = new HashSet<CommentVideoPost>();
             FriendFriendNavigations = new HashSet<Friend>();
             FriendUsers = new HashSet<Friend>();
@@ -39,11 +41,15 @@ namespace Domain.CommandModels
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
             ReactGroupPosts = new HashSet<ReactGroupPost>();
+            ReactGroupSharePostComments = new HashSet<ReactGroupSharePostComment>();
+            ReactGroupSharePosts = new HashSet<ReactGroupSharePost>();
             ReactGroupVideoPostComments = new HashSet<ReactGroupVideoPostComment>();
             ReactGroupVideoPosts = new HashSet<ReactGroupVideoPost>();
             ReactPhotoPostComments = new HashSet<ReactPhotoPostComment>();
             ReactPhotoPosts = new HashSet<ReactPhotoPost>();
             ReactPosts = new HashSet<ReactPost>();
+            ReactSharePostComments = new HashSet<ReactSharePostComment>();
+            ReactSharePosts = new HashSet<ReactSharePost>();
             ReactUserChatMessages = new HashSet<ReactUserChatMessage>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
@@ -98,10 +104,12 @@ namespace Domain.CommandModels
         public virtual ICollection<BlockUser> BlockUserUserIsBlockeds { get; set; }
         public virtual ICollection<BlockUser> BlockUserUsers { get; set; }
         public virtual ICollection<CommentGroupPost> CommentGroupPosts { get; set; }
+        public virtual ICollection<CommentGroupSharePost> CommentGroupSharePosts { get; set; }
         public virtual ICollection<CommentGroupVideoPost> CommentGroupVideoPosts { get; set; }
         public virtual ICollection<CommentPhotoGroupPost> CommentPhotoGroupPosts { get; set; }
         public virtual ICollection<CommentPhotoPost> CommentPhotoPosts { get; set; }
         public virtual ICollection<CommentPost> CommentPosts { get; set; }
+        public virtual ICollection<CommentSharePost> CommentSharePosts { get; set; }
         public virtual ICollection<CommentVideoPost> CommentVideoPosts { get; set; }
         public virtual ICollection<Friend> FriendFriendNavigations { get; set; }
         public virtual ICollection<Friend> FriendUsers { get; set; }
@@ -126,11 +134,15 @@ namespace Domain.CommandModels
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
         public virtual ICollection<ReactGroupPost> ReactGroupPosts { get; set; }
+        public virtual ICollection<ReactGroupSharePostComment> ReactGroupSharePostComments { get; set; }
+        public virtual ICollection<ReactGroupSharePost> ReactGroupSharePosts { get; set; }
         public virtual ICollection<ReactGroupVideoPostComment> ReactGroupVideoPostComments { get; set; }
         public virtual ICollection<ReactGroupVideoPost> ReactGroupVideoPosts { get; set; }
         public virtual ICollection<ReactPhotoPostComment> ReactPhotoPostComments { get; set; }
         public virtual ICollection<ReactPhotoPost> ReactPhotoPosts { get; set; }
         public virtual ICollection<ReactPost> ReactPosts { get; set; }
+        public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
+        public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
         public virtual ICollection<ReactUserChatMessage> ReactUserChatMessages { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }

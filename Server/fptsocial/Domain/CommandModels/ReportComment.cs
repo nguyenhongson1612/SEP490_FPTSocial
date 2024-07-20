@@ -18,12 +18,16 @@ namespace Domain.CommandModels
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
         public bool? Processing { get; set; }
+        public Guid? CommentSharePostId { get; set; }
+        public Guid? CommentGroupSharePostId { get; set; }
 
         public virtual CommentPost Comment { get; set; } = null!;
         public virtual CommentGroupPost CommentGroupPost { get; set; } = null!;
+        public virtual CommentGroupSharePost? CommentGroupSharePost { get; set; }
         public virtual CommentGroupVideoPost CommentGroupVideoPost { get; set; } = null!;
         public virtual CommentPhotoGroupPost CommentPhotoGroupPost { get; set; } = null!;
         public virtual CommentPhotoPost CommentPhotoPost { get; set; } = null!;
+        public virtual CommentSharePost? CommentSharePost { get; set; }
         public virtual CommentVideoPost CommentVideoPost { get; set; } = null!;
         public virtual UserProfile ReportBy { get; set; } = null!;
         public virtual ReportType ReportType { get; set; } = null!;

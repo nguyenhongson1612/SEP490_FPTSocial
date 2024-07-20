@@ -13,11 +13,15 @@ namespace Domain.CommandModels
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
             ReactGroupPosts = new HashSet<ReactGroupPost>();
+            ReactGroupSharePostComments = new HashSet<ReactGroupSharePostComment>();
+            ReactGroupSharePosts = new HashSet<ReactGroupSharePost>();
             ReactGroupVideoPostComments = new HashSet<ReactGroupVideoPostComment>();
             ReactGroupVideoPosts = new HashSet<ReactGroupVideoPost>();
             ReactPhotoPostComments = new HashSet<ReactPhotoPostComment>();
             ReactPhotoPosts = new HashSet<ReactPhotoPost>();
             ReactPosts = new HashSet<ReactPost>();
+            ReactSharePostComments = new HashSet<ReactSharePostComment>();
+            ReactSharePosts = new HashSet<ReactSharePost>();
             ReactUserChatMessages = new HashSet<ReactUserChatMessage>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
@@ -34,11 +38,15 @@ namespace Domain.CommandModels
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
         public virtual ICollection<ReactGroupPost> ReactGroupPosts { get; set; }
+        public virtual ICollection<ReactGroupSharePostComment> ReactGroupSharePostComments { get; set; }
+        public virtual ICollection<ReactGroupSharePost> ReactGroupSharePosts { get; set; }
         public virtual ICollection<ReactGroupVideoPostComment> ReactGroupVideoPostComments { get; set; }
         public virtual ICollection<ReactGroupVideoPost> ReactGroupVideoPosts { get; set; }
         public virtual ICollection<ReactPhotoPostComment> ReactPhotoPostComments { get; set; }
         public virtual ICollection<ReactPhotoPost> ReactPhotoPosts { get; set; }
         public virtual ICollection<ReactPost> ReactPosts { get; set; }
+        public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
+        public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
         public virtual ICollection<ReactUserChatMessage> ReactUserChatMessages { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }

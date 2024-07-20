@@ -5,6 +5,13 @@ namespace Domain.CommandModels
 {
     public partial class SharePost
     {
+        public SharePost()
+        {
+            CommentSharePosts = new HashSet<CommentSharePost>();
+            ReactSharePostComments = new HashSet<ReactSharePostComment>();
+            ReactSharePosts = new HashSet<ReactSharePost>();
+        }
+
         public Guid SharePostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }
@@ -32,5 +39,8 @@ namespace Domain.CommandModels
         public virtual UserPostVideo? UserPostVideo { get; set; }
         public virtual UserProfile? UserShared { get; set; }
         public virtual UserStatus? UserStatus { get; set; }
+        public virtual ICollection<CommentSharePost> CommentSharePosts { get; set; }
+        public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
+        public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
     }
 }

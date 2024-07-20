@@ -22,10 +22,12 @@ namespace Domain.CommandModels
         public virtual DbSet<BlockUser> BlockUsers { get; set; } = null!;
         public virtual DbSet<Client> Clients { get; set; } = null!;
         public virtual DbSet<CommentGroupPost> CommentGroupPosts { get; set; } = null!;
+        public virtual DbSet<CommentGroupSharePost> CommentGroupSharePosts { get; set; } = null!;
         public virtual DbSet<CommentGroupVideoPost> CommentGroupVideoPosts { get; set; } = null!;
         public virtual DbSet<CommentPhotoGroupPost> CommentPhotoGroupPosts { get; set; } = null!;
         public virtual DbSet<CommentPhotoPost> CommentPhotoPosts { get; set; } = null!;
         public virtual DbSet<CommentPost> CommentPosts { get; set; } = null!;
+        public virtual DbSet<CommentSharePost> CommentSharePosts { get; set; } = null!;
         public virtual DbSet<CommentVideoPost> CommentVideoPosts { get; set; } = null!;
         public virtual DbSet<ContactInfo> ContactInfos { get; set; } = null!;
         public virtual DbSet<Friend> Friends { get; set; } = null!;
@@ -61,11 +63,15 @@ namespace Domain.CommandModels
         public virtual DbSet<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; } = null!;
         public virtual DbSet<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; } = null!;
         public virtual DbSet<ReactGroupPost> ReactGroupPosts { get; set; } = null!;
+        public virtual DbSet<ReactGroupSharePost> ReactGroupSharePosts { get; set; } = null!;
+        public virtual DbSet<ReactGroupSharePostComment> ReactGroupSharePostComments { get; set; } = null!;
         public virtual DbSet<ReactGroupVideoPost> ReactGroupVideoPosts { get; set; } = null!;
         public virtual DbSet<ReactGroupVideoPostComment> ReactGroupVideoPostComments { get; set; } = null!;
         public virtual DbSet<ReactPhotoPost> ReactPhotoPosts { get; set; } = null!;
         public virtual DbSet<ReactPhotoPostComment> ReactPhotoPostComments { get; set; } = null!;
         public virtual DbSet<ReactPost> ReactPosts { get; set; } = null!;
+        public virtual DbSet<ReactSharePost> ReactSharePosts { get; set; } = null!;
+        public virtual DbSet<ReactSharePostComment> ReactSharePostComments { get; set; } = null!;
         public virtual DbSet<ReactType> ReactTypes { get; set; } = null!;
         public virtual DbSet<ReactUserChatMessage> ReactUserChatMessages { get; set; } = null!;
         public virtual DbSet<ReactVideoPost> ReactVideoPosts { get; set; } = null!;
@@ -225,6 +231,33 @@ namespace Domain.CommandModels
                     .HasConstraintName("comment_roup_post_user_FK");
             });
 
+            modelBuilder.Entity<CommentGroupSharePost>(entity =>
+            {
+                entity.ToTable("CommentGroupSharePost");
+
+                entity.Property(e => e.CommentGroupSharePostId).ValueGeneratedNever();
+
+                entity.Property(e => e.Content).HasColumnType("ntext");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ListNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.GroupSharePost)
+                    .WithMany(p => p.CommentGroupSharePosts)
+                    .HasForeignKey(d => d.GroupSharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_coment_group_share_post");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.CommentGroupSharePosts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_coment_group_share_post");
+            });
+
             modelBuilder.Entity<CommentGroupVideoPost>(entity =>
             {
                 entity.ToTable("CommentGroupVideoPost");
@@ -334,6 +367,33 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserPostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("post_comment_FK");
+            });
+
+            modelBuilder.Entity<CommentSharePost>(entity =>
+            {
+                entity.ToTable("CommentSharePost");
+
+                entity.Property(e => e.CommentSharePostId).ValueGeneratedNever();
+
+                entity.Property(e => e.Content).HasColumnType("ntext");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ListNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.SharePost)
+                    .WithMany(p => p.CommentSharePosts)
+                    .HasForeignKey(d => d.SharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_coment_share_post");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.CommentSharePosts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_coment_share_post");
             });
 
             modelBuilder.Entity<CommentVideoPost>(entity =>
@@ -1342,6 +1402,68 @@ namespace Domain.CommandModels
                     .HasConstraintName("react_group_post_user_FK");
             });
 
+            modelBuilder.Entity<ReactGroupSharePost>(entity =>
+            {
+                entity.ToTable("ReactGroupSharePost");
+
+                entity.Property(e => e.ReactGroupSharePostId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.GroupSharePost)
+                    .WithMany(p => p.ReactGroupSharePosts)
+                    .HasForeignKey(d => d.GroupSharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_react_group_share_post");
+
+                entity.HasOne(d => d.ReactType)
+                    .WithMany(p => p.ReactGroupSharePosts)
+                    .HasForeignKey(d => d.ReactTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_type_react_group_share_post");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ReactGroupSharePosts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_react_group_share_post");
+            });
+
+            modelBuilder.Entity<ReactGroupSharePostComment>(entity =>
+            {
+                entity.HasKey(e => e.ReactGroupSharePosCommentId)
+                    .HasName("PK__ReactGro__307770EA5B28C6F3");
+
+                entity.ToTable("ReactGroupSharePostComment");
+
+                entity.Property(e => e.ReactGroupSharePosCommentId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CommentGroupSharePost)
+                    .WithMany(p => p.ReactGroupSharePostComments)
+                    .HasForeignKey(d => d.CommentGroupSharePostId)
+                    .HasConstraintName("fk_comment_react_group_share_post_cmt");
+
+                entity.HasOne(d => d.GroupSharePost)
+                    .WithMany(p => p.ReactGroupSharePostComments)
+                    .HasForeignKey(d => d.GroupSharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_react_group_share_post_cmt");
+
+                entity.HasOne(d => d.ReactType)
+                    .WithMany(p => p.ReactGroupSharePostComments)
+                    .HasForeignKey(d => d.ReactTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_type_react_group_share_post_cmt");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ReactGroupSharePostComments)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_react_group_share_post_cmt");
+            });
+
             modelBuilder.Entity<ReactGroupVideoPost>(entity =>
             {
                 entity.ToTable("ReactGroupVideoPost");
@@ -1492,6 +1614,68 @@ namespace Domain.CommandModels
                     .HasConstraintName("react_post_FK");
             });
 
+            modelBuilder.Entity<ReactSharePost>(entity =>
+            {
+                entity.ToTable("ReactSharePost");
+
+                entity.Property(e => e.ReactSharePostId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ReactType)
+                    .WithMany(p => p.ReactSharePosts)
+                    .HasForeignKey(d => d.ReactTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_type_react_share_post");
+
+                entity.HasOne(d => d.SharePost)
+                    .WithMany(p => p.ReactSharePosts)
+                    .HasForeignKey(d => d.SharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_react_share_post");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ReactSharePosts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_react_share_post");
+            });
+
+            modelBuilder.Entity<ReactSharePostComment>(entity =>
+            {
+                entity.HasKey(e => e.ReactSharePosCommentId)
+                    .HasName("PK__ReactSha__F43E716E4B291E6C");
+
+                entity.ToTable("ReactSharePostComment");
+
+                entity.Property(e => e.ReactSharePosCommentId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.CommentSharePost)
+                    .WithMany(p => p.ReactSharePostComments)
+                    .HasForeignKey(d => d.CommentSharePostId)
+                    .HasConstraintName("fk_comment_react_share_post_cmt");
+
+                entity.HasOne(d => d.ReactType)
+                    .WithMany(p => p.ReactSharePostComments)
+                    .HasForeignKey(d => d.ReactTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_type_react_share_post_cmt");
+
+                entity.HasOne(d => d.SharePost)
+                    .WithMany(p => p.ReactSharePostComments)
+                    .HasForeignKey(d => d.SharePostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_react_share_post_cmt");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ReactSharePostComments)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_react_share_post_cmt");
+            });
+
             modelBuilder.Entity<ReactType>(entity =>
             {
                 entity.ToTable("ReactType");
@@ -1623,6 +1807,11 @@ namespace Domain.CommandModels
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment__group_post_FK");
 
+                entity.HasOne(d => d.CommentGroupSharePost)
+                    .WithMany(p => p.ReportComments)
+                    .HasForeignKey(d => d.CommentGroupSharePostId)
+                    .HasConstraintName("fk_report_comment_group_share_post");
+
                 entity.HasOne(d => d.CommentGroupVideoPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentGroupVideoPostId)
@@ -1646,6 +1835,11 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.CommentPhotoPostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_photo_post_FK");
+
+                entity.HasOne(d => d.CommentSharePost)
+                    .WithMany(p => p.ReportComments)
+                    .HasForeignKey(d => d.CommentSharePostId)
+                    .HasConstraintName("fk_report_comment_share_post");
 
                 entity.HasOne(d => d.CommentVideoPost)
                     .WithMany(p => p.ReportComments)
