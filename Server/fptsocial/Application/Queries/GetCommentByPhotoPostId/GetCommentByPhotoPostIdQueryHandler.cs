@@ -37,7 +37,7 @@ namespace Application.Queries.GetCommentByPhotoPostId
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.UserPostPhotoId == request.UserPostPhotoId
-                                        && c.IsHide == false
+                                        && c.IsHide == false && c.IsBanned == false
                                   orderby c.CreatedDate ascending
                                   select new CommentPhotoDto
                                   {
