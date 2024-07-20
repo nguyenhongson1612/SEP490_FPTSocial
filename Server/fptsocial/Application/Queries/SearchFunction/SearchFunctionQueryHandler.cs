@@ -12,6 +12,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,13 +27,13 @@ namespace Application.Queries.SearchFunction
 {
     public class SearchFunctionQueryHandler : IQueryHandler<SearchFunctionQuery, SearchFunctionQueryResult>
     {
-        private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public SearchFunctionQueryHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public SearchFunctionQueryHandler(fptforumQueryContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -84,6 +85,7 @@ namespace Application.Queries.SearchFunction
         public async Task<List<GroupFPTDTO>> searchGroup (string content)
         {
             List<GroupFPTDTO> groups = await _context.GroupFpts
+                                                     .Where(x => x.IsDelete != true)
                                                      .Select(group => new GroupFPTDTO
                                                      {
                                                          GroupId = group.GroupId,
@@ -158,6 +160,7 @@ namespace Application.Queries.SearchFunction
 
             // Lấy các bài viết theo điều kiện trạng thái mà không chuẩn hóa nội dung
             var posts = await _context.UserPosts
+                                      .Where(p => p.IsBanned == false)
                                       //.Where(p => friendUserIds.Contains(p.UserId) &&
                                       //            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) &&
                                       //            p.IsHide != true)

@@ -35,7 +35,7 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
             var comments = await (from c in _context.CommentGroupVideoPosts // Thay đổi bảng truy vấn
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                  where c.GroupPostVideoId == request.GroupPostVideoId && c.IsHide == false// Thay đổi điều kiện lọc
+                                  where c.GroupPostVideoId == request.GroupPostVideoId && c.IsHide == false && c.IsBanned == false// Thay đổi điều kiện lọc
                                   orderby c.CreatedDate ascending
                                   select new GroupVideoCommentDto // Sử dụng DTO tương ứng cho video comment
                                   {
