@@ -116,6 +116,30 @@ namespace Domain.CommandModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AdminProfile>(entity =>
+            {
+                entity.HasKey(e => e.AdminId)
+                    .HasName("PK__AdminPro__719FE48882423A8A");
+
+                entity.ToTable("AdminProfile");
+
+                entity.Property(e => e.AdminId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FullName).HasMaxLength(100);
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AdminProfiles)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_role_admin");
+            });
+
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
