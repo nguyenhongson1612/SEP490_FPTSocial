@@ -15,6 +15,8 @@ namespace Application.DTO.NotificationDTO
         public string SenderAvatar { get; set; }
         public string Message { get; set; }
         public string Url { get; set; }
+        public bool IsRead { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
     public class GetAvatarSenderDTO

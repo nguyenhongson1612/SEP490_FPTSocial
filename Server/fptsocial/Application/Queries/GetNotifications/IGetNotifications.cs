@@ -13,6 +13,8 @@ namespace Application.Queries.GetNotifications
         public GetAvatarSenderDTO GetAvatarBySenderId(string senderId);
         public Domain.QueryModels.UserProfile GetUserProfileByUserId(string userId);
         public List<Domain.QueryModels.Notification> GetNotifyByUserId(string userId);
+        public List<NotificationOutDTO> GetNotifyByUserIds(string userId);
         public List<Domain.QueryModels.Notification> GetNotifyBySenderId(string senderId);
+        public bool IsNotifyExist(string senderId, string msgDB);
     }
 }
