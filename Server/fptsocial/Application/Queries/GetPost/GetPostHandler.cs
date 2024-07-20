@@ -317,9 +317,11 @@ namespace Application.Queries.GetPost
 
                 var avtShare = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
 
-                var reactNumber = _context.ReactPosts.Count(x => x.UserPostId == item.SharePostId);
-                var commentNumber = _context.CommentPosts.Count(x => x.UserPostId == item.SharePostId);
-                var shareNumber = _context.SharePosts.Count(x => x.UserPostId == item.SharePostId);
+                var groupId = _context.GroupPosts.Where(x => x.GroupPostId == item.GroupPostId).Select(x => x.GroupId).FirstOrDefault();
+                var group = _context.GroupFpts.FirstOrDefault(x => x.GroupId == groupId);
+
+                var reactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId);
+                var commentNumber = _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId);
 
                 combinePost.Add(new GetPostResult
                 {
@@ -347,6 +349,9 @@ namespace Application.Queries.GetPost
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
                     UserNameShare = userShare,
                     UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
+                    GroupShareId = group?.GroupId ?? null,
+                    GroupShareName = group?.GroupName ?? null,
+                    GroupShareCorverImage = group?.CoverImage ?? null,
                     UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
                     UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
@@ -358,9 +363,9 @@ namespace Application.Queries.GetPost
                     {
                         ReactNumber =  reactNumber,
                         CommentNumber =  commentNumber,
-                        ShareNumber =  shareNumber,
+                        ShareNumber =  0,
                     },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, shareNumber, item.CreatedDate ?? DateTime.Now)
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, 0, item.CreatedDate ?? DateTime.Now)
                 });
             }
 

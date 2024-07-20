@@ -1,8 +1,15 @@
 ﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupDTO;
 using Application.DTO.GroupPostDTO;
+using Application.DTO.UserPostDTO;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
+using Application.Queries.GetPost;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Core.Helper;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -28,6 +35,25 @@ namespace Application.Queries.GetGroupPostByGroupId
             _mapper = mapper;
         }
 
+        private List<GetGroupPostByGroupIdResult> ApplySortingAndPaging(List<GetGroupPostByGroupIdResult> query, string type, int page, int pageSize)
+        {
+            if (type.Contains("Valid"))
+            {
+                query = query.OrderByDescending(x => x.EdgeRank)
+                             .ThenByDescending(x => x.CreatedAt)
+                             .ToList();
+            }
+            else if (type.Contains("New"))
+            {
+                query = query.OrderByDescending(x => x.CreatedAt)
+                    .ToList();
+            }
+
+            return query.Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToList();
+        }
+
         public async Task<Result<List<GetGroupPostByGroupIdResult>>> Handle(GetGroupPostByGroupIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
@@ -40,7 +66,10 @@ namespace Application.Queries.GetGroupPostByGroupId
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
+            List<GetGroupPostByGroupIdResult> combine = new List<GetGroupPostByGroupIdResult>();
+
             var groupPost = await _context.GroupPosts
+                                    .AsNoTracking()
                                     .Include(x => x.GroupStatus)
                                     .Include(x => x.GroupPhoto)
                                     .Include(x => x.GroupVideo)
@@ -49,89 +78,185 @@ namespace Application.Queries.GetGroupPostByGroupId
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
                                     .Include(x => x.Group)
-                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true)
+                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true && x.IsPending != false)
                                     .ToListAsync(cancellationToken);
 
-            var result = groupPost.Select(x => new GetGroupPostByGroupIdResult
+            foreach ( var item in groupPost)
             {
-                GroupPostId = x.GroupPostId,
-                UserId = x.UserId,
-                Content = x.Content,
-                GroupPostNumber = x.GroupPostNumber,
-                GroupStatusId = new DTO.GroupDTO.GetGroupStatusDTO {
-                    GroupStatusId = x.GroupStatusId,
-                    GroupStatusName = x.GroupStatus.GroupStatusName
-                },
-                CreatedAt = x.CreatedAt,
-                IsHide = x.IsHide,
-                UpdatedAt = x.UpdatedAt,
-                GroupPhotoId = x.GroupPhotoId,
-                GroupVideoId = x.GroupVideoId,
-                NumberPost = x.NumberPost,
-                IsBanned = x.IsBanned,
-                GroupPhoto = _mapper.Map<GroupPhotoDTO>(x.GroupPhoto),
-                GroupVideo = _mapper.Map<GroupVideoDTO>(x.GroupVideo),
-                GroupPostPhoto = x.GroupPostPhotos?.Select(upp => new GroupPostPhotoDTO {
-                    GroupPostPhotoId = upp.GroupPostPhotoId,
-                    GroupPostId = upp.GroupPostId,
-                    Content = upp.Content,
-                    GroupPhotoId = upp.GroupPhotoId,
-                    GroupStatusId = upp.GroupStatusId,
-                    GroupPostPhotoNumber = upp.GroupPostPhotoNumber,
-                    IsHide = upp.IsHide,
-                    CreatedAt = upp.CreatedAt,
-                    UpdatedAt = upp.UpdatedAt,
-                    PostPosition = upp.PostPosition,
-                    GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto),
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = _context.ReactGroupPhotoPosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                        CommentNumber = _context.ReactGroupPhotoPostComments.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId)
-                    }
-                }).ToList(),
-                GroupPostVideo = x.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
-                {
-                    GroupPostVideoId = upp.GroupPostVideoId,
-                    GroupPostId = upp.GroupPostId,
-                    Content = upp.Content,
-                    GroupVideoId = upp.GroupVideoId,
-                    GroupStatusId = upp.GroupStatusId,
-                    GroupPostVideoNumber = upp.GroupPostVideoNumber,
-                    IsHide = upp.IsHide,
-                    CreatedAt = upp.CreatedAt,
-                    UpdatedAt = upp.UpdatedAt,
-                    PostPosition = upp.PostPosition,
-                    GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                        CommentNumber = _context.ReactGroupVideoPostComments.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId)
-                    }
-                }).ToList(),
-                GroupId = x.GroupId,
-                GroupName = x.Group.GroupName,
-                GroupCorverImage = x.Group.CoverImage
-            }).ToList();
-
-            foreach (var item in result)
-            {
-                var avt = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
-                var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == item.UserId);
-                item.UserAvata = _mapper.Map<GetUserAvatar>(avt);
-                item.UserName = user.FirstName + " " + user.LastName;
+                var userName = _context.UserProfiles.Where(x => x.UserId == item.UserId).Select(x => x.FirstName + " " + x.LastName).FirstOrDefault();
+                var userAvatar = _context.AvataPhotos.Where(x => x.UserId == item.UserId && x.IsUsed == true).FirstOrDefault();
                 var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == item.GroupPostId);
-                item.ReactCount = new DTO.ReactDTO.ReactCount
-                {
-                    ReactNumber = react.ReactCount,
-                    CommentNumber = react.CommentCount,
-                    ShareNumber = react.ShareCount
-                };
+
+                combine.Add(new GetGroupPostByGroupIdResult {
+                    PostId = item.GroupPostId,
+                    UserId = item.UserId,
+                    Content = item.Content,
+                    CreatedAt = item.CreatedAt,
+                    UpdateAt = item.UpdatedAt,
+                    IsHide = item.IsHide,
+                    IsShare = false,
+                    IsBanned = item.IsBanned,
+                    IsPending = item.IsPending,
+                    GroupPostNumber = item.GroupPostNumber,
+                    NumberGroupPost = item.NumberPost,
+                    GroupPhoto = _mapper.Map<GroupPhotoDTO>(item.GroupPhoto),
+                    GroupVideo = _mapper.Map<GroupVideoDTO>(item.GroupVideo),
+                    GroupPostPhoto = item.GroupPostPhotos?.Select(upp => new GroupPostPhotoDTO
+                    {
+                        GroupPostPhotoId = upp.GroupPostPhotoId,
+                        GroupPostId = upp.GroupPostId,
+                        Content = upp.Content,
+                        GroupPhotoId = upp.GroupPhotoId,
+                        GroupStatusId = upp.GroupStatusId,
+                        GroupPostPhotoNumber = upp.GroupPostPhotoNumber,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto),
+                    }).ToList(),
+                    GroupPostVideo = item.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
+                    {
+                        GroupPostVideoId = upp.GroupPostVideoId,
+                        GroupPostId = upp.GroupPostId,
+                        Content = upp.Content,
+                        GroupVideoId = upp.GroupVideoId,
+                        GroupStatusId = upp.GroupStatusId,
+                        GroupPostVideoNumber = upp.GroupPostVideoNumber,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
+                    }).ToList(),
+                    UserName = userName,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(userAvatar),
+                    GroupStatus = new GetGroupStatusDTO
+                    {
+                        GroupStatusId = item.GroupStatusId,
+                        GroupStatusName = item.GroupStatus.GroupStatusName,
+                    },
+                    GroupId = item.GroupId,
+                    GroupName = item.Group.GroupName,
+                    GroupCorverImage = item.Group.CoverImage,
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = react?.ReactCount ?? 0,
+                        CommentNumber = react?.CommentCount ?? 0,
+                        ShareNumber = react?.ShareCount ?? 0
+                    },
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(react?.ReactCount ?? 0, react?.CommentCount ?? 0, react?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
+                });
             }
-            return Result<List<GetGroupPostByGroupIdResult>>.Success(result);
+
+            var sharePost = await _context.GroupSharePosts
+                .AsNoTracking()
+                .Include(x => x.GroupStatus)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostPhotos)
+                        .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostVideos)
+                        .ThenInclude(x => x.Video)
+                .Include(x => x.UserPostPhoto)
+                    .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPostVideo)
+                    .ThenInclude(x => x.Video)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostPhotos)
+                        .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostVideos)
+                        .ThenInclude(x => x.GroupVideo)
+                .Include(x => x.GroupPostPhoto)
+                    .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPostVideo)
+                    .ThenInclude(x => x.GroupVideo)
+                .Where(p => p.GroupId == request.GroupId && p.IsHide != true && p.IsBanned != true && p.IsPending != false)
+                .ToListAsync(cancellationToken);
+
+            foreach (var item in sharePost)
+            {
+                var user = _context.UserProfiles
+                    .AsNoTracking()
+                    .Where(x => x.UserId == item.UserId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefault();
+
+                var avatar = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+
+                var userShare = _context.UserProfiles
+                    .AsNoTracking()
+                    .Where(x => x.UserId == item.UserSharedId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefault();
+
+                var avtShare = _context.AvataPhotos
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+
+                var groupId = _context.GroupPosts
+                    .AsNoTracking()
+                    .Where(x => x.GroupPostId == item.GroupPostId).Select(x => x.GroupId).FirstOrDefault();
+                var group = _context.GroupFpts
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.GroupId == groupId);
+
+                var reactNumber = _context.ReactGroupSharePosts
+                    .AsNoTracking()
+                    .Count(x => x.GroupSharePostId == item.GroupSharePostId);
+                var commentNumber = _context.CommentGroupSharePosts
+                    .AsNoTracking()
+                    .Count(x => x.GroupSharePostId == item.GroupSharePostId);
+
+                combine.Add(new GetGroupPostByGroupIdResult
+                {
+                    PostId = item.GroupSharePostId,
+                    UserId = item.UserId,
+                    Content = item.Content,
+                    UserPostShareId = item.UserPostId,
+                    UserPostPhotoShareId = item.UserPostPhotoId,
+                    UserPostVideoShareId = item.UserPostVideoId,
+                    GroupPostShareId = item.GroupPostId,
+                    GroupPostPhotoShareId = item.GroupPostPhotoId,
+                    GroupPostVideoShareId = item.GroupPostVideoId,
+                    SharedToUserId = item.SharedToUserId,
+                    CreatedAt = item.CreateDate,
+                    UpdateAt = item.UpdateDate,
+                    IsHide = item.IsHide,
+                    IsBanned = item.IsBanned,
+                    IsShare = true,
+                    GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
+                    GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
+                    GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
+                    UserPostShare = _mapper.Map<UserPostDTO>(item.UserPost),
+                    UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
+                    UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
+                    UserNameShare = userShare,
+                    UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
+                    GroupShareId = group?.GroupId ?? null,
+                    GroupShareName = group?.GroupName ?? null,
+                    GroupShareCorverImage = group?.CoverImage ?? null,
+                    UserName = user,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
+                    GroupStatus = new GetGroupStatusDTO
+                    {
+                        GroupStatusId = (Guid) item.GroupStatusId,
+                        GroupStatusName = item.GroupStatus.GroupStatusName
+                    },
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = reactNumber,
+                        CommentNumber = commentNumber,
+                        ShareNumber = 0,
+                    },
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, 0, item.CreateDate ?? DateTime.Now)
+                });
+            }
+
+            combine = ApplySortingAndPaging(combine, request.Type, request.Page, request.PageSize);
+
+            return Result<List<GetGroupPostByGroupIdResult>>.Success(combine);
         }
     }
 }

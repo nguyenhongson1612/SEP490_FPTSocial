@@ -45,9 +45,19 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
             List<GetOtherUserPostByUserIdResult> combine = new List<GetOtherUserPostByUserIdResult>();
 
-            var idprofilestatus = await _context.Settings.Where(x => x.SettingName.Contains("Profile Status")).Select(x => x.SettingId).FirstOrDefaultAsync();
-            var idpublic = await _context.UserStatuses.Where(x => x.StatusName.Contains("Public")).Select(x => x.UserStatusId).FirstOrDefaultAsync();
-            var setting = await _context.UserSettings.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
+            var idprofilestatus = await _context.Settings
+                .AsNoTracking()
+                .Where(x => x.SettingName.Contains("Profile Status"))
+                .Select(x => x.SettingId)
+                .FirstOrDefaultAsync();
+            var idpublic = await _context.UserStatuses
+                .AsNoTracking()
+                .Where(x => x.StatusName.Contains("Public"))
+                .Select(x => x.UserStatusId)
+                .FirstOrDefaultAsync();
+            var setting = await _context.UserSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
 
             if (setting == null)
             {
@@ -86,16 +96,20 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
-            var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.IsUsed == true);
+            var avt = await _context.AvataPhotos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.IsUsed == true);
             var user = await _context.UserProfiles
+                .AsNoTracking()
                 .Where(x => x.UserId == request.UserId)
                 .Select(x => x.FirstName + " " + x.LastName)
                 .FirstOrDefaultAsync(cancellationToken);
 
             foreach (var item in userPosts)
             {
-                var react = await _context.PostReactCounts
-                .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId);
+                var react =  _context.PostReactCounts
+                .AsNoTracking()
+                .FirstOrDefault(x => x.UserPostId == item.UserPostId);
                 combine.Add(new GetOtherUserPostByUserIdResult {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -183,12 +197,12 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
             foreach (var item in sharePosts)
             {
-                var userShare = await _context.UserProfiles
+                var userShare =  _context.UserProfiles
                     .Where(x => x.UserId == item.UserSharedId)
                     .Select(x => x.FirstName + " " + x.LastName)
-                    .FirstOrDefaultAsync(cancellationToken);
+                    .FirstOrDefault();
                 
-                var avtShare = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+                var avtShare =  _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
                 combine.Add(new GetOtherUserPostByUserIdResult
                 {
                     PostId = item.SharePostId,
@@ -223,14 +237,18 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = await _context.ReactPosts.CountAsync(x => x.UserPostId == item.SharePostId),
-                        CommentNumber = await _context.CommentPosts.CountAsync(x => x.UserPostId == item.SharePostId),
-                        ShareNumber = await _context.SharePosts.CountAsync(x => x.UserPostId == item.SharePostId),
+                        ReactNumber =  _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        CommentNumber =  _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        ShareNumber = 0,
                     }
                 });
             }
 
-            combine = combine.OrderByDescending(x => x.CreatedAt).ToList();
+            combine = combine.OrderByDescending(x => x.CreatedAt)
+                            .Skip((request.Page - 1) * request.PageSize)
+                            .Take(request.PageSize)
+                            .ToList();
+
             return Result<List<GetOtherUserPostByUserIdResult>>.Success(combine);
         }
     }

@@ -49,9 +49,8 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getuserpostbyuserid")]
-        public async Task<IActionResult> GetUserPostByUserId()
+        public async Task<IActionResult> GetUserPostByUserId([FromQuery] GetUserPostQuery input)
         {
-            var input = new GetUserPostQuery();
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
