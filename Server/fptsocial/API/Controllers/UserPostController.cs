@@ -28,6 +28,8 @@ using Application.Commands.UpdateCommentUserPhotoPost;
 using Application.Queries.GetOtherUserPostByUserId;
 using Application.Commands.DeleteUserPost;
 using Application.Commands.DeleteCommentUserPost;
+using Application.Commands.DeleteCommentUserPhotoPost;
+using Application.Commands.DeleteCommentUserVideoPost;
 
 namespace API.Controllers
 {
@@ -324,6 +326,46 @@ namespace API.Controllers
         [HttpGet]
         [Route("deleteCommentUserPost")]
         public async Task<IActionResult> DeleteCommentUserPost([FromQuery] DeleteCommentUserPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("deleteCommentUserPhotoPost")]
+        public async Task<IActionResult> DeleteCommentUserPhotoPost([FromQuery] DeleteCommentUserPhotoPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("deleteCommentUserVideoPost")]
+        public async Task<IActionResult> DeleteCommentUserVideoPost([FromQuery] DeleteCommentUserVideoPostCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
