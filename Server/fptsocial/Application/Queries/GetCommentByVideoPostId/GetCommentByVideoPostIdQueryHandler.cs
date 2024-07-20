@@ -36,7 +36,7 @@ namespace Application.Queries.GetCommentByVideoPostId
             var comments = await (from c in _context.CommentVideoPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                  where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && c.IsBanned == false
+                                  where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && c.IsBanned != true
                                   orderby c.CreatedDate ascending
                                   select new CommentVideoDto
                                   {

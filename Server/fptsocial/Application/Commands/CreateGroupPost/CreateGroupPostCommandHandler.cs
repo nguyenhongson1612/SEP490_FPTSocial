@@ -9,7 +9,10 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
 using static Application.Services.CheckingBadWord;
 
 namespace Application.Commands.CreateGroupPost
@@ -43,6 +46,18 @@ namespace Application.Commands.CreateGroupPost
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
+            bool statusGroup = true;
+            var groupSettingName = (from g in _context.GroupFpts
+                                    join gsu in _context.GroupSettingUses
+                                        on g.GroupId equals gsu.GroupId
+                                    join groupSetting in _context.GroupSettings
+                                        on gsu.GroupSettingId equals groupSetting.GroupSettingId
+                                    where g.GroupId == request.GroupId
+                                    select groupSetting.GroupSettingName).FirstOrDefault();
+            if (groupSettingName == "Approve Post")
+            {
+                statusGroup = false;
+            }
 
             if (photos.Count() == 1 && numberPost == 1)
             {
@@ -66,6 +81,7 @@ namespace Application.Commands.CreateGroupPost
                 UpdatedAt = DateTime.Now,
                 NumberPost = numberPost,
                 IsBanned = false,
+                IsPending = statusGroup
             };
 
             if (PhotoIdSingle != Guid.Empty)
@@ -116,7 +132,8 @@ namespace Application.Commands.CreateGroupPost
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1
+                        PostPosition = postPosition + 1,
+                        IsPending = statusGroup,
                     };
                     await _context.GroupPostPhotos.AddAsync(groupPostPhoto);
                     await _context.SaveChangesAsync();
@@ -149,7 +166,8 @@ namespace Application.Commands.CreateGroupPost
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1
+                        PostPosition = postPosition + 1,
+                        IsPending = statusGroup,
                     };
                     await _context.GroupPostVideos.AddAsync(groupPostVideo);
                     await _context.SaveChangesAsync();
