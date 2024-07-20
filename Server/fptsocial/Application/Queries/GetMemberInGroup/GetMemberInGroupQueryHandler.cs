@@ -87,6 +87,10 @@ namespace Application.Queries.GetMemberInGroup
                         {
                             mem.SendFriendRequest = false;
                         }
+
+                        if ((listSetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Send Friend Invitations")).UserStatus.StatusName.Equals("Private")){
+                            mem.SendFriendRequest = false;
+                        }
                     }
 
                     if (item.GroupRole.GroupRoleName.Equals("Admin"))

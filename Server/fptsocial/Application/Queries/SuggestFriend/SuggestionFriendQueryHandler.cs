@@ -111,16 +111,23 @@ namespace Application.Queries.SuggestFriend
                 int i = 0;
                 foreach (var item in user)
                 {
-                    var friendDTO = new GetAllFriendDTO
+                    var listSetting = await _context.UserSettings.Include(x => x.Setting)
+                                        .Include(x => x.UserStatus).Where(x => x.UserId == item.UserId).ToListAsync();
+
+                    if (listSetting.FirstOrDefault(x=>x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Public")
+                        && listSetting.FirstOrDefault(x=> x.Setting.SettingName.Equals("Send Friend Invitations")).UserStatus.StatusName.Equals("Public"))
                     {
-                        FriendId = item.UserId,
-                        FriendName = $"{item.FirstName} {item.LastName}",
-                        Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
-                        MutualFriends = 0,
-                        ReactCount = 0
-                    };
-                    result.AllFriend.Add(friendDTO);
-                    i++;
+                        var friendDTO = new GetAllFriendDTO
+                        {
+                            FriendId = item.UserId,
+                            FriendName = $"{item.FirstName} {item.LastName}",
+                            Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                            MutualFriends = 0,
+                            ReactCount = 0
+                        };
+                        result.AllFriend.Add(friendDTO);
+                        i++;
+                    }
                     if(i  == 20)
                     {
                         break;
