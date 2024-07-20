@@ -23,13 +23,38 @@ namespace Application.Queries.GetFriendyName
         public GetFriendByNameQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
-            _mapper = mapper;        }
+            _mapper = mapper;
+        }
         public async Task<Result<GetFriendByNameQueryResult>> Handle(GetFriendByNameQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
+            var result = new GetFriendByNameQueryResult();
+            var listSetting = await _context.UserSettings.Include(x=>x.Setting)
+                .Include(x=>x.UserStatus).Where(x => x.UserId == request.UserId).ToListAsync();
+
+            if(request.AccessUserId != request.UserId)
+            {
+                if(listSetting.FirstOrDefault(x=>x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Private"))
+                {
+                    result.Count = 0;
+                    return Result<GetFriendByNameQueryResult>.Success(result);
+                }
+                if(listSetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Friend"))
+                {
+                    var friend = await _context.Friends.FirstOrDefaultAsync(x =>
+                                        ((x.UserId == request.UserId && x.FriendId == request.AccessUserId) ||
+                                        (x.UserId == request.AccessUserId && x.FriendId == request.UserId)) && x.Confirm == true);
+                    if(friend == null)
+                    {
+                        result.Count = 0;
+                        return Result<GetFriendByNameQueryResult>.Success(result);
+                    }
+                }
+            }
+
             var normalizedSearchString = request.FindName.RemoveDiacritics();
             var searchWords = normalizedSearchString.SplitIntoWords();
             var friendrequest = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
@@ -54,7 +79,7 @@ namespace Application.Queries.GetFriendyName
                 var profile = await _context.UserProfiles.Include(x => x.AvataPhotos).FirstOrDefaultAsync(x => x.UserId == fr.UserId);
                 listallfriend.Add(profile);
             }
-            var result = new GetFriendByNameQueryResult();
+            
             if (listallfriend != null)
             {
                 //result.Count = listallfriend.Count;
@@ -114,7 +139,7 @@ namespace Application.Queries.GetFriendyName
                                     .Select(f => f.Friend)
                                     .ToList();
                 result.getFriendByName.AddRange(secondSearch);
-                //result.getFriendByName.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
+                result.getFriendByName.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }
             else
             {

@@ -9,7 +9,8 @@ namespace Application.Queries.GetFriendyName
 {
     public class GetFriendByNameQuery : IQuery<GetFriendByNameQueryResult>
     {
-        public Guid? UserId { get; set; }
+        public Guid? AccessUserId { get; set; }
+        public Guid UserId { get; set; }
         public string FindName { get; set; }
     }
 }

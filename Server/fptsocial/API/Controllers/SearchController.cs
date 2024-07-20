@@ -36,7 +36,7 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            input.AccessUserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
