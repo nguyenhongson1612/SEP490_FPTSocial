@@ -67,7 +67,18 @@ namespace Application.Commands.ShareGroupPostCommand
             //{
             //    throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
             //}
-
+            bool statusGroup = true;
+            var groupSettingName = (from g in _context.GroupFpts
+                                    join gsu in _context.GroupSettingUses
+                                        on g.GroupId equals gsu.GroupId
+                                    join groupSetting in _context.GroupSettings
+                                        on gsu.GroupSettingId equals groupSetting.GroupSettingId
+                                    where g.GroupId == request.GroupId
+                                    select groupSetting.GroupSettingName).FirstOrDefault();
+            if (groupSettingName == "Approve Post")
+            {
+                statusGroup = false;
+            }
             Domain.CommandModels.GroupSharePost sharePost = new Domain.CommandModels.GroupSharePost
             {
                 GroupSharePostId = _helper.GenerateNewGuid(),
@@ -81,7 +92,8 @@ namespace Application.Commands.ShareGroupPostCommand
                 CreatedDate = DateTime.Now,
                 IsHide = false,
                 IsBanned = false,
-                UserSharedId = request.UserSharedId
+                UserSharedId = request.UserSharedId,
+                IsPending = statusGroup
             };
 
             var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>
