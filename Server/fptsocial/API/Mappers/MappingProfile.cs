@@ -90,6 +90,7 @@ using Application.Commands.CreateReactCommentGroupVideoPost;
 using Application.Commands.UpdateGroupPostCommand;
 using Application.Commands.UpdateGroupPhotoPostCommand;
 using Application.Commands.UpdateGroupVideoPostCommand;
+using Application.Commands.CreateReportComment;
 
 namespace Application.Mappers
 {
@@ -164,7 +165,10 @@ namespace Application.Mappers
             CreateMap<Command.Interest, CreateInterestCommandResult>();
             CreateMap<CreateUserGenderCommand, Command.UserGender>();
             CreateMap<Command.UserGender, CreateUserGenderCommandResult>();
+
+            //Report
             CreateMap<Command.ReportType, CreateReportTypeCommandResult>();
+            CreateMap<Command.ReportComment, CreateReportCommentCommandResult>();
 
 
             //Mapping for getuser
@@ -322,6 +326,8 @@ namespace Application.Mappers
             CreateMap<GroupFPTDTO, GroupFpt>();
             CreateMap<GetGroupStatusDTO, GroupStatus>();
             CreateMap<GroupPostDTO, GroupPost>().ReverseMap();
+
+
         }
     }
 }

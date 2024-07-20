@@ -92,7 +92,7 @@ namespace Application.Queries.GetPost
 
                 combinePost.Add(new GetPostResult
                 {
-                    PostId = item.UserId,
+                    PostId = item.UserPostId,
                     UserId = item.UserId,
                     Content = item.Content,
                     CreatedAt = item.CreatedAt,
