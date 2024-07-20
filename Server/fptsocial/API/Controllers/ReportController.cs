@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CreateReportType;
 using Application.Commands.CreateUserGender;
+using Application.Queries.GetReportType;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,15 @@ namespace API.Controllers
         [Route("createreporttype")]
         public async Task<IActionResult> CreateReportType(CreateReportTypeCommand input)
         {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getreporttype")]
+        public async Task<IActionResult> GetReportType()
+        {
+            var input = new GetReportTypeQuery();
             var res = await _sender.Send(input);
             return Success(res.Value);
         }

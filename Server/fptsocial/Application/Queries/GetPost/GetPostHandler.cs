@@ -155,11 +155,31 @@ namespace Application.Queries.GetPost
                 });
             }
 
-            var groupMemberIds = await _context.GroupMembers
-                                    .Where(x => x.UserId == request.UserId)
+            // Lấy ra id của setting Group Status
+            var groupStatus = await _context.GroupSettings
+                                    .Where(x => x.GroupSettingName.Contains("Group Status"))
+                                    .Select(x => x.GroupSettingId)
+                                    .FirstOrDefaultAsync(cancellationToken);
+
+            // Lấy ra id của GroupStatuc ở Public
+            var groupStatusPublicId = await _context.GroupStatuses
+                                    .Where(x => x.GroupStatusName.Contains("Public"))
+                                    .Select(x => x.GroupStatusId)
+                                    .FirstOrDefaultAsync (cancellationToken);
+
+            // Lấy ra những group mà friend join nhưng ở chế độ public
+            var groupStatusPublic = await _context.GroupSettingUses
+                                    .Where(x => x.GroupSettingId == groupStatus && x.GroupStatusId == groupStatusPublicId)
                                     .Select(x => x.GroupId)
                                     .ToListAsync(cancellationToken);
 
+            // Lấy ra id của những group mà user đã join hoặc là của những friend đã join nhưng ở chế độ public
+            var groupMemberIds = await _context.GroupMembers
+                                    .Where(x => x.UserId == request.UserId || (friendUserIds.Contains(x.UserId) && groupStatusPublic.Contains(x.GroupId)))
+                                    .Select(x => x.GroupId)
+                                    .ToListAsync(cancellationToken);
+
+            // Truy vấn bảng GroupPost theo những thông tin cần tìm kiếm
             var groupPost = await _context.GroupPosts
                                     .Include(x => x.GroupStatus)
                                     .Include(x => x.Group)
@@ -169,7 +189,8 @@ namespace Application.Queries.GetPost
                                         .ThenInclude(x => x.GroupPhoto)
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
-                                    .Where(x => groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned != true)
+                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned != true)
+                                        || (groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned != true))
                                     .ToListAsync();
 
             foreach(var item  in groupPost)
