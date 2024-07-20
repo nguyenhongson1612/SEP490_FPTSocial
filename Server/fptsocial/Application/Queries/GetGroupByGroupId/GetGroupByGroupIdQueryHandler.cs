@@ -34,28 +34,28 @@ namespace Application.Queries.GetGroupByGroupId
 
             var group = await _context.GroupFpts.Include(x => x.GroupType)
                                                 .Include(x => x.GroupTagUseds)
-                                                .Include(x=>x.GroupMembers)
+                                                .Include(x => x.GroupMembers)
                                                 .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.IsDelete == false);
             var groupsetting = await _context.GroupSettingUses.Include(x => x.GroupSetting)
-                                                                .Include(x=>x.GroupStatus)
+                                                                .Include(x => x.GroupStatus)
                                                                .Where(x => x.GroupId == request.GroupId).ToListAsync();
             var member = await _context.GroupMembers
                                     .Where(x => x.GroupId == request.GroupId && x.IsJoined == true)
                                     .Include(x => x.GroupRole)
-                                    .Include(x=>x.User)
+                                    .Include(x => x.User)
                                     .ToListAsync();
-            
+
             var memjoin = member?.FirstOrDefault(x => x.UserId == request.UserId);
-             
-            var admin = member?.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Admin"));
-            var censor = member?.FirstOrDefault(x => x.GroupRole.GroupRoleName.Equals("Censor"));
+
+            var admin = member?.FirstOrDefault(x => x.UserId == request.UserId && x.GroupRole.GroupRoleName.Equals("Admin"));
+            var censor = member?.FirstOrDefault(x => x.UserId == request.UserId && x.GroupRole.GroupRoleName.Equals("Censor"));
 
             if (group == null)
             {
                 throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
             }
 
-            if(group.IsDelete == true)
+            if (group.IsDelete == true)
             {
                 throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
             }
@@ -78,13 +78,14 @@ namespace Application.Queries.GetGroupByGroupId
                     GroupSettingId = st.GroupSettingId,
                     GroupSettingName = st.GroupSetting.GroupSettingName,
                     GroupStatusId = st.GroupStatusId,
-                    GroupStatusName = st.GroupStatus.GroupStatusName  
+                    GroupStatusName = st.GroupStatus.GroupStatusName
                 };
                 getgroup.GroupSettings.Add(gst);
             }
-            if(memjoin != null)
+            getgroup.IsAdmin = false;
+            getgroup.IsCensor = false;
+            if (memjoin != null)
             {
-
                 if (memjoin.IsJoined == false)
                 {
                     getgroup.IsJoin = false;
@@ -93,28 +94,20 @@ namespace Application.Queries.GetGroupByGroupId
                 else
                 {
                     getgroup.IsJoin = true;
-                    getgroup.isRequest = false;
-                    if(admin != null)
+                    getgroup.isRequest = true;
+                    if (admin != null)
                     {
-                        if (admin.UserId == request.UserId)
-                        {
-                            getgroup.IsAdmin = true;
-                            getgroup.IsCensor = false;
-                        }
+                        getgroup.IsAdmin = true;
+                        getgroup.IsCensor = false;
+
                     }
-                    else
+                    else if (censor != null)
                     {
                         getgroup.IsAdmin = false;
-                        getgroup.IsCensor = false;
-                        if(censor != null)
-                        {
-                            if (censor.UserId == request.UserId)
-                            {
-                                getgroup.IsCensor = true;
-                            }
-                        }   
+                        getgroup.IsCensor = true;
+
                     }
-                   
+
                 }
             }
             else
@@ -122,26 +115,60 @@ namespace Application.Queries.GetGroupByGroupId
                 getgroup.IsJoin = false;
                 getgroup.isRequest = false;
             }
-           
+
 
             foreach (var mem in member)
             {
-                if(mem.IsJoined == true)
+                if (mem.IsJoined == true)
                 {
+                    var friend = await _context.Friends.FirstOrDefaultAsync(x =>
+                                        ((x.UserId == request.UserId && x.FriendId == mem.UserId) ||
+                                        (x.UserId == mem.UserId && x.FriendId == request.UserId)) && x.Confirm == true);
                     var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId && x.IsUsed == true);
-                    var gmem = new GroupMemberDTO
+                    if (friend != null)
                     {
-                        GroupId = mem.GroupId,
-                        UserId = mem.UserId,
-                        MemberName = mem.User.FirstName + " " + mem.User.LastName,
-                        Avata = user?.AvataPhotosUrl,
-                        GroupRoleId = mem.GroupRoleId,
-                        GroupRoleName = mem.GroupRole.GroupRoleName
-                    };
-                    getgroup.GroupMember.Add(gmem);
-                } 
+                        var gmem = new GroupMemberDTO
+                        {
+                            GroupId = mem.GroupId,
+                            UserId = mem.UserId,
+                            MemberName = mem.User.FirstName + " " + mem.User.LastName,
+                            Avata = user?.AvataPhotosUrl,
+                            GroupRoleId = mem.GroupRoleId,
+                            GroupRoleName = mem.GroupRole.GroupRoleName
+                        };
+                        getgroup.GroupMember.Add(gmem);
+                    }
+                }
             }
-            getgroup.MemberCount = getgroup.GroupMember.Count;
+            if (getgroup.GroupMember?.Count < 10)
+            {
+                foreach (var mem in member)
+                {
+                    if (mem.IsJoined == true)
+                    {
+                        var user = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == mem.UserId && x.IsUsed == true);
+
+                        var gmem = new GroupMemberDTO
+                        {
+                            GroupId = mem.GroupId,
+                            UserId = mem.UserId,
+                            MemberName = mem.User.FirstName + " " + mem.User.LastName,
+                            Avata = user?.AvataPhotosUrl,
+                            GroupRoleId = mem.GroupRoleId,
+                            GroupRoleName = mem.GroupRole.GroupRoleName
+                        };
+                        getgroup.GroupMember.Add(gmem);
+
+                    }
+                    
+                    if(getgroup.GroupMember.Count == 10)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            getgroup.MemberCount = member.Where(x=>x.IsJoined == true).ToList().Count;
             var result = getgroup;
             return Result<GetGroupByGroupIdQueryResult>.Success(result);
         }

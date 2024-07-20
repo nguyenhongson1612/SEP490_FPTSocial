@@ -53,7 +53,8 @@ namespace Application.Queries.GetListFriendToInvate
 
             if(listallfriend != null)
             {
-                foreach (var item in listallfriend)
+                var listfr = new List<Domain.QueryModels.UserProfile>(listallfriend);
+                foreach (var item in listfr)
                 {
                     var joined = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == item.UserId);
                     if(joined != null)
