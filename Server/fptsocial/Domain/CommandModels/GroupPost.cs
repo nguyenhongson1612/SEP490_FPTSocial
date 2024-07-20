@@ -31,6 +31,7 @@ namespace Domain.CommandModels
         public int? NumberPost { get; set; }
         public bool? IsBanned { get; set; }
         public Guid? GroupId { get; set; }
+        public bool? IsPending { get; set; }
 
         public virtual GroupFpt? Group { get; set; }
         public virtual GroupPhoto? GroupPhoto { get; set; }

@@ -27,6 +27,7 @@ namespace Domain.QueryModels
         public int? PostPosition { get; set; }
         public bool? IsBanned { get; set; }
         public Guid? GroupId { get; set; }
+        public bool? IsPending { get; set; }
 
         public virtual GroupFpt? Group { get; set; }
         public virtual GroupPost GroupPost { get; set; } = null!;

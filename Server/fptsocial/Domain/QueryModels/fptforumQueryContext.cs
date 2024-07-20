@@ -862,8 +862,6 @@ namespace Domain.QueryModels
 
                 entity.Property(e => e.Content).HasColumnType("ntext");
 
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");

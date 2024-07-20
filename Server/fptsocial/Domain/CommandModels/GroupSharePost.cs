@@ -18,11 +18,11 @@ namespace Domain.CommandModels
         public DateTime? CreatedDate { get; set; }
         public bool? IsHide { get; set; }
         public Guid? GroupStatusId { get; set; }
-        public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public bool? IsBanned { get; set; }
         public Guid? GroupId { get; set; }
         public Guid? UserSharedId { get; set; }
+        public bool? IsPending { get; set; }
 
         public virtual GroupFpt? Group { get; set; }
         public virtual GroupPost? GroupPost { get; set; }
