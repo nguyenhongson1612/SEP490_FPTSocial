@@ -102,6 +102,7 @@ using Application.Queries.GetCommentBySharePost;
 using Application.Queries.GetCommentByGroupSharePost;
 using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByGroupSharePostId;
+using Application.Commands.CreateCommentForSharePost;
 
 namespace Application.Mappers
 {
@@ -355,6 +356,7 @@ namespace Application.Mappers
             CreateMap<CommentSharePost, GetCommentBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactSharePost, GetReactBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactGroupSharePost, GetReactByGroupSharePostQueryResult>().ReverseMap();
+            CreateMap<CommentSharePost, CreateCommentForSharePostCommandResult>().ReverseMap();
         }
     }
 }
