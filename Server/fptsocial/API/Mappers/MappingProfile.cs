@@ -103,6 +103,7 @@ using Application.Queries.GetCommentByGroupSharePost;
 using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByGroupSharePostId;
 using Application.Commands.CreateCommentForSharePost;
+using Application.Commands.UpdateSharePost;
 
 namespace Application.Mappers
 {
@@ -350,13 +351,14 @@ namespace Application.Mappers
             CreateMap<ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
             CreateMap<ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
             CreateMap<ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
-            CreateMap<CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
-            CreateMap<CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
-            CreateMap<CommentGroupSharePost, GetCommentByGroupSharePostQueryResult>().ReverseMap();
+            CreateMap<Command.CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentGroupSharePost, GetCommentByGroupSharePostQueryResult>().ReverseMap();
             CreateMap<CommentSharePost, GetCommentBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactSharePost, GetReactBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactGroupSharePost, GetReactByGroupSharePostQueryResult>().ReverseMap();
-            CreateMap<CommentSharePost, CreateCommentForSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentSharePost, CreateCommentForSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.SharePost, UpdateSharePostCommandResult>().ReverseMap();
         }
     }
 }
