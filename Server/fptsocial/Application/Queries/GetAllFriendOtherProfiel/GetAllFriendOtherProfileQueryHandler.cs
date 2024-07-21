@@ -87,20 +87,23 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                 result.Count = listfriend.Count;
                 foreach (var friend in listallfriend)
                 {
-                    var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true).ToList();
-                    var mutualfriend = otherfriend.Intersect(list);
-                    var frienddto = new GetAllFriendDTO
+                   if(friend.IsActive == true)
                     {
-                        FriendId = friend.UserId,
-                        FriendName = friend.FirstName + " " + friend.LastName,
-                        ReactCount = listreact[friend.UserId],
-                        MutualFriends = mutualfriend.Count()
-                    };
-                    if (friend.AvataPhotos.Count > 0)
-                    {
-                        frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                        var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true).ToList();
+                        var mutualfriend = otherfriend.Intersect(list);
+                        var frienddto = new GetAllFriendDTO
+                        {
+                            FriendId = friend.UserId,
+                            FriendName = friend.FirstName + " " + friend.LastName,
+                            ReactCount = listreact[friend.UserId],
+                            MutualFriends = mutualfriend.Count()
+                        };
+                        if (friend.AvataPhotos.Count > 0)
+                        {
+                            frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
+                        }
+                        result.AllFriend.Add(frienddto);
                     }
-                    result.AllFriend.Add(frienddto);
                 }
                 result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }

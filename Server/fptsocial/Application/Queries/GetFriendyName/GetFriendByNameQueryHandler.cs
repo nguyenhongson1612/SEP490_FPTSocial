@@ -64,7 +64,6 @@ namespace Application.Queries.GetFriendyName
             list.AddRange(friendconfirm);
             var listallfriend = new List<Domain.QueryModels.UserProfile>();
             var listfrienddto = new List<GetAllFriendDTO>();
-            var listsearchfriend = new List<Domain.QueryModels.UserProfile>();
             var listreact = new Dictionary<Guid, int?>();
             foreach (var fr in friendrequest)
             {
@@ -85,21 +84,24 @@ namespace Application.Queries.GetFriendyName
                 //result.Count = listallfriend.Count;
                 foreach (var friend in listallfriend)
                 {
-                    var otherfriend = _context.Friends.Where(x => (x.UserId == friend.UserId && x.Confirm == true)
+                    if(friend.IsActive == true)
+                    {
+                        var otherfriend = _context.Friends.Where(x => (x.UserId == friend.UserId && x.Confirm == true)
                                                         || (x.FriendId == friend.UserId && x.Confirm == true)).ToList();
-                    var mutualfriend = otherfriend.Intersect(list);
-                    var frienddto = new GetAllFriendDTO
-                    {
-                        FriendId = friend.UserId,
-                        FriendName = friend.FirstName + " " + friend.LastName,
-                        ReactCount = listreact[friend.UserId],
-                        MutualFriends = mutualfriend.Count(),
-                    };
-                    if (friend.AvataPhotos.Count > 0)
-                    {
-                        frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
+                        var mutualfriend = otherfriend.Intersect(list);
+                        var frienddto = new GetAllFriendDTO
+                        {
+                            FriendId = friend.UserId,
+                            FriendName = friend.FirstName + " " + friend.LastName,
+                            ReactCount = listreact[friend.UserId],
+                            MutualFriends = mutualfriend.Count(),
+                        };
+                        if (friend.AvataPhotos.Count > 0)
+                        {
+                            frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
+                        }
+                        listfrienddto.Add(frienddto);
                     }
-                    listfrienddto.Add(frienddto);
                     //result.getFriendByName.Add(frienddto);
                 }
 
@@ -138,6 +140,7 @@ namespace Application.Queries.GetFriendyName
                                     .ThenBy(f => f.NormalizedName)
                                     .Select(f => f.Friend)
                                     .ToList();
+                
                 result.getFriendByName.AddRange(secondSearch);
                 result.getFriendByName.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
             }

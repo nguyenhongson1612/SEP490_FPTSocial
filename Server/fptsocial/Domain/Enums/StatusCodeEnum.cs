@@ -28,6 +28,8 @@ namespace Domain.Enums
         U04_Can_Not_Create,
         [Description("User don't have any web affilication")]
         U05_Not_Has_WebAffilication,
+        [Description("Account is not active")]
+        U06_User_Not_Active,
         [Description("Gender is existed in data")]
         G01_Gender_Existed,
         [Description("Gender is not found")]

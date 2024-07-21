@@ -43,6 +43,10 @@ namespace Application.Queries.CheckUserExist
                 result.Message = StatusCodeEnum.U01_Not_Found.GetDescription();
                 return Result<CheckUserExistQueryResult>.Success(result);
             }
+            if(user.IsActive == false)
+            {
+                throw new ErrorException(StatusCodeEnum.U06_User_Not_Active);
+            }
             result.enumcode = StatusCodeEnum.U03_User_Exist;
             result.Message = StatusCodeEnum.U03_User_Exist.GetDescription();
             result.UserId = user.UserId;
