@@ -98,7 +98,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId, 
                 GroupStatusId = groupStatusId,
-                CreatedDate = DateTime.Now,
+                CreateDate = DateTime.Now,
                 IsHide = false,
                 IsBanned = false,
                 UserSharedId = request.UserSharedId,
