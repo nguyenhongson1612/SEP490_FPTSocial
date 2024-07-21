@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.CQRS.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetReactByCommentGroupSharePostId
 {
-    public class GetReactByCommentGroupSharePostQuery
+    public class GetReactByCommentGroupSharePostQuery : IQuery<GetReactByCommentGroupSharePostQueryResult>
     {
         public Guid CommentGroupSharePostId { get; set; }
         public Guid UserId { get; set; }

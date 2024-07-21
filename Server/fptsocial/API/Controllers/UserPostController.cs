@@ -36,6 +36,10 @@ using Application.Commands.CreateCommentForSharePost;
 using Application.Commands.CreateReactForCommentSharePost;
 using Application.Commands.CreateReactForSharePost;
 using Application.Queries.GetCommentBySharePost;
+using Application.Commands.UpdateCommentSharePost;
+using Application.Commands.DeleteCommentSharePost;
+using Application.Commands.UpdateSharePost;
+using Application.Commands.DeleteSharePost;
 
 namespace API.Controllers
 {
@@ -447,10 +451,85 @@ namespace API.Controllers
 
         }
 
+        [HttpPost]
+        [Route("updateCommentSharePost")]
+        public async Task<IActionResult> UpdateCommentSharePost(UpdateCommentSharePostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
 
+        [HttpPost]
+        [Route("updateSharePost")]
+        public async Task<IActionResult> UpdateSharePost(UpdateSharePostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
 
+        [HttpDelete]
+        [Route("deleteCommentSharePost")]
+        public async Task<IActionResult> DeleteCommentSharePost([FromQuery] DeleteCommentSharePostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
 
-
+        [HttpDelete]
+        [Route("deleteSharePost")]
+        public async Task<IActionResult> DeleteSharePost([FromQuery] DeleteSharePostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
 
     }
 }

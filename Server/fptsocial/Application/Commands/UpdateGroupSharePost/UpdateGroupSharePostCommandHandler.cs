@@ -18,9 +18,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static Application.Services.CheckingBadWord;
 
-namespace Application.Commands.UpdateSharePost
+namespace Application.Commands.UpdateGroupSharePost
 {
-    public class UpdateSharePostCommandHandler : ICommandHandler<UpdateSharePostCommand, UpdateSharePostCommandResult>
+    public class UpdateGroupSharePostCommandHandler : ICommandHandler<UpdateGroupSharePostCommand, UpdateGroupSharePostCommandResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _queryContext;
@@ -29,7 +29,7 @@ namespace Application.Commands.UpdateSharePost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateGroupSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -37,20 +37,20 @@ namespace Application.Commands.UpdateSharePost
             _configuration = configuration;
             _checkContent = new CheckingBadWord();
         }
-        public async Task<Result<UpdateSharePostCommandResult>> Handle(UpdateSharePostCommand request, CancellationToken cancellationToken)
+        public async Task<Result<UpdateGroupSharePostCommandResult>> Handle(UpdateGroupSharePostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var sharePost = await _context.SharePosts.FindAsync(request.SharePostId);
-            if (sharePost == null)
+            var GroupSharePost = await _context.GroupSharePosts.FindAsync(request.GroupSharePostId);
+            if (GroupSharePost == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.SharePosts
-                                      .Where(a => a.SharePostId == request.SharePostId)
+            var userId = await _context.GroupSharePosts
+                                      .Where(a => a.GroupSharePostId == request.GroupSharePostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();
 
@@ -59,7 +59,7 @@ namespace Application.Commands.UpdateSharePost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photoPost = _context.SharePosts.Where(x => x.SharePostId == request.SharePostId).FirstOrDefault();
+            var photoPost = _context.GroupSharePosts.Where(x => x.GroupSharePostId == request.GroupSharePostId).FirstOrDefault();
             if (photoPost != null) 
             {
                 photoPost.Content = request.Content;
@@ -73,7 +73,7 @@ namespace Application.Commands.UpdateSharePost
             }
             await _context.SaveChangesAsync();
 
-            var result = _mapper.Map<UpdateSharePostCommandResult>(photoPost);
+            var result = _mapper.Map<UpdateGroupSharePostCommandResult>(photoPost);
             result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;
             if (haveBadWord.Any())
@@ -82,7 +82,7 @@ namespace Application.Commands.UpdateSharePost
             }
             else
             {
-                return Result<UpdateSharePostCommandResult>.Success(result);
+                return Result<UpdateGroupSharePostCommandResult>.Success(result);
             }
 
         }

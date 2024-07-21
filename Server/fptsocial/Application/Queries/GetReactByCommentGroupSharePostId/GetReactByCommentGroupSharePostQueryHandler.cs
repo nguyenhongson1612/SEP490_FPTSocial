@@ -2,6 +2,7 @@
 using Application.Queries.GetReactByCommentId;
 using AutoMapper;
 using Core.CQRS;
+using Core.CQRS.Query;
 using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetReactByCommentGroupSharePostId
 {
-    public class GetReactByCommentGroupSharePostQueryHandler
+    public class GetReactByCommentGroupSharePostQueryHandler : IQueryHandler<GetReactByCommentGroupSharePostQuery, GetReactByCommentGroupSharePostQueryResult>
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
