@@ -19,7 +19,6 @@ namespace Application.Commands.ShareGroupPostCommand
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
-        public Guid? GroupStatusId { get; set; }
         public Guid? UserSharedId {  get; set; }
         public Guid? GroupId { get; set; }
     }

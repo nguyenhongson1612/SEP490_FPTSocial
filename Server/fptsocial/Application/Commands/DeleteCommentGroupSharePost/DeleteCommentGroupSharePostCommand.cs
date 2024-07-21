@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Application.Commands.DeleteCommentSharePost
+namespace Application.Commands.DeleteCommentGroupSharePost
 {
-    public class DeleteCommentSharePostCommand : ICommand<DeleteCommentSharePostCommandResult>
+    public class DeleteCommentGroupSharePostCommand : ICommand<DeleteCommentGroupSharePostCommandResult>
     {
         public Guid UserId { get; set; }
-        public Guid CommentSharePostId { get; set; }
+        public Guid CommentGroupSharePostId { get; set; }
     }
 }

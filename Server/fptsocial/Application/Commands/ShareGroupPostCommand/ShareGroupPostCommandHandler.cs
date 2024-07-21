@@ -85,6 +85,9 @@ namespace Application.Commands.ShareGroupPostCommand
             {
                 statusGroup = false;
             }
+
+            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
+
             Domain.CommandModels.GroupSharePost sharePost = new Domain.CommandModels.GroupSharePost
             {
                 GroupSharePostId = _helper.GenerateNewGuid(),
@@ -94,8 +97,8 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupPostPhotoId = request.GroupPostPhotoId,
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId, 
-                GroupStatusId = request.GroupStatusId,
-                CreateDate = DateTime.Now,
+                GroupStatusId = groupStatusId,
+                CreatedDate = DateTime.Now,
                 IsHide = false,
                 IsBanned = false,
                 UserSharedId = request.UserSharedId,

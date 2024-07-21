@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Commands.UpdateCommentUserPost
+namespace Application.Commands.UpdateCommentSharePost
 {
-    public class UpdateCommentUserPostCommandResult
+    public class UpdateCommentSharePostCommandResult
     {
-        public Guid CommentId { get; set; }
-        public Guid UserPostId { get; set; }
+        public Guid CommentSharePostId { get; set; }
+        public Guid SharePostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? ParentCommentId { get; set; }
