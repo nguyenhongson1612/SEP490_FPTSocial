@@ -32,6 +32,10 @@ using Application.Commands.DeleteCommentUserPhotoPost;
 using Application.Commands.DeleteCommentUserVideoPost;
 using Application.Queries.GetFriendyName;
 using Application.Queries.GetBannedPostByUserId;
+using Application.Commands.CreateCommentForSharePost;
+using Application.Commands.CreateReactForCommentSharePost;
+using Application.Commands.CreateReactForSharePost;
+using Application.Queries.GetCommentBySharePost;
 
 namespace API.Controllers
 {
@@ -304,7 +308,7 @@ namespace API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteUserPost")]
         public async Task<IActionResult> DeleteUserPost([FromQuery] DeleteUserPostCommand input)
         {
@@ -324,7 +328,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentUserPost")]
         public async Task<IActionResult> DeleteCommentUserPost([FromQuery] DeleteCommentUserPostCommand input)
         {
@@ -344,7 +348,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentUserPhotoPost")]
         public async Task<IActionResult> DeleteCommentUserPhotoPost([FromQuery] DeleteCommentUserPhotoPostCommand input)
         {
@@ -364,7 +368,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentUserVideoPost")]
         public async Task<IActionResult> DeleteCommentUserVideoPost([FromQuery] DeleteCommentUserVideoPostCommand input)
         {
@@ -424,5 +428,29 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
+
+        [HttpPost]
+        [Route("createCommentSharePost")]
+        public async Task<IActionResult> CreateSharePostComment(CreateCommentForSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getCommentBySharePostId")]
+        public async Task<IActionResult> GetCommentBySharePostId([FromQuery] GetCommentBySharePostQuery command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+
+
+
+
+
     }
 }

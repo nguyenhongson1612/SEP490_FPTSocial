@@ -54,6 +54,22 @@ namespace Application.DTO.CommentDTO
         public string? ListNumber { get; set; }
     }
 
+    public class CommentSharePostDto
+    {
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public Guid CommentSharePostId { get; set; }
+        public Guid SharePostId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<CommentSharePostDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
+    }
+
     public class GroupCommentDto
     {
         public Guid UserId { get; set; }
@@ -99,6 +115,22 @@ namespace Application.DTO.CommentDTO
         public DateTime? CreatedDate { get; set; }
         public int? Level { get; set; }
         public List<GroupVideoCommentDto>? Replies { get; set; }
+        public string? ListNumber { get; set; }
+    }
+
+    public class CommentGroupSharePostDto
+    {
+        public Guid UserId { get; set; }
+        public string Url { get; set; }
+        public Guid CommentGroupSharePostId { get; set; }
+        public Guid GroupSharePostId { get; set; }
+        public string? UserName { get; set; }
+        public string? Content { get; set; }
+        public Guid? ParentCommentId { get; set; }
+        public bool? IsHide { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? Level { get; set; }
+        public List<CommentGroupSharePostDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
     }
 }

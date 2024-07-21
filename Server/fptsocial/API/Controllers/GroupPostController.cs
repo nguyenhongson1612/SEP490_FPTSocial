@@ -1,4 +1,5 @@
-﻿using Application.Commands.CreateGroupPost;
+﻿using Application.Commands.CreateCommentForGroupSharePost;
+using Application.Commands.CreateGroupPost;
 using Application.Commands.CreateReactCommentGroupPost;
 using Application.Commands.CreateReactCommentGroupPostPhoto;
 using Application.Commands.CreateReactCommentUserPost;
@@ -29,6 +30,7 @@ using Application.Commands.UpdateGroupVideoPostCommand;
 using Application.Queries.GetChildGroupPost;
 using Application.Queries.GetCommentbyGroupPhotoPostId;
 using Application.Queries.GetCommentByGroupPostId;
+using Application.Queries.GetCommentByGroupSharePost;
 using Application.Queries.GetCommentByGroupVideoPostId;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
@@ -313,6 +315,23 @@ namespace API.Controllers
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
+
+        [HttpPost]
+        [Route("commentGroupSharePost")]
+        public async Task<IActionResult> CommentGroupSharePost(CreateCommentForGroupSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getGroupSharePostComment")]
+        public async Task<IActionResult> getGroupSharePostComment([FromQuery] GetCommentByGroupSharePostQuery command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
         }
     }
 }

@@ -91,6 +91,7 @@ using Application.Commands.UpdateGroupPostCommand;
 using Application.Commands.UpdateGroupPhotoPostCommand;
 using Application.Commands.UpdateGroupVideoPostCommand;
 using Application.Commands.CreateReportComment;
+using Application.Commands.ShareGroupPostCommand;
 
 namespace Application.Mappers
 {
@@ -328,7 +329,8 @@ namespace Application.Mappers
             CreateMap<GroupFPTDTO, GroupFpt>();
             CreateMap<GetGroupStatusDTO, GroupStatus>();
             CreateMap<GroupPostDTO, GroupPost>().ReverseMap();
-
+            CreateMap<Command.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
+            CreateMap<Query.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
 
         }
     }
