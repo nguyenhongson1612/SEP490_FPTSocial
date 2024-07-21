@@ -312,13 +312,14 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
-        
+
         [HttpGet]
         [Route("getGroupPostIdPendingByGroupId")]
         public async Task<IActionResult> GetGroupPostIdPendingByGroupId([FromQuery] GetGroupPostIdPendingByGroupIdQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
+        }
 
         [HttpPost]
         [Route("commentGroupSharePost")]
