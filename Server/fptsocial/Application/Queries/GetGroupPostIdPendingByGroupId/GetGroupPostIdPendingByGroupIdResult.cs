@@ -1,5 +1,4 @@
-﻿using Application.DTO.CommentDTO;
-using Application.DTO.GetUserProfileDTO;
+﻿using Application.DTO.GetUserProfileDTO;
 using Application.DTO.GroupDTO;
 using Application.DTO.GroupPostDTO;
 using Application.DTO.ReactDTO;
@@ -7,15 +6,14 @@ using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetGroupPostByGroupId
+namespace Application.Queries.GetGroupPostIdPendingByGroupId
 {
-    public class GetGroupPostByGroupIdResult
+    public class GetGroupPostIdPendingByGroupIdResult
     {
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
@@ -66,7 +64,5 @@ namespace Application.Queries.GetGroupPostByGroupId
         public Guid? GroupId { get; set; }
         public string? GroupName { get; set; }
         public string? GroupCorverImage { get; set; }
-        public ReactCount? ReactCount { get; set; }
-        public double? EdgeRank { get; set; }
     }
 }

@@ -33,6 +33,7 @@ using Application.Queries.GetCommentByGroupVideoPostId;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
 using Application.Queries.GetGroupPostByGroupPostId;
+using Application.Queries.GetGroupPostIdPendingByGroupId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -302,6 +303,14 @@ namespace API.Controllers
                 return BadRequest();
             }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+        
+        [HttpGet]
+        [Route("getGroupPostIdPendingByGroupId")]
+        public async Task<IActionResult> GetGroupPostIdPendingByGroupId([FromQuery] GetGroupPostIdPendingByGroupIdQuery input)
+        {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
