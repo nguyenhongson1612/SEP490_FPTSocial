@@ -104,6 +104,8 @@ using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByGroupSharePostId;
 using Application.Commands.CreateCommentForSharePost;
 using Application.Commands.UpdateSharePost;
+using Application.Commands.CreateCommentForGroupSharePost;
+using Application.Commands.UpdateGroupSharePost;
 
 namespace Application.Mappers
 {
@@ -353,6 +355,8 @@ namespace Application.Mappers
             CreateMap<ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentGroupSharePost, CreateCommentForGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.GroupSharePost, UpdateGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Query.CommentGroupSharePost, GetCommentByGroupSharePostQueryResult>().ReverseMap();
             CreateMap<CommentSharePost, GetCommentBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactSharePost, GetReactBySharePostQueryResult>().ReverseMap();
