@@ -92,6 +92,16 @@ using Application.Commands.UpdateGroupPhotoPostCommand;
 using Application.Commands.UpdateGroupVideoPostCommand;
 using Application.Commands.CreateReportComment;
 using Application.Commands.ShareGroupPostCommand;
+using Application.Commands.CreateReactForSharePost;
+using Application.Commands.CreateReactForGroupSharePost;
+using Application.Commands.CreateReactForCommentSharePost;
+using Application.Commands.CreateReactForCommentGroupSharePost;
+using Application.Commands.UpdateCommentSharePost;
+using Application.Commands.UpdateCommentGroupSharePost;
+using Application.Queries.GetCommentBySharePost;
+using Application.Queries.GetCommentByGroupSharePost;
+using Application.Queries.GetReactBySharePostId;
+using Application.Queries.GetReactByGroupSharePostId;
 
 namespace Application.Mappers
 {
@@ -332,6 +342,19 @@ namespace Application.Mappers
             CreateMap<Command.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
             CreateMap<Query.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
 
+            //SharePost
+            CreateMap<SharePost, ShareUserPostCommandResult>().ReverseMap();
+            CreateMap<GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
+            CreateMap<ReactSharePost, CreateReactForSharePostCommandResult>().ReverseMap();
+            CreateMap<ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<CommentGroupSharePost, GetCommentByGroupSharePostQueryResult>().ReverseMap();
+            CreateMap<CommentSharePost, GetCommentBySharePostQueryResult>().ReverseMap();
+            CreateMap<ReactSharePost, GetReactBySharePostQueryResult>().ReverseMap();
+            CreateMap<ReactGroupSharePost, GetReactByGroupSharePostQueryResult>().ReverseMap();
         }
     }
 }
