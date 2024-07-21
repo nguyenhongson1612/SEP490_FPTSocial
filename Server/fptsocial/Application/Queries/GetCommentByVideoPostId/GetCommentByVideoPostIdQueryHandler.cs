@@ -49,8 +49,8 @@ namespace Application.Queries.GetCommentByVideoPostId
                                     IsHide = c.IsHide,
                                     CommentVideoPostId = c.CommentVideoPostId,
                                     ParentCommentId = c.ParentCommentId,
-                                    ListNumber = c.ListNumber, // Giả sử bạn có trường này trong CommentVideoPost
-                                    Level = c.LevelCmt, // Giả sử bạn có trường này trong CommentVideoPost
+                                    ListNumber = c.ListNumber, 
+                                    Level = c.LevelCmt, 
                                     Replies = new List<CommentVideoDto>()
                                   })
                                   .ToListAsync(cancellationToken);

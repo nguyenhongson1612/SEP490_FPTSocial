@@ -1,4 +1,5 @@
-﻿using Application.Commands.CreateGroupPost;
+﻿using Application.Commands.CreateCommentForGroupSharePost;
+using Application.Commands.CreateGroupPost;
 using Application.Commands.CreateReactCommentGroupPost;
 using Application.Commands.CreateReactCommentGroupPostPhoto;
 using Application.Commands.CreateReactCommentUserPost;
@@ -17,18 +18,23 @@ using Application.Commands.CreateUserCommentPhotoPost;
 using Application.Commands.CreateUserCommentVideoPost;
 using Application.Commands.DeleteCommentGroupPhotoPost;
 using Application.Commands.DeleteCommentGroupPost;
+using Application.Commands.DeleteCommentGroupSharePost;
 using Application.Commands.DeleteCommentGroupVideoPost;
 using Application.Commands.DeleteCommentUserPost;
 using Application.Commands.DeleteGroupPost;
+using Application.Commands.DeleteGroupSharePost;
 using Application.Commands.Post;
 using Application.Commands.ShareGroupPostCommand;
 using Application.Commands.ShareUserPostCommand;
+using Application.Commands.UpdateCommentGroupSharePost;
 using Application.Commands.UpdateGroupPhotoPostCommand;
 using Application.Commands.UpdateGroupPostCommand;
+using Application.Commands.UpdateGroupSharePost;
 using Application.Commands.UpdateGroupVideoPostCommand;
 using Application.Queries.GetChildGroupPost;
 using Application.Queries.GetCommentbyGroupPhotoPostId;
 using Application.Queries.GetCommentByGroupPostId;
+using Application.Queries.GetCommentByGroupSharePost;
 using Application.Queries.GetCommentByGroupVideoPostId;
 using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
@@ -227,7 +233,7 @@ namespace API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentGroupPost")]
         public async Task<IActionResult> DeleteCommentGroupPost([FromQuery] DeleteCommentGroupPostCommand input)
         {
@@ -247,7 +253,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentGroupPhotoPost")]
         public async Task<IActionResult> DeleteCommentGroupPhotoPost([FromQuery] DeleteCommentGroupPhotoPostCommand input)
         {
@@ -267,7 +273,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteCommentGroupVideoPost")]
         public async Task<IActionResult> DeleteCommentGroupVideoPost([FromQuery] DeleteCommentGroupVideoPostCommand input)
         {
@@ -287,7 +293,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Route("deleteGroupPost")]
         public async Task<IActionResult> DeleteGroupPost([FromQuery] DeleteGroupPostCommand input)
         {
@@ -306,7 +312,7 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
-        
+
         [HttpGet]
         [Route("getGroupPostIdPendingByGroupId")]
         public async Task<IActionResult> GetGroupPostIdPendingByGroupId([FromQuery] GetGroupPostIdPendingByGroupIdQuery input)
@@ -314,5 +320,103 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
+
+        [HttpPost]
+        [Route("commentGroupSharePost")]
+        public async Task<IActionResult> CommentGroupSharePost(CreateCommentForGroupSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getGroupSharePostComment")]
+        public async Task<IActionResult> getGroupSharePostComment([FromQuery] GetCommentByGroupSharePostQuery command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updateGroupSharePost")]
+        public async Task<IActionResult> UpdateGroupSharePost(UpdateGroupSharePostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updateCommentGroupSharePost")]
+        public async Task<IActionResult> UpdateCommentGroupSharePost(UpdateCommentGroupSharePostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpDelete]
+        [Route("deleteGroupSharePost")]
+        public async Task<IActionResult> DeleteGroupSharePost([FromQuery] DeleteGroupSharePostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpDelete]
+        [Route("deleteCommentGroupSharePost")]
+        public async Task<IActionResult> DeleteCommentGroupSharePost([FromQuery] DeleteCommentGroupSharePostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
     }
 }

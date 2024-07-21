@@ -1,15 +1,15 @@
-﻿using Core.CQRS.Command;
+﻿using Application.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
-namespace Application.Commands.ShareGroupPostCommand
+namespace Application.Commands.UpdateSharePost
 {
-    public class ShareGroupPostCommand : ICommand<ShareGroupPostCommandResult>
+    public class UpdateSharePostCommandResult
     {
+        public Guid SharePostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public Guid? UserPostId { get; set; }
@@ -19,7 +19,9 @@ namespace Application.Commands.ShareGroupPostCommand
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? GroupPostVideoId { get; set; }
         public Guid? SharedToUserId { get; set; }
-        public Guid? UserSharedId {  get; set; }
-        public Guid? GroupId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public Guid? UserStatusId { get; set; }
+        public List<CheckingBadWord.BannedWord>? BannedWords { get; set; }
+        public Guid? UserSharedId { get; set; }
     }
 }

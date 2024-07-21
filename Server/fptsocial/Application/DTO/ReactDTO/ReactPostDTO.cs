@@ -42,6 +42,18 @@ namespace Application.DTO.ReactDTO
         public string? AvataUrl { get; set; }
     }
 
+    public class ReactSharePostDTO
+    {
+        public Guid ReactSharePostId { get; set; }
+        public Guid SharePostId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
     public class ReactCommentDTO
     {
         public Guid ReactCommentId { get; set; }
@@ -81,6 +93,19 @@ namespace Application.DTO.ReactDTO
         public string AvataUrl { get; set; }
     }
 
+    public class ReactSharePostCommentDTO
+    {
+        public Guid ReactSharePostCommentId { get; set; }
+        public Guid SharePostId { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactTypeName { get; set; }
+        public Guid? CommentSharePostId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string AvataUrl { get; set; }
+    }
+
     public class ReactGroupPostDTO
     {
         public Guid ReactGroupPostId { get; set; }
@@ -109,6 +134,18 @@ namespace Application.DTO.ReactDTO
     {
         public Guid ReactGroupVideoPostId { get; set; }
         public Guid GroupPostVideoId { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
+
+    public class ReactGroupSharePostDTO
+    {
+        public Guid ReactGroupSharePostId { get; set; }
+        public Guid GroupSharePostId { get; set; }
         public Guid ReactTypeId { get; set; }
         public string ReactName { get; set; }
         public Guid UserId { get; set; }
@@ -152,6 +189,19 @@ namespace Application.DTO.ReactDTO
         public Guid ReactTypeId { get; set; }
         public string ReactTypeName { get; set; }
         public Guid CommentGroupVideoPostId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string AvataUrl { get; set; }
+    }
+
+    public class ReactGroupSharePostCommentDTO
+    {
+        public Guid ReactGroupSharePostCommentId { get; set; }
+        public Guid GroupSharePostId { get; set; }
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public Guid ReactTypeId { get; set; }
+        public string ReactTypeName { get; set; }
+        public Guid? CommentGroupSharePostId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string AvataUrl { get; set; }
     }

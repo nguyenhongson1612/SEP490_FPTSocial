@@ -5,6 +5,10 @@ using Application.Commands.CreateReactCommentGroupVideoPost;
 using Application.Commands.CreateReactCommentUserPost;
 using Application.Commands.CreateReactCommentUserPostPhoto;
 using Application.Commands.CreateReactCommentUserPostVideo;
+using Application.Commands.CreateReactForCommentGroupSharePost;
+using Application.Commands.CreateReactForCommentSharePost;
+using Application.Commands.CreateReactForGroupSharePost;
+using Application.Commands.CreateReactForSharePost;
 using Application.Commands.CreateReactGroupPhotoPost;
 using Application.Commands.CreateReactGroupPost;
 using Application.Commands.CreateReactGroupVideoPost;
@@ -15,6 +19,7 @@ using Application.Commands.Post;
 using Application.Queries.GetAllReactType;
 using Application.Queries.GetReactByCommentGroupPhotoId;
 using Application.Queries.GetReactByCommentGroupPostId;
+using Application.Queries.GetReactByCommentGroupSharePostId;
 using Application.Queries.GetReactByCommentGroupVideoId;
 using Application.Queries.GetReactByCommentId;
 using Application.Queries.GetReactByCommentPhotoId;
@@ -24,6 +29,7 @@ using Application.Queries.GetReactByGroupPost;
 using Application.Queries.GetReactByGroupVideoPost;
 using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
+using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByVideoPost;
 using Application.Queries.GetUserStatus;
 using MediatR;
@@ -407,5 +413,78 @@ namespace API.Controllers
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
+
+        [HttpPost]
+        [Route("createReactCommentSharePost")]
+        public async Task<IActionResult> CreateReactSharePostComment(CreateReactForCommentSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactSharePost")]
+        public async Task<IActionResult> CreateReactSharePost(CreateReactForSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactBySharePostId")]
+        public async Task<IActionResult> GetAllReactBySharePostId([FromQuery] GetReactBySharePostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllReactByCommentSharePostId")]
+        public async Task<IActionResult> GetAllReactByCommentSharePostId([FromQuery] GetReactByCommentGroupSharePostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactCommentGroupSharePost")]
+        public async Task<IActionResult> CreateReactShareGroupPostComment(CreateReactForCommentGroupSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createReactGroupSharePost")]
+        public async Task<IActionResult> CreateReactGroupSharePost(CreateReactForGroupSharePostCommand command)
+        {
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
     }
 }

@@ -73,12 +73,21 @@ namespace Application.Commands.ShareGroupPostCommand
                                         on g.GroupId equals gsu.GroupId
                                     join groupSetting in _context.GroupSettings
                                         on gsu.GroupSettingId equals groupSetting.GroupSettingId
+                                    join groupStatus in _context.GroupStatuses // Join với bảng GroupStatuses
+                                        on gsu.GroupStatusId equals groupStatus.GroupStatusId
                                     where g.GroupId == request.GroupId
-                                    select groupSetting.GroupSettingName).FirstOrDefault();
-            if (groupSettingName == "Approve Post")
+                                    select new
+                                    {
+                                        GroupSettingName = groupSetting.GroupSettingName,
+                                        GroupStatusName = groupStatus.GroupStatusName
+                                    }).FirstOrDefault();
+            if (groupSettingName.GroupSettingName == "Approve Post" && groupSettingName.GroupStatusName == "Public")
             {
                 statusGroup = false;
             }
+
+            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
+
             Domain.CommandModels.GroupSharePost sharePost = new Domain.CommandModels.GroupSharePost
             {
                 GroupSharePostId = _helper.GenerateNewGuid(),
@@ -88,7 +97,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupPostPhotoId = request.GroupPostPhotoId,
                 GroupPostVideoId = request.GroupPostVideoId,
                 SharedToUserId = request.SharedToUserId, 
-                GroupStatusId = request.GroupStatusId,
+                GroupStatusId = groupStatusId,
                 CreateDate = DateTime.Now,
                 IsHide = false,
                 IsBanned = false,

@@ -52,12 +52,20 @@ namespace Application.Commands.CreateGroupPost
                                         on g.GroupId equals gsu.GroupId
                                     join groupSetting in _context.GroupSettings
                                         on gsu.GroupSettingId equals groupSetting.GroupSettingId
+                                    join groupStatus in _context.GroupStatuses // Join với bảng GroupStatuses
+                                        on gsu.GroupStatusId equals groupStatus.GroupStatusId
                                     where g.GroupId == request.GroupId
-                                    select groupSetting.GroupSettingName).FirstOrDefault();
-            if (groupSettingName == "Approve Post")
+                                    select new
+                                    {
+                                        GroupSettingName = groupSetting.GroupSettingName,
+                                        GroupStatusName = groupStatus.GroupStatusName
+                                    }).FirstOrDefault();
+            if (groupSettingName.GroupSettingName == "Approve Post" && groupSettingName.GroupStatusName == "Public")
             {
                 statusGroup = false;
             }
+
+            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
 
             if (photos.Count() == 1 && numberPost == 1)
             {
@@ -75,7 +83,7 @@ namespace Application.Commands.CreateGroupPost
                 Content = request.Content,
                 GroupId = request.GroupId,
                 GroupPostNumber = DateTime.Now.ToString("ddMMyyHHmmss") + request.UserId.ToString().Replace("-", ""),
-                GroupStatusId = request.GroupStatusId,
+                GroupStatusId = groupStatusId,
                 IsHide = false,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
