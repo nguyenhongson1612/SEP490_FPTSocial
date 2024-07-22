@@ -94,7 +94,7 @@ namespace Application.Commands.UpdateRoleMember
                     }
                     else if (member.GroupRole.GroupRoleName.Equals("Censor"))
                     {
-                        var newrole = await _querycontext.GroupMembers
+                        var newrole = await _querycontext.GroupMembers.Include(x=>x.GroupRole)
                             .FirstOrDefaultAsync(x => x.UserId == request.MemberId && x.GroupId == request.GroupId && x.IsJoined == true);
                         if(newrole.GroupRole.GroupRoleName.Equals("Admin") || newrole.GroupRole.GroupRoleName.Equals("Censor"))
                         {
