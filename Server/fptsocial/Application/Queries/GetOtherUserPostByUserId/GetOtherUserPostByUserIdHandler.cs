@@ -96,8 +96,37 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
+            var sharePosts = await _context.SharePosts
+                .AsNoTracking()
+                .Include(x => x.UserStatus)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostPhotos)
+                        .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostVideos)
+                        .ThenInclude(x => x.Video)
+                .Include(x => x.UserPostPhoto)
+                    .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPostVideo)
+                    .ThenInclude(x => x.Video)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostPhotos)
+                        .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostVideos)
+                        .ThenInclude(x => x.GroupVideo)
+                .Include(x => x.GroupPostPhoto)
+                    .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPostVideo)
+                    .ThenInclude(x => x.GroupVideo)
+                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync(cancellationToken);
+
+            var listUserId = sharePosts.Select(x => x.UserSharedId).ToList();
             var avt = await _context.AvataPhotos
                 .AsNoTracking()
+                .Where(x => x.UserId == request.OtherUserId || listUserId.Contains(x.UserId))
                 .ToListAsync();
 
             var userProfile = await _context.UserProfiles
@@ -107,8 +136,10 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     x.UserId,
                     FullName = $"{x.FirstName} {x.LastName}"
                 })
+                .Where(x => x.UserId == request.OtherUserId || listUserId.Contains(x.UserId))
                 .ToListAsync(cancellationToken);
 
+            var listUserpostId = userPosts.Select(x => x.UserPostId).ToList();
             var react = await _context.PostReactCounts
                 .AsNoTracking()
                 .Select(x => new {
@@ -117,6 +148,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     CommentNumber = x.CommentCount,
                     ShareNumber = x.ShareCount,
                 })
+                .Where(x => listUserpostId.Contains((Guid)x.UserPostId))
                 .ToListAsync(cancellationToken);
 
             foreach (var item in userPosts)
@@ -184,33 +216,6 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     }
                 });
             }
-
-            var sharePosts = await _context.SharePosts
-                .AsNoTracking()
-                .Include(x => x.UserStatus)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostPhotos)
-                        .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostVideos)
-                        .ThenInclude(x => x.Video)
-                .Include(x => x.UserPostPhoto)
-                    .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideo)
-                    .ThenInclude(x => x.Video)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostPhotos)
-                        .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostVideos)
-                        .ThenInclude(x => x.GroupVideo)
-                .Include(x => x.GroupPostPhoto)
-                    .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPostVideo)
-                    .ThenInclude(x => x.GroupVideo)
-                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
-                .OrderByDescending(x => x.CreatedDate)
-                .ToListAsync(cancellationToken);
 
             foreach (var item in sharePosts)
             {

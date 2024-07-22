@@ -78,7 +78,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                     .ThenInclude(gpp => gpp.GroupPhoto)
                 .Include(gp => gp.GroupPostVideos)
                     .ThenInclude(gpv => gpv.GroupVideo)
-                .Where(gp => gp.GroupId == request.GroupId && gp.IsHide != true && gp.IsBanned != true && gp.IsPending != false)
+                .Where(gp => gp.GroupId == request.GroupId && gp.IsHide != true && gp.IsBanned != true && gp.IsPending == false)
                 .ToListAsync(cancellationToken);
 
             var groupPostIds = groupPosts.Select(gp => gp.GroupPostId).ToList();
@@ -115,7 +115,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                     .ThenInclude(up => up.Photo)
                 .Include(gsp => gsp.UserPostVideo)
                     .ThenInclude(upv => upv.Video)
-                .Where(gsp => gsp.GroupId == request.GroupId && gsp.IsHide != true && gsp.IsBanned != true && gsp.IsPending != false)
+                .Where(gsp => gsp.GroupId == request.GroupId && gsp.IsHide != true && gsp.IsBanned != true && gsp.IsPending == false)
                 .ToListAsync(cancellationToken);
 
             var userShareProfiles = await _context.UserProfiles
