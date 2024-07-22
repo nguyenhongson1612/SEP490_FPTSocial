@@ -66,6 +66,11 @@ namespace Application.Queries.GetGroupPostByGroupId
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
+            var isDelete = await _context.GroupFpts.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.IsDelete == true);
+            if (isDelete != null)
+            {
+                throw new ErrorException(StatusCodeEnum.GR17_Group_Is_Not_Exist);
+            }
 
             // Truy vấn các bài đăng nhóm với các thông tin liên quan
             var groupPosts = await _context.GroupPosts

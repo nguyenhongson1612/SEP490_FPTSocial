@@ -189,7 +189,7 @@ namespace Application.Queries.GetPost
                                         .ThenInclude(x => x.GroupPhoto)
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
-                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.IsHide != true && x.IsBanned != true))
+                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.Group.IsDelete != true && x.IsHide != true && x.IsBanned != true))
                                     .ToListAsync();
 
             foreach(var item  in groupPost)
