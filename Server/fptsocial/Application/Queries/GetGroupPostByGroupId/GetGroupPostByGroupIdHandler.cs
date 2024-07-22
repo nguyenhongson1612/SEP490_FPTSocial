@@ -193,7 +193,13 @@ namespace Application.Queries.GetGroupPostByGroupId
 
                 var avtShare = _context.AvataPhotos
                     .AsNoTracking()
-                    .FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+                    .Where(x => x.UserId == item.UserSharedId && x.IsUsed == true)
+                    .Select(x => new GetUserAvatar {
+                        AvataPhotosId = x.AvataPhotosId,
+                        AvataPhotosUrl = x.AvataPhotosUrl,
+                        UserStatusId = x.UserStatusId,
+                    })
+                    .FirstOrDefault();
 
                 var groupId = _context.GroupPosts
                     .AsNoTracking()
@@ -226,6 +232,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                     IsHide = item.IsHide,
                     IsBanned = item.IsBanned,
                     IsShare = true,
+                    IsPending = item.IsPending,
                     GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
                     GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
                     GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
@@ -233,7 +240,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                     UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
                     UserNameShare = userShare,
-                    UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
+                    UserAvatarShare = avtShare,
                     GroupShareId = group?.GroupId ?? null,
                     GroupShareName = group?.GroupName ?? null,
                     GroupShareCorverImage = group?.CoverImage ?? null,

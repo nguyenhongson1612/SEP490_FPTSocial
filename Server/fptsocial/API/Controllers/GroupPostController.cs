@@ -40,6 +40,7 @@ using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
 using Application.Queries.GetGroupPostByGroupPostId;
 using Application.Queries.GetGroupPostIdPendingByGroupId;
+using Application.Queries.SearchGroupPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -418,5 +419,12 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("searchGroupPost")]
+        public async Task<IActionResult> SearchGroupPost([FromQuery] SearchGroupPostQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
