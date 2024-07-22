@@ -35,6 +35,7 @@ namespace Application.Queries.GetGroupByGroupId
             var group = await _context.GroupFpts.Include(x => x.GroupType)
                                                 .Include(x => x.GroupTagUseds)
                                                 .Include(x => x.GroupMembers)
+                                                .Include(x=>x.CreatedBy)
                                                 .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.IsDelete == false);
             var groupsetting = await _context.GroupSettingUses.Include(x => x.GroupSetting)
                                                                 .Include(x => x.GroupStatus)
@@ -66,7 +67,7 @@ namespace Application.Queries.GetGroupByGroupId
                 GroupNumber = group.GroupNumber,
                 GroupDescription = group.GroupDescription,
                 CoverImage = group.CoverImage,
-                GroupAdmin = admin.User.FirstName + " " + admin.User.LastName,
+                GroupAdmin = group.CreatedBy.FullName,
                 GroupTypeId = group.GroupTypeId,
                 GroupTypeName = group.GroupType.GroupTypeName,
                 CreateAt = group.CreatedDate,
