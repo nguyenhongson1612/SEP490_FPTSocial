@@ -1,4 +1,5 @@
-﻿using Application.Commands.CreateCommentForGroupSharePost;
+﻿using Application.Commands.AprroveGroupPost;
+using Application.Commands.CreateCommentForGroupSharePost;
 using Application.Commands.CreateGroupPost;
 using Application.Commands.CreateReactCommentGroupPost;
 using Application.Commands.CreateReactCommentGroupPostPhoto;
@@ -26,7 +27,11 @@ using Application.Commands.DeleteGroupSharePost;
 using Application.Commands.Post;
 using Application.Commands.ShareGroupPostCommand;
 using Application.Commands.ShareUserPostCommand;
+using Application.Commands.UpdateCommentGroupPhotoPost;
+using Application.Commands.UpdateCommentGroupPost;
 using Application.Commands.UpdateCommentGroupSharePost;
+using Application.Commands.UpdateCommentGroupVideoPost;
+using Application.Commands.UpdateCommentUserPost;
 using Application.Commands.UpdateGroupPhotoPostCommand;
 using Application.Commands.UpdateGroupPostCommand;
 using Application.Commands.UpdateGroupSharePost;
@@ -417,6 +422,98 @@ namespace API.Controllers
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("searchGroupPost")]
+        public async Task<IActionResult> SearchGroupPost([FromQuery] SearchGroupPostQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updateGroupCommentPost")]
+        public async Task<IActionResult> UpdateGroupCommentPost(UpdateCommentGroupPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("updateGroupCommentVideoPost")]
+        public async Task<IActionResult> UpdateGroupCommentVideoPost(UpdateCommentGroupVideoPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("updateGroupCommentPhotoPost")]
+        public async Task<IActionResult> UpdateGroupCommentPhotoPost(UpdateCommentGroupPhotoPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
+        }
+
+        [HttpPost]
+        [Route("approveGroupPost")]
+        public async Task<IActionResult> ApproveGroupPost(ApproveGroupPostCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+
         }
     }
 }
