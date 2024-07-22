@@ -106,6 +106,9 @@ using Application.Commands.CreateCommentForSharePost;
 using Application.Commands.UpdateSharePost;
 using Application.Commands.CreateCommentForGroupSharePost;
 using Application.Commands.UpdateGroupSharePost;
+using Application.Commands.UpdateCommentGroupPost;
+using Application.Commands.UpdateCommentGroupVideoPost;
+using Application.Commands.UpdateCommentGroupPhotoPost;
 
 namespace Application.Mappers
 {
@@ -345,6 +348,9 @@ namespace Application.Mappers
             CreateMap<GroupPostDTO, GroupPost>().ReverseMap();
             CreateMap<Command.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
             CreateMap<Query.GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentGroupPost, UpdateCommentGroupPostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentGroupVideoPost, UpdateCommentGroupVideoPostCommandResult>().ReverseMap();
+            CreateMap<Command.CommentPhotoGroupPost, UpdateCommentGroupPhotoPostCommandResult>().ReverseMap();
 
             //SharePost
             CreateMap<SharePost, ShareUserPostCommandResult>().ReverseMap();
