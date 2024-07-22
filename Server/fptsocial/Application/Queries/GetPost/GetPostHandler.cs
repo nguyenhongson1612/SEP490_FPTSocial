@@ -23,7 +23,7 @@ using Application.Queries.GetUserPost;
 
 namespace Application.Queries.GetPost
 {
-    public class GetPostHandler : IQueryHandler<GetPostQuery, List<GetPostResult>>
+    public class GetPostHandler : IQueryHandler<GetPostQuery, GetPostResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ namespace Application.Queries.GetPost
             _mapper = mapper;
         }
 
-        public async Task<Result<List<GetPostResult>>> Handle(GetPostQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetPostResult>> Handle(GetPostQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -48,7 +48,7 @@ namespace Application.Queries.GetPost
 
             if (request.Page <= 0)
             {
-                return Result<List<GetPostResult>>.Failure("Page number must be greater than 0");
+                return Result<GetPostResult>.Failure("Page number must be greater than 0");
             }
 
             // Retrieve the list of friend UserIds
@@ -78,7 +78,7 @@ namespace Application.Queries.GetPost
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
-            List<GetPostResult> combinePost = new List<GetPostResult>();
+            var combinePost = new List<GetPostDTO>();
 
             foreach (var item in posts)
             {
@@ -90,7 +90,7 @@ namespace Application.Queries.GetPost
                 var reactCounts = _context.PostReactCounts
                                         .FirstOrDefault(x => x.UserPostId == item.UserPostId);
 
-                combinePost.Add(new GetPostResult
+                combinePost.Add(new GetPostDTO
                 {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -201,7 +201,8 @@ namespace Application.Queries.GetPost
 
                 var groupreactCounts = _context.PostReactCounts
                                         .FirstOrDefault(x => x.UserPostId == item.GroupPostId);
-                combinePost.Add(new GetPostResult { 
+                combinePost.Add(new GetPostDTO
+                { 
                     PostId = item.GroupPostId,
                     UserId = item.UserId,
                     Content = item.Content,
@@ -323,7 +324,7 @@ namespace Application.Queries.GetPost
                 var reactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId);
                 var commentNumber = _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId);
 
-                combinePost.Add(new GetPostResult
+                combinePost.Add(new GetPostDTO
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -369,6 +370,10 @@ namespace Application.Queries.GetPost
                 });
             }
 
+            var getpost = new GetPostResult();
+
+            getpost.totalPage = (combinePost.Count()) / request.PageSize;
+
             combinePost = combinePost
                             .OrderByDescending(x => x.EdgeRank)
                             .ThenByDescending(x => x.CreatedAt)
@@ -376,8 +381,9 @@ namespace Application.Queries.GetPost
                             .Take(request.PageSize)
                             .ToList();
 
+            getpost.result = combinePost;
 
-            return Result<List<GetPostResult>>.Success(combinePost);
+            return Result<GetPostResult>.Success(getpost);
         }
 
 

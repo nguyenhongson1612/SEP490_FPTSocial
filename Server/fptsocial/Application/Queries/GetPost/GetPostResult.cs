@@ -16,6 +16,12 @@ namespace Application.Queries.GetPost
 {
     public class GetPostResult
     {
+        public List<GetPostDTO>? result { get; set; }
+        public int? totalPage { get; set; }
+    }
+
+    public class GetPostDTO
+    {
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }

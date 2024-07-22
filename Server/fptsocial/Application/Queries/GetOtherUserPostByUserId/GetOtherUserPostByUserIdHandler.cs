@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetOtherUserPostByUserId
 {
-    public class GetOtherUserPostByUserIdHandler : IQueryHandler<GetOtherUserPostByUserIdQuery, List<GetOtherUserPostByUserIdResult>>
+    public class GetOtherUserPostByUserIdHandler : IQueryHandler<GetOtherUserPostByUserIdQuery, GetOtherUserPostByUserIdResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -31,7 +31,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
             _mapper = mapper;
         }
 
-        public async Task<Result<List<GetOtherUserPostByUserIdResult>>> Handle(GetOtherUserPostByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetOtherUserPostByUserIdResult>> Handle(GetOtherUserPostByUserIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -43,7 +43,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
-            List<GetOtherUserPostByUserIdResult> combine = new List<GetOtherUserPostByUserIdResult>();
+            List<GetOtherUserPostByUserId> combine = new List<GetOtherUserPostByUserId>();
 
             var idprofilestatus = await _context.Settings
                 .AsNoTracking()
@@ -157,7 +157,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 var userName = userProfile.Where(x => x.UserId == item.UserId).Select(x => x.FullName).FirstOrDefault();
                 var reactCount = react.FirstOrDefault(x => x.UserPostId == item.UserPostId);
 
-                combine.Add(new GetOtherUserPostByUserIdResult
+                combine.Add(new GetOtherUserPostByUserId
                 {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -234,7 +234,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .FirstOrDefault(x => x.GroupId == groupId);
 
 
-                combine.Add(new GetOtherUserPostByUserIdResult
+                combine.Add(new GetOtherUserPostByUserId
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -278,12 +278,18 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 });
             }
 
+            var getotheruserpost = new GetOtherUserPostByUserIdResult();
+
+            getotheruserpost.totalPage = (combine.Count()) / request.PageSize;
+
             combine = combine.OrderByDescending(x => x.CreatedAt)
                             .Skip((request.Page - 1) * request.PageSize)
                             .Take(request.PageSize)
                             .ToList();
 
-            return Result<List<GetOtherUserPostByUserIdResult>>.Success(combine);
+
+            getotheruserpost.result = combine;
+            return Result<GetOtherUserPostByUserIdResult>.Success(getotheruserpost);
         }
     }
 }

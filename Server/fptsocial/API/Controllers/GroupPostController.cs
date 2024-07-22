@@ -418,13 +418,5 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
-
-        [HttpGet]
-        [Route("searchGroupPost")]
-        public async Task<IActionResult> SearchGroupPost([FromQuery] SearchGroupPostQuery input)
-        {
-            var res = await _sender.Send(input);
-            return Success(res.Value);
-        }
     }
 }

@@ -52,7 +52,7 @@ namespace Application.Queries.SearchGroupPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var result = new SearchGroupPostResult();
+            
             var combine = new List<GetGroupPostByGroupIdResult>();
 
             var normalizedSearchString = request.SearchString.RemoveDiacritics().ToLower();
@@ -278,9 +278,12 @@ namespace Application.Queries.SearchGroupPost
                     }
                 }
             }
+            var searchgrouppost = new SearchGroupPostResult();
+
+            searchgrouppost.totalPage = (combine.Count()) / request.PageSize;
 
             // Sắp xếp theo ngày đăng
-            result.GroupPost = combine
+            searchgrouppost.result = combine
                 .OrderByDescending(p => p.EdgeRank)
                 .ThenByDescending(p => p.CreatedAt)
                 .Skip((request.Page - 1) * request.PageSize)
@@ -288,7 +291,7 @@ namespace Application.Queries.SearchGroupPost
                 .ToList();
 
             // Trả về kết quả
-            return Result<SearchGroupPostResult>.Success(result);
+            return Result<SearchGroupPostResult>.Success(searchgrouppost);
         }
     }
 }

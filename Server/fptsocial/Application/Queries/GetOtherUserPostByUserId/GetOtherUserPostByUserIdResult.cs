@@ -4,16 +4,16 @@ using Application.DTO.ReactDTO;
 using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
-using Domain.QueryModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Queries.GetOtherUserPostByUserId
 {
     public class GetOtherUserPostByUserIdResult
+    {
+        public List<GetOtherUserPostByUserId>? result { get; set;}
+        public int? totalPage { get; set;}
+    }
+
+    public class GetOtherUserPostByUserId
     {
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
@@ -22,10 +22,11 @@ namespace Application.Queries.GetOtherUserPostByUserId
         public DateTime? UpdateAt { get; set; }
         public bool? IsHide { get; set; }
         public bool? IsBanned { get; set; }
-        public bool? IsShare {  get; set; }
+        public bool? IsShare { get; set; }
 
         // Specific to UserPost
         public string? UserPostNumber { get; set; }
+
         public Guid? UserStatusId { get; set; }
         public bool? IsAvataPost { get; set; }
         public bool? IsCoverPhotoPost { get; set; }
@@ -37,9 +38,9 @@ namespace Application.Queries.GetOtherUserPostByUserId
         public virtual List<UserPostPhotoDTO>? UserPostPhoto { get; set; }
         public virtual List<UserPostVideoDTO>? UserPostVideo { get; set; }
 
-
         // Specific to SharePost
         public Guid? UserPostShareId { get; set; }
+
         public Guid? UserPostVideoShareId { get; set; }
         public Guid? UserPostPhotoShareId { get; set; }
         public Guid? GroupPostShareId { get; set; }
@@ -51,6 +52,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
         //public virtual UserProfile? SharedToUser { get; set; }
         public virtual UserPostDTO? UserPostShare { get; set; }
+
         public virtual UserPostPhotoDTO? UserPostPhotoShare { get; set; }
         public virtual UserPostVideoDTO? UserPostVideoShare { get; set; }
         public virtual GroupPostDTO? GroupPostShare { get; set; }

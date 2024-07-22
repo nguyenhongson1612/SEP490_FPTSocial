@@ -17,10 +17,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Application.Queries.GetUserPost.GetUserPostResult;
 
 namespace Application.Queries.GetUserPost
 {
-    public class GetUserPostHandler : IQueryHandler<GetUserPostQuery, List<GetUserPostResult>>
+    public class GetUserPostHandler : IQueryHandler<GetUserPostQuery, GetUserPostResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -30,7 +31,7 @@ namespace Application.Queries.GetUserPost
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Result<List<GetUserPostResult>>> Handle(GetUserPostQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetUserPostResult>> Handle(GetUserPostQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -42,7 +43,7 @@ namespace Application.Queries.GetUserPost
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
-            List<GetUserPostResult> combine = new List<GetUserPostResult>();
+            var combine = new List<GetUserPostDTO>();
 
             var userPosts = await _context.UserPosts
                 .AsNoTracking()
@@ -72,7 +73,7 @@ namespace Application.Queries.GetUserPost
                 .AsNoTracking()
                 .FirstOrDefault(x => x.UserPostId == item.UserPostId);
 
-                combine.Add(new GetUserPostResult
+                combine.Add(new GetUserPostDTO
                 {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -170,7 +171,7 @@ namespace Application.Queries.GetUserPost
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
 
-                combine.Add(new GetUserPostResult
+                combine.Add(new GetUserPostDTO
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -211,12 +212,16 @@ namespace Application.Queries.GetUserPost
                 });
             }
 
+            var getuserpost = new GetUserPostResult();
+            getuserpost.totalPage = (combine.Count()) / request.PageSize;
+
             combine = combine.OrderByDescending(x => x.CreatedAt)
                             .Skip((request.Page - 1) * request.PageSize)
                             .Take(request.PageSize)
                             .ToList();
 
-            return Result<List<GetUserPostResult>>.Success(combine);
+            getuserpost.result = combine;
+            return Result<GetUserPostResult>.Success(getuserpost);
         }
 
     }

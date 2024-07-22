@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetGroupPostByGroupId
 {
-    public class GetGroupPostByGroupIdQuery : IQuery<List<GetGroupPostByGroupIdResult>>
+    public class GetGroupPostByGroupIdQuery : IQuery<GetGroupPostByGroupIdResult>
     {
         public Guid GroupId { get; set; }
         public string Type {  get; set; }
