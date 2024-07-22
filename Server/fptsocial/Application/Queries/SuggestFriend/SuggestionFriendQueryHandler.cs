@@ -86,20 +86,24 @@ namespace Application.Queries.SuggestFriend
                         .Include(x=>x.AvataPhotos)
                         .Where(x => x.UserId == friendId)
                         .FirstOrDefaultAsync();
-
-                    if (friendProfile != null)
+                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == friendId || x.FriendId == friendId));
+                    if(requestFriend == null)
                     {
-                        var friendDTO = new GetAllFriendDTO
+                        if (friendProfile != null)
                         {
-                            FriendId = friendProfile.UserId,
-                            FriendName = $"{friendProfile.FirstName} {friendProfile.LastName}",
-                            MutualFriends = potentialFriends[friendId].mutualFriends,
-                            ReactCount = potentialFriends[friendId].reactCount,
-                            Avata = friendProfile.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
-                            // Add other fields if needed
-                        };
-                        result.AllFriend.Add(friendDTO);
+                            var friendDTO = new GetAllFriendDTO
+                            {
+                                FriendId = friendProfile.UserId,
+                                FriendName = $"{friendProfile.FirstName} {friendProfile.LastName}",
+                                MutualFriends = potentialFriends[friendId].mutualFriends,
+                                ReactCount = potentialFriends[friendId].reactCount,
+                                Avata = friendProfile.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                                // Add other fields if needed
+                            };
+                            result.AllFriend.Add(friendDTO);
+                        }
                     }
+                    
                 }
                 result.Count = result.AllFriend.Count;
             }
@@ -113,7 +117,7 @@ namespace Application.Queries.SuggestFriend
                 {
                     var listSetting = await _context.UserSettings.Include(x => x.Setting)
                                         .Include(x => x.UserStatus).Where(x => x.UserId == item.UserId).ToListAsync();
-                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId || x.FriendId == request.UserId));
+                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == item.UserId || x.FriendId == item.UserId));
                     if(requestFriend == null)
                     {
                         if(listSetting?.Count > 0)
