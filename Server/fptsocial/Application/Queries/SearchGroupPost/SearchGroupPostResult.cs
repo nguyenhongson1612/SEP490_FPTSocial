@@ -9,6 +9,8 @@ namespace Application.Queries.SearchGroupPost
 {
     public class SearchGroupPostResult
     {
-        public List<GetGroupPostByGroupIdResult>? GroupPost {  get; set; }
+        public List<GetGroupPostByGroupIdDTO>? result {  get; set; }
+        public int? totalPage { get; set; }
+
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetOtherUserPostByUserId
 {
-    public class GetOtherUserPostByUserIdQuery : IQuery<List<GetOtherUserPostByUserIdResult>>
+    public class GetOtherUserPostByUserIdQuery : IQuery<GetOtherUserPostByUserIdResult>
     {
         public Guid? UserId { get; set; }
         public Guid? OtherUserId { get; set; }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetPost
 {
-    public class GetPostQuery : IQuery<List<GetPostResult>>
+    public class GetPostQuery : IQuery<GetPostResult>
     {
         public Guid UserId { get; set; }
         public int Page { get; set; } = 1;

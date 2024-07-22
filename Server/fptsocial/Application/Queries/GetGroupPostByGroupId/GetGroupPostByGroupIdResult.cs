@@ -17,6 +17,11 @@ namespace Application.Queries.GetGroupPostByGroupId
 {
     public class GetGroupPostByGroupIdResult
     {
+        public List<GetGroupPostByGroupIdDTO>? result {  get; set; }
+        public int? totalPage { get; set; }
+    }
+    public class GetGroupPostByGroupIdDTO
+    {
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }

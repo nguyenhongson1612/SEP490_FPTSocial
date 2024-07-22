@@ -3,6 +3,7 @@ using Application.Queries.GetFriendyName;
 using Application.Queries.GetGroupByGroupId;
 using Application.Queries.GetGroupByName;
 using Application.Queries.SearchFunction;
+using Application.Queries.SearchGroupPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -99,6 +100,14 @@ namespace API.Controllers
                 return BadRequest();
             }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("searchGroupPost")]
+        public async Task<IActionResult> SearchGroupPost([FromQuery] SearchGroupPostQuery input)
+        {
             var res = await _sender.Send(input);
             return Success(res.Value);
         }

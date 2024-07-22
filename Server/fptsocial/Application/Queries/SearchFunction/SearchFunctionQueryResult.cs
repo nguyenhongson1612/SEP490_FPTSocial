@@ -17,7 +17,7 @@ namespace Application.Queries.SearchFunction
     public class SearchFunctionQueryResult
     {
         public List<GroupFPTDTO>? groups { get; set; }
-        public List<GetPostResult>? userPosts { get; set; }
+        public List<GetPostDTO>? userPosts { get; set; }
         public List<UserDTO>? userProfiles { get; set; }
 
     }

@@ -139,7 +139,7 @@ namespace Application.Queries.SearchFunction
             return result;
         }
 
-        public async Task<List<GetPostResult>> searchUserPosts(string searchContent, SearchFunctionQuery request)
+        public async Task<List<GetPostDTO>> searchUserPosts(string searchContent, SearchFunctionQuery request)
         {
             // Chuẩn hóa chuỗi tìm kiếm
             var normalizedSearchContent = NormalizeString(searchContent);
@@ -190,7 +190,7 @@ namespace Application.Queries.SearchFunction
                 var user = users.TryGetValue(userPost.UserId, out var userProfile) ? userProfile : null;
                 var avatar = avatars.TryGetValue(userPost.UserId, out var avataPhoto) ? avataPhoto : null;
 
-                return new GetPostResult
+                return new GetPostDTO
                 {
                     PostId = userPost.UserPostId,
                     UserId = userPost.UserId,

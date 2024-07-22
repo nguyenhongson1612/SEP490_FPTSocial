@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.GetGroupPostByGroupId
 {
-    public class GetGroupPostByGroupIdHandler : IQueryHandler<GetGroupPostByGroupIdQuery, List<GetGroupPostByGroupIdResult>>
+    public class GetGroupPostByGroupIdHandler : IQueryHandler<GetGroupPostByGroupIdQuery, GetGroupPostByGroupIdResult>
     {
         private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
@@ -35,7 +35,7 @@ namespace Application.Queries.GetGroupPostByGroupId
             _mapper = mapper;
         }
 
-        private List<GetGroupPostByGroupIdResult> ApplySortingAndPaging(List<GetGroupPostByGroupIdResult> query, string type, int page, int pageSize)
+        private List<GetGroupPostByGroupIdDTO> ApplySortingAndPaging(List<GetGroupPostByGroupIdDTO> query, string type, int page, int pageSize)
         {
             if (type.Contains("Valid"))
             {
@@ -54,7 +54,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                         .ToList();
         }
 
-        public async Task<Result<List<GetGroupPostByGroupIdResult>>> Handle(GetGroupPostByGroupIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetGroupPostByGroupIdResult>> Handle(GetGroupPostByGroupIdQuery request, CancellationToken cancellationToken)
         {
             if (_context == null)
             {
@@ -151,7 +151,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .ToListAsync(cancellationToken);
 
             // Tạo danh sách kết quả
-            var combine = new List<GetGroupPostByGroupIdResult>();
+            var combine = new List<GetGroupPostByGroupIdDTO>();
 
             foreach (var item in groupPosts)
             {
@@ -159,7 +159,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                 var userAvatar = avatarPhotos.FirstOrDefault(ap => ap.UserId == item.UserId);
                 var react = reactCounts.FirstOrDefault(r => r.GroupPostId == item.GroupPostId);
 
-                combine.Add(new GetGroupPostByGroupIdResult
+                combine.Add(new GetGroupPostByGroupIdDTO
                 {
                     PostId = item.GroupPostId,
                     UserId = item.UserId,
@@ -235,7 +235,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                 var groupPost = groupPostsForShare.FirstOrDefault(gp => gp.GroupPostId == item.GroupPostId);
                 var group = groups.FirstOrDefault(g => g.GroupId == groupPost?.GroupId);
 
-                combine.Add(new GetGroupPostByGroupIdResult
+                combine.Add(new GetGroupPostByGroupIdDTO
                 {
                     PostId = item.GroupSharePostId,
                     UserId = item.UserId,
@@ -281,9 +281,15 @@ namespace Application.Queries.GetGroupPostByGroupId
                 });
             }
 
+            var getgrouppost = new GetGroupPostByGroupIdResult();
+
+            getgrouppost.totalPage = (combine.Count()) / request.PageSize;
+
             combine = ApplySortingAndPaging(combine, request.Type, request.Page, request.PageSize);
 
-            return Result<List<GetGroupPostByGroupIdResult>>.Success(combine);
+            getgrouppost.result = combine;
+
+            return Result<GetGroupPostByGroupIdResult>.Success(getgrouppost);
         }
     }
 }
