@@ -120,5 +120,7 @@ namespace Domain.Enums
         PS01_Profile_Status_Private,
         [Description("Request is null!")]
         RQ01_Request_Is_Null,
+        [Description("Group is not exist!")]
+        GR17_Group_Is_Not_Exist,
     }
 }
