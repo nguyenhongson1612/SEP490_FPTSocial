@@ -76,21 +76,29 @@ namespace Application.Queries.GetListMemberRole
             }
             else if(joined.GroupRole.GroupRoleName.Equals("Censor"))
             {
-                if (member != null)
+                if (member?.Count > 0)
                 {
                     foreach (var item in member)
                     {
+                        var mem = new GroupMemberDTO
+                        {
+                            UserId = item.UserId,
+                            GroupId = request.GroupId,
+                            MemberName = item.User.FirstName + " " + item.User.LastName,
+                            Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                            GroupRoleId = item.GroupRoleId,
+                            GroupRoleName = item.GroupRole.GroupRoleName
+                        };
+                        if (item.GroupRole.GroupRoleName.Equals("Admin"))
+                        {
+                            result.GroupAdmin.Add(mem);
+                        }
+                        if (item.GroupRole.GroupRoleName.Equals("Censor"))
+                        {
+                            result.GroupMangager.Add(mem);
+                        }
                         if (item.GroupRole.GroupRoleName.Equals("Member"))
                         {
-                            var mem = new GroupMemberDTO
-                            {
-                                UserId = item.UserId,
-                                GroupId = request.GroupId,
-                                MemberName = item.User.FirstName + " " + item.User.LastName,
-                                Avata = item.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
-                                GroupRoleId = item.GroupRoleId,
-                                GroupRoleName = item.GroupRole.GroupRoleName
-                            };
                             result.GroupMember.Add(mem);
                         }
                     }
