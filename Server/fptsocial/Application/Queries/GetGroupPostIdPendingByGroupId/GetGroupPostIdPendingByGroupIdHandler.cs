@@ -57,7 +57,7 @@ namespace Application.Queries.GetGroupPostIdPendingByGroupId
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
                                     .Include(x => x.Group)
-                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true && x.IsPending == false)
+                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true && x.IsPending == true)
                                     .ToListAsync(cancellationToken);
 
             foreach (var item in groupPost)
@@ -145,7 +145,7 @@ namespace Application.Queries.GetGroupPostIdPendingByGroupId
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(p => p.GroupId == request.GroupId && p.IsHide != true && p.IsBanned != true && p.IsPending == false)
+                .Where(p => p.GroupId == request.GroupId && p.IsHide != true && p.IsBanned != true && p.IsPending == true)
                 .ToListAsync(cancellationToken);
 
             foreach (var item in sharePost)

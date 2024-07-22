@@ -33,12 +33,12 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
         public async Task<Result<List<GetOtherUserPostByUserIdResult>>> Handle(GetOtherUserPostByUserIdQuery request, CancellationToken cancellationToken)
         {
-            if(_context == null)
+            if (_context == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            if(request == null)
+            if (request == null)
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
@@ -96,26 +96,75 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
+            var sharePosts = await _context.SharePosts
+                .AsNoTracking()
+                .Include(x => x.UserStatus)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostPhotos)
+                        .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPost)
+                    .ThenInclude(x => x.UserPostVideos)
+                        .ThenInclude(x => x.Video)
+                .Include(x => x.UserPostPhoto)
+                    .ThenInclude(x => x.Photo)
+                .Include(x => x.UserPostVideo)
+                    .ThenInclude(x => x.Video)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostPhotos)
+                        .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPost)
+                    .ThenInclude(x => x.GroupPostVideos)
+                        .ThenInclude(x => x.GroupVideo)
+                .Include(x => x.GroupPostPhoto)
+                    .ThenInclude(x => x.GroupPhoto)
+                .Include(x => x.GroupPostVideo)
+                    .ThenInclude(x => x.GroupVideo)
+                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync(cancellationToken);
+
+            var listUserId = sharePosts.Select(x => x.UserSharedId).ToList();
             var avt = await _context.AvataPhotos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.IsUsed == true);
-            var user = await _context.UserProfiles
+                .Where(x => x.UserId == request.OtherUserId || listUserId.Contains(x.UserId))
+                .ToListAsync();
+
+            var userProfile = await _context.UserProfiles
                 .AsNoTracking()
-                .Where(x => x.UserId == request.UserId)
-                .Select(x => x.FirstName + " " + x.LastName)
-                .FirstOrDefaultAsync(cancellationToken);
+                .Select(x => new
+                {
+                    x.UserId,
+                    FullName = $"{x.FirstName} {x.LastName}"
+                })
+                .Where(x => x.UserId == request.OtherUserId || listUserId.Contains(x.UserId))
+                .ToListAsync(cancellationToken);
+
+            var listUserpostId = userPosts.Select(x => x.UserPostId).ToList();
+            var react = await _context.PostReactCounts
+                .AsNoTracking()
+                .Select(x => new {
+                    x.UserPostId,
+                    ReactNumber = x.ReactCount,
+                    CommentNumber = x.CommentCount,
+                    ShareNumber = x.ShareCount,
+                })
+                .Where(x => listUserpostId.Contains((Guid)x.UserPostId))
+                .ToListAsync(cancellationToken);
 
             foreach (var item in userPosts)
             {
-                var react =  _context.PostReactCounts
-                .AsNoTracking()
-                .FirstOrDefault(x => x.UserPostId == item.UserPostId);
-                combine.Add(new GetOtherUserPostByUserIdResult {
+                var userAvt = avt.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+                var userName = userProfile.Where(x => x.UserId == item.UserId).Select(x => x.FullName).FirstOrDefault();
+                var reactCount = react.FirstOrDefault(x => x.UserPostId == item.UserPostId);
+
+                combine.Add(new GetOtherUserPostByUserIdResult
+                {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
                     Content = item.Content,
                     UserPostNumber = item.UserPostNumber,
-                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO {
+                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
+                    {
                         UserStatusId = item.UserStatusId,
                         UserStatusName = item.UserStatus.StatusName
                     },
@@ -157,52 +206,34 @@ namespace Application.Queries.GetOtherUserPostByUserId
                         PostPosition = upp.PostPosition,
                         Video = _mapper.Map<VideoDTO>(upp.Video),
                     }).ToList(),
-                    UserName = user,
-                    UserAvatar = _mapper.Map<GetUserAvatar>(avt),
+                    UserName = userName,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(userAvt),
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = react?.ReactCount ?? null,
-                        CommentNumber = react?.CommentCount ?? null,
-                        ShareNumber = react?.ShareCount ?? null,
+                        ReactNumber = reactCount?.ReactNumber ?? 0,
+                        CommentNumber = reactCount?.CommentNumber ?? 0,
+                        ShareNumber = reactCount?.ShareNumber ?? 0,
                     }
                 });
             }
 
-            var sharePosts = await _context.SharePosts
-                .AsNoTracking()
-                .Include(x => x.UserStatus)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostPhotos)
-                        .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostVideos)
-                        .ThenInclude(x => x.Video)
-                .Include(x => x.UserPostPhoto)
-                    .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideo)
-                    .ThenInclude(x => x.Video)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostPhotos)
-                        .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostVideos)
-                        .ThenInclude(x => x.GroupVideo)
-                .Include(x => x.GroupPostPhoto)
-                    .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPostVideo)
-                    .ThenInclude(x => x.GroupVideo)
-                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
-                .OrderByDescending(x => x.CreatedDate)
-                .ToListAsync(cancellationToken);
-
             foreach (var item in sharePosts)
             {
-                var userShare =  _context.UserProfiles
-                    .Where(x => x.UserId == item.UserSharedId)
-                    .Select(x => x.FirstName + " " + x.LastName)
-                    .FirstOrDefault();
-                
-                var avtShare =  _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true);
+                var userAvt = avt.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+                var userName = userProfile.Where(x => x.UserId == item.UserId).Select(x => x.FullName).FirstOrDefault();
+
+                var userShare = userProfile.Where(x => x.UserId == item.UserSharedId).Select(x => x.FullName).FirstOrDefault();
+                var avtShare = avt.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+
+                var groupId = _context.GroupPosts.Where(x => x.GroupPostId == item.GroupPostId).Select(x => x.GroupId).FirstOrDefault();
+                var group = _context.GroupFpts.Select(x => new {
+                    x.GroupId,
+                    x.GroupName,
+                    x.CoverImage,
+                })
+                .FirstOrDefault(x => x.GroupId == groupId);
+
+
                 combine.Add(new GetOtherUserPostByUserIdResult
                 {
                     PostId = item.SharePostId,
@@ -228,8 +259,11 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
                     UserNameShare = userShare,
                     UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
-                    UserName = user,
-                    UserAvatar = _mapper.Map<GetUserAvatar>(avt),
+                    GroupShareId = group?.GroupId ?? null,
+                    GroupShareName = group?.GroupName ?? null,
+                    GroupShareCorverImage = group?.CoverImage ?? null,
+                    UserName = userName,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(userAvt),
                     UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
                     {
                         UserStatusId = item.UserStatusId,
@@ -237,8 +271,8 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber =  _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
-                        CommentNumber =  _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        ReactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        CommentNumber = _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId),
                         ShareNumber = 0,
                     }
                 });
