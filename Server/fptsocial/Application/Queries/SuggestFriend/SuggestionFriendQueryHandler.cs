@@ -113,24 +113,30 @@ namespace Application.Queries.SuggestFriend
                 {
                     var listSetting = await _context.UserSettings.Include(x => x.Setting)
                                         .Include(x => x.UserStatus).Where(x => x.UserId == item.UserId).ToListAsync();
-
-                    if (listSetting.FirstOrDefault(x=>x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Public")
-                        && listSetting.FirstOrDefault(x=> x.Setting.SettingName.Equals("Send Friend Invitations")).UserStatus.StatusName.Equals("Public"))
+                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == request.UserId || x.FriendId == request.UserId));
+                    if(requestFriend == null)
                     {
-                        var friendDTO = new GetAllFriendDTO
+                        if(listSetting?.Count > 0)
                         {
-                            FriendId = item.UserId,
-                            FriendName = $"{item.FirstName} {item.LastName}",
-                            Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
-                            MutualFriends = 0,
-                            ReactCount = 0
-                        };
-                        result.AllFriend.Add(friendDTO);
-                        i++;
-                    }
-                    if(i  == 20)
-                    {
-                        break;
+                            if (listSetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Public")
+                            && listSetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Send Friend Invitations")).UserStatus.StatusName.Equals("Public"))
+                            {
+                                var friendDTO = new GetAllFriendDTO
+                                {
+                                    FriendId = item.UserId,
+                                    FriendName = $"{item.FirstName} {item.LastName}",
+                                    Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                                    MutualFriends = 0,
+                                    ReactCount = 0
+                                };
+                                result.AllFriend.Add(friendDTO);
+                                i++;
+                            }
+                            if (i == 20)
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
                 result.Count = result.AllFriend.Count;
