@@ -12,5 +12,8 @@ namespace Application.Commands.AprroveGroupPost
     {
         public Guid UserId { get; set; }
         public Guid GroupPostId { get; set; }
+        public Guid GroupSharePostId { get; set; }
+
+        public string Type { get; set; }
     }
 }

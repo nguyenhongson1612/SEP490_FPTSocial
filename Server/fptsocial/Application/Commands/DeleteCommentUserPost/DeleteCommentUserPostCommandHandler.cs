@@ -46,8 +46,21 @@ namespace Application.Commands.DeleteCommentUserPost
                 }
                 else
                 {
-                    userComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    Domain.CommandModels.CommentPost commentPost = new Domain.CommandModels.CommentPost
+                    {
+                        CommentId = userComment.CommentId,
+                        UserPostId = userComment.UserPostId,
+                        UserId = userComment.UserId,
+                        Content = userComment.Content,
+                        ParentCommentId = userComment.ParentCommentId,
+                        ListNumber = userComment.ListNumber,
+                        LevelCmt = userComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = userComment.CreatedDate,
+                        IsBanned = userComment.IsBanned,
+                    };
+                    _context.Update(commentPost);
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }
