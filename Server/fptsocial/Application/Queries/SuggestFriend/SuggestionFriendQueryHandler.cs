@@ -86,7 +86,8 @@ namespace Application.Queries.SuggestFriend
                         .Include(x=>x.AvataPhotos)
                         .Where(x => x.UserId == friendId)
                         .FirstOrDefaultAsync();
-                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == friendId || x.FriendId == friendId));
+                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == friendId && x.FriendId == request.UserId)
+                                                                                    || (x.UserId == request.UserId && x.FriendId == friendId));
                     if(requestFriend == null)
                     {
                         if (friendProfile != null)
@@ -117,7 +118,8 @@ namespace Application.Queries.SuggestFriend
                 {
                     var listSetting = await _context.UserSettings.Include(x => x.Setting)
                                         .Include(x => x.UserStatus).Where(x => x.UserId == item.UserId).ToListAsync();
-                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == item.UserId || x.FriendId == item.UserId));
+                    var requestFriend = await _context.Friends.FirstOrDefaultAsync(x => (x.UserId == item.UserId && x.FriendId == request.UserId) 
+                                                                                    || (x.UserId == request.UserId && x.FriendId == item.UserId));
                     if(requestFriend == null)
                     {
                         if(listSetting?.Count > 0)
