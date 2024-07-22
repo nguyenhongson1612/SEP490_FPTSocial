@@ -13,6 +13,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -282,6 +283,8 @@ namespace Application.Queries.SearchGroupPost
             result.GroupPost = combine
                 .OrderByDescending(p => p.EdgeRank)
                 .ThenByDescending(p => p.CreatedAt)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToList();
 
             // Trả về kết quả
