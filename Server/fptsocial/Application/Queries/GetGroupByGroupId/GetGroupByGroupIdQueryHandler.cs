@@ -46,7 +46,7 @@ namespace Application.Queries.GetGroupByGroupId
                                     .Include(x => x.User)
                                     .ToListAsync();
 
-            var memjoin = member?.FirstOrDefault(x => x.UserId == request.UserId);
+            var memjoin = await _context.GroupMembers.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId);
 
             var admin = member?.FirstOrDefault(x => x.UserId == request.UserId && x.GroupRole.GroupRoleName.Equals("Admin"));
             var censor = member?.FirstOrDefault(x => x.UserId == request.UserId && x.GroupRole.GroupRoleName.Equals("Censor"));
@@ -87,15 +87,15 @@ namespace Application.Queries.GetGroupByGroupId
             getgroup.IsCensor = false;
             if (memjoin != null)
             {
+                getgroup.isRequest = true;
                 if (memjoin.IsJoined == false)
                 {
                     getgroup.IsJoin = false;
-                    getgroup.isRequest = true;
+                    
                 }
                 else
                 {
                     getgroup.IsJoin = true;
-                    getgroup.isRequest = true;
                     if (admin != null)
                     {
                         getgroup.IsAdmin = true;
