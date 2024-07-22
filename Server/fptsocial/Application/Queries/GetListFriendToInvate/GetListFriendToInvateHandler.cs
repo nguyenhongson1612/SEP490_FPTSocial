@@ -53,20 +53,20 @@ namespace Application.Queries.GetListFriendToInvate
 
             if(listallfriend != null)
             {
-                var listfr = new List<Domain.QueryModels.UserProfile>(listallfriend);
-                foreach (var item in listfr)
+                
+                foreach (var item in listallfriend)
                 {
                     var joined = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == item.UserId);
                     if(joined != null)
                     {
-                        listallfriend.Remove(item);
-                    }
-                    var friend = new GetListFriendToInvateResult { 
-                        UserId = item.UserId,
-                        Avata = item.AvataPhotos.FirstOrDefault(x=>x.IsUsed == true)?.AvataPhotosUrl,
-                        UserName = item.FirstName + " " + item.LastName
-                    };
-                    result.Add(friend);
+                        var friend = new GetListFriendToInvateResult
+                        {
+                            UserId = item.UserId,
+                            Avata = item.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                            UserName = item.FirstName + " " + item.LastName
+                        };
+                        result.Add(friend);
+                    } 
                 }
 
             }
