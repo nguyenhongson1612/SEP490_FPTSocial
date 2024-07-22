@@ -53,7 +53,7 @@ namespace Application.Queries.SearchGroupPost
             }
 
             
-            var combine = new List<GetGroupPostByGroupIdResult>();
+            var combine = new List<GetGroupPostByGroupIdDTO>();
 
             var normalizedSearchString = request.SearchString.RemoveDiacritics().ToLower();
             var searchWords = normalizedSearchString.SplitIntoWords();
@@ -122,7 +122,7 @@ namespace Application.Queries.SearchGroupPost
                             .FirstOrDefault();
                         var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == groupPost.GroupPostId);
                         // Thông tin bài đăng nhóm
-                        var grouppost = new GetGroupPostByGroupIdResult
+                        var grouppost = new GetGroupPostByGroupIdDTO
                         {
                             PostId = groupPost.GroupPostId,
                             UserId = groupPost.UserId,
@@ -236,7 +236,7 @@ namespace Application.Queries.SearchGroupPost
                             .Count(x => x.GroupSharePostId == sharePost.GroupSharePostId);
 
                         // Thông tin bài đăng chia sẻ
-                        var sharepost = new GetGroupPostByGroupIdResult
+                        var sharepost = new GetGroupPostByGroupIdDTO
                         {
                             PostId = sharePost.GroupSharePostId,
                             UserId = sharePost.UserId,
