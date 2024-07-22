@@ -57,7 +57,7 @@ namespace Application.Queries.GetListFriendToInvate
                 foreach (var item in listallfriend)
                 {
                     var joined = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == item.UserId);
-                    if(joined != null)
+                    if(joined == null)
                     {
                         var friend = new GetListFriendToInvateResult
                         {
