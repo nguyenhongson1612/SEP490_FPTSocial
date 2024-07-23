@@ -272,7 +272,8 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
-                        CommentNumber = _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        CommentNumber = _context.CommentSharePosts
+                        .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
                         ShareNumber = 0,
                     }
                 });
