@@ -52,7 +52,12 @@ namespace Application.Queries.SearchGroupPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+
             var combine = new List<GetGroupPostByGroupIdDTO>();
 
             var normalizedSearchString = request.SearchString.RemoveDiacritics().ToLower();
@@ -68,7 +73,7 @@ namespace Application.Queries.SearchGroupPost
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
                                     .Include(x => x.Group)
-                                    .Where(x => x.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true && x.IsPending == false)
+                                    .Where(x => x.GroupId == request.GroupId && !blockUserList.Contains(x.UserId) && x.IsHide != true && x.IsBanned != true && x.IsPending == false)
                                     .ToListAsync(cancellationToken);
 
             var sharePosts = await _context.GroupSharePosts
@@ -94,7 +99,7 @@ namespace Application.Queries.SearchGroupPost
                     .ThenInclude(x => x.GroupPhoto)
             .Include(x => x.GroupPostVideo)
             .ThenInclude(x => x.GroupVideo)
-                .Where(p => p.GroupId == request.GroupId && p.IsHide != true && p.IsBanned != true && p.IsPending == false)
+                .Where(p => p.GroupId == request.GroupId && !blockUserList.Contains(p.UserId) && p.IsHide != true && p.IsBanned != true && p.IsPending == false)
                 .ToListAsync(cancellationToken);
 
             foreach (var post in groupPosts.Cast<object>().Concat(sharePosts.Cast<object>()))
@@ -280,7 +285,7 @@ namespace Application.Queries.SearchGroupPost
             }
             var searchgrouppost = new SearchGroupPostResult();
 
-            searchgrouppost.totalPage = (combine.Count()) / request.PageSize;
+            searchgrouppost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             // Sắp xếp theo ngày đăng
             searchgrouppost.result = combine

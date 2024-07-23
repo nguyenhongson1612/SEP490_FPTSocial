@@ -9,6 +9,7 @@ namespace Application.Queries.GetChildPost
 {
     public class GetChildPostQuery : IQuery<GetChildPostResult>
     {
+        public Guid? UserId { get; set; }
         public Guid UserPostMediaId { get; set; }
     }
 }

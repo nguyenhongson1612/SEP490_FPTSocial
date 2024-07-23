@@ -72,6 +72,13 @@ namespace Application.Queries.GetGroupPostByGroupId
                 throw new ErrorException(StatusCodeEnum.GR17_Group_Is_Not_Exist);
             }
 
+            // Lấy ra listuser mà user chặn hoặc bị chặn
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+
             // Truy vấn các bài đăng nhóm với các thông tin liên quan
             var groupPosts = await _context.GroupPosts
                 .AsNoTracking()
@@ -83,18 +90,18 @@ namespace Application.Queries.GetGroupPostByGroupId
                     .ThenInclude(gpp => gpp.GroupPhoto)
                 .Include(gp => gp.GroupPostVideos)
                     .ThenInclude(gpv => gpv.GroupVideo)
-                .Where(gp => gp.GroupId == request.GroupId && gp.IsHide != true && gp.IsBanned != true && gp.IsPending == false)
+                .Where(gp => gp.GroupId == request.GroupId && !blockUserList.Contains(gp.UserId) && gp.IsHide != true && gp.IsBanned != true && gp.IsPending == false)
                 .ToListAsync(cancellationToken);
 
             var groupPostIds = groupPosts.Select(gp => gp.GroupPostId).ToList();
 
             // Truy vấn thông tin người dùng, ảnh đại diện và số lượng tương tác một lần cho tất cả bài đăng
             var userProfiles = await _context.UserProfiles
-                .Where(up => groupPosts.Select(gp => gp.UserId).Contains(up.UserId))
+                .Where(up => groupPosts.Select(gp => gp.UserId).Contains(up.UserId) && !blockUserList.Contains(up.UserId))
                 .ToListAsync(cancellationToken);
 
             var avatarPhotos = await _context.AvataPhotos
-                .Where(ap => groupPosts.Select(gp => gp.UserId).Contains(ap.UserId) && ap.IsUsed)
+                .Where(ap => groupPosts.Select(gp => gp.UserId).Contains(ap.UserId) && !blockUserList.Contains(ap.UserId) && ap.IsUsed)
                 .ToListAsync(cancellationToken);
 
             var reactCounts = await _context.GroupPostReactCounts
@@ -120,7 +127,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                     .ThenInclude(up => up.Photo)
                 .Include(gsp => gsp.UserPostVideo)
                     .ThenInclude(upv => upv.Video)
-                .Where(gsp => gsp.GroupId == request.GroupId && gsp.IsHide != true && gsp.IsBanned != true && gsp.IsPending == false)
+                .Where(gsp => gsp.GroupId == request.GroupId && !blockUserList.Contains(gsp.UserId) && gsp.IsHide != true && gsp.IsBanned != true && gsp.IsPending == false)
                 .ToListAsync(cancellationToken);
 
             var userShareProfiles = await _context.UserProfiles
@@ -289,7 +296,7 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             var getgrouppost = new GetGroupPostByGroupIdResult();
 
-            getgrouppost.totalPage = (combine.Count()) / request.PageSize;
+            getgrouppost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             combine = ApplySortingAndPaging(combine, request.Type, request.Page, request.PageSize);
 

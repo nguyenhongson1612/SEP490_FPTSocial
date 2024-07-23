@@ -9,6 +9,7 @@ namespace Application.Queries.GetGroupPostByGroupPostId
 {
     public class GetGroupPostByGroupPostIdQuery : IQuery<GetGroupPostByGroupPostIdResult>
     {
+        public Guid? UserId { get; set; }
         public Guid GroupPostId { get; set; }
     }
 }

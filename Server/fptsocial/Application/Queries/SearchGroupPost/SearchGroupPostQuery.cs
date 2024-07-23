@@ -9,6 +9,7 @@ namespace Application.Queries.SearchGroupPost
 {
     public class SearchGroupPostQuery : IQuery<SearchGroupPostResult>
     {
+        public Guid? UserId { get; set; }
         public Guid GroupId { get; set; }
         public string SearchString { get; set; }
         public int Page { get; set; } = 1;

@@ -214,7 +214,7 @@ namespace Application.Queries.GetUserPost
             }
 
             var getuserpost = new GetUserPostResult();
-            getuserpost.totalPage = (combine.Count()) / request.PageSize;
+            getuserpost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             combine = combine.OrderByDescending(x => x.CreatedAt)
                             .Skip((request.Page - 1) * request.PageSize)

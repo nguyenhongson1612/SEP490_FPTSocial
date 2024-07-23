@@ -42,6 +42,11 @@ namespace Application.Queries.GetChildGroupPost
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
             var groupPostId = await _context.GroupPostPhotos
                                             .Where(x => x.GroupPostPhotoId == request.GroupPostMediaId)
                                             .Select(x => x.GroupPostId)
@@ -53,6 +58,17 @@ namespace Application.Queries.GetChildGroupPost
                                             .Where(x => x.GroupPostVideoId == request.GroupPostMediaId)
                                             .Select(x => x.GroupPostId)
                                             .FirstOrDefaultAsync();
+            }
+
+            //Lấy UserId của bài post cha
+            var userId = await _context.GroupPosts
+                .Where(x => x.GroupPostId == groupPostId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (blockUserList.Contains(userId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
 
             var combinedResults = new List<GetChildGroupPostResult>();

@@ -51,6 +51,12 @@ namespace Application.Queries.GetPost
                 return Result<GetPostResult>.Failure("Page number must be greater than 0");
             }
 
+            // Lấy listuserBlock
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
             // Retrieve the list of friend UserIds
             var friendUserIds = await _context.Friends
                                               .Where(f => (f.UserId == request.UserId || f.FriendId == request.UserId) && f.Confirm == true)
@@ -73,7 +79,7 @@ namespace Application.Queries.GetPost
                     .ThenInclude(upp => upp.Photo)
                 .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                     .ThenInclude(upv => upv.Video)
-                .Where(p => friendUserIds.Contains(p.UserId) &&
+                .Where(p => friendUserIds.Contains(p.UserId) && !blockUserList.Contains(p.UserId) &&
                             (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true && p.IsBanned != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
@@ -189,7 +195,7 @@ namespace Application.Queries.GetPost
                                         .ThenInclude(x => x.GroupPhoto)
                                     .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                                         .ThenInclude(x => x.GroupVideo)
-                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && x.Group.IsDelete != true && x.IsHide != true && x.IsBanned != true))
+                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && !blockUserList.Contains(x.UserId) && x.Group.IsDelete != true && x.IsHide != true && x.IsBanned != true))
                                     .ToListAsync();
 
             foreach(var item  in groupPost)
@@ -285,7 +291,7 @@ namespace Application.Queries.GetPost
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(p => friendUserIds.Contains(p.UserId) &&
+                .Where(p => friendUserIds.Contains(p.UserId) && !blockUserList.Contains(p.UserId) && 
                             (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true && p.IsBanned != true)
                 .ToListAsync(cancellationToken);
 
@@ -359,7 +365,7 @@ namespace Application.Queries.GetPost
 
             var getpost = new GetPostResult();
 
-            getpost.totalPage = (combinePost.Count()) / request.PageSize;
+            getpost.totalPage = (int)Math.Ceiling((double)combinePost.Count() / request.PageSize);
 
             combinePost = combinePost
                             .OrderByDescending(x => x.EdgeRank)

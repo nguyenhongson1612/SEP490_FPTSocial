@@ -4,6 +4,7 @@ using Application.Queries.GetGroupPostByGroupId;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -38,6 +39,21 @@ namespace Application.Queries.GetGroupPostByGroupPostId
             if(request == null)
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
+            }
+
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+            var userId = await _context.GroupPosts
+                .Where(x => x.GroupPostId == request.GroupPostId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (blockUserList.Contains(userId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
 
             var groupPost = await _context.GroupPosts

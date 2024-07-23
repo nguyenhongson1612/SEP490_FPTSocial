@@ -43,7 +43,18 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
-            List<GetOtherUserPostByUserId> combine = new List<GetOtherUserPostByUserId>();
+            // Lấy ra listuser mà user chặn hoặc bị chặn
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+            if(blockUserList.Contains((Guid)request.UserId) || blockUserList.Contains(request.OtherUserId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
+            var combine = new List<GetOtherUserPostByUserId>();
 
             var idprofilestatus = await _context.Settings
                 .AsNoTracking()
@@ -281,7 +292,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
             var getotheruserpost = new GetOtherUserPostByUserIdResult();
 
-            getotheruserpost.totalPage = (combine.Count()) / request.PageSize;
+            getotheruserpost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             combine = combine.OrderByDescending(x => x.CreatedAt)
                             .Skip((request.Page - 1) * request.PageSize)
