@@ -151,6 +151,7 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             var commentGroupShareCounts = await _context.CommentGroupSharePosts
                 .AsNoTracking()
+                .Where(c => c.IsHide != true)
                 .GroupBy(c => c.GroupSharePostId)
                 .Select(g => new { GroupSharePostId = g.Key, CommentCount = g.Count() })
                 .ToListAsync(cancellationToken);

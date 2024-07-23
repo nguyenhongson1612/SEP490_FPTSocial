@@ -233,13 +233,6 @@ namespace Application.Queries.GetPost
                         UpdatedAt = upp.UpdatedAt,
                         PostPosition = upp.PostPosition,
                         GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactGroupPhotoPosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                            CommentNumber = _context.ReactGroupPhotoPostComments.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId),
-                            ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == upp.GroupPostPhotoId)
-                        }
                     }).ToList(),
                     GroupPostVideo = item.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
                     {
@@ -254,13 +247,6 @@ namespace Application.Queries.GetPost
                         UpdatedAt = upp.UpdatedAt,
                         PostPosition = upp.PostPosition,
                         GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                            CommentNumber = _context.ReactGroupVideoPostComments.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
-                            ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId)
-                        }
                     }).ToList(),
                     GroupId = item.GroupId,
                     GroupName = item.Group.GroupName,
@@ -322,7 +308,8 @@ namespace Application.Queries.GetPost
                 var group = _context.GroupFpts.FirstOrDefault(x => x.GroupId == groupId);
 
                 var reactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId);
-                var commentNumber = _context.CommentSharePosts.Count(x => x.SharePostId == item.SharePostId);
+                var commentNumber = _context.CommentSharePosts
+                    .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true);
 
                 combinePost.Add(new GetPostDTO
                 {

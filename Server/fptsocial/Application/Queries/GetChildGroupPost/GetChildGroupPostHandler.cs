@@ -97,9 +97,10 @@ namespace Application.Queries.GetChildGroupPost
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = _context.ReactGroupPhotoPosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId),
-                        CommentNumber = _context.ReactGroupPhotoPostComments.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId)
+                        CommentNumber = _context.CommentPhotoGroupPosts
+                        .Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true)
                     }
                 });
             }
@@ -144,9 +145,10 @@ namespace Application.Queries.GetChildGroupPost
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId),
-                        CommentNumber = _context.ReactGroupVideoPostComments.Count(x => x.GroupPostVideoId == video.GroupPostVideoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId) +
-                                        _context.SharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId)
+                        CommentNumber = _context.CommentGroupVideoPosts
+                        .Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true)
                     }
                 });
             }

@@ -58,7 +58,7 @@ namespace Application.Queries.GetChildPost
                 .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Photo)
-                .Where(x => x.UserPostId == userPostId && x.IsHide != true)
+                .Where(x => x.UserPostId == userPostId && x.IsHide != true && x.IsBanned != true)
                 .ToListAsync(cancellationToken);
 
             foreach (var photo in userPostPhoto)
@@ -75,7 +75,7 @@ namespace Application.Queries.GetChildPost
                     Status = new GetUserStatusDTO
                     {
                         UserStatusId = photo.UserStatusId,
-                        UserStatusName = _context.UserStatuses.Where(x => x.UserStatusId == photo.UserStatusId).Select(x => x.StatusName).FirstOrDefault()
+                        UserStatusName = photo.UserStatus.StatusName
                     },
                     IsHide = photo.IsHide,
                     CreatedAt = photo.CreatedAt,
@@ -89,9 +89,10 @@ namespace Application.Queries.GetChildPost
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId),
-                        CommentNumber = _context.ReactPhotoPostComments.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId) +
-                                        _context.SharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId)
+                        CommentNumber = _context.CommentPhotoPosts
+                        .Count(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.IsHide != true && x.IsBanned != true),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.IsHide != true && x.IsBanned != true)
                     }
                 });
             }
@@ -100,7 +101,7 @@ namespace Application.Queries.GetChildPost
                 .Include(x => x.UserPost)
                 .Include(x => x.UserStatus)
                 .Include(x => x.Video)
-                .Where(x => x.UserPostId == userPostId && x.IsHide != true)
+                .Where(x => x.UserPostId == userPostId && x.IsHide != true && x.IsBanned != true )
                 .ToListAsync(cancellationToken);
 
             foreach (var video in userPostVideo)
@@ -117,7 +118,7 @@ namespace Application.Queries.GetChildPost
                     Status = new GetUserStatusDTO
                     {
                         UserStatusId = video.UserStatusId,
-                        UserStatusName = _context.UserStatuses.Where(x => x.UserStatusId == video.UserStatusId).Select(x => x.StatusName).FirstOrDefault()
+                        UserStatusName = video.UserStatus.StatusName
                     },
                     IsHide = video.IsHide,
                     CreatedAt = video.CreatedAt,
@@ -131,9 +132,10 @@ namespace Application.Queries.GetChildPost
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == video.UserPostVideoId),
-                        CommentNumber = _context.ReactVideoPostComments.Count(x => x.UserPostVideoId == video.UserPostVideoId),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId) +
-                                        _context.SharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId)
+                        CommentNumber = _context.CommentVideoPosts
+                        .Count(x => x.UserPostVideoId == video.UserPostVideoId && x.IsHide != true && x.IsBanned != true),
+                        ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId && x.IsHide != true && x.IsBanned != true)
                     }
                 });
             }

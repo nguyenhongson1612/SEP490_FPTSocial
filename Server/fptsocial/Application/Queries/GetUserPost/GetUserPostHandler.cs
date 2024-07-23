@@ -79,7 +79,7 @@ namespace Application.Queries.GetUserPost
                     UserId = item.UserId,
                     Content = item.Content,
                     UserPostNumber = item.UserPostNumber,
-                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
+                    UserStatus = new GetUserStatusDTO
                     {
                         UserStatusId = item.UserStatusId,
                         UserStatusName = item.UserStatus.StatusName
@@ -126,9 +126,9 @@ namespace Application.Queries.GetUserPost
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = react?.ReactCount ?? null,
-                        CommentNumber = react?.CommentCount ?? null,
-                        ShareNumber = react?.ShareCount ?? null,
+                        ReactNumber = react?.ReactCount ?? 0,
+                        CommentNumber = react?.CommentCount ?? 0,
+                        ShareNumber = react?.ShareCount ?? 0,
                     }
                 });
             }
@@ -198,15 +198,16 @@ namespace Application.Queries.GetUserPost
                     UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
                     UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
-                    UserStatus = new DTO.GetUserProfileDTO.GetUserStatusDTO
+                    UserStatus = new GetUserStatusDTO
                     {
                         UserStatusId = item.UserStatusId,
                         UserStatusName = item.UserStatus.StatusName
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = await _context.ReactSharePosts.CountAsync(x => x.SharePostId == item.SharePostId),
-                        CommentNumber = await _context.CommentSharePosts.CountAsync(x => x.SharePostId == item.SharePostId),
+                        ReactNumber =  _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
+                        CommentNumber =  _context.CommentSharePosts
+                        .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
                         ShareNumber = 0,
                     }
                 });
