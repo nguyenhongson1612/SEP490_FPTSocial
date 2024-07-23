@@ -365,7 +365,7 @@ namespace Application.Queries.GetPost
 
             var getpost = new GetPostResult();
 
-            getpost.totalPage = (combinePost.Count()) / request.PageSize;
+            getpost.totalPage = (int)Math.Ceiling((double)combinePost.Count() / request.PageSize);
 
             combinePost = combinePost
                             .OrderByDescending(x => x.EdgeRank)

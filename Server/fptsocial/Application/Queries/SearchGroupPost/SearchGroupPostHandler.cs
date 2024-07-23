@@ -285,7 +285,7 @@ namespace Application.Queries.SearchGroupPost
             }
             var searchgrouppost = new SearchGroupPostResult();
 
-            searchgrouppost.totalPage = (combine.Count()) / request.PageSize;
+            searchgrouppost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             // Sắp xếp theo ngày đăng
             searchgrouppost.result = combine

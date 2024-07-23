@@ -292,7 +292,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
 
             var getotheruserpost = new GetOtherUserPostByUserIdResult();
 
-            getotheruserpost.totalPage = (combine.Count()) / request.PageSize;
+            getotheruserpost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
 
             combine = combine.OrderByDescending(x => x.CreatedAt)
                             .Skip((request.Page - 1) * request.PageSize)
