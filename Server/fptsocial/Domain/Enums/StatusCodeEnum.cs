@@ -110,7 +110,7 @@ namespace Domain.Enums
         GR16_User_Not_Exist_In_Group,
         [Description("Your post have bad word")]
         UP01_Post_Have_Bad_Word,
-        [Description("Your post not found")]
+        [Description("Post not found")]
         UP02_Post_Not_Found,
         [Description("Access denied!")]
         UP03_Not_Authorized,
@@ -122,5 +122,7 @@ namespace Domain.Enums
         RQ01_Request_Is_Null,
         [Description("Group is not exist!")]
         GR17_Group_Is_Not_Exist,
+        [Description("Yon can not see this content!")]
+        UP05_Can_Not_See_Content,
     }
 }

@@ -38,6 +38,17 @@ namespace Application.Queries.GetUserPostById
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
+
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+            if (blockUserList.Contains((Guid)request.UserId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
             var userPost = await _context.UserPosts
                 .Include(x => x.Photo)
                 .Include(x => x.Video)

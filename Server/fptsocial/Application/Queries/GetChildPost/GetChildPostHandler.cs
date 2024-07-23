@@ -52,6 +52,22 @@ namespace Application.Queries.GetChildPost
                                             .FirstOrDefaultAsync();
             }
 
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync(cancellationToken);
+
+            //Lấy UserId của bài post cha
+            var userId = await _context.UserPosts
+                .Where(x => x.UserPostId == userPostId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (blockUserList.Contains(userId))
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
+            }
+
             var combinedResults = new List<GetChildPostResult>();
 
             var userPostPhoto = await _context.UserPostPhotos

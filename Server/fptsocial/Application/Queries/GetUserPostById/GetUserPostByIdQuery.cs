@@ -9,6 +9,7 @@ namespace Application.Queries.GetUserPostById
 {
     public class GetUserPostByIdQuery : IQuery<GetUserPostByIdResult>
     {
+        public Guid? UserId { get; set; }
         public Guid UserPostId { get; set; }
     }
 }
