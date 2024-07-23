@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -73,7 +74,51 @@ namespace Application.Commands.UpdateGroupPostCommand
             var photosToDelete = existingPhotoUrls.Except(photos).ToList();
             var videosToDelete = existingVideoUrls.Except(videos).ToList();
 
-            
+
+            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
+
+            if (GroupPost.GroupPhotoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
+            {
+                Domain.CommandModels.GroupPost gp = new Domain.CommandModels.GroupPost
+                {
+                    GroupPostId = GroupPost.GroupPostId,
+                    UserId = GroupPost.UserId,
+                    Content = GroupPost.Content,
+                    GroupPostNumber = GroupPost.GroupPostNumber,
+                    GroupStatusId  = groupStatusId,
+                    IsHide = GroupPost.IsHide,
+                    CreatedAt = GroupPost.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                    GroupPhotoId = null,
+                    GroupVideoId = GroupPost.GroupVideoId,
+                    NumberPost = GroupPost.NumberPost,
+                    IsBanned = GroupPost.IsBanned,
+                };
+                _context.GroupPosts.Update(gp);
+                _context.SaveChanges();
+            }
+
+            if (GroupPost.GroupVideoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
+            {
+                Domain.CommandModels.GroupPost gp = new Domain.CommandModels.GroupPost
+                {
+                    GroupPostId = GroupPost.GroupPostId,
+                    UserId = GroupPost.UserId,
+                    Content = GroupPost.Content,
+                    GroupPostNumber = GroupPost.GroupPostNumber,
+                    GroupStatusId = groupStatusId,
+                    IsHide = GroupPost.IsHide,
+                    CreatedAt = GroupPost.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                    GroupPhotoId = GroupPost.GroupVideoId,
+                    GroupVideoId = null,
+                    NumberPost = GroupPost.NumberPost,
+                    IsBanned = GroupPost.IsBanned,
+                };
+                _context.GroupPosts.Update(gp);
+                _context.SaveChanges();
+            }
+
             foreach (var photoUrl in photosToDelete)
             {
                 var photoToDelete = await _context.GroupPhotos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
@@ -122,7 +167,7 @@ namespace Application.Commands.UpdateGroupPostCommand
             }
 
             GroupPost.Content = request.Content;
-            GroupPost.GroupStatusId = request.GroupStatusId;
+            GroupPost.GroupStatusId = groupStatusId;
             GroupPost.UpdatedAt = DateTime.Now;
             GroupPost.NumberPost = numberPost;
             GroupPost.IsBanned = false;
@@ -165,7 +210,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                             GroupPhotoId = photoId,
                             Content = string.Empty,
                             GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-",""),
-                            GroupStatusId = GroupPost.GroupStatusId,
+                            GroupStatusId = groupStatusId,
                             IsHide = GroupPost.IsHide,
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now,

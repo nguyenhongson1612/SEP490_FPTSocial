@@ -159,6 +159,7 @@ namespace Application.Mappers
             CreateMap<Query.Setting, GetSettingsQueryResult>();
             CreateMap<UpdateUserCommand, Query.UserProfile>();
             CreateMap<Query.UserPost, GetUserPostResult>();
+            CreateMap<Query.UserPost, UpdateUserPostCommandResult>();
             CreateMap<UserPostPhoto, UserPostPhotoDTO>();
             CreateMap<Photo, PhotoDTO>().ReverseMap();
             CreateMap<UserPostVideo, UserPostVideoDTO>();

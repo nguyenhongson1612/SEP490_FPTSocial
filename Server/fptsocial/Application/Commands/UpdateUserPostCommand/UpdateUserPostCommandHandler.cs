@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -22,14 +23,16 @@ namespace Application.Commands.UpdateUserPostCommand
     public class UpdateUserPostCommandHandler : ICommandHandler<UpdateUserPostCommand, UpdateUserPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateUserPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateUserPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -43,7 +46,7 @@ namespace Application.Commands.UpdateUserPostCommand
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var userPost = await _context.UserPosts.FindAsync(request.UserPostId);
+            var userPost = await _querycontext.UserPosts.Where(x => x.UserPostId == request.UserPostId).FirstOrDefaultAsync();
             if (userPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
@@ -57,12 +60,12 @@ namespace Application.Commands.UpdateUserPostCommand
             var photos = request.Photos ?? new List<string>();
             var videos = request.Videos ?? new List<string>();
 
-            var existingPhotoUrls = _context.UserPostPhotos
+            var existingPhotoUrls = _querycontext.UserPostPhotos
                 .Where(p => p.UserPostId == userPost.UserPostId)
                 .Select(p => p.Photo.PhotoUrl)
                 .ToList();
 
-            var existingVideoUrls = _context.UserPostVideos
+            var existingVideoUrls = _querycontext.UserPostVideos
                 .Where(v => v.UserPostId == userPost.UserPostId)
                 .Select(v => v.Video.VideoUrl)
                 .ToList();
@@ -73,7 +76,52 @@ namespace Application.Commands.UpdateUserPostCommand
             var photosToDelete = existingPhotoUrls.Except(photos).ToList();
             var videosToDelete = existingVideoUrls.Except(videos).ToList();
 
-            
+            if (userPost.PhotoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
+            {
+                Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
+                {
+                    UserPostId = userPost.UserPostId,
+                    UserId = userPost.UserId,
+                    Content = userPost.Content,
+                    UserPostNumber = userPost.UserPostNumber,
+                    UserStatusId = userPost.UserStatusId,
+                    IsAvataPost = userPost.IsAvataPost,
+                    IsCoverPhotoPost = userPost.IsCoverPhotoPost,
+                    IsHide = userPost.IsHide,
+                    CreatedAt = userPost.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                    PhotoId = null,
+                    VideoId = userPost.VideoId,
+                    NumberPost = userPost.NumberPost,
+                    IsBanned = userPost.IsBanned,
+                };
+                _context.UserPosts.Update(up);
+                _context.SaveChanges();
+            }
+
+            if (userPost.VideoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
+            {
+                Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
+                {
+                    UserPostId = userPost.UserPostId,
+                    UserId = userPost.UserId,
+                    Content = userPost.Content,
+                    UserPostNumber = userPost.UserPostNumber,
+                    UserStatusId = userPost.UserStatusId,
+                    IsAvataPost = userPost.IsAvataPost,
+                    IsCoverPhotoPost = userPost.IsCoverPhotoPost,
+                    IsHide = userPost.IsHide,
+                    CreatedAt = userPost.CreatedAt,
+                    UpdatedAt = DateTime.Now,
+                    PhotoId = userPost.PhotoId,
+                    VideoId = null,
+                    NumberPost = userPost.NumberPost,
+                    IsBanned = userPost.IsBanned,
+                };
+                _context.UserPosts.Update(up);
+                _context.SaveChanges();
+            }
+
             foreach (var photoUrl in photosToDelete)
             {
                 var photoToDelete = await _context.Photos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
