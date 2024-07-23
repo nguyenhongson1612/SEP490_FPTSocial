@@ -33,9 +33,6 @@ namespace Domain.CommandModels
         public virtual DbSet<ContactInfo> ContactInfos { get; set; } = null!;
         public virtual DbSet<Friend> Friends { get; set; } = null!;
         public virtual DbSet<Gender> Genders { get; set; } = null!;
-        public virtual DbSet<GroupChat> GroupChats { get; set; } = null!;
-        public virtual DbSet<GroupChatMember> GroupChatMembers { get; set; } = null!;
-        public virtual DbSet<GroupChatMessage> GroupChatMessages { get; set; } = null!;
         public virtual DbSet<GroupFpt> GroupFpts { get; set; } = null!;
         public virtual DbSet<GroupInvitation> GroupInvitations { get; set; } = null!;
         public virtual DbSet<GroupMember> GroupMembers { get; set; } = null!;
@@ -59,7 +56,6 @@ namespace Domain.CommandModels
         public virtual DbSet<Photo> Photos { get; set; } = null!;
         public virtual DbSet<PostReactCount> PostReactCounts { get; set; } = null!;
         public virtual DbSet<ReactComment> ReactComments { get; set; } = null!;
-        public virtual DbSet<ReactGroupChatMessage> ReactGroupChatMessages { get; set; } = null!;
         public virtual DbSet<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; } = null!;
         public virtual DbSet<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; } = null!;
         public virtual DbSet<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; } = null!;
@@ -74,22 +70,16 @@ namespace Domain.CommandModels
         public virtual DbSet<ReactSharePost> ReactSharePosts { get; set; } = null!;
         public virtual DbSet<ReactSharePostComment> ReactSharePostComments { get; set; } = null!;
         public virtual DbSet<ReactType> ReactTypes { get; set; } = null!;
-        public virtual DbSet<ReactUserChatMessage> ReactUserChatMessages { get; set; } = null!;
         public virtual DbSet<ReactVideoPost> ReactVideoPosts { get; set; } = null!;
         public virtual DbSet<ReactVideoPostComment> ReactVideoPostComments { get; set; } = null!;
         public virtual DbSet<Relationship> Relationships { get; set; } = null!;
         public virtual DbSet<ReportComment> ReportComments { get; set; } = null!;
-        public virtual DbSet<ReportGroupChat> ReportGroupChats { get; set; } = null!;
         public virtual DbSet<ReportPost> ReportPosts { get; set; } = null!;
         public virtual DbSet<ReportProfile> ReportProfiles { get; set; } = null!;
         public virtual DbSet<ReportType> ReportTypes { get; set; } = null!;
-        public virtual DbSet<ReportUserChat> ReportUserChats { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<SharePost> SharePosts { get; set; } = null!;
-        public virtual DbSet<UserChat> UserChats { get; set; } = null!;
-        public virtual DbSet<UserChatMessage> UserChatMessages { get; set; } = null!;
-        public virtual DbSet<UserChatWithUser> UserChatWithUsers { get; set; } = null!;
         public virtual DbSet<UserClientPermission> UserClientPermissions { get; set; } = null!;
         public virtual DbSet<UserGender> UserGenders { get; set; } = null!;
         public virtual DbSet<UserInterest> UserInterests { get; set; } = null!;
@@ -119,7 +109,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<AdminProfile>(entity =>
             {
                 entity.HasKey(e => e.AdminId)
-                    .HasName("PK__AdminPro__719FE48882423A8A");
+                    .HasName("PK__AdminPro__719FE48897BD1C7C");
 
                 entity.ToTable("AdminProfile");
 
@@ -143,7 +133,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<AvataPhoto>(entity =>
             {
                 entity.HasKey(e => e.AvataPhotosId)
-                    .HasName("PK__AvataPho__BF0395A4DF6D3B0F");
+                    .HasName("PK__AvataPho__BF0395A4D152E955");
 
                 entity.ToTable("AvataPhoto");
 
@@ -367,7 +357,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<CommentPost>(entity =>
             {
                 entity.HasKey(e => e.CommentId)
-                    .HasName("PK__CommentP__C3B4DFCA7892F543");
+                    .HasName("PK__CommentP__C3B4DFCA0A1B372B");
 
                 entity.ToTable("CommentPost");
 
@@ -526,78 +516,10 @@ namespace Domain.CommandModels
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<GroupChat>(entity =>
-            {
-                entity.ToTable("GroupChat");
-
-                entity.Property(e => e.GroupChatId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.NameChat)
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.CreateByUser)
-                    .WithMany(p => p.GroupChats)
-                    .HasForeignKey(d => d.CreateByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_chat_FK");
-            });
-
-            modelBuilder.Entity<GroupChatMember>(entity =>
-            {
-                entity.HasKey(e => e.UserChatWithUserId)
-                    .HasName("PK__GroupCha__1ED28B673708CD9F");
-
-                entity.ToTable("GroupChatMember");
-
-                entity.Property(e => e.UserChatWithUserId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.GroupChat)
-                    .WithMany(p => p.GroupChatMembers)
-                    .HasForeignKey(d => d.GroupChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_chat_member_FK");
-
-                entity.HasOne(d => d.Member)
-                    .WithMany(p => p.GroupChatMembers)
-                    .HasForeignKey(d => d.MemberId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("member_chat_FK");
-            });
-
-            modelBuilder.Entity<GroupChatMessage>(entity =>
-            {
-                entity.ToTable("GroupChatMessage");
-
-                entity.Property(e => e.GroupChatMessageId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.MessageChat).HasColumnType("ntext");
-
-                entity.HasOne(d => d.GroupChat)
-                    .WithMany(p => p.GroupChatMessages)
-                    .HasForeignKey(d => d.GroupChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_chat_message_FK");
-
-                entity.HasOne(d => d.SendByUser)
-                    .WithMany(p => p.GroupChatMessages)
-                    .HasForeignKey(d => d.SendByUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("send_by_user_chat_FK");
-            });
-
             modelBuilder.Entity<GroupFpt>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupFPT__149AF36AC34D499B");
+                    .HasName("PK__GroupFPT__149AF36A2EEAD8AE");
 
                 entity.ToTable("GroupFPT");
 
@@ -640,7 +562,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupInvitation>(entity =>
             {
                 entity.HasKey(e => e.InvitationId)
-                    .HasName("PK__GroupInv__033C8DCFD0AB5B27");
+                    .HasName("PK__GroupInv__033C8DCF37C14BED");
 
                 entity.ToTable("GroupInvitation");
 
@@ -1026,7 +948,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<GroupTag>(entity =>
             {
                 entity.HasKey(e => e.TagId)
-                    .HasName("PK__GroupTag__657CF9AC77E5B5CD");
+                    .HasName("PK__GroupTag__657CF9AC5294E2E4");
 
                 entity.ToTable("GroupTag");
 
@@ -1277,33 +1199,6 @@ namespace Domain.CommandModels
                     .HasConstraintName("react_comment_on_post_FK");
             });
 
-            modelBuilder.Entity<ReactGroupChatMessage>(entity =>
-            {
-                entity.ToTable("ReactGroupChatMessage");
-
-                entity.Property(e => e.ReactGroupChatMessageId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.GroupChatMessage)
-                    .WithMany(p => p.ReactGroupChatMessages)
-                    .HasForeignKey(d => d.GroupChatMessageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("react_group_chat_mess");
-
-                entity.HasOne(d => d.ReactType)
-                    .WithMany(p => p.ReactGroupChatMessages)
-                    .HasForeignKey(d => d.ReactTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("group_chat_message_react_FK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ReactGroupChatMessages)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("react_by_group_chat_FK");
-            });
-
             modelBuilder.Entity<ReactGroupCommentPost>(entity =>
             {
                 entity.ToTable("ReactGroupCommentPost");
@@ -1367,7 +1262,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupPhotoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactPhotoPostCommentId)
-                    .HasName("PK__ReactGro__E6B52528F57C8724");
+                    .HasName("PK__ReactGro__E6B525286DEC3ED0");
 
                 entity.ToTable("ReactGroupPhotoPostComment");
 
@@ -1457,7 +1352,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupSharePostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupSharePosCommentId)
-                    .HasName("PK__ReactGro__307770EA5B28C6F3");
+                    .HasName("PK__ReactGro__307770EA84AEB094");
 
                 entity.ToTable("ReactGroupSharePostComment");
 
@@ -1519,7 +1414,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactGroupVideoPostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactGroupVideoCommentId)
-                    .HasName("PK__ReactGro__B37F79E42E6936ED");
+                    .HasName("PK__ReactGro__B37F79E410C4D8CF");
 
                 entity.ToTable("ReactGroupVideoPostComment");
 
@@ -1669,7 +1564,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<ReactSharePostComment>(entity =>
             {
                 entity.HasKey(e => e.ReactSharePosCommentId)
-                    .HasName("PK__ReactSha__F43E716E4B291E6C");
+                    .HasName("PK__ReactSha__F43E716EA5D4E3F8");
 
                 entity.ToTable("ReactSharePostComment");
 
@@ -1712,33 +1607,6 @@ namespace Domain.CommandModels
                 entity.Property(e => e.ReactTypeName).HasMaxLength(100);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<ReactUserChatMessage>(entity =>
-            {
-                entity.ToTable("ReactUserChatMessage");
-
-                entity.Property(e => e.ReactUserChatMessageId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.ReactType)
-                    .WithMany(p => p.ReactUserChatMessages)
-                    .HasForeignKey(d => d.ReactTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("user_chat_message_react_FK");
-
-                entity.HasOne(d => d.UserChatMessage)
-                    .WithMany(p => p.ReactUserChatMessages)
-                    .HasForeignKey(d => d.UserChatMessageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_user_chat_message_FK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ReactUserChatMessages)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("to_user_chat_FK");
             });
 
             modelBuilder.Entity<ReactVideoPost>(entity =>
@@ -1829,7 +1697,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.CommentGroupPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentGroupPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment__group_post_FK");
 
                 entity.HasOne(d => d.CommentGroupSharePost)
@@ -1840,25 +1707,21 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.CommentGroupVideoPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentGroupVideoPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_group_video_post_FK");
 
                 entity.HasOne(d => d.Comment)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_post_FK");
 
                 entity.HasOne(d => d.CommentPhotoGroupPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentPhotoGroupPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_group_photo_post_FK");
 
                 entity.HasOne(d => d.CommentPhotoPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentPhotoPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_photo_post_FK");
 
                 entity.HasOne(d => d.CommentSharePost)
@@ -1869,7 +1732,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.CommentVideoPost)
                     .WithMany(p => p.ReportComments)
                     .HasForeignKey(d => d.CommentVideoPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_comment_video_post_FK");
 
                 entity.HasOne(d => d.ReportBy)
@@ -1885,33 +1747,6 @@ namespace Domain.CommandModels
                     .HasConstraintName("report_comment_type_FK");
             });
 
-            modelBuilder.Entity<ReportGroupChat>(entity =>
-            {
-                entity.ToTable("ReportGroupChat");
-
-                entity.Property(e => e.ReportGroupChatId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.GroupChat)
-                    .WithMany(p => p.ReportGroupChats)
-                    .HasForeignKey(d => d.GroupChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_group_chat_FK");
-
-                entity.HasOne(d => d.ReportBy)
-                    .WithMany(p => p.ReportGroupChats)
-                    .HasForeignKey(d => d.ReportById)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_by_group_chat_FK");
-
-                entity.HasOne(d => d.ReportType)
-                    .WithMany(p => p.ReportGroupChats)
-                    .HasForeignKey(d => d.ReportTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_group_chat_type_FK");
-            });
-
             modelBuilder.Entity<ReportPost>(entity =>
             {
                 entity.ToTable("ReportPost");
@@ -1925,6 +1760,16 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupPostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_group_post_FK");
+
+                entity.HasOne(d => d.GroupPostPhoto)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.GroupPostPhotoId)
+                    .HasConstraintName("fk_report_group_photo_post");
+
+                entity.HasOne(d => d.GroupPostVideo)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.GroupPostVideoId)
+                    .HasConstraintName("fk_report_group_video_post");
 
                 entity.HasOne(d => d.ReportBy)
                     .WithMany(p => p.ReportPosts)
@@ -1943,6 +1788,16 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserPostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_user_post_FK");
+
+                entity.HasOne(d => d.UserPostPhoto)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.UserPostPhotoId)
+                    .HasConstraintName("fk_report_photo_post");
+
+                entity.HasOne(d => d.UserPostVideo)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.UserPostVideoId)
+                    .HasConstraintName("fk_report_video_post");
             });
 
             modelBuilder.Entity<ReportProfile>(entity =>
@@ -1989,33 +1844,6 @@ namespace Domain.CommandModels
                 entity.Property(e => e.ReportTypeName).HasMaxLength(100);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<ReportUserChat>(entity =>
-            {
-                entity.ToTable("ReportUserChat");
-
-                entity.Property(e => e.ReportUserChatId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.ReportBy)
-                    .WithMany(p => p.ReportUserChats)
-                    .HasForeignKey(d => d.ReportById)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_by_user_chat_FK");
-
-                entity.HasOne(d => d.ReportType)
-                    .WithMany(p => p.ReportUserChats)
-                    .HasForeignKey(d => d.ReportTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_user_chat_type_FK");
-
-                entity.HasOne(d => d.UserChat)
-                    .WithMany(p => p.ReportUserChats)
-                    .HasForeignKey(d => d.UserChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("report_user_chat_FK");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -2108,71 +1936,6 @@ namespace Domain.CommandModels
                     .WithMany(p => p.SharePosts)
                     .HasForeignKey(d => d.UserStatusId)
                     .HasConstraintName("fk_share_post_status");
-            });
-
-            modelBuilder.Entity<UserChat>(entity =>
-            {
-                entity.ToTable("UserChat");
-
-                entity.Property(e => e.UserChatId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.NameChat)
-                    .HasMaxLength(300)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UpdateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserChats)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("user_chat_FK");
-            });
-
-            modelBuilder.Entity<UserChatMessage>(entity =>
-            {
-                entity.ToTable("UserChatMessage");
-
-                entity.Property(e => e.UserChatMessageId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.Property(e => e.MessageChat).HasColumnType("ntext");
-
-                entity.HasOne(d => d.FromUser)
-                    .WithMany(p => p.UserChatMessages)
-                    .HasForeignKey(d => d.FromUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("from_user_chat_FK");
-
-                entity.HasOne(d => d.UserChat)
-                    .WithMany(p => p.UserChatMessages)
-                    .HasForeignKey(d => d.UserChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("user_chat_message_FK");
-            });
-
-            modelBuilder.Entity<UserChatWithUser>(entity =>
-            {
-                entity.ToTable("UserChatWithUser");
-
-                entity.Property(e => e.UserChatWithUserId).ValueGeneratedNever();
-
-                entity.Property(e => e.CreateAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.UserChat)
-                    .WithMany(p => p.UserChatWithUsers)
-                    .HasForeignKey(d => d.UserChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("user_chat_with_user_FK");
-
-                entity.HasOne(d => d.UserChatNavigation)
-                    .WithMany(p => p.UserChatWithUsers)
-                    .HasForeignKey(d => d.UserChatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("with_user_chat_FK");
             });
 
             modelBuilder.Entity<UserClientPermission>(entity =>
@@ -2374,7 +2137,7 @@ namespace Domain.CommandModels
             modelBuilder.Entity<UserProfile>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserProf__1788CC4C5BC6DD2C");
+                    .HasName("PK__UserProf__1788CC4CF185CD9E");
 
                 entity.ToTable("UserProfile");
 
@@ -2499,7 +2262,7 @@ namespace Domain.CommandModels
                     .WithMany(p => p.UserSettings)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__21D600EE");
+                    .HasConstraintName("FK__UserSetti__UserI__2D7CBDC4");
 
                 entity.HasOne(d => d.UserStatus)
                     .WithMany(p => p.UserSettings)

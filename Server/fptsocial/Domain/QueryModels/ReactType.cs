@@ -8,7 +8,6 @@ namespace Domain.QueryModels
         public ReactType()
         {
             ReactComments = new HashSet<ReactComment>();
-            ReactGroupChatMessages = new HashSet<ReactGroupChatMessage>();
             ReactGroupCommentPosts = new HashSet<ReactGroupCommentPost>();
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
@@ -22,7 +21,6 @@ namespace Domain.QueryModels
             ReactPosts = new HashSet<ReactPost>();
             ReactSharePostComments = new HashSet<ReactSharePostComment>();
             ReactSharePosts = new HashSet<ReactSharePost>();
-            ReactUserChatMessages = new HashSet<ReactUserChatMessage>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
         }
@@ -33,7 +31,6 @@ namespace Domain.QueryModels
         public DateTime? UpdatedAt { get; set; }
 
         public virtual ICollection<ReactComment> ReactComments { get; set; }
-        public virtual ICollection<ReactGroupChatMessage> ReactGroupChatMessages { get; set; }
         public virtual ICollection<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; }
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
@@ -47,7 +44,6 @@ namespace Domain.QueryModels
         public virtual ICollection<ReactPost> ReactPosts { get; set; }
         public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
         public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
-        public virtual ICollection<ReactUserChatMessage> ReactUserChatMessages { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }
     }

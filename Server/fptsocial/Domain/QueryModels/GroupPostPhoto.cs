@@ -12,6 +12,7 @@ namespace Domain.QueryModels
             GroupSharePosts = new HashSet<GroupSharePost>();
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
+            ReportPosts = new HashSet<ReportPost>();
             SharePosts = new HashSet<SharePost>();
         }
 
@@ -38,6 +39,7 @@ namespace Domain.QueryModels
         public virtual ICollection<GroupSharePost> GroupSharePosts { get; set; }
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
+        public virtual ICollection<ReportPost> ReportPosts { get; set; }
         public virtual ICollection<SharePost> SharePosts { get; set; }
     }
 }

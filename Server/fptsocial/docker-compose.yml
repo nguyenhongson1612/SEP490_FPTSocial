@@ -10,8 +10,8 @@ services:
     networks:
       - my_network
     environment:
-      -  QueryConnection=server =.,1466; database = fptforum;uid=sa_query;pwd=VeryComplex123Password;Trusted_Connection=False;Encrypt=False
-      -  CommandConnection=server =.,1466; database = fptforum;uid=sa_command;pwd=VeryComplex123Password;Trusted_Connection=False;Encrypt=False
+      -  QueryConnection=server =sql_server2022,1466; database = fptforum;uid=sa_query;pwd=VeryComplex123Password;Trusted_Connection=False;Encrypt=False
+      -  CommandConnection=server =sql_server2022,1466; database = fptforum;uid=sa_command;pwd=VeryComplex123Password;Trusted_Connection=False;Encrypt=False
     depends_on:
       - "sql"
     ports:

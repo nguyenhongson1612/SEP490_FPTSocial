@@ -156,7 +156,6 @@ var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseHttpsRedirection();
-app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.UseAuthentication();

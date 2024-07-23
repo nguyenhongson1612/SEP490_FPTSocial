@@ -20,9 +20,6 @@ namespace Domain.QueryModels
             CommentVideoPosts = new HashSet<CommentVideoPost>();
             FriendFriendNavigations = new HashSet<Friend>();
             FriendUsers = new HashSet<Friend>();
-            GroupChatMembers = new HashSet<GroupChatMember>();
-            GroupChatMessages = new HashSet<GroupChatMessage>();
-            GroupChats = new HashSet<GroupChat>();
             GroupFpts = new HashSet<GroupFpt>();
             GroupInvitationInviteds = new HashSet<GroupInvitation>();
             GroupInvitationInviters = new HashSet<GroupInvitation>();
@@ -36,7 +33,6 @@ namespace Domain.QueryModels
             NotificationUsers = new HashSet<Notification>();
             Photos = new HashSet<Photo>();
             ReactComments = new HashSet<ReactComment>();
-            ReactGroupChatMessages = new HashSet<ReactGroupChatMessage>();
             ReactGroupCommentPosts = new HashSet<ReactGroupCommentPost>();
             ReactGroupPhotoPostComments = new HashSet<ReactGroupPhotoPostComment>();
             ReactGroupPhotoPosts = new HashSet<ReactGroupPhotoPost>();
@@ -50,21 +46,15 @@ namespace Domain.QueryModels
             ReactPosts = new HashSet<ReactPost>();
             ReactSharePostComments = new HashSet<ReactSharePostComment>();
             ReactSharePosts = new HashSet<ReactSharePost>();
-            ReactUserChatMessages = new HashSet<ReactUserChatMessage>();
             ReactVideoPostComments = new HashSet<ReactVideoPostComment>();
             ReactVideoPosts = new HashSet<ReactVideoPost>();
             ReportComments = new HashSet<ReportComment>();
-            ReportGroupChats = new HashSet<ReportGroupChat>();
             ReportPosts = new HashSet<ReportPost>();
             ReportProfileReportBies = new HashSet<ReportProfile>();
             ReportProfileUsers = new HashSet<ReportProfile>();
-            ReportUserChats = new HashSet<ReportUserChat>();
             SharePostSharedToUsers = new HashSet<SharePost>();
             SharePostUserShareds = new HashSet<SharePost>();
             SharePostUsers = new HashSet<SharePost>();
-            UserChatMessages = new HashSet<UserChatMessage>();
-            UserChatWithUsers = new HashSet<UserChatWithUser>();
-            UserChats = new HashSet<UserChat>();
             UserInterests = new HashSet<UserInterest>();
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
@@ -112,9 +102,6 @@ namespace Domain.QueryModels
         public virtual ICollection<CommentVideoPost> CommentVideoPosts { get; set; }
         public virtual ICollection<Friend> FriendFriendNavigations { get; set; }
         public virtual ICollection<Friend> FriendUsers { get; set; }
-        public virtual ICollection<GroupChatMember> GroupChatMembers { get; set; }
-        public virtual ICollection<GroupChatMessage> GroupChatMessages { get; set; }
-        public virtual ICollection<GroupChat> GroupChats { get; set; }
         public virtual ICollection<GroupFpt> GroupFpts { get; set; }
         public virtual ICollection<GroupInvitation> GroupInvitationInviteds { get; set; }
         public virtual ICollection<GroupInvitation> GroupInvitationInviters { get; set; }
@@ -128,7 +115,6 @@ namespace Domain.QueryModels
         public virtual ICollection<Notification> NotificationUsers { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<ReactComment> ReactComments { get; set; }
-        public virtual ICollection<ReactGroupChatMessage> ReactGroupChatMessages { get; set; }
         public virtual ICollection<ReactGroupCommentPost> ReactGroupCommentPosts { get; set; }
         public virtual ICollection<ReactGroupPhotoPostComment> ReactGroupPhotoPostComments { get; set; }
         public virtual ICollection<ReactGroupPhotoPost> ReactGroupPhotoPosts { get; set; }
@@ -142,21 +128,15 @@ namespace Domain.QueryModels
         public virtual ICollection<ReactPost> ReactPosts { get; set; }
         public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
         public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
-        public virtual ICollection<ReactUserChatMessage> ReactUserChatMessages { get; set; }
         public virtual ICollection<ReactVideoPostComment> ReactVideoPostComments { get; set; }
         public virtual ICollection<ReactVideoPost> ReactVideoPosts { get; set; }
         public virtual ICollection<ReportComment> ReportComments { get; set; }
-        public virtual ICollection<ReportGroupChat> ReportGroupChats { get; set; }
         public virtual ICollection<ReportPost> ReportPosts { get; set; }
         public virtual ICollection<ReportProfile> ReportProfileReportBies { get; set; }
         public virtual ICollection<ReportProfile> ReportProfileUsers { get; set; }
-        public virtual ICollection<ReportUserChat> ReportUserChats { get; set; }
         public virtual ICollection<SharePost> SharePostSharedToUsers { get; set; }
         public virtual ICollection<SharePost> SharePostUserShareds { get; set; }
         public virtual ICollection<SharePost> SharePostUsers { get; set; }
-        public virtual ICollection<UserChatMessage> UserChatMessages { get; set; }
-        public virtual ICollection<UserChatWithUser> UserChatWithUsers { get; set; }
-        public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
