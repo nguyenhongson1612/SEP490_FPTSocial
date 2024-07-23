@@ -102,7 +102,8 @@ namespace Application.Commands.ShareGroupPostCommand
                 IsHide = false,
                 IsBanned = false,
                 UserSharedId = request.UserSharedId,
-                IsPending = statusGroup
+                IsPending = statusGroup,
+                GroupId = request.GroupId,
             };
 
             var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>

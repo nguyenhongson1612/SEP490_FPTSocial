@@ -46,7 +46,7 @@ namespace Application.Commands.CreateGroupPost
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
-            bool statusGroup = false;
+            bool statusGroup = true;
             var groupSettingName = (from g in _context.GroupFpts
                                     join gsu in _context.GroupSettingUses
                                         on g.GroupId equals gsu.GroupId
@@ -62,7 +62,7 @@ namespace Application.Commands.CreateGroupPost
                                     }).FirstOrDefault();
             if (groupSettingName.GroupSettingName == "Approve Post" && groupSettingName.GroupStatusName == "Public")
             {
-                statusGroup = true;
+                statusGroup = false;
             }
 
             Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
@@ -89,7 +89,7 @@ namespace Application.Commands.CreateGroupPost
                 UpdatedAt = DateTime.Now,
                 NumberPost = numberPost,
                 IsBanned = false,
-                IsPending = statusGroup
+                IsPending = statusGroup,
             };
 
             if (PhotoIdSingle != Guid.Empty)
