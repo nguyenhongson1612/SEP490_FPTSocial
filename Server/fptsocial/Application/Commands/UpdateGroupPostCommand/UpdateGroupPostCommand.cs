@@ -14,7 +14,6 @@ namespace Application.Commands.UpdateGroupPostCommand
         public Guid GroupPostId { get; set; }
         public Guid GroupId { get; set; }
         public string Content { get; set; }
-        public Guid GroupStatusId { get; set; }
         public IEnumerable<string>? Photos { get; set; }
         public IEnumerable<string>? Videos { get; set; }
     }
