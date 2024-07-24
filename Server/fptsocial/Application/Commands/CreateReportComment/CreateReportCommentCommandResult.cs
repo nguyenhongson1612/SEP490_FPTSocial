@@ -10,12 +10,12 @@ namespace Application.Commands.CreateReportComment
     {
         public Guid ReportCommentId { get; set; }
         public Guid ReportTypeId { get; set; }
-        public Guid CommentId { get; set; }
-        public Guid CommentPhotoPostId { get; set; }
-        public Guid CommentVideoPostId { get; set; }
-        public Guid CommentGroupPostId { get; set; }
-        public Guid CommentPhotoGroupPostId { get; set; }
-        public Guid CommentGroupVideoPostId { get; set; }
+        public Guid? CommentId { get; set; }
+        public Guid? CommentPhotoPostId { get; set; }
+        public Guid? CommentVideoPostId { get; set; }
+        public Guid? CommentGroupPostId { get; set; }
+        public Guid? CommentPhotoGroupPostId { get; set; }
+        public Guid? CommentGroupVideoPostId { get; set; }
         public string? Content { get; set; }
         public Guid ReportById { get; set; }
         public bool? ReportStatus { get; set; }

@@ -42,7 +42,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("createReportComment")]
-        public async Task<IActionResult> CreateReportComment([FromQuery] CreateReportCommentCommand input)
+        public async Task<IActionResult> CreateReportComment(CreateReportCommentCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
