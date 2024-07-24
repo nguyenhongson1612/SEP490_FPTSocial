@@ -29,9 +29,10 @@ namespace Application.Commands.UpdateGroupSharePost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateGroupSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateGroupSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -44,12 +45,12 @@ namespace Application.Commands.UpdateGroupSharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var GroupSharePost = await _context.GroupSharePosts.FindAsync(request.GroupSharePostId);
-            if (GroupSharePost == null)
+            var groupSharePostCheck = await _queryContext.GroupSharePosts.FindAsync(request.GroupSharePostId);
+            if (groupSharePostCheck == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.GroupSharePosts
+            var userId = await _queryContext.GroupSharePosts
                                       .Where(a => a.GroupSharePostId == request.GroupSharePostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();
@@ -59,21 +60,44 @@ namespace Application.Commands.UpdateGroupSharePost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photoPost = _context.GroupSharePosts.Where(x => x.GroupSharePostId == request.GroupSharePostId).FirstOrDefault();
-            if (photoPost != null) 
+            var groupSharePost = _queryContext.GroupSharePosts.Where(x => x.GroupSharePostId == request.GroupSharePostId).FirstOrDefault();
+            if (groupSharePost != null) 
             {
-                photoPost.Content = request.Content;
-                photoPost.IsBanned = false;
+                groupSharePost.Content = request.Content;
+                groupSharePost.IsBanned = false;
             }
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(photoPost.Content);
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(groupSharePost.Content);
             if (haveBadWord.Any())
             {
-                photoPost.IsBanned = true;
-                photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
+                groupSharePost.IsBanned = true;
+                groupSharePost.Content = MarkBannedWordsInContent(groupSharePost.Content, haveBadWord);
             }
-            await _context.SaveChangesAsync();
 
-            var result = _mapper.Map<UpdateGroupSharePostCommandResult>(photoPost);
+            Domain.CommandModels.GroupSharePost gsp = new Domain.CommandModels.GroupSharePost
+            {
+                GroupSharePostId = groupSharePost.GroupSharePostId,
+                UserId = groupSharePost.UserId,
+                Content = groupSharePost.Content,
+                UserPostId = groupSharePost.UserPostId,
+                UserPostVideoId = groupSharePost.UserPostVideoId,
+                UserPostPhotoId = groupSharePost.UserPostPhotoId,
+                GroupPostId = groupSharePost.GroupPostId,
+                GroupPostPhotoId = groupSharePost.GroupPostPhotoId,
+                GroupPostVideoId = groupSharePost.GroupPostVideoId,
+                SharedToUserId = groupSharePost.SharedToUserId,
+                CreateDate = groupSharePost.CreateDate,
+                IsHide = groupSharePost.IsHide,
+                GroupStatusId = groupSharePost.GroupStatusId,
+                UpdateDate = DateTime.Now,
+                IsBanned = groupSharePost.IsBanned,
+                GroupId = groupSharePost.GroupId,
+                UserSharedId = groupSharePost.UserSharedId,
+                IsPending = groupSharePost.IsPending,
+            };
+            _context.GroupSharePosts.Update(gsp);
+            _context.SaveChanges();
+
+            var result = _mapper.Map<UpdateGroupSharePostCommandResult>(gsp);
             result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;
             if (haveBadWord.Any())

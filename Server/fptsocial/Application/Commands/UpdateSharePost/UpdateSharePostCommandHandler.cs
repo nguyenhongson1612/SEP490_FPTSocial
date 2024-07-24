@@ -29,9 +29,10 @@ namespace Application.Commands.UpdateSharePost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -44,7 +45,7 @@ namespace Application.Commands.UpdateSharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var sharePost = await _context.SharePosts.FindAsync(request.SharePostId);
+            var sharePost = await _querycontext.SharePosts.FindAsync(request.SharePostId);
             if (sharePost == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
@@ -93,7 +94,7 @@ namespace Application.Commands.UpdateSharePost
             _context.SharePosts.Update(sp);
             _context.SaveChanges();
 
-            var result = _mapper.Map<UpdateSharePostCommandResult>(photoPost);
+            var result = _mapper.Map<UpdateSharePostCommandResult>(sp);
             result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;
             if (haveBadWord.Any())
