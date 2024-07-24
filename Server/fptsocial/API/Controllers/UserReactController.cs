@@ -27,6 +27,7 @@ using Application.Queries.GetReactByCommentSharePostId;
 using Application.Queries.GetReactByCommentVideoId;
 using Application.Queries.GetReactByGroupPhotoPost;
 using Application.Queries.GetReactByGroupPost;
+using Application.Queries.GetReactByGroupSharePostId;
 using Application.Queries.GetReactByGroupVideoPost;
 using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
@@ -506,6 +507,26 @@ namespace API.Controllers
             var res = await _sender.Send(query);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupSharePostId")]
+        public async Task<IActionResult> GetAllReactByGroupSharePostId([FromQuery] GetReactByGroupSharePostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
         }
     }
 }
