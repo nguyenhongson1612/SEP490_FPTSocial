@@ -356,10 +356,10 @@ namespace Application.Mappers
             //SharePost
             CreateMap<SharePost, ShareUserPostCommandResult>().ReverseMap();
             CreateMap<GroupSharePost, ShareGroupPostCommandResult>().ReverseMap();
-            CreateMap<ReactSharePost, CreateReactForSharePostCommandResult>().ReverseMap();
-            CreateMap<ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
-            CreateMap<ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
-            CreateMap<ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.ReactSharePost, CreateReactForSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<Command.ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, CreateCommentForGroupSharePostCommandResult>().ReverseMap();

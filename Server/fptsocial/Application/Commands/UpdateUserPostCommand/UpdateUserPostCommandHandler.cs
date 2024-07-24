@@ -78,7 +78,7 @@ namespace Application.Commands.UpdateUserPostCommand
 
             if (userPost.PhotoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
             {
-                Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
+                Domain.CommandModels.UserPost upp = new Domain.CommandModels.UserPost
                 {
                     UserPostId = userPost.UserPostId,
                     UserId = userPost.UserId,
@@ -95,13 +95,13 @@ namespace Application.Commands.UpdateUserPostCommand
                     NumberPost = userPost.NumberPost,
                     IsBanned = userPost.IsBanned,
                 };
-                _context.UserPosts.Update(up);
+                _context.UserPosts.Update(upp   );
                 _context.SaveChanges();
             }
 
             if (userPost.VideoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
             {
-                Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
+                Domain.CommandModels.UserPost upv = new Domain.CommandModels.UserPost
                 {
                     UserPostId = userPost.UserPostId,
                     UserId = userPost.UserId,
@@ -118,7 +118,7 @@ namespace Application.Commands.UpdateUserPostCommand
                     NumberPost = userPost.NumberPost,
                     IsBanned = userPost.IsBanned,
                 };
-                _context.UserPosts.Update(up);
+                _context.UserPosts.Update(upv);
                 _context.SaveChanges();
             }
 
@@ -192,7 +192,25 @@ namespace Application.Commands.UpdateUserPostCommand
                 userPost.Content = MarkBannedWordsInContent(userPost.Content, haveBadWord);
             }
 
-            await _context.SaveChangesAsync();
+            Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
+            {
+                UserPostId = userPost.UserPostId,
+                UserId = userPost.UserId,
+                Content = userPost.Content,
+                UserPostNumber = userPost.UserPostNumber,
+                UserStatusId = userPost.UserStatusId,
+                IsAvataPost = userPost.IsAvataPost,
+                IsCoverPhotoPost = userPost.IsCoverPhotoPost,
+                IsHide = userPost.IsHide,
+                CreatedAt = userPost.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                PhotoId = userPost.PhotoId,
+                VideoId = userPost.VideoId,
+                NumberPost = userPost.NumberPost,
+                IsBanned = userPost.IsBanned,
+            };
+            _context.UserPosts.Update(up);
+            _context.SaveChanges();
 
             if (numberPost > 1)
             {

@@ -23,9 +23,11 @@ using Application.Queries.GetReactByCommentGroupSharePostId;
 using Application.Queries.GetReactByCommentGroupVideoId;
 using Application.Queries.GetReactByCommentId;
 using Application.Queries.GetReactByCommentPhotoId;
+using Application.Queries.GetReactByCommentSharePostId;
 using Application.Queries.GetReactByCommentVideoId;
 using Application.Queries.GetReactByGroupPhotoPost;
 using Application.Queries.GetReactByGroupPost;
+using Application.Queries.GetReactByGroupSharePostId;
 using Application.Queries.GetReactByGroupVideoPost;
 using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
@@ -131,7 +133,7 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            var handle = new JwtSecurityTokenHandler();     
+            var handle = new JwtSecurityTokenHandler();
             var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
             if (jsontoken == null)
             {
@@ -452,7 +454,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllReactByCommentSharePostId")]
-        public async Task<IActionResult> GetAllReactByCommentSharePostId([FromQuery] GetReactByCommentGroupSharePostQuery query)
+        public async Task<IActionResult> GetAllReactByCommentSharePostId([FromQuery] GetReactByCommentSharePostQuery query)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
@@ -486,5 +488,45 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("getAllReactByCommentGroupSharePostId")]
+        public async Task<IActionResult> GetAllReactByCommentGroupSharePostId([FromQuery] GetReactByCommentGroupSharePostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getAllReactByGroupSharePostId")]
+        public async Task<IActionResult> GetAllReactByGroupSharePostId([FromQuery] GetReactByGroupSharePostQuery query)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
     }
 }
