@@ -9,6 +9,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,16 @@ namespace Application.Commands.UpdateGroupPostCommand
     public class UpdateGroupPostCommandHandler : ICommandHandler<UpdateGroupPostCommand, UpdateGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateGroupPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateGroupPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -44,7 +47,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var GroupPost = await _context.GroupPosts.FindAsync(request.GroupPostId);
+            var GroupPost = await _querycontext.GroupPosts.FindAsync(request.GroupPostId);
             if (GroupPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
@@ -58,12 +61,12 @@ namespace Application.Commands.UpdateGroupPostCommand
             var photos = request.Photos ?? new List<string>();
             var videos = request.Videos ?? new List<string>();
 
-            var existingPhotoUrls = _context.GroupPostPhotos
+            var existingPhotoUrls = _querycontext.GroupPostPhotos
                 .Where(p => p.GroupPostId == GroupPost.GroupPostId)
                 .Select(p => p.GroupPhoto.PhotoUrl)
                 .ToList();
 
-            var existingVideoUrls = _context.GroupPostVideos
+            var existingVideoUrls = _querycontext.GroupPostVideos
                 .Where(v => v.GroupPostId == GroupPost.GroupPostId)
                 .Select(v => v.GroupVideo.VideoUrl)
                 .ToList();
@@ -110,7 +113,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                     IsHide = GroupPost.IsHide,
                     CreatedAt = GroupPost.CreatedAt,
                     UpdatedAt = DateTime.Now,
-                    GroupPhotoId = GroupPost.GroupVideoId,
+                    GroupPhotoId = GroupPost.GroupPhotoId,
                     GroupVideoId = null,
                     NumberPost = GroupPost.NumberPost,
                     IsBanned = GroupPost.IsBanned,
@@ -189,7 +192,23 @@ namespace Application.Commands.UpdateGroupPostCommand
                 GroupPost.Content = MarkBannedWordsInContent(GroupPost.Content, haveBadWord);
             }
 
-            await _context.SaveChangesAsync();
+            Domain.CommandModels.GroupPost gp1 = new Domain.CommandModels.GroupPost
+            {
+                GroupPostId = GroupPost.GroupPostId,
+                UserId = GroupPost.UserId,
+                Content = GroupPost.Content,
+                GroupPostNumber = GroupPost.GroupPostNumber,
+                GroupStatusId = groupStatusId,
+                IsHide = GroupPost.IsHide,
+                CreatedAt = GroupPost.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                GroupPhotoId = GroupPost.GroupPhotoId,
+                GroupVideoId = GroupPost.GroupVideoId,
+                NumberPost = GroupPost.NumberPost,
+                IsBanned = GroupPost.IsBanned,
+            };
+            _context.GroupPosts.Update(gp1);
+            _context.SaveChanges();
 
             if (numberPost > 1)
             {
@@ -247,7 +266,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                 }
             }
 
-            var result = _mapper.Map<UpdateGroupPostCommandResult>(GroupPost);
+            var result = _mapper.Map<UpdateGroupPostCommandResult>(gp1);
             result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;
             if (haveBadWord.Any())

@@ -12,6 +12,7 @@ namespace Application.Commands.UpdateSharePost
     {
         public Guid SharePostId { get; set; }
         public Guid UserId { get; set; }
+        public Guid UserStatusId { get; set; }
         public string? Content { get; set; }
     }
 }
