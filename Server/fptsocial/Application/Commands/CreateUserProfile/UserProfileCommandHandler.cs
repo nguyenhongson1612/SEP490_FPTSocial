@@ -46,14 +46,14 @@ namespace Application.Commands.CreateUserProfile
 
             var getuserbyemail = await _querycontext.UserProfiles.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
             var getuserbyfeid = await _querycontext.UserProfiles.FirstOrDefaultAsync(X => X.FeId.Equals(request.FeId));
-            var role = await _querycontext.Roles.FirstOrDefaultAsync(x=>x.NameRole == request.RoleName);
-            var status = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.StatusName == "Public");
-            var listsetting = await _querycontext.Settings.ToListAsync();
-            if(getuserbyemail != null || getuserbyfeid != null)
+            if (getuserbyemail != null || getuserbyfeid != null)
             {
                 throw new ErrorException(StatusCodeEnum.U03_User_Exist);
             }
 
+            var role = await _querycontext.Roles.FirstOrDefaultAsync(x=>x.NameRole == request.RoleName);
+            var status = await _querycontext.UserStatuses.FirstOrDefaultAsync(x => x.StatusName == "Public");
+            var listsetting = await _querycontext.Settings.ToListAsync();
             var userprofile = _mapper.Map<Domain.CommandModels.UserProfile>(request);
             userprofile.UserId = (Guid)request.UserId;
             userprofile.RoleId = role.RoleId;
@@ -79,7 +79,7 @@ namespace Application.Commands.CreateUserProfile
                 UserStatusId = status.UserStatusId,
                 CreatedAt = DateTime.Now
             };
-            if (request.Relationship.RelationshipId != null)
+            if (request.Relationship?.RelationshipId != null)
             {
                 var userrelationship = new Domain.CommandModels.UserRelationship
                 {
@@ -119,7 +119,7 @@ namespace Application.Commands.CreateUserProfile
                     await _context.UserSettings.AddAsync(usersetting);
                 }
            
-            if(request.Interes.Count > 0)
+            if(request.Interes?.Count > 0)
             {
                 foreach (var us in request.Interes)
                 {
@@ -138,7 +138,7 @@ namespace Application.Commands.CreateUserProfile
                 }
             }
             
-            if(request.WorkPlace.Count >0)
+            if(request.WorkPlace?.Count >0)
             {
                 foreach (var us in request.WorkPlace)
                 {
@@ -157,7 +157,7 @@ namespace Application.Commands.CreateUserProfile
                 }
             }
 
-            if(request.WebAffilication.Count > 0)
+            if(request.WebAffilication?.Count > 0)
             {
                 foreach (var us in request.WebAffilication)
                 {
