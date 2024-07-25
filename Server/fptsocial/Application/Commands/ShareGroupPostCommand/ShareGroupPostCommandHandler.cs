@@ -93,6 +93,9 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupSharePostId = _helper.GenerateNewGuid(),
                 UserId = request.UserId,
                 Content = request.Content,
+                UserPostId = request.UserPostId,
+                UserPostPhotoId = request.UserPostPhotoId,
+                UserPostVideoId = request.UserPostVideoId,
                 GroupPostId = request.GroupPostId, 
                 GroupPostPhotoId = request.GroupPostPhotoId,
                 GroupPostVideoId = request.GroupPostVideoId,
@@ -106,7 +109,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 GroupId = request.GroupId,
             };
 
-            var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>
+            var countUserPost = _querycontext.PostReactCounts.FirstOrDefault(x =>
                                 (x.UserPostId == request.UserPostId && x.UserPostPhotoId == null && x.UserPostVideoId == null) ||
                                 (x.UserPostPhotoId == request.UserPostPhotoId && x.UserPostId == null && x.UserPostVideoId == null) ||
                                 (x.UserPostVideoId == request.UserPostVideoId && x.UserPostId == null && x.UserPostPhotoId == null)
@@ -115,6 +118,8 @@ namespace Application.Commands.ShareGroupPostCommand
             if (countUserPost != null)
             {
                 countUserPost.ShareCount++;
+                var commandModel = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(countUserPost);
+                _context.PostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 

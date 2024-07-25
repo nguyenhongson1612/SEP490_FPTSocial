@@ -96,6 +96,8 @@ namespace Application.Commands.UpdateGroupPostCommand
                     GroupVideoId = GroupPost.GroupVideoId,
                     NumberPost = GroupPost.NumberPost,
                     IsBanned = GroupPost.IsBanned,
+                    GroupId = GroupPost.GroupId,
+                    IsPending = GroupPost.IsPending,
                 };
                 _context.GroupPosts.Update(gp);
                 _context.SaveChanges();
@@ -117,6 +119,8 @@ namespace Application.Commands.UpdateGroupPostCommand
                     GroupVideoId = null,
                     NumberPost = GroupPost.NumberPost,
                     IsBanned = GroupPost.IsBanned,
+                    GroupId = GroupPost.GroupId,
+                    IsPending = GroupPost.IsPending,
                 };
                 _context.GroupPosts.Update(gp);
                 _context.SaveChanges();
@@ -206,6 +210,8 @@ namespace Application.Commands.UpdateGroupPostCommand
                 GroupVideoId = GroupPost.GroupVideoId,
                 NumberPost = GroupPost.NumberPost,
                 IsBanned = GroupPost.IsBanned,
+                GroupId = GroupPost.GroupId,
+                IsPending = GroupPost.IsPending,
             };
             _context.GroupPosts.Update(gp1);
             _context.SaveChanges();

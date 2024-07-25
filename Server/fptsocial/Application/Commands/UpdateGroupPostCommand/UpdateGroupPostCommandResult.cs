@@ -14,8 +14,6 @@ namespace Application.Commands.UpdateGroupPostCommand
         public string? Content { get; set; }
         public string? GroupPostNumber { get; set; }
         public string GroupStatusId { get; set; } = null!;
-        public bool? IsAvataPost { get; set; }
-        public bool? IsCoverPhotoPost { get; set; }
         public bool? IsHide { get; set; }
         public List<CheckingBadWord.BannedWord>? BannedWords { get; set; }
         public DateTime? CreatedAt { get; set; }
