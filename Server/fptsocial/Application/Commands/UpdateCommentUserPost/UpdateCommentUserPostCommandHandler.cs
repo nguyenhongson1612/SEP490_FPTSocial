@@ -21,14 +21,16 @@ namespace Application.Commands.UpdateCommentUserPost
     public class UpdateCommentUserPostCommandHandler : ICommandHandler<UpdateCommentUserPostCommand, UpdateCommentUserPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentUserPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentUserPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -48,30 +50,31 @@ namespace Application.Commands.UpdateCommentUserPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var userPost = await _context.CommentPosts.FindAsync(request.CommentId);
-            if (userPost == null)
+            var commentPost = await _querycontext.CommentPosts.FindAsync(request.CommentId);
+            if (commentPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
             }
 
-            if (request.UserId != userPost.UserId)
+            if (request.UserId != commentPost.UserId)
             {
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentPosts.Where(x => x.CommentId == request.CommentId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentPosts.Where(x => x.CommentId == request.CommentId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
-
-            if (comment != null) 
+            
+            comment.Content = request.Content;
+            if (bannedWords.Any())
             {
-                comment.Content = request.Content;
-                if (bannedWords.Any())
-                {
-                    comment.IsHide = true;
-                }
+                comment.IsHide = true;
             }
-            await _context.SaveChangesAsync();
-            var result = _mapper.Map<UpdateCommentUserPostCommandResult>(comment);
+
+            var commandModel = ModelConverter.Convert<Domain.QueryModels.CommentPost, Domain.CommandModels.CommentPost>(comment);
+            _context.CommentPosts.Update(commandModel);
+            _context.SaveChanges();
+
+            var result = _mapper.Map<UpdateCommentUserPostCommandResult>(commandModel);
             result.BannedWords = bannedWords;
             if (bannedWords.Any())
             {
