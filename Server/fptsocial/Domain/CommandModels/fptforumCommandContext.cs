@@ -1758,7 +1758,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.GroupPost)
                     .WithMany(p => p.ReportPosts)
                     .HasForeignKey(d => d.GroupPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_group_post_FK");
 
                 entity.HasOne(d => d.GroupPostPhoto)
@@ -1786,7 +1785,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.UserPost)
                     .WithMany(p => p.ReportPosts)
                     .HasForeignKey(d => d.UserPostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_user_post_FK");
 
                 entity.HasOne(d => d.UserPostPhoto)
@@ -1811,7 +1809,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.ReportProfiles)
                     .HasForeignKey(d => d.GroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_group_FK");
 
                 entity.HasOne(d => d.ReportBy)
@@ -1829,7 +1826,6 @@ namespace Domain.CommandModels
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.ReportProfileUsers)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_user_FK");
             });
 
