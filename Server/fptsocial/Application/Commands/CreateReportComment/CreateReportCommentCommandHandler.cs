@@ -53,7 +53,7 @@ namespace Application.Commands.CreateReportComment
             reportCmt.ReportById = (Guid) request.ReportById;
             reportCmt.ReportStatus = null;
             reportCmt.CreatedDate = DateTime.Now;
-            reportCmt.Processing = false;
+            reportCmt.Processing = true;
 
             await _context.ReportComments.AddAsync(reportCmt);
             await _context.SaveChangesAsync();

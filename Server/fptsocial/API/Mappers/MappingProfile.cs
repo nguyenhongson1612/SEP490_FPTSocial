@@ -109,6 +109,8 @@ using Application.Commands.UpdateGroupSharePost;
 using Application.Commands.UpdateCommentGroupPost;
 using Application.Commands.UpdateCommentGroupVideoPost;
 using Application.Commands.UpdateCommentGroupPhotoPost;
+using Application.Commands.CreateReportPost;
+using Application.Commands.CreateReportProfile;
 
 namespace Application.Mappers
 {
@@ -190,6 +192,8 @@ namespace Application.Mappers
             //Report
             CreateMap<Command.ReportType, CreateReportTypeCommandResult>();
             CreateMap<Command.ReportComment, CreateReportCommentCommandResult>();
+            CreateMap<Command.ReportPost, CreateReportPostCommandResult>();
+            CreateMap<Command.ReportProfile, CreateReportProfileCommandResult>();
 
 
             //Mapping for getuser
