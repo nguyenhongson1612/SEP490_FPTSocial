@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,14 @@ namespace Application.Commands.CreateReactForSharePost
     public class CreateReactForSharePostCommandHandler : ICommandHandler<CreateReactForSharePostCommand, CreateReactForSharePostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactForSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -36,7 +39,7 @@ namespace Application.Commands.CreateReactForSharePost
             }
 
             // 1. Check for Existing Reaction
-            var existingReact = await _context.ReactSharePosts
+            var existingReact = await _queryContext.ReactSharePosts
                 .FirstOrDefaultAsync(r => r.SharePostId == request.SharePostId && r.UserId == request.UserId, cancellationToken);
             //var postReactCount = await _context.PostReactCounts
             //    .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
@@ -48,22 +51,16 @@ namespace Application.Commands.CreateReactForSharePost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // User clicked the same react type again -> Remove it
-                    _context.ReactSharePosts.Remove(existingReact);
-                    //if (postReactCount != null)
-                    //{
-                    //    postReactCount.ReactCount--;
-
-                    //    if (postReactCount.ReactCount < 0)
-                    //    {
-                    //        postReactCount.ReactCount = 0;
-                    //    }
-                    //}
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactSharePost, Domain.CommandModels.ReactSharePost>(existingReact);
+                    _context.ReactSharePosts.Remove(commandReact);
                 }
                 else
                 {
                     // User changed react type -> Update
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreateDate = DateTime.Now; // Optionally update timestamp
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactSharePost, Domain.CommandModels.ReactSharePost>(existingReact);
+                    _context.ReactSharePosts.Update(commandReact);
                 }
             }
             else

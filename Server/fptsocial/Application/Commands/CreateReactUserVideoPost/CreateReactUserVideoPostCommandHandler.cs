@@ -19,12 +19,14 @@ namespace Application.Commands.CreateReactUserVideoPost
     public class CreateReactUserVideoPostCommandHandler : ICommandHandler<CreateReactUserVideoPostCommand, CreateReactUserVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactUserVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,16 +39,17 @@ namespace Application.Commands.CreateReactUserVideoPost
             }
 
             // 1. Kiểm tra phản ứng hiện có
-            var existingReact = await _context.ReactVideoPosts
+            var existingReact = await _queryContext.ReactVideoPosts
                 .FirstOrDefaultAsync(r => r.UserPostVideoId == request.UserPostVideoId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.PostReactCounts
+            var postReactCount = await _queryContext.PostReactCounts
                 .FirstOrDefaultAsync(prc => prc.UserPostVideoId == request.UserPostVideoId);
             if (existingReact != null)
             {
                 // 2. Xử lý phản ứng hiện có
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
-                    _context.ReactVideoPosts.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPost, Domain.CommandModels.ReactVideoPost>(existingReact);
+                    _queryContext.ReactVideoPosts.Remove(existingReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -62,6 +65,8 @@ namespace Application.Commands.CreateReactUserVideoPost
                     // Khác loại phản ứng -> Cập nhật
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPost, Domain.CommandModels.ReactVideoPost>(existingReact);
+                    _queryContext.ReactVideoPosts.Update(existingReact);
                 }
             }
             else
@@ -82,7 +87,8 @@ namespace Application.Commands.CreateReactUserVideoPost
                     postReactCount.ReactCount++;
                 }
             }
-
+            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Trả về kết quả

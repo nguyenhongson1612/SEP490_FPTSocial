@@ -19,12 +19,14 @@ namespace Application.Commands.CreateReactUserPhotoPost
     public class CreateReactUserPhotoPostCommandHandler : ICommandHandler<CreateReactUserPhotoPostCommand, CreateReactUserPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactUserPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,9 +39,9 @@ namespace Application.Commands.CreateReactUserPhotoPost
             }
 
             // 1. Kiểm tra phản ứng hiện có
-            var existingReact = await _context.ReactPhotoPosts
+            var existingReact = await _queryContext.ReactPhotoPosts
                 .FirstOrDefaultAsync(r => r.UserPostPhotoId == request.UserPostPhotoId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.PostReactCounts
+            var postReactCount = await _queryContext.PostReactCounts
                 .FirstOrDefaultAsync(prc => prc.UserPostPhotoId == request.UserPostPhotoId);
 
             if (existingReact != null)
@@ -48,7 +50,8 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Cùng loại phản ứng -> Xóa
-                    _context.ReactPhotoPosts.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPhotoPost, Domain.CommandModels.ReactPhotoPost>(existingReact);
+                    _context.ReactPhotoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -64,6 +67,9 @@ namespace Application.Commands.CreateReactUserPhotoPost
                     // Khác loại phản ứng -> Cập nhật
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPhotoPost, Domain.CommandModels.ReactPhotoPost>(existingReact);
+                    _context.ReactPhotoPosts.Update(commandReact);
+
                 }
             }
             else
@@ -85,6 +91,8 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 }
             }
 
+            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Trả về kết quả

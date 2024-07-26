@@ -46,7 +46,7 @@ namespace Application.Commands.CreateReactCommentGroupVideoPost
             }
 
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactGroupVideoPostComments
+            var existingReact = await _querycontext.ReactGroupVideoPostComments
                 .FirstOrDefaultAsync(r =>
                     r.GroupPostVideoId == request.GroupPostVideoId &&
                     r.CommentGroupVideoPostId == request.CommentGroupVideoPostId &&
@@ -61,13 +61,16 @@ namespace Application.Commands.CreateReactCommentGroupVideoPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactGroupVideoPostComments.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupVideoPostComment, Domain.CommandModels.ReactGroupVideoPostComment>(existingReact);
+                    _context.ReactGroupVideoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupVideoPostComment, Domain.CommandModels.ReactGroupVideoPostComment>(existingReact);
+                    _context.ReactGroupVideoPostComments.Update(commandReact);
                 }
             }
             else
