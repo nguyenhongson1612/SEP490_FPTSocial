@@ -194,7 +194,7 @@ namespace Application.Queries.SearchGroupPost
                 }
                 else if (post is GroupSharePost sharePost)
                 {
-                    content = sharePost.UserPost.Content;
+                    content = sharePost.Content;
 
                     // Kiểm tra tìm kiếm
                     isMatch = SubstringMatch(content, searchWords) || ContainsMostWords(content, searchWords);
@@ -245,13 +245,19 @@ namespace Application.Queries.SearchGroupPost
                         {
                             PostId = sharePost.GroupSharePostId,
                             UserId = sharePost.UserId,
-                            Content = sharePost.UserPost.Content,
+                            Content = sharePost.Content,
                             CreatedAt = sharePost.CreateDate,
                             UpdateAt = sharePost.UpdateDate,
                             IsHide = sharePost.IsHide,
                             IsBanned = sharePost.IsBanned,
                             IsShare = true,
                             IsPending = sharePost.IsPending,
+                            UserPostShareId = sharePost.UserPostId,
+                            UserPostPhotoShareId = sharePost.UserPostPhotoId,
+                            UserPostVideoShareId = sharePost.UserPostVideoId,
+                            GroupPostShareId = sharePost.GroupPostId,
+                            GroupPostPhotoShareId = sharePost.GroupPostPhotoId,
+                            GroupPostVideoShareId = sharePost.GroupPostVideoId,
                             GroupPostShare = _mapper.Map<GroupPostDTO>(sharePost.GroupPost),
                             GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(sharePost.GroupPostPhoto),
                             GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(sharePost.GroupPostVideo),
