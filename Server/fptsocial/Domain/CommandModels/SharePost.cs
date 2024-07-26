@@ -10,6 +10,7 @@ namespace Domain.CommandModels
             CommentSharePosts = new HashSet<CommentSharePost>();
             ReactSharePostComments = new HashSet<ReactSharePostComment>();
             ReactSharePosts = new HashSet<ReactSharePost>();
+            ReportPosts = new HashSet<ReportPost>();
         }
 
         public Guid SharePostId { get; set; }
@@ -42,5 +43,6 @@ namespace Domain.CommandModels
         public virtual ICollection<CommentSharePost> CommentSharePosts { get; set; }
         public virtual ICollection<ReactSharePostComment> ReactSharePostComments { get; set; }
         public virtual ICollection<ReactSharePost> ReactSharePosts { get; set; }
+        public virtual ICollection<ReportPost> ReportPosts { get; set; }
     }
 }

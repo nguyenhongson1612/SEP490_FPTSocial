@@ -1770,6 +1770,11 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.GroupPostVideoId)
                     .HasConstraintName("fk_report_group_video_post");
 
+                entity.HasOne(d => d.GroupSharePost)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.GroupSharePostId)
+                    .HasConstraintName("fk_report_group_share_post");
+
                 entity.HasOne(d => d.ReportBy)
                     .WithMany(p => p.ReportPosts)
                     .HasForeignKey(d => d.ReportById)
@@ -1781,6 +1786,11 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.ReportTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("report_post_type_FK");
+
+                entity.HasOne(d => d.SharePost)
+                    .WithMany(p => p.ReportPosts)
+                    .HasForeignKey(d => d.SharePostId)
+                    .HasConstraintName("fk_report_share_post");
 
                 entity.HasOne(d => d.UserPost)
                     .WithMany(p => p.ReportPosts)
