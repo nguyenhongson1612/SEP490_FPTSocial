@@ -110,6 +110,7 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             var sharePosts = await _context.GroupSharePosts
                 .AsNoTracking()
+                .Include(x => x.Group)
                 .Include(gsp => gsp.GroupStatus)
                 .Include(gsp => gsp.GroupPost)
                     .ThenInclude(gp => gp.GroupPhoto)
@@ -292,6 +293,9 @@ namespace Application.Queries.GetGroupPostByGroupId
                         GroupStatusId = item.GroupStatusId ?? Guid.Empty,
                         GroupStatusName = item.GroupStatus.GroupStatusName
                     },
+                    GroupId = item.GroupId,
+                    GroupName = item.Group.GroupName,
+                    GroupCorverImage = item.Group.CoverImage,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
                         ReactNumber = reactCount,
