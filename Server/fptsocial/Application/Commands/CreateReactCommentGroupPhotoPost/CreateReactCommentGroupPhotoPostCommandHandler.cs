@@ -47,7 +47,7 @@ namespace Application.Commands.CreateReactCommentGroupPostPhoto
             }
 
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactGroupPhotoPostComments
+            var existingReact = await _querycontext.ReactGroupPhotoPostComments
                 .FirstOrDefaultAsync(r =>
                     r.GroupPostPhotoId == request.GroupPostPhotoId &&
                     r.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId &&
@@ -62,13 +62,17 @@ namespace Application.Commands.CreateReactCommentGroupPostPhoto
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactGroupPhotoPostComments.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPostComment, Domain.CommandModels.ReactGroupPhotoPostComment>(existingReact);
+                    _context.ReactGroupPhotoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPostComment, Domain.CommandModels.ReactGroupPhotoPostComment>(existingReact);
+                    _context.ReactGroupPhotoPostComments.Update(commandReact);
+
                 }
             }
             else

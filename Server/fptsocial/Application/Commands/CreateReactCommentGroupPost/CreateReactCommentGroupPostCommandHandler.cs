@@ -45,7 +45,7 @@ namespace Application.Commands.CreateReactCommentGroupPost
             }
 
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactGroupCommentPosts
+            var existingReact = await _querycontext.ReactGroupCommentPosts
                 .FirstOrDefaultAsync(r =>
                     r.GroupPostId == request.GroupPostId &&
                     r.CommentGroupPostId == request.CommentGroupPostId &&
@@ -60,13 +60,16 @@ namespace Application.Commands.CreateReactCommentGroupPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactGroupCommentPosts.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupCommentPost, Domain.CommandModels.ReactGroupCommentPost>(existingReact);
+                    _context.ReactGroupCommentPosts.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupCommentPost, Domain.CommandModels.ReactGroupCommentPost>(existingReact);
+                    _context.ReactGroupCommentPosts.Update(commandReact);
                 }
             }
             else

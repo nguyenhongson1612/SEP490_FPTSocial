@@ -19,12 +19,14 @@ namespace Application.Commands.CreateReactUserPost
     public class CreateReactUserPostCommandHandler : ICommandHandler<CreateReactUserPostCommand, CreateReactUserPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public CreateReactUserPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public CreateReactUserPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,9 +39,9 @@ namespace Application.Commands.CreateReactUserPost
             }
 
             // 1. Check for Existing Reaction
-            var existingReact = await _context.ReactPosts
+            var existingReact = await _queryContext.ReactPosts
                 .FirstOrDefaultAsync(r => r.UserPostId == request.UserPostId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.PostReactCounts
+            var postReactCount = await _queryContext.PostReactCounts
                 .FirstOrDefaultAsync(prc => prc.UserPostId == request.UserPostId);
 
             Domain.CommandModels.ReactPost reactPost = new Domain.CommandModels.ReactPost();
@@ -49,7 +51,8 @@ namespace Application.Commands.CreateReactUserPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // User clicked the same react type again -> Remove it
-                    _context.ReactPosts.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPost, Domain.CommandModels.ReactPost>(existingReact);
+                    _context.ReactPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -65,6 +68,8 @@ namespace Application.Commands.CreateReactUserPost
                     // User changed react type -> Update
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now; // Optionally update timestamp
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPost, Domain.CommandModels.ReactPost>(existingReact);
+                    _context.ReactPosts.Update(commandReact);
                 }
             }
             else
@@ -86,6 +91,8 @@ namespace Application.Commands.CreateReactUserPost
                 }
             }
 
+            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Return Result (Consider Adjustments)

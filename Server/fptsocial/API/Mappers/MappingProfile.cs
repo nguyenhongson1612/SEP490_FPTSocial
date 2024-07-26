@@ -261,6 +261,13 @@ namespace Application.Mappers
             CreateMap<Command.ReactGroupPhotoPostComment, CreateReactCommentGroupPostPhotoCommandResult>();
             CreateMap<Command.ReactGroupCommentPost, CreateReactCommentGroupPostCommandResult>();
 
+            CreateMap<Query.ReactGroupPost, CreateReactGroupPostCommandResult>();
+            CreateMap<Query.ReactGroupVideoPost, CreateReactGroupVideoPostCommandResult>();
+            CreateMap<Query.ReactGroupPhotoPost, CreateReactGroupPhotoPostCommandResult>();
+            CreateMap<Query.ReactGroupVideoPostComment, CreateReactCommentGroupPostVideoCommandResult>();
+            CreateMap<Query.ReactGroupPhotoPostComment, CreateReactCommentGroupPostPhotoCommandResult>();
+            CreateMap<Query.ReactGroupCommentPost, CreateReactCommentGroupPostCommandResult>();
+
 
             CreateMap<Command.CommentPost, CreateUserCommentPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
@@ -337,6 +344,14 @@ namespace Application.Mappers
             CreateMap<Command.ReactComment, CreateReactCommentUserPostCommandResult>();
             CreateMap<Command.ReactVideoPostComment, CreateReactCommentUserPostVideoCommandResult>();
             CreateMap<Command.ReactPhotoPostComment, CreateReactCommentUserPostPhotoCommandResult>();
+
+            CreateMap<Query.ReactPost, CreateReactUserPostCommandResult>();
+            CreateMap<Query.ReactType, CreateNewReactCommandResult>();
+            CreateMap<Query.ReactPhotoPost, CreateReactUserPhotoPostCommandResult>();
+            CreateMap<Query.ReactVideoPost, CreateReactUserVideoPostCommandResult>();
+            CreateMap<Query.ReactComment, CreateReactCommentUserPostCommandResult>();
+            CreateMap<Query.ReactVideoPostComment, CreateReactCommentUserPostVideoCommandResult>();
+            CreateMap<Query.ReactPhotoPostComment, CreateReactCommentUserPostPhotoCommandResult>();
             CreateMap<Query.ReactType, GetAllReactTypeQueryResult>();
 
             //Notification
@@ -364,6 +379,10 @@ namespace Application.Mappers
             CreateMap<Command.ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
             CreateMap<Command.ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.ReactSharePost, CreateReactForSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.ReactGroupSharePost, CreateReactForGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.ReactSharePostComment, CreateReactForCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.ReactGroupSharePostComment, CreateReactForCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, CreateCommentForGroupSharePostCommandResult>().ReverseMap();

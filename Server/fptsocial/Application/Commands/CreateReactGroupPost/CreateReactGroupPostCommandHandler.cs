@@ -19,12 +19,14 @@ namespace Application.Commands.CreateReactGroupPost
     public class CreateReactGroupPostCommandHandler : ICommandHandler<CreateReactGroupPostCommand, CreateReactGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactGroupPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,9 +39,9 @@ namespace Application.Commands.CreateReactGroupPost
             }
 
             // 1. Check for Existing Reaction
-            var existingReact = await _context.ReactGroupPosts
+            var existingReact = await _queryContext.ReactGroupPosts
                 .FirstOrDefaultAsync(r => r.GroupPostId == request.GroupPostId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.GroupPostReactCounts
+            var postReactCount = await _queryContext.GroupPostReactCounts
                 .FirstOrDefaultAsync(prc => prc.GroupPostId == request.GroupPostId);
 
             Domain.CommandModels.ReactGroupPost reactPost = new Domain.CommandModels.ReactGroupPost();
@@ -49,7 +51,8 @@ namespace Application.Commands.CreateReactGroupPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Group clicked the same react type again -> Remove it
-                    _context.ReactGroupPosts.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPost, Domain.CommandModels.ReactGroupPost>(existingReact);
+                    _context.ReactGroupPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -65,6 +68,8 @@ namespace Application.Commands.CreateReactGroupPost
                     // Group changed react type -> Update
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now; // Optionally update timestamp
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPost, Domain.CommandModels.ReactGroupPost>(existingReact);
+                    _context.ReactGroupPosts.Update(commandReact);
                 }
             }
             else
@@ -85,7 +90,8 @@ namespace Application.Commands.CreateReactGroupPost
                     postReactCount.ReactCount++;
                 }
             }
-
+            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Return Result (Consider Adjustments)

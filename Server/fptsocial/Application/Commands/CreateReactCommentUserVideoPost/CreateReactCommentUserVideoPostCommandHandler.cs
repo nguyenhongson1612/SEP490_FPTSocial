@@ -38,8 +38,15 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            await _querycontext.ReactVideoPostComments.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
+            var comment = await _querycontext.ReactVideoPostComments.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
+            if (comment == null)
+            {
+                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
+            }
+
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactVideoPostComments
+            var existingReact = await _querycontext.ReactVideoPostComments
                 .FirstOrDefaultAsync(r =>
                     r.UserPostVideoId == request.UserPostVideoId &&
                     r.CommentVideoPostId == request.CommentVideoPostId &&
@@ -54,13 +61,16 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactVideoPostComments.Remove(existingReact);
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPostComment, Domain.CommandModels.ReactVideoPostComment>(existingReact);
+                    _context.ReactVideoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
                     existingReact.ReactTypeId = request.ReactTypeId;
                     existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPostComment, Domain.CommandModels.ReactVideoPostComment>(existingReact);
+                    _context.ReactVideoPostComments.Update(commandReact);
                 }
             }
             else
@@ -80,13 +90,6 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            // 4. Lấy thông tin comment
-            var comment = await _querycontext.ReactVideoPostComments.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
-            if (comment == null)
-            {
-                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
-            }
 
             // 5. Trả về kết quả
             var result = existingReact != null

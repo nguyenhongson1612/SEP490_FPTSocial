@@ -20,14 +20,16 @@ namespace Application.Commands.CreateGroupPost
     public class CreateGroupPostCommandHandler : ICommandHandler<CreateGroupPostCommand, CreateGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateGroupPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateGroupPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -36,7 +38,7 @@ namespace Application.Commands.CreateGroupPost
 
         public async Task<Result<CreateGroupPostCommandResult>> Handle(CreateGroupPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -47,12 +49,12 @@ namespace Application.Commands.CreateGroupPost
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
             bool statusGroup = true;
-            var groupSettingName = (from g in _context.GroupFpts
-                                    join gsu in _context.GroupSettingUses
+            var groupSettingName = (from g in _queryContext.GroupFpts
+                                    join gsu in _queryContext.GroupSettingUses
                                         on g.GroupId equals gsu.GroupId
-                                    join groupSetting in _context.GroupSettings
+                                    join groupSetting in _queryContext.GroupSettings
                                         on gsu.GroupSettingId equals groupSetting.GroupSettingId
-                                    join groupStatus in _context.GroupStatuses // Join với bảng GroupStatuses
+                                    join groupStatus in _queryContext.GroupStatuses // Join với bảng GroupStatuses
                                         on gsu.GroupStatusId equals groupStatus.GroupStatusId
                                     where g.GroupId == request.GroupId
                                     select new
@@ -65,7 +67,7 @@ namespace Application.Commands.CreateGroupPost
                 statusGroup = false;
             }
 
-            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
+            Guid groupStatusId = (Guid)_queryContext.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
 
             if (photos.Count() == 1 && numberPost == 1)
             {

@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,16 @@ namespace Application.Commands.CreateCommentForGroupSharePost
     public class CreateCommentForGroupSharePostCommandHandler : ICommandHandler<CreateCommentForGroupSharePostCommand, CreateCommentForGroupSharePostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateCommentForGroupSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateCommentForGroupSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -53,7 +56,7 @@ namespace Application.Commands.CreateCommentForGroupSharePost
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
-                var parentComment = await _context.CommentGroupSharePosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentGroupSharePosts.FindAsync(request.ParentCommentId.Value);
 
                 // Check if the parent comment exists
                 if (parentComment == null || parentComment.IsHide == true)
