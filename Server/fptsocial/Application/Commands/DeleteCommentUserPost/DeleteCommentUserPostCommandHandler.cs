@@ -3,6 +3,7 @@ using Application.Commands.DeleteUserPost;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -33,6 +34,8 @@ namespace Application.Commands.DeleteCommentUserPost
             }
 
             var userComment = _querycontext.CommentPosts.Where(x => x.CommentId == request.CommentId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostId == userComment.UserPostId).FirstOrDefault();
+
             var result = new DeleteCommentUserPostCommandResult();
             if (userComment == null)
             {
@@ -60,6 +63,15 @@ namespace Application.Commands.DeleteCommentUserPost
                         IsBanned = userComment.IsBanned,
                     };
                     _context.Update(commentPost);
+                    if (postReactCount != null)
+                    {
+                        if (postReactCount.CommentCount > 0)
+                        {
+                            postReactCount.CommentCount--;
+                        }
+                        var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+                        _context.PostReactCounts.Update(prc);
+                    }
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;

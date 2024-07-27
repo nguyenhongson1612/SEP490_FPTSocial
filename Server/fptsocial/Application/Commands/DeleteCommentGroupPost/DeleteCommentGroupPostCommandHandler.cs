@@ -34,6 +34,7 @@ namespace Application.Commands.DeleteCommentGroupPost
             }
 
             var GroupComment = _querycontext.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).FirstOrDefault();
+            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostId == GroupComment.GroupPostId).FirstOrDefault();
             var result = new DeleteCommentGroupPostCommandResult();
             if (GroupComment == null)
             {
@@ -50,6 +51,15 @@ namespace Application.Commands.DeleteCommentGroupPost
                     GroupComment.IsHide = true;
                     var cgp = ModelConverter.Convert<Domain.QueryModels.CommentGroupPost, Domain.CommandModels.CommentGroupPost>(GroupComment);
                     _context.CommentGroupPosts.Update(cgp);
+                    if (groupPostReactCount != null)
+                    {
+                        if (groupPostReactCount.CommentCount > 0)
+                        {
+                            groupPostReactCount.CommentCount--;
+                        }
+                        var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(groupPostReactCount);
+                        _context.GroupPostReactCounts.Update(prc);
+                    }
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;

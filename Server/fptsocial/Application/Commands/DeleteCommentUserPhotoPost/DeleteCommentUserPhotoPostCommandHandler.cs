@@ -32,6 +32,8 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
             }
 
             var UserPhotoComment = _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostPhotoId == UserPhotoComment.UserPostPhotoId).FirstOrDefault();
+
             var result = new DeleteCommentUserPhotoPostCommandResult();
             if (UserPhotoComment == null)
             {
@@ -48,6 +50,15 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
                     UserPhotoComment.IsHide = true;
                     var cpp = ModelConverter.Convert<Domain.QueryModels.CommentPhotoPost, Domain.CommandModels.CommentPhotoPost>(UserPhotoComment);
                     _context.CommentPhotoPosts.Update(cpp);
+                    if (postReactCount != null)
+                    {
+                        if (postReactCount.CommentCount > 0)
+                        {
+                            postReactCount.CommentCount--;
+                        }
+                        var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+                        _context.PostReactCounts.Update(prc);
+                    }
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
