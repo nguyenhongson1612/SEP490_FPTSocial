@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -25,7 +26,7 @@ namespace Application.Commands.DeleteCommentUserVideoPost
         }
         public async Task<Result<DeleteCommentUserVideoPostCommandResult>> Handle(DeleteCommentUserVideoPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -45,7 +46,9 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                 else
                 {
                     UserVideoComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var csp = ModelConverter.Convert<Domain.QueryModels.CommentVideoPost, Domain.CommandModels.CommentVideoPost>(UserVideoComment);
+                    _context.CommentVideoPosts.Update(csp);
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

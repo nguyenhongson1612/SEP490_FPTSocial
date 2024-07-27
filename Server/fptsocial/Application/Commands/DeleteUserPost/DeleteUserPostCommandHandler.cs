@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -47,17 +48,24 @@ namespace Application.Commands.DeleteUserPost
                 else
                 {
                     userPost.IsHide = true;
+                    var up = ModelConverter.Convert<Domain.QueryModels.UserPost, Domain.CommandModels.UserPost>(userPost);
+                    _context.UserPosts.Update(up);
+
                     var userPhotoPost = _querycontext.UserPostPhotos.Where(x => x.UserPostId == request.UserPostId).ToList();
                     foreach (var photoPost in userPhotoPost) 
                     {
                         photoPost.IsHide = true;
+                        var pp = ModelConverter.Convert<Domain.QueryModels.UserPostPhoto, Domain.CommandModels.UserPostPhoto>(photoPost);
+                        _context.UserPostPhotos.Update(pp);
                     }
                     var userVideoPost = _querycontext.UserPostVideos.Where(x => x.UserPostId == request.UserPostId).ToList();
                     foreach (var videoPost in userVideoPost)
                     {
                         videoPost.IsHide = true;
+                        var vp = ModelConverter.Convert<Domain.QueryModels.UserPostVideo, Domain.CommandModels.UserPostVideo>(videoPost);
+                        _context.UserPostVideos.Update(vp);
                     }
-                    _querycontext.SaveChanges();
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }
