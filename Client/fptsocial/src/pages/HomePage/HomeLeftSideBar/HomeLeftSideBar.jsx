@@ -1,21 +1,27 @@
 // import React from 'react'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { getGroupByUserId } from '~/apis/groupApis'
+import GroupAvatar from '~/components/UI/GroupAvatar'
 import CurrentUserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
 function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
   const [isMore, setIsMore] = useState(false)
+  const [listGroup, setListGroup] = useState([])
   const currentUser = useSelector(selectCurrentUser)
+  useEffect(() => {
+    getGroupByUserId().then(data => setListGroup([...data?.listGroupAdmin || [], ...data?.listGroupMember || []]))
+  }, [])
 
 
   return (
     <div className={`h-[calc(100vh_-_55px)] ${!isShowHomeLeftSideBar && 'hidden'} lg:!flex lg:basis-3/12 flex-col overflow-y-auto scrollbar-none-track text-lg font-semibold`}>
       <div className="ml-3 mt-8 mb-5">
         <div id="explore"
-          className=" flex flex-col items-start mb-8 border-b-2"
+          className=" flex flex-col items-start mb-8 border-b-2 border-gray-300"
         >
           <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
@@ -49,33 +55,24 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
           className="flex flex-col items-start mb-5"
         >
           <p className="text-gray-500">Group</p>
-          <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              className="rounded-md aspect-square object-cover w-8"
-            />
+          {
+            listGroup?.map(group => (
+              <Link
+                to={`/groups/${group?.groupId}`}
+                key={group?.groupId}
+                className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
+                <GroupAvatar
+                  avatarSrc={group?.coverImage}
+                  className="rounded-md aspect-square object-cover w-8"
+                />
 
-            <span className="font-semibold">New Feeds</span>
-          </a>
+                <span className="font-semibold capitalize">{group?.groupName}</span>
+              </Link>
+            ))
+          }
 
-          <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              className="rounded-md aspect-square object-cover w-8"
-            />
 
-            <span className="font-semibold">New Feeds</span>
-          </a>
-          <a className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuatIJXhoIyk41rXuz9n3cHerAI8OdrNUjzBvvYALViA&s"
-              className="rounded-md aspect-square object-cover w-8"
-            />
-
-            <span className="font-semibold">New Feeds</span>
-          </a>
-
-          <a
+          {/* <a
             onClick={() => setIsMore(!isMore)}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             {!isMore ?
@@ -89,7 +86,7 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
               )
             }
             <span className="font-semibold">{isMore ? 'Hide' : 'More'}</span>
-          </a>
+          </a> */}
         </div>
       </div>
 

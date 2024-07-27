@@ -5,7 +5,6 @@ import FriendRequests from './FriendRequests/FriendRequests'
 import FriendSuggestions from './FriendSuggestions/FriendSuggestions'
 import FriendList from './FriendList/FriendList'
 import FriendsSideBar from './FriendsSideBar/FriendsSideBar'
-import { getAllPost } from '~/apis/postApis'
 
 
 function Friends() {
@@ -14,13 +13,13 @@ function Friends() {
   const isSuggestions = location.pathname === '/friends/suggestions'
   const isFriendList = location.pathname === '/friends/list'
   const [listPost, setListPost] = useState(null)
-  useEffect(() => {
-    // Call API
-    getAllPost().then(data => {
-      // console.log('🚀 ~ getAllPost ~ data:', data)
-      setListPost(data)
-    })
-  }, [])
+  // useEffect(() => {
+  //   // Call API
+  //   getAllPost().then(data => {
+  //     // console.log('🚀 ~ getAllPost ~ data:', data)
+  //     setListPost(data)
+  //   })
+  // }, [])
   return (
     <>
       <NavTopBar />

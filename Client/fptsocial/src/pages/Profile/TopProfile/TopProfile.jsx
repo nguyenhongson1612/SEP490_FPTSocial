@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis';
 import { useConfirm } from 'material-ui-confirm';
-import { IconEdit, IconUser, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react';
+import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import connectionSignalR from '~/utils/signalRConnection';
-import { Avatar, Popover } from '@mui/material';
+import { Avatar, Menu, MenuItem, Popover } from '@mui/material';
 import { toast } from 'react-toastify';
 import { handleCoverImg } from '~/utils/formatters';
+import { useDispatch } from 'react-redux';
+import { addReport, openModalReport } from '~/redux/report/reportSlice';
+import { REPORT_TYPES } from '~/utils/constants';
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
 
   const backgroundStyle = handleCoverImg(user?.coverImage)
-
+  const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null);
   const [hoveredFriendId, setHoveredFriendId] = useState(null);
 
@@ -24,6 +27,15 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
     setAnchorEl(null);
     setHoveredFriendId(null);
   };
+
+  const [anchorEl2, setAnchorEl2] = useState(null)
+  const open = Boolean(anchorEl2)
+  const handleClick = (event) => {
+    setAnchorEl2(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl2(null)
+  }
 
   const handleAddFriend = async () => {
     try {
@@ -228,6 +240,34 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
               </div>
             </div>
           )}
+          {
+            user?.userId !== currentUser?.userId &&
+            <div className='flex flex-col justify-end mb-5 cursor-pointer'>
+              <div
+                className="rounded-md size-[40px] flex justify-center items-center bg-fbWhite cursor-pointer p-2"
+                onClick={handleClick}
+              ><IconDotsVertical /></div>
+              <Menu
+                anchorEl={anchorEl2}
+                id="account-menu"
+                open={open}
+                onClose={handleClose}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    dispatch(addReport({ reportData: { ...user }, reportType: REPORT_TYPES.PROFILE }))
+                    dispatch(openModalReport())
+                    handleClose()
+                  }}
+                  sx={{ gap: '5px' }}>
+                  <IconMessageReport /> Report
+                </MenuItem>
+
+              </Menu>
+            </div>
+          }
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import LazyImage from '~/components/LazyImage'
 import { cleanAndParseHTML } from '~/utils/formatters'
 
-function PostContents({ postData }) {
+function PostContents({ postData, postType }) {
   const cleanHtml = cleanAndParseHTML(postData?.content)
 
   return (

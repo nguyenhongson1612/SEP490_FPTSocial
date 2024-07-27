@@ -1,6 +1,6 @@
 import { IconCake, IconHeartFilled, IconHomeFilled, IconManFilled, IconUser } from '@tabler/icons-react'
 import ListPost from '~/components/ListPost/ListPost'
-import NewPost from '~/components/NewPost/NewPost'
+import NewPost from '~/components/Modal/NewPost/NewPost'
 import { POST_TYPES } from '~/utils/constants'
 
 function ProfilePosts({ listPost, user }) {
@@ -9,7 +9,7 @@ function ProfilePosts({ listPost, user }) {
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div
         id='info'
-        className='w-full sm:w-[500px] lg:basis-3/12 h-fit bg-white mt-8 rounded-md shadow-md'>
+        className='w-full sm:w-[500px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
         <div className='flex flex-col p-4 gap-3'>
           <h3 className='text-xl font-bold'>Profile</h3>
           <div className='flex gap-1'><IconUser stroke={2} color='#c8d3e1' /><span className='font-semibold'>{user?.firstName + ' ' + user?.lastName || 'No information'}</span></div>
@@ -20,7 +20,7 @@ function ProfilePosts({ listPost, user }) {
         </div>
       </div>
       <div className=' flex flex-col gap-3'>
-        <NewPost type={POST_TYPES.MAIN_POST} />
+        <NewPost postType={POST_TYPES.PROFILE_POST} />
         <ListPost listPost={listPost} />
       </div>
     </div >

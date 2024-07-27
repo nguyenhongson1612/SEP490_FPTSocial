@@ -8,22 +8,44 @@ import RadioGroup from '@mui/material/RadioGroup'
 import { IconBookmark, IconMessageReport, IconPencil, IconTrash, IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { IconDots } from '@tabler/icons-react'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { compareDateTime } from '~/utils/formatters'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsShowModalUpdatePost, showModalUpdatePost, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectListUserStatus } from '~/redux/sideData/sideDataSlice'
+import { POST_TYPES, REPORT_TYPES } from '~/utils/constants'
+import GroupAvatar from '~/components/UI/GroupAvatar'
+import { deleteSharePost, deleteUserPost } from '~/apis/postApis'
+import { triggerReload } from '~/redux/ui/uiSlice'
+import { useConfirm } from 'material-ui-confirm'
+import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
+import { deleteGroupPost, deleteGroupSharePost } from '~/apis/groupPostApis'
+import { addReport, openModalReport } from '~/redux/report/reportSlice'
 
 
-function PostTitle({ postData, isYourPost }) {
+function PostTitle({ postData, isYourPost, postType }) {
+  console.log('🚀 ~ PostTitle ~ postType:', postData)
+  // console.log('🚀 ~ PostTitle ~ postData:', postData)
   const [isOpenModal, setIsOpenModal] = useState(false)
   const listStatus = useSelector(selectListUserStatus)
+  const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const { register, setValue, control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
     }
   })
+  const location = useLocation()
+  const isInGroupPath = /^\/groups\/\w+\/?.*$/.test(location.pathname)
+
+  const isProfile = postType == POST_TYPES.PROFILE_POST
+  const isPhoto = postType == POST_TYPES.PHOTO_POST
+  const isVideo = postType == POST_TYPES.VIDEO_POST
+  const isShare = postType == POST_TYPES.SHARE_POST
+  const isGroup = postType == POST_TYPES.GROUP_POST
+  const isGroupPhoto = postType == POST_TYPES.GROUP_PHOTO_POST
+  const isGroupVideo = postType == POST_TYPES.GROUP_VIDEO_POST
+  const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
 
   const isShowModalUpdatePost = useSelector(selectIsShowModalUpdatePost)
   const dispatch = useDispatch()
@@ -38,24 +60,82 @@ function PostTitle({ postData, isYourPost }) {
 
   const handleEdit = () => {
     dispatch(showModalUpdatePost())
-    dispatch(updateCurrentActivePost(postData))
+    dispatch(updateCurrentActivePost({ ...postData, postType: postType }))
+  }
+
+  const confirm = useConfirm()
+  const handleRemovePost = () => {
+    confirm({
+      title: (
+        <div className='flex flex-col gap-2'>
+          <div className='font-bold text-[#d22e2e]'>Delete this post?</div>
+        </div>
+      ),
+      description: ('This a permanent action and cannot be undone. All content and associated comments will be permanently removed from the system.'),
+      confirmationButtonProps: { color: 'error', variant: 'contained' },
+      confirmationText: 'Delete',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      (
+        isProfile ? deleteUserPost(postData?.postId)
+          : isShare ? deleteSharePost(postData?.postId)
+            : isGroup ? deleteGroupPost(postData?.postId)
+              : isGroupShare && deleteGroupSharePost(postData?.postId)
+      ).then(() => {
+        dispatch(triggerReload())
+      })
+    }).catch(() => { })
   }
 
   return (
     <div id="post-title"
       className="w-full flex justify-between items-center px-4 py-2">
       <div className='w-full flex gap-4'>
-        <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className="w-fit cursor-pointer relative text-gray-500 hover:text-gray-950 flex items-center justify-start gap-3">
-          <UserAvatar avatarSrc={postData?.avatar?.avataPhotosUrl} isOther={true} />
-        </Link>
-
+        <div className='flex items-center relative'>
+          {(isGroup || isGroupShare) && !isInGroupPath ?
+            <>
+              <Link to={`/groups/${postData?.groupId}`} className="text-gray-500 hover:text-gray-950">
+                <GroupAvatar avatarSrc={postData?.groupCorverImage} />
+              </Link>
+              <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`}
+                className="absolute text-gray-500 hover:text-gray-950 -bottom-[2px] -right-2">
+                <UserAvatar avatarSrc={postData?.userAvatar?.avataPhotosUrl || postData?.avatar?.avataPhotosUrl} isOther={true} size={1.8} />
+              </Link>
+            </>
+            : <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className="text-gray-500 hover:text-gray-950 ">
+              <UserAvatar avatarSrc={postData?.userAvatar?.avataPhotosUrl || postData?.avatar?.avataPhotosUrl} isOther={true} />
+            </Link>
+          }
+        </div>
         <div className="flex flex-col gap-1">
-          <div className="font-semibold font-sans">{postData?.fullName}</div>
-          <div className="flex justify-start gap-2 text-gray-500  text-sm">
-            <Link to={`/post/${postData?.userPostId}`}>{compareDateTime(postData?.createdAt)}</Link>
-            <span onClick={() => { isYourPost && setIsOpenModal(!isOpenModal) }}
-              className={`text-gray-900 font-bold ${isYourPost && 'cursor-pointer'}`}>
-              {postData?.userStatus?.userStatusName || postData?.status?.userStatusName}
+          <div className="font-bold font-sans capitalize">
+            {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName || postData?.userNameShare)}
+          </div>
+          <div className="flex justify-start gap-1 text-gray-500 text-sm">
+            {((isGroup || isGroupShare) && !isInGroupPath &&
+              <>
+                <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className='font-semibold capitalize'>
+                  {postData?.userName}
+                </Link>
+                <span className='font-semibold'>.</span>
+              </>
+            )}
+            {
+              (isGroup || isGroupShare) ? <a href={`/groups/${postData?.groupId}/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
+                {compareDateTime(postData?.createdAt)}
+              </a>
+                : <Link to={`/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
+                  {compareDateTime(postData?.createdAt)}
+                </Link>
+            }
+            {/* <Link to={`/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
+              {compareDateTime(postData?.createdAt)}
+            </Link> */}
+            <span
+              // onClick={() => { isYourPost && !isGroup && !isGroupShare && setIsOpenModal(!isOpenModal) }}
+              // ${isYourPost && !isGroup && !isGroupShare && 'cursor-pointer'}
+              className={`text-gray-900 font-bold ${''}`}>
+              {postData?.userStatus?.userStatusName || postData?.status?.userStatusName || postData?.groupStatus?.groupStatusName}
             </span>
 
             <Modal
@@ -124,20 +204,26 @@ function PostTitle({ postData, isYourPost }) {
         </MenuItem>
         {
           isYourPost && (
-            <MenuItem onClick={handleEdit} sx={{ gap: '5px' }} >
+            <MenuItem onClick={() => { handleClose(); handleEdit() }} sx={{ gap: '5px' }} >
               <IconPencil /> Edit post
             </MenuItem>
           )
         }
         {
           isYourPost && (
-            <MenuItem onClick={handleClose} sx={{ gap: '5px' }}  >
+            <MenuItem onClick={() => { handleClose(); handleRemovePost() }} sx={{ gap: '5px' }} >
               <IconTrash /> Remove post
             </MenuItem>
           )
         }
         {!isYourPost &&
-          <MenuItem onClick={handleClose} sx={{ gap: '5px' }}>
+          <MenuItem
+            onClick={() => {
+              dispatch(addReport({ reportData: { ...postData, type: postType }, reportType: REPORT_TYPES.POST }))
+              dispatch(openModalReport())
+              handleClose()
+            }}
+            sx={{ gap: '5px' }}>
             <IconMessageReport /> Report
           </MenuItem>
         }

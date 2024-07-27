@@ -12,7 +12,11 @@ function UserAvatar({ avatarSrc, size = '2.5', isOther = false }) {
 
   return (
     <img
-      src={avatarUrl || avatarHolder}
+      src={avatarUrl || 'invalid-url'}
+      onError={e => {
+        e.target.src = avatarHolder
+        e.onerror = null
+      }}
       alt="avatar"
       className="rounded-[50%] aspect-square object-cover border border-gray-300"
       style={{

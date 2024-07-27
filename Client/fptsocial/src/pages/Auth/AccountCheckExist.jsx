@@ -19,7 +19,10 @@ function AccountCheckExist() {
           { pending: 'Checking...' }
         )
           .then(res => {
-            if (!res.error) navigate('/')
+            if (!res.error) {
+              navigate('/')
+              toast.success('Welcome to FPT Social!')
+            }
           })
       }
     })

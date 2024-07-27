@@ -4,14 +4,14 @@ export const uiStateSlice = createSlice({
   name: 'uiState',
   initialState: {
     isShowHomeLeftSideBar: false,
-    isReload: false
+    isReload: 0
   },
   reducers: {
     triggerHomeLeftSideBar: (state) => {
       state.isShowHomeLeftSideBar = !state.isShowHomeLeftSideBar
     },
     triggerReload: (state) => {
-      state.isReload = !state.isReload
+      state.isReload = state.isReload + 1
     }
   },
   extraReducers: (builder) => { }

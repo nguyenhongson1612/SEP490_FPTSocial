@@ -1,13 +1,16 @@
-import { IconChevronDown, IconChevronUp, IconHomeFilled, IconStack, IconUsersGroup, IconUserShare } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronUp, IconHomeFilled, IconReport, IconStack, IconUsersGroup, IconUserShare } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-function GroupManageTab({ group, listRequestJoins }) {
-  const [isOpenSetting, setIsOpenSetting] = useState(false)
-  const [isOpenTools, setIsOpenTools] = useState(true)
+function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
+  console.log('🚀 ~ GroupManageTab ~ listPendingPost:', listPendingPost)
   const isMemberRequest = /^\/groups\/[a-zA-Z0-9-]+\/member-requests\/?$/.test(location.pathname)
   const isMemberManage = /^\/groups\/[a-zA-Z0-9-]+\/member-manage\/?$/.test(location.pathname)
+  const isPendingPost = /^\/groups\/[a-zA-Z0-9-]+\/pending-posts\/?$/.test(location.pathname)
+  const isSetting = /^\/groups\/[a-zA-Z0-9-]+\/settings\/?$/.test(location.pathname)
   const isHomeGroup = /^\/groups\/[a-zA-Z0-9-]+\/?$/.test(location.pathname)
+  const [isOpenTools, setIsOpenTools] = useState(true)
+  const [isOpenSetting, setIsOpenSetting] = useState(isSetting)
 
   return (
     <div className='text-sm'>
@@ -42,6 +45,15 @@ function GroupManageTab({ group, listRequestJoins }) {
                   <span className=''>{listRequestJoins?.length} request</span>
                 </div>
               </Link>
+              <Link to={`/groups/${group?.groupId}/pending-posts`}
+                className={`w-full flex items-center gap-2 py-3 px-2 rounded-lg 
+                ${isPendingPost ? 'bg-blue-100 text-blue-500' : 'hover:bg-fbWhite text-black'}`}>
+                <IconReport stroke={1} />
+                <div className='flex flex-col gap-1'>
+                  <span className='font-semibold'>Pending post</span>
+                  <span className=''>{listPendingPost?.length} posts</span>
+                </div>
+              </Link>
               <Link to={`/groups/${group?.groupId}/member-manage`}
                 className={`w-full flex items-center gap-2 py-3 px-2 rounded-lg 
                 ${isMemberManage ? 'bg-blue-100 text-blue-500' : 'hover:bg-fbWhite  text-black'}`}>
@@ -58,16 +70,21 @@ function GroupManageTab({ group, listRequestJoins }) {
           <div className='w-full flex justify-between items-center gap-2 font-bold py-3 px-2 rounded-lg cursor-pointer hover:bg-fbWhite'
             onClick={() => setIsOpenSetting(!isOpenSetting)}
           >
-            <span className=''>Setting</span>
+            <span className=''>Settings</span>
             {isOpenSetting ? <IconChevronUp /> : <IconChevronDown />}
           </div>
           {
             isOpenSetting && (
               <div>
-                <div className='w-full flex items-center gap-2 font-bold py-3 px-2 rounded-lg hover:bg-fbWhite'>
-                  <IconStack />
-                  Overview
-                </div>
+                <Link to={`/groups/${group?.groupId}/settings`}
+                  className={`w-full flex items-center gap-2 py-3 px-2 rounded-lg 
+                ${isSetting ? 'bg-blue-100 text-blue-500' : 'hover:bg-fbWhite text-black'}`}>
+                  <IconUserShare stroke={1} />
+                  <div className='flex flex-col gap-1'>
+                    <span className='font-semibold'>Group settings</span>
+                    <span className=''>Manage group information and more</span>
+                  </div>
+                </Link>
                 <div className='w-full flex items-center gap-2 font-bold py-3 px-2 rounded-lg hover:bg-fbWhite'>
                   <IconStack />
                   Overview

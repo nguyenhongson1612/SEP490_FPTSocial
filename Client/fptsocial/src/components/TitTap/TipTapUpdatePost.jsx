@@ -86,7 +86,7 @@ const TipTapUpdatePost = ({ setContent, content, type, listMedia, setListMedia, 
     <div className="w-full px-3">
       <div className='max-h-72 overflow-y-auto scrollbar-none-track mb-2'>
         <EditorContent editor={editor} />
-        {isChoseFIle || listMedia?.length > 0 && <div className={`${''} relative border border-gray-300 rounded-md `}>
+        {(isChoseFIle || listMedia?.length) > 0 && <div className={`${''} relative border border-gray-300 rounded-md `}>
           {
             listMedia?.length == 0 && !isLoading && (
               <div className='w-full h-[12rem] flex flex-col items-center justify-center text-base font-semibold bg-fbWhite cursor-pointer'
@@ -129,9 +129,10 @@ const TipTapUpdatePost = ({ setContent, content, type, listMedia, setListMedia, 
             </div>
 
             {listMedia?.map((e, key) => {
-              if (e?.type == 'image')
+              if (e?.type == 'image') {
+                // let url = e?.media?.photoUrl || e?.media?.photo?.photoUrl
                 return <img
-                  key={e?.url}
+                  key={key}
                   src={e?.url}
                   className={`${listMedia.length % 2 !== 0
                     ? key === 0
@@ -139,17 +140,21 @@ const TipTapUpdatePost = ({ setContent, content, type, listMedia, setListMedia, 
                       : 'col-span-1'
                     : 'col-span-1'} h-full object-cover`}
                 />
-              else return <video
-                key={e?.url}
-                src={e?.url}
-                className={`${listMedia.length % 2 !== 0
-                  ? key === 0
-                    ? 'col-span-2'
-                    : 'col-span-1'
-                  : 'col-span-1'} h-full object-cover`}
-                controls
-                disablePictureInPicture
-              />
+              }
+              else {
+                // let url = e?.media?.videoUrl || e?.media?.video?.videoUrl
+                return <video
+                  key={key}
+                  src={e?.url}
+                  className={`${listMedia.length % 2 !== 0
+                    ? key === 0
+                      ? 'col-span-2'
+                      : 'col-span-1'
+                    : 'col-span-1'} h-full object-cover`}
+                  controls
+                  disablePictureInPicture
+                />
+              }
             })}
 
             {isLoading && <div className='col-span-2 h-20'><PageLoadingSpinner /></div>}
@@ -165,7 +170,7 @@ const TipTapUpdatePost = ({ setContent, content, type, listMedia, setListMedia, 
         />
       </div>
       <div className='flex items-center bg-fbWhite'>
-        <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} type={type} />
+        <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} type={type} isChooseFile={isChoseFIle} />
         {
           type == 'comment' && (
             <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2'>

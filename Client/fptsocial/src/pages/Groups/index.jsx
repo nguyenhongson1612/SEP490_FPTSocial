@@ -1,11 +1,10 @@
 import ListPost from '~/components/ListPost/ListPost'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
-import GroupSideBar from './GroupSideBar/GroupSideBar'
 import { useLocation } from 'react-router-dom'
-import GroupCreate from './GroupCreate/GroupCreate'
 import { useEffect, useState } from 'react'
-import { getAllPost } from '~/apis/postApis'
 import { getGroupByUserId } from '~/apis/groupApis'
+import GroupSideBar from './GroupsSideBar/GroupSideBar'
+import GroupCreate from './GroupsCreate/GroupCreate'
 
 
 function Groups() {
@@ -16,7 +15,7 @@ function Groups() {
   const [listPersonalGroup, setListPersonalGroup] = useState({})
 
   useEffect(() => {
-    getAllPost().then(data => setListPost(data))
+    // getAllPost().then(data => setListPost(data))
     getGroupByUserId().then(data => setListPersonalGroup(data))
   }, [])
   return (

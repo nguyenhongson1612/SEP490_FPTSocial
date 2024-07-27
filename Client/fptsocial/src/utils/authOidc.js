@@ -1,3 +1,5 @@
+import { useConfirm } from 'material-ui-confirm'
+
 const oidcConfig = {
   onSignIn: () => {
     window.location.href = '/home'
@@ -12,5 +14,4 @@ const oidcConfig = {
   scope: 'openid profile offline_access',
   responseType: 'code',
 }
-
 export default oidcConfig

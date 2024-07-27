@@ -1,14 +1,20 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
-import { API_ROOT } from '~/utils/constants'
+import { API_ROOT, SEARCH_TYPE } from '~/utils/constants'
 // export const getAllPost = async () => {
 //   const response = await authorizedAxiosInstance.get(`${API_ROOT_FAKE_DATA}/products`)
 //   return response.data
 // }
 
+
 export const checkUserExist = async () => {
   // console.log(token, 'checkUserExist');
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/checkuserexist`)
   return response.data
+}
+export const searchFriendByName = async ({ accUserId, userId, search }) => {
+  // console.log(token, 'checkUserExist');
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchfriendbyname?AccessUserId=${accUserId}&UserId=${userId}&FindName=${search}`)
+  return response.data?.data
 }
 
 export const getUserByNumber = async (userNumber) => {
@@ -114,3 +120,9 @@ export const uploadVideo = async ({ userId, data }) => {
   return response.data
 }
 
+
+//search api
+export const searchAll = async ({ search, type = SEARCH_TYPE.ALL }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchAll?SearchContent=${search}&Type=${type}`)
+  return response.data?.data
+}

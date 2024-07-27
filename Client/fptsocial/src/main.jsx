@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           }}>
             <CssBaseline />
             <App />
-            <ToastContainer position="top-right" theme="colored" />
+            <ToastContainer position="bottom-left" theme="dark" autoClose={2000} hideProgressBar limit={2} newestOnTop />
           </ConfirmProvider>
         </CssVarsProvider>
       </BrowserRouter>

@@ -10,8 +10,10 @@ import { toast } from 'react-toastify'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
 import { IconEdit, IconFilePlus, IconPhotoPlus, IconSend2 } from '@tabler/icons-react'
 import { useConfirm } from 'material-ui-confirm'
+import { CREATE, EDITOR_TYPE } from '~/utils/constants'
+import { Button } from '@mui/material'
 
-const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos, type, isUpdatePost, listMedia }) => {
+const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, setListVideos, postType, editorType, actionType }) => {
   const [isChoseFIle, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isEditMedia, setIsEditMedia] = useState(false)
@@ -131,6 +133,7 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
               )}
             </div>
 
+
             {listPhotos?.map((photo, key) => (
               <img
                 key={photo}
@@ -168,13 +171,19 @@ const Tiptap = ({ setContent, content, listPhotos, setListPhotos, listVideos, se
           onChange={handleImageUpload}
         />
       </div>
-      <div className='flex items-center bg-fbWhite'>
-        <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} type={type} />
+      <div className={`flex ${editorType == EDITOR_TYPE.SHARE ? 'justify-end' : ' bg-fbWhite'} items-center`}>
+        {/* {editorType !== EDITOR_TYPE.SHARE && <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} postType={postType} />} */}
+        <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} postType={postType} />
         {
-          type == 'comment' && (
+          editorType == EDITOR_TYPE.COMMENT && (
             <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2'>
               <IconSend2 className='text-blue-500 rounded-full size-8 hover:bg-blue-200 p-1' stroke={1} />
             </button>
+          )
+        }
+        {
+          editorType == EDITOR_TYPE.SHARE && actionType == CREATE && (
+            <Button type='submit' variant="contained" onClick={handleRemoveCurrentContent} color="warning">Share</Button>
           )
         }
       </div>
