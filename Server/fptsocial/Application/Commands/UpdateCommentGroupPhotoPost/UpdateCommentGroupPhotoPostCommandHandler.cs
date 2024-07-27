@@ -21,14 +21,16 @@ namespace Application.Commands.UpdateCommentGroupPhotoPost
     public class UpdateCommentGroupPhotoPostCommandHandler : ICommandHandler<UpdateCommentGroupPhotoPostCommand, UpdateCommentGroupPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentGroupPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentGroupPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -48,7 +50,7 @@ namespace Application.Commands.UpdateCommentGroupPhotoPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var GroupPhotoPost = await _context.CommentPhotoGroupPosts.FindAsync(request.CommentPhotoGroupPostId);
+            var GroupPhotoPost = await _querycontext.CommentPhotoGroupPosts.FindAsync(request.CommentPhotoGroupPostId);
             if (GroupPhotoPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -59,7 +61,7 @@ namespace Application.Commands.UpdateCommentGroupPhotoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -70,6 +72,8 @@ namespace Application.Commands.UpdateCommentGroupPhotoPost
                     comment.IsHide = true;
                 }
             }
+            var cpgp = ModelConverter.Convert<Domain.QueryModels.CommentPhotoGroupPost, Domain.CommandModels.CommentPhotoGroupPost>(comment);
+            _context.CommentPhotoGroupPosts.Update(cpgp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupPhotoPostCommandResult>(comment);
             result.BannedWords = bannedWords;

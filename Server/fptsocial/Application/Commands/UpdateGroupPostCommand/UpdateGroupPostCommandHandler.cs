@@ -42,7 +42,7 @@ namespace Application.Commands.UpdateGroupPostCommand
 
         public async Task<Result<UpdateGroupPostCommandResult>> Handle(UpdateGroupPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -128,32 +128,36 @@ namespace Application.Commands.UpdateGroupPostCommand
 
             foreach (var photoUrl in photosToDelete)
             {
-                var photoToDelete = await _context.GroupPhotos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
+                var photoToDelete = await _querycontext.GroupPhotos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
                 if (photoToDelete != null)
                 {
-                    var GroupPostPhotosToHide = await _context.GroupPostPhotos
+                    var GroupPostPhotosToHide = await _querycontext.GroupPostPhotos
                         .Where(upp => upp.GroupPhotoId == photoToDelete.GroupPhotoId)
                         .ToListAsync();
 
                     foreach (var GroupPostPhoto in GroupPostPhotosToHide)
                     {
                         GroupPostPhoto.IsHide = true; // Mark as hidden instead of deleting
+                        var gpv = ModelConverter.Convert<Domain.QueryModels.GroupPostPhoto, Domain.CommandModels.GroupPostPhoto>(GroupPostPhoto);
+                        _context.GroupPostPhotos.Update(gpv);
                     }
                 }
             }
 
             foreach (var videoUrl in videosToDelete)
             {
-                var videoToDelete = await _context.GroupVideos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
+                var videoToDelete = await _querycontext.GroupVideos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
                 if (videoToDelete != null)
                 {
-                    var GroupPostVideosToHide = await _context.GroupPostVideos
+                    var GroupPostVideosToHide = await _querycontext.GroupPostVideos
                         .Where(upv => upv.GroupVideoId == videoToDelete.GroupVideoId)
                         .ToListAsync();
 
                     foreach (var GroupPostVideo in GroupPostVideosToHide)
                     {
                         GroupPostVideo.IsHide = true; // Mark as hidden instead of deleting
+                        var gpv = ModelConverter.Convert<Domain.QueryModels.GroupPostVideo, Domain.CommandModels.GroupPostVideo>(GroupPostVideo);
+                        _context.GroupPostVideos.Update(gpv);
                     }
                 }
             }
@@ -219,8 +223,8 @@ namespace Application.Commands.UpdateGroupPostCommand
             if (numberPost > 1)
             {
                 int postPosition = Math.Max(
-                    _context.GroupPostPhotos.Where(upp => upp.GroupPostId == GroupPost.GroupPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
-                    _context.GroupPostVideos.Where(upv => upv.GroupPostId == GroupPost.GroupPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
+                    _querycontext.GroupPostPhotos.Where(upp => upp.GroupPostId == GroupPost.GroupPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
+                    _querycontext.GroupPostVideos.Where(upv => upv.GroupPostId == GroupPost.GroupPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
                 );
 
                 if (newPhotos.Any())

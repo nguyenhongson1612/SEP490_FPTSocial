@@ -29,9 +29,10 @@ namespace Application.Commands.UpdateUserPhotoPost
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateUserPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateUserPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -44,12 +45,12 @@ namespace Application.Commands.UpdateUserPhotoPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var userPostPhoto = await _context.UserPostPhotos.FindAsync(request.UserPostPhotoId);
+            var userPostPhoto = await _queryContext.UserPostPhotos.FindAsync(request.UserPostPhotoId);
             if (userPostPhoto == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.UserPosts
+            var userId = await _queryContext.UserPosts
                                       .Where(a => a.UserPostId == request.UserPostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();
@@ -59,7 +60,7 @@ namespace Application.Commands.UpdateUserPhotoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photoPost = _context.UserPostPhotos.Where(x => x.UserPostPhotoId == request.UserPostPhotoId).FirstOrDefault();
+            var photoPost = _queryContext.UserPostPhotos.Where(x => x.UserPostPhotoId == request.UserPostPhotoId).FirstOrDefault();
             if (photoPost != null) 
             {
                 photoPost.Content = request.Content;
@@ -71,6 +72,8 @@ namespace Application.Commands.UpdateUserPhotoPost
                 photoPost.IsBanned = true;
                 photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
             }
+            var upp = ModelConverter.Convert<Domain.QueryModels.UserPostPhoto, Domain.CommandModels.UserPostPhoto>(userPostPhoto);
+            _context.UserPostPhotos.Update(upp);
             await _context.SaveChangesAsync();
 
             var result = _mapper.Map<UpdateUserPhotoPostCommandResult>(photoPost);

@@ -20,14 +20,16 @@ namespace Application.Commands.UpdateCommentGroupSharePost
     public class UpdateCommentGroupSharePostCommandHandler : ICommandHandler<UpdateCommentGroupSharePostCommand, UpdateCommentGroupSharePostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentGroupSharePostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentGroupSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -47,7 +49,7 @@ namespace Application.Commands.UpdateCommentGroupSharePost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var GroupSharePost = await _context.CommentGroupSharePosts.FindAsync(request.CommentGroupSharePostId);
+            var GroupSharePost = await _querycontext.CommentGroupSharePosts.FindAsync(request.CommentGroupSharePostId);
             if (GroupSharePost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -58,7 +60,7 @@ namespace Application.Commands.UpdateCommentGroupSharePost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentGroupSharePosts.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentGroupSharePosts.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -69,6 +71,8 @@ namespace Application.Commands.UpdateCommentGroupSharePost
                     comment.IsHide = true;
                 }
             }
+            var cgp = ModelConverter.Convert<Domain.QueryModels.CommentGroupSharePost, Domain.CommandModels.CommentGroupSharePost>(comment);
+            _context.CommentGroupSharePosts.Update(cgp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupSharePostCommandResult>(comment);
             result.BannedWords = bannedWords;

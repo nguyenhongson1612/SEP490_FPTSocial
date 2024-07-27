@@ -123,7 +123,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 _context.SaveChanges();
             }
 
-            var countGroupPost = _context.GroupPostReactCounts.FirstOrDefault(x =>
+            var countGroupPost = _querycontext.GroupPostReactCounts.FirstOrDefault(x =>
                                 (x.GroupPostId == request.GroupPostId && x.GroupPostPhotoId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostPhotoId == request.GroupPostPhotoId && x.GroupPostId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostVideoId == request.GroupPostVideoId && x.GroupPostId == null && x.GroupPostPhotoId == null)
@@ -133,6 +133,8 @@ namespace Application.Commands.ShareGroupPostCommand
             if (countGroupPost != null)
             {
                 countGroupPost.ShareCount++;
+                var commandModel = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(countGroupPost);
+                _context.GroupPostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 

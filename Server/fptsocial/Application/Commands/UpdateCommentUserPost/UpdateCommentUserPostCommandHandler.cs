@@ -40,7 +40,7 @@ namespace Application.Commands.UpdateCommentUserPost
         public async Task<Result<UpdateCommentUserPostCommandResult>> Handle(UpdateCommentUserPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }

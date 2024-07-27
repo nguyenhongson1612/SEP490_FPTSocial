@@ -21,14 +21,16 @@ namespace Application.Commands.UpdateCommentUserVideoPost
     public class UpdateCommentUserVideoPostCommandHandler : ICommandHandler<UpdateCommentUserVideoPostCommand, UpdateCommentUserVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentUserVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentUserVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -38,7 +40,7 @@ namespace Application.Commands.UpdateCommentUserVideoPost
         public async Task<Result<UpdateCommentUserVideoPostCommandResult>> Handle(UpdateCommentUserVideoPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -48,7 +50,7 @@ namespace Application.Commands.UpdateCommentUserVideoPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var UserVideoPost = await _context.CommentVideoPosts.FindAsync(request.CommentVideoPostId);
+            var UserVideoPost = await _querycontext.CommentVideoPosts.FindAsync(request.CommentVideoPostId);
             if (UserVideoPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -59,7 +61,7 @@ namespace Application.Commands.UpdateCommentUserVideoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -70,7 +72,11 @@ namespace Application.Commands.UpdateCommentUserVideoPost
                     comment.IsHide = true;
                 }
             }
+
+            var cvp = ModelConverter.Convert<Domain.QueryModels.CommentVideoPost, Domain.CommandModels.CommentVideoPost>(comment);
+            _context.CommentVideoPosts.Update(cvp);
             await _context.SaveChangesAsync();
+
             var result = _mapper.Map<UpdateCommentUserVideoPostCommandResult>(comment);
             result.BannedWords = bannedWords;
             if (bannedWords.Any())

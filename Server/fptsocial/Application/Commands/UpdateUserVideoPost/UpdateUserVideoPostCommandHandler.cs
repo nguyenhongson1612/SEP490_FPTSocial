@@ -44,12 +44,12 @@ namespace Application.Commands.UpdateUserVideoPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var userPostVideo = await _context.UserPostVideos.FindAsync(request.UserPostVideoId);
+            var userPostVideo = await _queryContext.UserPostVideos.FindAsync(request.UserPostVideoId);
             if (userPostVideo == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.UserPosts
+            var userId = await _queryContext.UserPosts
                                       .Where(a => a.UserPostId == request.UserPostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();
@@ -59,7 +59,7 @@ namespace Application.Commands.UpdateUserVideoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var VideoPost = _context.UserPostVideos.Where(x => x.UserPostVideoId == request.UserPostVideoId).FirstOrDefault();
+            var VideoPost = _queryContext.UserPostVideos.Where(x => x.UserPostVideoId == request.UserPostVideoId).FirstOrDefault();
             if (VideoPost != null)
             {
                 VideoPost.Content = request.Content;
@@ -71,6 +71,8 @@ namespace Application.Commands.UpdateUserVideoPost
                 VideoPost.IsBanned = true;
                 VideoPost.Content = MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
             }
+            var cgp = ModelConverter.Convert<Domain.QueryModels.UserPostVideo, Domain.CommandModels.UserPostVideo>(VideoPost);
+            _context.UserPostVideos.Update(cgp);
             await _context.SaveChangesAsync();
 
             var result = _mapper.Map<UpdateUserVideoPostCommandResult>(VideoPost);

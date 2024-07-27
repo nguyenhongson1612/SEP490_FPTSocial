@@ -27,9 +27,10 @@ namespace Application.Commands.UpdateGroupVideoPostCommand
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateGroupVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateGroupVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -37,17 +38,17 @@ namespace Application.Commands.UpdateGroupVideoPostCommand
         }
         public async Task<Result<UpdateGroupVideoPostCommandResult>> Handle(UpdateGroupVideoPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var GroupPostVideo = await _context.GroupPostVideos.FindAsync(request.GroupPostVideoId);
+            var GroupPostVideo = await _queryContext.GroupPostVideos.FindAsync(request.GroupPostVideoId);
             if (GroupPostVideo == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.GroupPosts
+            var userId = await _queryContext.GroupPosts
                                       .Where(a => a.GroupPostId == request.GroupPostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();

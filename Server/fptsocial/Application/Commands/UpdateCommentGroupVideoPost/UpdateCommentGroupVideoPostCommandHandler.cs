@@ -21,14 +21,16 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
     public class UpdateCommentGroupVideoPostCommandHandler : ICommandHandler<UpdateCommentGroupVideoPostCommand, UpdateCommentGroupVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentGroupVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentGroupVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -38,7 +40,7 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
         public async Task<Result<UpdateCommentGroupVideoPostCommandResult>> Handle(UpdateCommentGroupVideoPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -48,7 +50,7 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var GroupVideoPost = await _context.CommentGroupVideoPosts.FindAsync(request.CommentGroupVideoPostId);
+            var GroupVideoPost = await _querycontext.CommentGroupVideoPosts.FindAsync(request.CommentGroupVideoPostId);
             if (GroupVideoPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -59,7 +61,7 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -70,6 +72,8 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
                     comment.IsHide = true;
                 }
             }
+            var cgv = ModelConverter.Convert<Domain.QueryModels.CommentGroupVideoPost, Domain.CommandModels.CommentGroupVideoPost>(comment);
+            _context.CommentGroupVideoPosts.Update(cgv);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupVideoPostCommandResult>(comment);
             result.BannedWords = bannedWords;
