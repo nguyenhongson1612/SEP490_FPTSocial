@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -26,7 +27,7 @@ namespace Application.Commands.DeleteSharePost
         }
         public async Task<Result<DeleteSharePostCommandResult>> Handle(DeleteSharePostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -46,7 +47,9 @@ namespace Application.Commands.DeleteSharePost
                 else
                 {
                     userPost.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var sp = ModelConverter.Convert<Domain.QueryModels.SharePost, Domain.CommandModels.SharePost>(userPost);
+                    _context.SharePosts.Update(sp);
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

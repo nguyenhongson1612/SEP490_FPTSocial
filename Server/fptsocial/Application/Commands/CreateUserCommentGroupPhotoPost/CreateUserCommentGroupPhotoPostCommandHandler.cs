@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,14 +21,16 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
     public class CreateUserCommentGroupPhotoPostCommandHandler : ICommandHandler<CreateUserCommentGroupPhotoPostCommand, CreateUserCommentGroupPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentGroupPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentGroupPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -50,13 +53,13 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
 
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.GroupPostReactCounts.Where(prc => prc.GroupPostPhotoId == request.GroupPostPhotoId).FirstOrDefaultAsync();
+            var postReactCount = await _queryContext.GroupPostReactCounts.Where(prc => prc.GroupPostPhotoId == request.GroupPostPhotoId).FirstOrDefaultAsync();
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
             {
                 // Find the parent comment
-                var parentComment = await _context.CommentPhotoGroupPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentPhotoGroupPosts.FindAsync(request.ParentCommentId.Value);
 
                 // If parent comment doesn't exist, throw error
                 if (parentComment == null || parentComment.IsHide == true)
@@ -106,7 +109,8 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
             {
                 postReactCount.CommentCount++;
             }
-
+            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            _context.GroupPostReactCounts.Update(prc);
             // Add comment to the database and save changes
             await _context.CommentPhotoGroupPosts.AddAsync(comment);
             await _context.SaveChangesAsync();

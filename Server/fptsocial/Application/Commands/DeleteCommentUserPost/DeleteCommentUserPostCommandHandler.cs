@@ -27,7 +27,7 @@ namespace Application.Commands.DeleteCommentUserPost
         }
         public async Task<Result<DeleteCommentUserPostCommandResult>> Handle(DeleteCommentUserPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }

@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -27,7 +28,7 @@ namespace Application.Commands.DeleteGroupPost
         }
         public async Task<Result<DeleteGroupPostCommandResult>> Handle(DeleteGroupPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null) 
+            if (_context == null || _querycontext == null) 
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -47,17 +48,24 @@ namespace Application.Commands.DeleteGroupPost
                 else
                 {
                     groupPost.IsHide = true;
+                    var gp = ModelConverter.Convert<Domain.QueryModels.GroupPost, Domain.CommandModels.GroupPost>(groupPost);
+                    _context.GroupPosts.Update(gp);
+
                     var GroupPhotoPost = _querycontext.GroupPostPhotos.Where(x => x.GroupPostId == request.GroupPostId).ToList();
                     foreach (var photoPost in GroupPhotoPost) 
                     {
                         photoPost.IsHide = true;
+                        var gpp = ModelConverter.Convert<Domain.QueryModels.GroupPostPhoto, Domain.CommandModels.GroupPostPhoto>(photoPost);
+                        _context.GroupPostPhotos.Update(gpp);
                     }
                     var GroupVideoPost = _querycontext.GroupPostVideos.Where(x => x.GroupPostId == request.GroupPostId).ToList();
                     foreach (var videoPost in GroupVideoPost)
                     {
                         videoPost.IsHide = true;
+                        var gpp = ModelConverter.Convert<Domain.QueryModels.GroupPostVideo, Domain.CommandModels.GroupPostVideo>(videoPost);
+                        _context.GroupPostVideos.Update(gpp);
                     }
-                    _querycontext.SaveChanges();
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

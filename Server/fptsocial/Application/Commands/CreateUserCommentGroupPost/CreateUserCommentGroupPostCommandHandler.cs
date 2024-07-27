@@ -23,14 +23,16 @@ namespace Application.Commands.CreateUserCommentGroupPost
     public class CreateUserCommentGroupPostCommandHandler : ICommandHandler<CreateUserCommentGroupPostCommand, CreateUserCommentGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentGroupPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentGroupPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -40,7 +42,7 @@ namespace Application.Commands.CreateUserCommentGroupPost
         public async Task<Result<CreateUserCommentGroupPostCommandResult>> Handle(CreateUserCommentGroupPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -53,12 +55,12 @@ namespace Application.Commands.CreateUserCommentGroupPost
 
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.GroupPostReactCounts.Where(prc => prc.GroupPostId == request.GroupPostId).FirstOrDefaultAsync();
+            var postReactCount = await _queryContext.GroupPostReactCounts.Where(prc => prc.GroupPostId == request.GroupPostId).FirstOrDefaultAsync();
 
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
-                var parentComment = await _context.CommentGroupPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentGroupPosts.FindAsync(request.ParentCommentId.Value);
 
                 // Check if the parent comment exists
                 if (parentComment == null || parentComment.IsHide == true)
@@ -110,6 +112,8 @@ namespace Application.Commands.CreateUserCommentGroupPost
             }
 
             // Add the comment to the context and save changes
+            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            _context.GroupPostReactCounts.Update(prc);
             await _context.CommentGroupPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 
