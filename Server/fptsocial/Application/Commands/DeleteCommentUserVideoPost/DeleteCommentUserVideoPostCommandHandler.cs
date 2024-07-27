@@ -32,6 +32,8 @@ namespace Application.Commands.DeleteCommentUserVideoPost
             }
 
             var UserVideoComment = _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostVideoId == UserVideoComment.UserPostVideoId).FirstOrDefault();
+
             var result = new DeleteCommentUserVideoPostCommandResult();
             if (UserVideoComment == null)
             {
@@ -48,6 +50,15 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                     UserVideoComment.IsHide = true;
                     var csp = ModelConverter.Convert<Domain.QueryModels.CommentVideoPost, Domain.CommandModels.CommentVideoPost>(UserVideoComment);
                     _context.CommentVideoPosts.Update(csp);
+                    if (postReactCount != null)
+                    {
+                        if (postReactCount.CommentCount > 0)
+                        {
+                            postReactCount.CommentCount--;
+                        }
+                        var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+                        _context.PostReactCounts.Update(prc);
+                    }
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;

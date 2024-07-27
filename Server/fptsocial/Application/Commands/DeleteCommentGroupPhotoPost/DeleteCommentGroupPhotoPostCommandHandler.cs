@@ -8,6 +8,7 @@ using Domain.Exceptions;
 using Domain.QueryModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
             }
 
             var GroupPhotoComment = _querycontext.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).FirstOrDefault();
+            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostPhotoId == GroupPhotoComment.GroupPostPhotoId).FirstOrDefault();
             var result = new DeleteCommentGroupPhotoPostCommandResult();
             if (GroupPhotoComment == null)
             {
@@ -48,7 +50,17 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
                     GroupPhotoComment.IsHide = true;
                     var cpgs = ModelConverter.Convert<Domain.QueryModels.CommentPhotoGroupPost, Domain.CommandModels.CommentPhotoGroupPost>(GroupPhotoComment);
                     _context.CommentPhotoGroupPosts.Update(cpgs);
+                    if (groupPostReactCount != null)
+                    {
+                        if (groupPostReactCount.CommentCount > 0)
+                        {
+                            groupPostReactCount.CommentCount--;
+                        }
+                        var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(groupPostReactCount);
+                        _context.GroupPostReactCounts.Update(prc);
+                    }
                     _context.SaveChanges();
+                    
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }
