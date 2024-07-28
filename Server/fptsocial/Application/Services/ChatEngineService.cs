@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,27 +23,42 @@ namespace Application.Services
 
         public async Task<string> CreateUserAsync(string username, string email, string firstname, string lastname, string avata)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.chatengine.io/users/");
-            request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+            var imageUrl = avata;
 
-            var user = new
+            // Tải ảnh từ URL
+            var imageResponse = await _httpClient.GetAsync(imageUrl);
+            if (!imageResponse.IsSuccessStatusCode)
             {
-                username = username,
-                secret = username,
-                email = email,
-                first_tname = firstname,
-                last_name = lastname,
-                new_avata = avata
-            };
+                throw new Exception("Failed to download image.");
+            }
+            var imageStream = await imageResponse.Content.ReadAsStreamAsync();
 
-            request.Content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+            // Tạo nội dung multipart/form-data
+            using (var content = new MultipartFormDataContent())
+            {
+                content.Add(new StringContent(username), "username");
+                content.Add(new StringContent(username), "secret");
+                content.Add(new StringContent(email), "email");
+                content.Add(new StringContent(firstname), "first_name");
+                content.Add(new StringContent(lastname), "last_name");
+                content.Add(new StringContent("true"), "is_online");
 
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+                var imageContent = new StreamContent(imageStream);
+                imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+                content.Add(imageContent, "avatar", "avatar.jpg");
 
-            return await response.Content.ReadAsStringAsync();
+                // Tạo yêu cầu POST
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.chatengine.io/users/");
+                request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+                request.Content = content;
+
+                // Gửi yêu cầu
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadAsStringAsync();
+            }
         }
-
         public async Task<string> CreateChatAsync(string title, string username)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.chatengine.io/chats/");
