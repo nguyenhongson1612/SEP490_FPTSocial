@@ -100,7 +100,10 @@ namespace Application.Queries.GetFriendyName
                         {
                             frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
                         }
-                        listfrienddto.Add(frienddto);
+                        if(friend.UserId != request.AccessUserId)
+                        {
+                            listfrienddto.Add(frienddto);
+                        }   
                     }
                     //result.getFriendByName.Add(frienddto);
                 }
