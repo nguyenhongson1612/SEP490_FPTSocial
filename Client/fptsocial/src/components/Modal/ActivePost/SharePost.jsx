@@ -29,7 +29,6 @@ function SharePost() {
   const currentActivePost = useSelector(selectCurrentActivePost)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const postType = currentActivePost?.postType
-  console.log('🚀 ~ SharePost ~ currentActivePost:', currentActivePost)
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const [isChooseGroup, setIsChooseGroup] = useState(false)
@@ -56,12 +55,16 @@ function SharePost() {
     if (shareType == EDITOR_TYPE.STORY)
       setChoseStatus(listStatus?.find(e => (e?.statusName?.toLowerCase() || e?.groupStatusName?.toLowerCase()) == PUBLIC))
     else if (shareType == EDITOR_TYPE.GROUP) {
+      console.log('🚀 ~ useEffect ~ currentActiveGroup:', currentActiveGroup)
+      console.log('🚀 ~ useEffect ~ currentActiveGroup:', chooseGroup?.groupId)
+
       if (!currentActiveGroup) {
         dispatch(getGroupByGroupId(chooseGroup?.groupId))
       }
+      console.log('group', currentActiveGroup?.groupSettings);
       setChoseStatus(currentActiveGroup?.groupSettings?.find(e => e?.groupSettingName == 'Group Status'))
     }
-  }, [listStatus])
+  }, [listStatus, chooseGroup, currentActiveGroup])
 
   const submitPost = () => {
     const submitData = {

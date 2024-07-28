@@ -65,9 +65,11 @@ export const REPORT_TYPES = {
   POST: "post",
   COMMENT: "comment",
   PROFILE: "profile",
-};
+}
 
 export const CHAT_KEY = {
   ProjectID: "d7c4f700-4fc1-4f96-822d-8ffd0920b438",
   PrivateKey: "62e47fdf-0ea8-429d-a68a-af5d0932ffac",
 };
+
+export const DEFAULT_AVATAR = "http://res.cloudinary.com/dqitgxwfl/image/upload/v1722218189/img/null/sy5sr97c29l4jddxkuk0.png"

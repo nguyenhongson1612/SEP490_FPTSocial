@@ -17,9 +17,8 @@ import Groups from './pages/Groups'
 import Group from './pages/Groups/_id'
 import Media from './pages/Media'
 import Post from './pages/Post/_id'
-import ChatsPage  from './pages/ChatsPage'
-
-import GroupRequest from './pages/Groups/GroupManage/GroupRequest'
+import ChatsPage from './pages/ChatsPage'
+import Dashboard from './pages/DashBoard/DashBoard'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -110,6 +109,8 @@ function App() {
               <Route path='pending-posts' element={<Group />} />
               <Route path='post/:postId' element={<Group />} />
             </Route>
+
+            <Route exact path="/dashboard" element={<Dashboard />} />
           </Route>
 
           {/* Auth */}
