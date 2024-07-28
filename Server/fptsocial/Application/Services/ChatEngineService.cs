@@ -21,7 +21,7 @@ namespace Application.Services
             _configuration = configuration;
         }
 
-        public async Task<string> CreateUserAsync(string username,string secrt, string email, string firstname, string lastname, string avata)
+        public async Task<string> CreateUserAsync(string username, string email, string firstname, string lastname, string avata)
         {
             if (!string.IsNullOrEmpty(avata))
             {
