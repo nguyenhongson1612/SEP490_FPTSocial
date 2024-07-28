@@ -17,6 +17,8 @@ import Groups from './pages/Groups'
 import Group from './pages/Groups/_id'
 import Media from './pages/Media'
 import Post from './pages/Post/_id'
+import ChatsPage  from './pages/ChatsPage'
+
 import GroupRequest from './pages/Groups/GroupManage/GroupRequest'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
@@ -64,7 +66,7 @@ function App() {
         {/* Protected Route */}
         <Route element={<ProtectedRouteByJWT jwtToken={jwtToken} />}>
           <Route path='/checkexist' element={<AccountCheckExist />} />
-
+          <Route path='/chats-page' element={<ChatsPage />} />
           <Route element={<UnCheckUser user={currentUser} />}>
             <Route path='/firstlogin' element={<FirstTimeLogin />} />
           </Route>
