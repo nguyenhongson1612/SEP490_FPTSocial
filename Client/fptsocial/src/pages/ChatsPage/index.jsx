@@ -1,7 +1,6 @@
 import React from "react";
 import { CHAT_KEY } from "~/utils/constants";
-
-import { ChatEngine } from "react-chat-engine";
+import { PrettyChatWindow } from "react-chat-engine-pretty";
 const userId = JSON.parse(
   window.sessionStorage.getItem(
     "oidc.user:https://feid.ptudev.net:societe-front-end"
@@ -13,10 +12,10 @@ const secret = userId;
 export default function ChatsPage() {
   return (
     <>
-      <ChatEngine
-        projectID={projectId}
-        userName={username}
-        userSecret={secret}
+      <PrettyChatWindow
+        projectId={projectId}
+        username={username}
+        secret={secret}
         height="calc(100vh - 12px)"
       />
     </>
