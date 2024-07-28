@@ -80,6 +80,7 @@ namespace Domain.CommandModels
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Setting> Settings { get; set; } = null!;
         public virtual DbSet<SharePost> SharePosts { get; set; } = null!;
+        public virtual DbSet<UserChat> UserChats { get; set; } = null!;
         public virtual DbSet<UserClientPermission> UserClientPermissions { get; set; } = null!;
         public virtual DbSet<UserGender> UserGenders { get; set; } = null!;
         public virtual DbSet<UserInterest> UserInterests { get; set; } = null!;
@@ -1942,6 +1943,21 @@ namespace Domain.CommandModels
                     .WithMany(p => p.SharePosts)
                     .HasForeignKey(d => d.UserStatusId)
                     .HasConstraintName("fk_share_post_status");
+            });
+
+            modelBuilder.Entity<UserChat>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("UserChat");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.User)
+                    .WithMany()
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_chat");
             });
 
             modelBuilder.Entity<UserClientPermission>(entity =>
