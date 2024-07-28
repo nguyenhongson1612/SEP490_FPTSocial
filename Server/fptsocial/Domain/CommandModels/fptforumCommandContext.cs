@@ -1947,14 +1947,14 @@ namespace Domain.CommandModels
 
             modelBuilder.Entity<UserChat>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("UserChat");
+
+                entity.Property(e => e.UserChatId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.User)
-                    .WithMany()
+                    .WithMany(p => p.UserChats)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_user_chat");

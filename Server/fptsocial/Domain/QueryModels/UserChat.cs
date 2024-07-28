@@ -5,8 +5,8 @@ namespace Domain.QueryModels
 {
     public partial class UserChat
     {
-        public Guid UserId { get; set; }
         public int UserChatId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime? CreateDate { get; set; }
 
         public virtual UserProfile User { get; set; } = null!;

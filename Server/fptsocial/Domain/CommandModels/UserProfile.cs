@@ -55,6 +55,7 @@ namespace Domain.CommandModels
             SharePostSharedToUsers = new HashSet<SharePost>();
             SharePostUserShareds = new HashSet<SharePost>();
             SharePostUsers = new HashSet<SharePost>();
+            UserChats = new HashSet<UserChat>();
             UserInterests = new HashSet<UserInterest>();
             UserPosts = new HashSet<UserPost>();
             UserSettings = new HashSet<UserSetting>();
@@ -136,6 +137,7 @@ namespace Domain.CommandModels
         public virtual ICollection<SharePost> SharePostSharedToUsers { get; set; }
         public virtual ICollection<SharePost> SharePostUserShareds { get; set; }
         public virtual ICollection<SharePost> SharePostUsers { get; set; }
+        public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<UserInterest> UserInterests { get; set; }
         public virtual ICollection<UserPost> UserPosts { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
