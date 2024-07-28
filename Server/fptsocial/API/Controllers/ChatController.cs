@@ -1,6 +1,7 @@
 ﻿using Application.Commands.CreateChatBox;
 using Application.Commands.CreateUserChat;
 using Application.Commands.CreateUserInterest;
+using Application.Commands.UpdateUserChat;
 using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,6 +47,26 @@ namespace API.Controllers
         [HttpPost]
         [Route("createuserchat")]
         public async Task<IActionResult> CreateUserChatBox(CreateUserChatCommand userchat)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            userchat.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(userchat);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updateuserchat")]
+        public async Task<IActionResult> UpdateUserChatBox(UpdateUserChatCommand userchat)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))

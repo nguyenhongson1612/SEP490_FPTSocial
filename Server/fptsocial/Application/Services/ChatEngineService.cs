@@ -136,7 +136,7 @@ namespace Application.Services
         }
 
 
-        public async Task<string> UpdateUserAsync(string username, string email, string firstname, string lastname, string avata)
+        public async Task<string> UpdateUserAsync(string username,string id, string email, string firstname, string lastname, string avata)
         {
             if (!string.IsNullOrEmpty(avata))
             {
@@ -165,7 +165,7 @@ namespace Application.Services
                     content.Add(imageContent, "avatar", "avatar.jpg");
 
                     // Tạo yêu cầu POST
-                    var request = new HttpRequestMessage(HttpMethod.Patch, "https://api.chatengine.io/users/");
+                    var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.chatengine.io/users/{id}/");
                     request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
                     request.Content = content;
 
@@ -178,7 +178,7 @@ namespace Application.Services
             }
             else
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.chatengine.io/users/");
+                var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.chatengine.io/users/{id}/");
                 request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
 
                 var user = new

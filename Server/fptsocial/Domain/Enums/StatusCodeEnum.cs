@@ -124,5 +124,9 @@ namespace Domain.Enums
         GR17_Group_Is_Not_Exist,
         [Description("Yon can not see this content!")]
         UP05_Can_Not_See_Content,
+        [Description("User is existed in chat!")]
+        UC01_User_Chat_Is_Exist,
+        [Description("User is not existed in chat!")]
+        UC02_User_Chat_Is_Not_Exist,
     }
 }
