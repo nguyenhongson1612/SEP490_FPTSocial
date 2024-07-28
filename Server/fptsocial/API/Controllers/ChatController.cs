@@ -3,6 +3,8 @@ using Application.Commands.CreateUserChat;
 using Application.Commands.CreateUserInterest;
 using Application.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
