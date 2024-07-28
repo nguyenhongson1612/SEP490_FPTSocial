@@ -69,11 +69,10 @@ namespace Application.Services
                 var user = new
                 {
                     username = username,
-                    secret = secrt,
+                    secret = username,
                     email = email,
                     first_tname = firstname,
                     last_name = lastname,
-                    new_avata = avata
                 };
 
                 request.Content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
