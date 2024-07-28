@@ -38,7 +38,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("creategrouprole")]
         public async Task<IActionResult> CreateGroupRole(CreateGroupRoleCommand input)
@@ -56,7 +56,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("creategrouptag")]
         public async Task<IActionResult> CreateGroupTag(CreateGroupTagCommand input)
@@ -75,7 +75,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("creategroupsetting")]
         public async Task<IActionResult> CreateGroupSetting(CreateGroupSettingCommand input)
@@ -94,7 +94,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("creategrouptype")]
         public async Task<IActionResult> CreateGroupType(CreateGroupTypeCommand input)
@@ -112,7 +112,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("creategroupstatus")]
         public async Task<IActionResult> CreateGroupStatus(CreateGroupStatusCommand input)

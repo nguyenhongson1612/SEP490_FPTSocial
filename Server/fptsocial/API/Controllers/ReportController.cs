@@ -24,7 +24,7 @@ namespace API.Controllers
             _sender = sender;
         }
 
-        [Authorize(Roles = "Societe-student")]
+        [Authorize(Roles = "Societe-admin")]
         [HttpPost]
         [Route("createreporttype")]
         public async Task<IActionResult> CreateReportType(CreateReportTypeCommand input)

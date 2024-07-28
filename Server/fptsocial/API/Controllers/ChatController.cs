@@ -1,8 +1,11 @@
-﻿using Application.Commands.CreateUserChat;
+﻿using Application.Commands.CreateChatBox;
+using Application.Commands.CreateUserChat;
 using Application.Commands.CreateUserInterest;
 using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers
 {
@@ -18,14 +21,41 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("createuserchat")]
-        public async Task<IActionResult> CreateUserChat(CreateUserChatCommand userchat)
+        [Route("createchatbox")]
+        public async Task<IActionResult> CreateUserChat(CreateChatBoxCommand userchat)
         {
-            userchat.UserId = Guid.NewGuid();
-            userchat.Email = "anhqunm@gmail.com";
-            userchat.FirstName = "Tran";
-            userchat.LastName = "Dung";
-            userchat.Avata = "https://www.facebook.com";
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            userchat.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(userchat);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("createuserchat")]
+        public async Task<IActionResult> CreateUserChatBox(CreateUserChatCommand userchat)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            userchat.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(userchat);
             return Success(res.Value);
         }

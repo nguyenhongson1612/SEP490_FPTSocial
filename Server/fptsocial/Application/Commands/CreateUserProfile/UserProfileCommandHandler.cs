@@ -34,7 +34,7 @@ namespace Application.Commands.CreateUserProfile
 
         public async Task<Result<UserProfileCommandResult>> Handle(UserProfileCommand request, CancellationToken cancellationToken)
         {
-            if(_context == null)
+            if(_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
