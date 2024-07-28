@@ -35,7 +35,7 @@ namespace Application.Queries.GetGroupPostByGroupId
             _mapper = mapper;
         }
 
-        private List<GetGroupPostByGroupIdDTO> ApplySortingAndPaging(List<GetGroupPostByGroupIdDTO> query, string type, int page, int pageSize)
+        private static List<GetGroupPostByGroupIdDTO> ApplySortingAndPaging(List<GetGroupPostByGroupIdDTO> query, string type, int page, int pageSize)
         {
             if (type.Contains("Valid"))
             {
