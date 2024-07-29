@@ -11,6 +11,8 @@ export const checkUserExist = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/checkuserexist`)
   return response.data
 }
+
+
 export const searchFriendByName = async ({ accUserId, userId, search }) => {
   // console.log(token, 'checkUserExist');
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchfriendbyname?AccessUserId=${accUserId}&UserId=${userId}&FindName=${search}`)
@@ -74,6 +76,15 @@ export const updateFriendStatus = async (data) => {
 
 export const updateSettings = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/updatesettings`, data)
+  return response.data?.data
+}
+
+export const createUserChat = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Chat/createuserchat`, data)
+  return response.data?.data
+}
+export const updateUserChat = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Chat/updateuserchat`, data)
   return response.data?.data
 }
 

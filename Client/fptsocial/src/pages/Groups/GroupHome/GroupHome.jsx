@@ -230,15 +230,16 @@ function GroupHome({ group }) {
                                       <Box>
                                         {listFriend.map((e) => (
                                           <FormControlLabel
-                                            key={e?.friendId}
+                                            className=' hover:bg-fbWhite p-1 rounded-lg'
+                                            key={e?.userId}
                                             control={
                                               <Checkbox
-                                                checked={value.some(friend => friend.friendId === e.friendId)}
+                                                checked={value.some(friend => friend.userId === e.userId)}
                                                 onChange={(event) => {
                                                   if (event.target.checked) {
                                                     onChange([...value, e])
                                                   } else {
-                                                    onChange(value.filter((friend) => friend.friendId !== e.friendId))
+                                                    onChange(value.filter((friend) => friend.userId !== e.userId))
                                                   }
                                                 }}
                                               />
@@ -252,7 +253,7 @@ function GroupHome({ group }) {
                                             label={
                                               <div className="flex items-center gap-2">
                                                 <UserAvatar avatarSrc={e?.avata} isOther={true} />
-                                                <span>{e?.friendName}</span>
+                                                <span className='capitalize font-semibold'>{e?.userName}</span>
                                               </div>
                                             }
                                             labelPlacement="start"
@@ -267,14 +268,14 @@ function GroupHome({ group }) {
                                 <span className='p-2 text-sm font-semibold'>{watch('inviteFriends')?.length ?? 0} friend selected</span>
                                 {
                                   watch('inviteFriends')?.map(friend => (
-                                    <div key={friend?.friendId} className="flex items-center justify-between gap-2 px-2">
+                                    <div key={friend?.userId} className="flex items-center justify-between gap-2 px-2">
                                       <div className="flex items-center gap-2">
                                         <UserAvatar avatarSrc={friend?.avata} isOther={true} />
-                                        <span>{friend?.friendName}</span>
+                                        <span className='capitalize'>{friend?.userName}</span>
                                       </div>
                                       <IconX
                                         className='text-white size-5 rounded-full cursor-pointer bg-orangeFpt hover:bg-orange-700'
-                                        onClick={() => setValue('inviteFriends', getValues('inviteFriends')?.filter(e => e.friendId !== friend?.friendId))}
+                                        onClick={() => setValue('inviteFriends', getValues('inviteFriends')?.filter(e => e.userId !== friend?.userId))}
                                       />
                                     </div>
                                   ))
@@ -283,8 +284,8 @@ function GroupHome({ group }) {
                             </div>
 
                             <div className='h-[60px] px-4 flex justify-end items-center gap-2 border-t'>
-                              <Button variant="outlined" onClick={handleClose}>Cancel</Button>
-                              <Button type='submit' variant="contained" className="interceptor-loading">Send invites</Button>
+                              <Button variant="contained" color='inherit' onClick={handleClose}>Cancel</Button>
+                              <Button type='submit' variant="contained" color='warning' className="interceptor-loading">Send invites</Button>
                             </div>
                           </div >
                         </form >
