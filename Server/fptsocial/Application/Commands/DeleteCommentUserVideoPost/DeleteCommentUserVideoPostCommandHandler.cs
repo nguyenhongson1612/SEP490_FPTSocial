@@ -48,7 +48,19 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                 else
                 {
                     UserVideoComment.IsHide = true;
-                    var csp = ModelConverter.Convert<Domain.QueryModels.CommentVideoPost, Domain.CommandModels.CommentVideoPost>(UserVideoComment);
+                    var csp = new Domain.CommandModels.CommentVideoPost
+                    {
+                        CommentVideoPostId = UserVideoComment.CommentVideoPostId,
+                        UserPostVideoId = UserVideoComment.UserPostVideoId,
+                        UserId = UserVideoComment.UserId,
+                        Content = UserVideoComment.Content,
+                        ParentCommentId = UserVideoComment.ParentCommentId,
+                        ListNumber = UserVideoComment.ListNumber,
+                        LevelCmt = UserVideoComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = UserVideoComment.CreatedDate,
+                        IsBanned = UserVideoComment.IsBanned,
+                    };
                     _context.CommentVideoPosts.Update(csp);
                     if (postReactCount != null)
                     {
@@ -56,7 +68,20 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                         {
                             postReactCount.CommentCount--;
                         }
-                        var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+
+                        var prc = new Domain.CommandModels.PostReactCount
+                        {
+                            PostReactCountId = postReactCount.PostReactCountId,
+                            UserPostId = postReactCount.UserPostId,
+                            UserPostPhotoId = postReactCount.UserPostPhotoId,
+                            UserPostVideoId = postReactCount.UserPostVideoId,
+                            ReactCount = postReactCount.ReactCount,
+                            CommentCount = postReactCount.CommentCount,
+                            ShareCount = postReactCount.ShareCount,
+                            CreateAt = postReactCount.CreateAt,
+                            UpdateAt = DateTime.Now,
+                        };
+
                         _context.PostReactCounts.Update(prc);
                     }
                     _context.SaveChanges();

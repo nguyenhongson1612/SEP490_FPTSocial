@@ -71,8 +71,20 @@ namespace Application.Commands.UpdateCommentGroupSharePost
                     comment.IsHide = true;
                 }
             }
-            var cgp = ModelConverter.Convert<Domain.QueryModels.CommentGroupSharePost, Domain.CommandModels.CommentGroupSharePost>(comment);
-            _context.CommentGroupSharePosts.Update(cgp);
+            var cgsp = new Domain.CommandModels.CommentGroupSharePost 
+            {
+                CommentGroupSharePostId = comment.CommentGroupSharePostId,
+                GroupSharePostId = comment.CommentGroupSharePostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.CommentGroupSharePostId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = true,
+                CreateDate = comment.CreateDate,
+                IsBanned = comment.IsBanned,
+            };
+            _context.CommentGroupSharePosts.Update(cgsp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupSharePostCommandResult>(comment);
             result.BannedWords = bannedWords;

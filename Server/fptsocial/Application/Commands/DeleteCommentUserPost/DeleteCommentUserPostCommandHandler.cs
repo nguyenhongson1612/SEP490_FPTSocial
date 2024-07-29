@@ -62,14 +62,24 @@ namespace Application.Commands.DeleteCommentUserPost
                         CreatedDate = userComment.CreatedDate,
                         IsBanned = userComment.IsBanned,
                     };
-                    _context.Update(commentPost);
+                    _context.CommentPosts.Update(commentPost);
                     if (postReactCount != null)
                     {
                         if (postReactCount.CommentCount > 0)
                         {
                             postReactCount.CommentCount--;
                         }
-                        var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+                        var prc = new Domain.CommandModels.PostReactCount 
+                        {
+                            PostReactCountId = postReactCount.PostReactCountId,
+                            UserPostId = postReactCount.UserPostId,
+                            UserPostPhotoId = postReactCount.UserPostPhotoId,
+                            ReactCount = postReactCount.ReactCount,
+                            CommentCount = postReactCount.CommentCount,
+                            ShareCount = postReactCount.ShareCount,
+                            CreateAt = postReactCount.CreateAt,
+                            UpdateAt = postReactCount.UpdateAt,
+                        };
                         _context.PostReactCounts.Update(prc);
                     }
                     _context.SaveChanges();

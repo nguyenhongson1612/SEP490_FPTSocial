@@ -51,7 +51,14 @@ namespace Application.Commands.CreateReactUserPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // User clicked the same react type again -> Remove it
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPost, Domain.CommandModels.ReactPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactPost
+                    {
+                        ReactPostId = existingReact.ReactPostId,
+                        UserPostId = existingReact.UserPostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate, 
+                    };
                     _context.ReactPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
@@ -66,9 +73,14 @@ namespace Application.Commands.CreateReactUserPost
                 else
                 {
                     // User changed react type -> Update
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now; // Optionally update timestamp
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPost, Domain.CommandModels.ReactPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactPost
+                    {
+                        ReactPostId = existingReact.ReactPostId,
+                        UserPostId = existingReact.UserPostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactPosts.Update(commandReact);
                 }
             }
@@ -91,7 +103,17 @@ namespace Application.Commands.CreateReactUserPost
                 }
             }
 
-            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = postReactCount.UpdateAt,
+            };
             _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 

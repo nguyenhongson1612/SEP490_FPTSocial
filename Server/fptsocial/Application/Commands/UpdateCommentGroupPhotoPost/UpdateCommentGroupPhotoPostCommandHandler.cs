@@ -72,7 +72,19 @@ namespace Application.Commands.UpdateCommentGroupPhotoPost
                     comment.IsHide = true;
                 }
             }
-            var cpgp = ModelConverter.Convert<Domain.QueryModels.CommentPhotoGroupPost, Domain.CommandModels.CommentPhotoGroupPost>(comment);
+            var cpgp = new Domain.CommandModels.CommentPhotoGroupPost 
+            {
+                CommentPhotoGroupPostId = comment.CommentPhotoGroupPostId,
+                GroupPostPhotoId = comment.GroupPostPhotoId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentPhotoGroupPosts.Update(cpgp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupPhotoPostCommandResult>(comment);

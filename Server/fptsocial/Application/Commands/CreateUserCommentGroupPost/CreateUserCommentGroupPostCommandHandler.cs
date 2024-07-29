@@ -112,7 +112,15 @@ namespace Application.Commands.CreateUserCommentGroupPost
             }
 
             // Add the comment to the context and save changes
-            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
             _context.GroupPostReactCounts.Update(prc);
             await _context.CommentGroupPosts.AddAsync(comment);
             await _context.SaveChangesAsync();

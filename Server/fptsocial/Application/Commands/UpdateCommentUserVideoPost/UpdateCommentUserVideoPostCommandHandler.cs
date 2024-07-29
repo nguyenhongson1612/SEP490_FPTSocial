@@ -73,7 +73,19 @@ namespace Application.Commands.UpdateCommentUserVideoPost
                 }
             }
 
-            var cvp = ModelConverter.Convert<Domain.QueryModels.CommentVideoPost, Domain.CommandModels.CommentVideoPost>(comment);
+            var cvp = new Domain.CommandModels.CommentVideoPost 
+            {
+                CommentVideoPostId = comment.CommentVideoPostId,
+                UserPostVideoId = comment.UserPostVideoId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentVideoPosts.Update(cvp);
             await _context.SaveChangesAsync();
 

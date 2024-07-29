@@ -112,7 +112,17 @@ namespace Application.Commands.CreateUserCommentVideoPost
             }
 
             // Add comment to the database and save changes
-            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = DateTime.Now,
+            };
             _context.PostReactCounts.Update(prc);
             await _context.CommentVideoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();

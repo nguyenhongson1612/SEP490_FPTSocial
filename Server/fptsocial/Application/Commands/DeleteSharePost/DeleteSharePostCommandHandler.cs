@@ -46,8 +46,25 @@ namespace Application.Commands.DeleteSharePost
                 }
                 else
                 {
-                    userPost.IsHide = true;
-                    var sp = ModelConverter.Convert<Domain.QueryModels.SharePost, Domain.CommandModels.SharePost>(userPost);
+                    var sp = new Domain.CommandModels.SharePost
+                    {
+                        SharePostId = userPost.SharePostId,
+                        UserId = userPost.UserId,
+                        Content = userPost.Content,
+                        UserPostId = userPost.UserPostId,
+                        UserPostVideoId = userPost.UserPostVideoId,
+                        UserPostPhotoId = userPost.UserPostPhotoId,
+                        GroupPostId = userPost.GroupPostId,
+                        GroupPostPhotoId = userPost.GroupPostPhotoId,
+                        GroupPostVideoId = userPost.GroupPostVideoId,
+                        SharedToUserId = userPost.SharedToUserId,
+                        CreatedDate = userPost.CreatedDate,
+                        UserStatusId = userPost.UserStatusId,
+                        IsHide = true,
+                        UpdateDate = userPost.UpdateDate,
+                        IsBanned = userPost.IsBanned,
+                        UserSharedId = userPost.UserSharedId,
+                    };
                     _context.SharePosts.Update(sp);
                     _context.SaveChanges();
                     result.Message = "Delete successfully";

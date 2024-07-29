@@ -74,7 +74,19 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
                 }
             }
 
-            var csp = ModelConverter.Convert<Domain.QueryModels.CommentPhotoPost, Domain.CommandModels.CommentPhotoPost>(comment);
+            var csp = new Domain.CommandModels.CommentPhotoPost 
+            {
+                CommentPhotoPostId = comment.CommentPhotoPostId,
+                UserPostPhotoId = comment.UserPostPhotoId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentPhotoPosts.Update(csp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentUserPhotoPostCommandResult>(comment);

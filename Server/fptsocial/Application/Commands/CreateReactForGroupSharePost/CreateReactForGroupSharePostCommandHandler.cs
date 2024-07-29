@@ -51,16 +51,28 @@ namespace Application.Commands.CreateReactForGroupSharePost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // User clicked the same react type again -> Remove it
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupSharePost, Domain.CommandModels.ReactGroupSharePost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePost
+                    {
+                        ReactGroupSharePostId = existingReact.ReactGroupSharePostId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = existingReact.CreateDate,
+                    };
                     _context.ReactGroupSharePosts.Remove(commandReact);
                     
                 }
                 else
                 {
                     // User changed react type -> Update
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreateDate = DateTime.Now; // Optionally update timestamp
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupSharePost, Domain.CommandModels.ReactGroupSharePost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePost
+                    {
+                        ReactGroupSharePostId = existingReact.ReactGroupSharePostId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = DateTime.Now
+                    };
                     _context.ReactGroupSharePosts.Update(commandReact);
                 }
             }

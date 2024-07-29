@@ -73,7 +73,22 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
                 photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
             }
 
-            var commandModel = ModelConverter.Convert<Domain.QueryModels.GroupPostPhoto, Domain.CommandModels.GroupPostPhoto>(photoPost);
+            var commandModel = new Domain.CommandModels.GroupPostPhoto 
+            {
+                GroupPostPhotoId = photoPost.GroupPostPhotoId,
+                GroupPostId = photoPost.GroupPostId,
+                Content = photoPost.Content,
+                GroupPhotoId = photoPost.GroupPhotoId,
+                GroupStatusId = photoPost.GroupStatusId,
+                GroupPostPhotoNumber = photoPost.GroupPostPhotoNumber,
+                IsHide = photoPost.IsHide,
+                CreatedAt = photoPost.CreatedAt,
+                UpdatedAt = photoPost.UpdatedAt,
+                PostPosition = photoPost.PostPosition,
+                IsBanned = photoPost.IsBanned,
+                GroupId = photoPost.GroupId,
+                IsPending = photoPost.IsPending,
+            };
             _context.GroupPostPhotos.Update(commandModel);
             await _context.SaveChangesAsync();
 

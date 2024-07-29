@@ -72,7 +72,19 @@ namespace Application.Commands.UpdateCommentSharePost
                     comment.IsHide = true;
                 }
             }
-            var csp = ModelConverter.Convert<Domain.QueryModels.CommentSharePost, Domain.CommandModels.CommentSharePost>(comment);
+            var csp = new Domain.CommandModels.CommentSharePost 
+            {
+                CommentSharePostId = comment.CommentSharePostId,
+                SharePostId = comment.SharePostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreateDate = comment.CreateDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentSharePosts.Update(csp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentSharePostCommandResult>(comment);

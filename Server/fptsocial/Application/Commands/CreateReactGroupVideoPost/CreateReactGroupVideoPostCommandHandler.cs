@@ -49,7 +49,14 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 // 2. Xử lý phản ứng hiện có
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupVideoPost, Domain.CommandModels.ReactGroupVideoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupVideoPost
+                    {
+                        ReactGroupVideoPostId = existingReact.ReactGroupVideoPostId,
+                        GroupPostVideoId = existingReact.GroupPostVideoId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
                     _context.ReactGroupVideoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
@@ -64,9 +71,14 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 else
                 {
                     // Khác loại phản ứng -> Cập nhật
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupVideoPost, Domain.CommandModels.ReactGroupVideoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupVideoPost
+                    {
+                        ReactGroupVideoPostId = existingReact.ReactGroupVideoPostId,
+                        GroupPostVideoId = existingReact.GroupPostVideoId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactGroupVideoPosts.Update(commandReact);
                 }
             }
@@ -89,7 +101,15 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 }
             }
 
-            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
             _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 

@@ -72,8 +72,20 @@ namespace Application.Commands.UpdateCommentGroupVideoPost
                     comment.IsHide = true;
                 }
             }
-            var cgv = ModelConverter.Convert<Domain.QueryModels.CommentGroupVideoPost, Domain.CommandModels.CommentGroupVideoPost>(comment);
-            _context.CommentGroupVideoPosts.Update(cgv);
+            var cgvp = new Domain.CommandModels.CommentGroupVideoPost 
+            {
+                CommentGroupVideoPostId = comment.CommentGroupVideoPostId,
+                GroupPostVideoId = comment.GroupPostVideoId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment?.CreatedDate,
+                IsBanned = comment?.IsBanned,
+            };
+            _context.CommentGroupVideoPosts.Update(cgvp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupVideoPostCommandResult>(comment);
             result.BannedWords = bannedWords;

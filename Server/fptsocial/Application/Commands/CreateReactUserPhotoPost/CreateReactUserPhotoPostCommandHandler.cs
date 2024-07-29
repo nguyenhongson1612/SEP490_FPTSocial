@@ -50,7 +50,14 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Cùng loại phản ứng -> Xóa
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPhotoPost, Domain.CommandModels.ReactPhotoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactPhotoPost
+                    {
+                        ReactPhotoPostId = existingReact.ReactPhotoPostId,
+                        UserPostPhotoId = existingReact.UserPostPhotoId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
                     _context.ReactPhotoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
@@ -65,9 +72,14 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 else
                 {
                     // Khác loại phản ứng -> Cập nhật
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactPhotoPost, Domain.CommandModels.ReactPhotoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactPhotoPost
+                    {
+                        ReactPhotoPostId = existingReact.ReactPhotoPostId,
+                        UserPostPhotoId = existingReact.UserPostPhotoId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactPhotoPosts.Update(commandReact);
 
                 }
@@ -91,7 +103,17 @@ namespace Application.Commands.CreateReactUserPhotoPost
                 }
             }
 
-            var prc = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = postReactCount.UpdateAt,
+            };
             _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 

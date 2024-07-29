@@ -48,8 +48,19 @@ namespace Application.Commands.DeleteCommentGroupPost
                 }
                 else
                 {
-                    GroupComment.IsHide = true;
-                    var cgp = ModelConverter.Convert<Domain.QueryModels.CommentGroupPost, Domain.CommandModels.CommentGroupPost>(GroupComment);
+                    var cgp = new Domain.CommandModels.CommentGroupPost
+                    {
+                        CommentGroupPostId = GroupComment.CommentGroupPostId,
+                        GroupPostId = GroupComment.GroupPostId,
+                        UserId = GroupComment.UserId,
+                        Content = GroupComment.Content,
+                        ParentCommentId = GroupComment.ParentCommentId,
+                        ListNumber = GroupComment.ListNumber,
+                        LevelCmt = GroupComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = GroupComment.CreatedDate,
+                        IsBanned = GroupComment.IsBanned,
+                    };
                     _context.CommentGroupPosts.Update(cgp);
                     if (groupPostReactCount != null)
                     {
@@ -57,7 +68,15 @@ namespace Application.Commands.DeleteCommentGroupPost
                         {
                             groupPostReactCount.CommentCount--;
                         }
-                        var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(groupPostReactCount);
+                        var prc = new Domain.CommandModels.GroupPostReactCount
+                        {
+                            GroupPostReactCountId = groupPostReactCount.GroupPostReactCountId,
+                            GroupPostId = groupPostReactCount.GroupPostId,
+                            GroupPostPhotoId = groupPostReactCount.GroupPostPhotoId,
+                            ReactCount = groupPostReactCount.ReactCount,
+                            CommentCount = groupPostReactCount.CommentCount,
+                            ShareCount = groupPostReactCount.ShareCount,
+                        };
                         _context.GroupPostReactCounts.Update(prc);
                     }
                     _context.SaveChanges();

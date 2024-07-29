@@ -46,8 +46,27 @@ namespace Application.Commands.DeleteGroupSharePost
                 }
                 else
                 {
-                    userPost.IsHide = true;
-                    var gsp = ModelConverter.Convert<Domain.QueryModels.GroupSharePost, Domain.CommandModels.GroupSharePost>(userPost);
+                    var gsp = new Domain.CommandModels.GroupSharePost
+                    {
+                        GroupSharePostId = userPost.GroupSharePostId,
+                        UserId = userPost.UserId,
+                        Content = userPost.Content,
+                        UserPostId = userPost.UserPostId,
+                        UserPostVideoId = userPost.UserPostVideoId,
+                        UserPostPhotoId = userPost.UserPostPhotoId,
+                        GroupPostId = userPost.GroupPostId,
+                        GroupPostPhotoId = userPost.GroupPostPhotoId,
+                        GroupPostVideoId = userPost.GroupPostVideoId,
+                        SharedToUserId = userPost.SharedToUserId,
+                        CreateDate = userPost.CreateDate,
+                        IsHide = true,
+                        GroupStatusId = userPost.GroupStatusId,
+                        UpdateDate = userPost.UpdateDate,
+                        IsBanned = userPost.IsBanned,
+                        GroupId = userPost.GroupId,
+                        UserSharedId = userPost.UserSharedId,
+                        IsPending = userPost.IsPending,
+                    };
                     _context.GroupSharePosts.Update(gsp);
                     _context.SaveChanges();
                     result.Message = "Delete successfully";

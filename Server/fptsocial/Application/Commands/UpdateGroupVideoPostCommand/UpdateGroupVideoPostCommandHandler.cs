@@ -70,6 +70,23 @@ namespace Application.Commands.UpdateGroupVideoPostCommand
                 VideoPost.IsBanned = true;
                 VideoPost.Content = MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
             }
+            var commandModel = new Domain.CommandModels.GroupPostVideo 
+            {
+                GroupPostVideoId = VideoPost.GroupPostVideoId,
+                GroupPostId = VideoPost.GroupPostId,
+                Content = VideoPost.Content,
+                GroupVideoId = VideoPost.GroupPostId,
+                GroupStatusId = VideoPost.GroupStatusId,
+                GroupPostVideoNumber = VideoPost.GroupPostVideoNumber,
+                IsHide = VideoPost.IsHide,
+                CreatedAt = VideoPost.CreatedAt,
+                UpdatedAt = VideoPost.UpdatedAt,
+                PostPosition = VideoPost.PostPosition,
+                IsBanned = VideoPost.IsBanned,
+                GroupId = VideoPost.GroupId,
+                IsPending = VideoPost.IsPending,
+            };
+            _context.GroupPostVideos.Update(commandModel);
             await _context.SaveChangesAsync();
 
             var result = _mapper.Map<UpdateGroupVideoPostCommandResult>(VideoPost);

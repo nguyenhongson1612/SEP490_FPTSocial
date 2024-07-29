@@ -65,15 +65,29 @@ namespace Application.Commands.CreateReactForCommentSharePost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactSharePostComment, Domain.CommandModels.ReactSharePostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactSharePostComment
+                    {
+                        ReactSharePosCommentId = existingReact.ReactSharePosCommentId,
+                        SharePostId = existingReact.SharePostId,
+                        CommentSharePostId = existingReact.CommentSharePostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = existingReact.CreateDate,
+                    };
                     _context.ReactSharePostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreateDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactSharePostComment, Domain.CommandModels.ReactSharePostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactSharePostComment
+                    {
+                        ReactSharePosCommentId = existingReact.ReactSharePosCommentId,
+                        SharePostId = existingReact.SharePostId,
+                        CommentSharePostId = existingReact.CommentSharePostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = DateTime.Now
+                    };
                     _context.ReactSharePostComments.Update(commandReact);
                 }
             }

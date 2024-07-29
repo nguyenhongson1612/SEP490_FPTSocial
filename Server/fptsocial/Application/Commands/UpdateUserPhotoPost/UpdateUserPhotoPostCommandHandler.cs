@@ -72,7 +72,20 @@ namespace Application.Commands.UpdateUserPhotoPost
                 photoPost.IsBanned = true;
                 photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
             }
-            var upp = ModelConverter.Convert<Domain.QueryModels.UserPostPhoto, Domain.CommandModels.UserPostPhoto>(userPostPhoto);
+            var upp = new Domain.CommandModels.UserPostPhoto
+            {
+                UserPostPhotoId = photoPost.UserPostPhotoId,
+                UserPostId = photoPost.UserPostId,
+                PhotoId = photoPost.PhotoId,
+                Content = photoPost.Content,
+                UserPostPhotoNumber = photoPost.UserPostPhotoNumber,
+                UserStatusId = photoPost.UserStatusId,
+                IsHide = true,
+                CreatedAt = photoPost.CreatedAt,
+                UpdatedAt = photoPost.UpdatedAt,
+                PostPosition = photoPost.PostPosition,
+                IsBanned = photoPost.IsBanned,
+            };
             _context.UserPostPhotos.Update(upp);
             await _context.SaveChangesAsync();
 

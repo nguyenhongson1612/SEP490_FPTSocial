@@ -133,8 +133,20 @@ namespace Application.Commands.UpdateUserPostCommand
 
                     foreach (var userPostPhoto in userPostPhotosToHide)
                     {
-                        userPostPhoto.IsHide = true; // Mark as hidden instead of deleting
-                        var upp = ModelConverter.Convert<Domain.QueryModels.UserPostPhoto, Domain.CommandModels.UserPostPhoto>(userPostPhoto);
+                        var upp = new Domain.CommandModels.UserPostPhoto 
+                        {
+                            UserPostPhotoId = userPostPhoto.UserPostPhotoId,
+                            UserPostId = userPostPhoto.UserPostId,
+                            PhotoId = userPostPhoto.PhotoId,
+                            Content = userPostPhoto.Content,
+                            UserPostPhotoNumber = userPostPhoto.UserPostPhotoNumber,
+                            UserStatusId = userPostPhoto.UserStatusId,
+                            IsHide = true,
+                            CreatedAt = userPostPhoto.CreatedAt,
+                            UpdatedAt = userPostPhoto.UpdatedAt,
+                            PostPosition = userPostPhoto.PostPosition,
+                            IsBanned = userPostPhoto.IsBanned,
+                        };
                         _context.UserPostPhotos.Update(upp);
                     }
                 }
@@ -152,7 +164,20 @@ namespace Application.Commands.UpdateUserPostCommand
                     foreach (var userPostVideo in userPostVideosToHide)
                     {
                         userPostVideo.IsHide = true; // Mark as hidden instead of deleting
-                        var upv = ModelConverter.Convert<Domain.QueryModels.UserPostVideo, Domain.CommandModels.UserPostVideo>(userPostVideo);
+                        var upv = new Domain.CommandModels.UserPostVideo 
+                        {
+                            UserPostVideoId = userPostVideo.UserPostVideoId,
+                            UserPostId = userPostVideo.UserPostId,
+                            VideoId = userPostVideo.VideoId,
+                            Content = userPostVideo.Content,
+                            UserPostVideoNumber = userPostVideo.UserPostVideoNumber,
+                            UserStatusId = userPostVideo.UserStatusId,
+                            IsHide = true,
+                            CreatedAt = userPostVideo.CreatedAt,
+                            UpdatedAt = userPostVideo.UpdatedAt,
+                            PostPosition = userPostVideo.PostPosition,
+                            IsBanned = userPostVideo.IsBanned,
+                        };
                         _context.UserPostVideos.Update(upv);
                     }
                 }

@@ -62,15 +62,29 @@ namespace Application.Commands.CreateReactCommentGroupPostPhoto
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPostComment, Domain.CommandModels.ReactGroupPhotoPostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPhotoPostComment
+                    {
+                        ReactPhotoPostCommentId = existingReact.ReactPhotoPostCommentId,
+                        GroupPostPhotoId = existingReact.GroupPostPhotoId,
+                        CommentPhotoGroupPostId = existingReact.CommentPhotoGroupPostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate
+                    };
                     _context.ReactGroupPhotoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPostComment, Domain.CommandModels.ReactGroupPhotoPostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPhotoPostComment
+                    {
+                        ReactPhotoPostCommentId = existingReact.ReactPhotoPostCommentId,
+                        GroupPostPhotoId = existingReact.GroupPostPhotoId,
+                        CommentPhotoGroupPostId = existingReact.CommentPhotoGroupPostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactGroupPhotoPostComments.Update(commandReact);
 
                 }

@@ -47,22 +47,62 @@ namespace Application.Commands.DeleteUserPost
                 }
                 else
                 {
-                    userPost.IsHide = true;
-                    var up = ModelConverter.Convert<Domain.QueryModels.UserPost, Domain.CommandModels.UserPost>(userPost);
+                    var up = new Domain.CommandModels.UserPost
+                    {
+                        UserPostId = userPost.UserPostId,
+                        UserId = userPost.UserId,
+                        Content = userPost.Content,
+                        UserPostNumber = userPost.UserPostNumber,
+                        UserStatusId = userPost.UserStatusId,
+                        IsAvataPost = userPost.IsAvataPost,
+                        IsCoverPhotoPost = userPost.IsCoverPhotoPost,
+                        IsHide = true,
+                        CreatedAt = userPost.CreatedAt,
+                        UpdatedAt = DateTime.Now,
+                        PhotoId = userPost.PhotoId,
+                        VideoId = userPost.VideoId,
+                        NumberPost = userPost.NumberPost,
+                        IsBanned = userPost.IsBanned,
+                    };
                     _context.UserPosts.Update(up);
 
                     var userPhotoPost = _querycontext.UserPostPhotos.Where(x => x.UserPostId == request.UserPostId).ToList();
                     foreach (var photoPost in userPhotoPost) 
                     {
-                        photoPost.IsHide = true;
-                        var pp = ModelConverter.Convert<Domain.QueryModels.UserPostPhoto, Domain.CommandModels.UserPostPhoto>(photoPost);
+                        var pp = new Domain.CommandModels.UserPostPhoto 
+                        {
+                            UserPostPhotoId = photoPost.UserPostPhotoId,
+                            UserPostId = photoPost.UserPostId,
+                            PhotoId = photoPost.PhotoId,
+                            Content = photoPost.Content,
+                            UserPostPhotoNumber = photoPost.UserPostPhotoNumber,
+                            UserStatusId = photoPost.UserStatusId,
+                            IsHide = true,
+                            CreatedAt= photoPost.CreatedAt,
+                            UpdatedAt = photoPost.UpdatedAt,
+                            PostPosition = photoPost.PostPosition,
+                            IsBanned= photoPost.IsBanned,
+                        };
                         _context.UserPostPhotos.Update(pp);
                     }
                     var userVideoPost = _querycontext.UserPostVideos.Where(x => x.UserPostId == request.UserPostId).ToList();
                     foreach (var videoPost in userVideoPost)
                     {
                         videoPost.IsHide = true;
-                        var vp = ModelConverter.Convert<Domain.QueryModels.UserPostVideo, Domain.CommandModels.UserPostVideo>(videoPost);
+                        var vp = new Domain.CommandModels.UserPostVideo
+                        {
+                            UserPostVideoId = videoPost.UserPostVideoId,
+                            UserPostId = videoPost.UserPostId,
+                            VideoId = videoPost.VideoId,
+                            Content = videoPost.Content,
+                            UserPostVideoNumber = videoPost.UserPostVideoNumber,
+                            UserStatusId = videoPost.UserStatusId,
+                            IsHide = true,
+                            CreatedAt = videoPost.CreatedAt,
+                            UpdatedAt = videoPost.UpdatedAt,
+                            PostPosition = videoPost.PostPosition,
+                            IsBanned = videoPost.IsBanned,
+                        };
                         _context.UserPostVideos.Update(vp);
                     }
                     _context.SaveChanges();

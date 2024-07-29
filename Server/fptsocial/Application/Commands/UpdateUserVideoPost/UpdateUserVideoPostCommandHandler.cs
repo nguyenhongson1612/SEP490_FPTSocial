@@ -71,7 +71,20 @@ namespace Application.Commands.UpdateUserVideoPost
                 VideoPost.IsBanned = true;
                 VideoPost.Content = MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
             }
-            var cgp = ModelConverter.Convert<Domain.QueryModels.UserPostVideo, Domain.CommandModels.UserPostVideo>(VideoPost);
+            var cgp = new Domain.CommandModels.UserPostVideo 
+            {
+                UserPostVideoId = VideoPost.UserPostVideoId,
+                UserPostId = VideoPost.UserPostId,
+                VideoId = VideoPost.VideoId,
+                Content = VideoPost.Content,
+                UserPostVideoNumber = VideoPost.UserPostVideoNumber,
+                UserStatusId = VideoPost.UserStatusId,
+                IsHide = VideoPost.IsHide,
+                CreatedAt = VideoPost.CreatedAt,
+                UpdatedAt = VideoPost.UpdatedAt,
+                PostPosition = VideoPost.PostPosition,
+                IsBanned = VideoPost.IsBanned,
+            };
             _context.UserPostVideos.Update(cgp);
             await _context.SaveChangesAsync();
 

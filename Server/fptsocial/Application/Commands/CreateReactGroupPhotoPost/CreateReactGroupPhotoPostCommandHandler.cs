@@ -50,7 +50,14 @@ namespace Application.Commands.CreateReactGroupPhotoPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Cùng loại phản ứng -> Xóa
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPost, Domain.CommandModels.ReactGroupPhotoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPhotoPost
+                    {
+                        ReactGroupPhotoPostId = existingReact.ReactGroupPhotoPostId,
+                        GroupPostPhotoId = existingReact.GroupPostPhotoId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
                     _context.ReactGroupPhotoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
@@ -65,9 +72,14 @@ namespace Application.Commands.CreateReactGroupPhotoPost
                 else
                 {
                     // Khác loại phản ứng -> Cập nhật
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPhotoPost, Domain.CommandModels.ReactGroupPhotoPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPhotoPost
+                    {
+                        ReactGroupPhotoPostId = existingReact.ReactGroupPhotoPostId,
+                        GroupPostPhotoId = existingReact.GroupPostPhotoId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactGroupPhotoPosts.Update(commandReact);
                 }
             }
@@ -89,7 +101,15 @@ namespace Application.Commands.CreateReactGroupPhotoPost
                     postReactCount.ReactCount++;
                 }
             }
-            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
             _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 

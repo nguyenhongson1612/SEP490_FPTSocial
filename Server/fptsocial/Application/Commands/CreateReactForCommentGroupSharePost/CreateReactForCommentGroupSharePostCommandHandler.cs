@@ -64,15 +64,29 @@ namespace Application.Commands.CreateReactForCommentGroupSharePost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupSharePostComment, Domain.CommandModels.ReactGroupSharePostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePostComment
+                    {
+                        ReactGroupSharePosCommentId = existingReact.ReactGroupSharePosCommentId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        CommentGroupSharePostId = existingReact.CommentGroupSharePostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = existingReact.CreateDate,
+                    };
                     _context.ReactGroupSharePostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreateDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupSharePostComment, Domain.CommandModels.ReactGroupSharePostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePostComment
+                    {
+                        ReactGroupSharePosCommentId = existingReact.ReactGroupSharePosCommentId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        CommentGroupSharePostId = existingReact.CommentGroupSharePostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = DateTime.Now
+                    };
                     _context.ReactGroupSharePostComments.Update(commandReact);
                 }
             }

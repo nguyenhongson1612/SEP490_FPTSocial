@@ -109,7 +109,15 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
             {
                 postReactCount.CommentCount++;
             }
-            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
             _context.GroupPostReactCounts.Update(prc);
             // Add comment to the database and save changes
             await _context.CommentPhotoGroupPosts.AddAsync(comment);

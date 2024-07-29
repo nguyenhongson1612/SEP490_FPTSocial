@@ -70,7 +70,19 @@ namespace Application.Commands.UpdateCommentUserPost
                 comment.IsHide = true;
             }
 
-            var commandModel = ModelConverter.Convert<Domain.QueryModels.CommentPost, Domain.CommandModels.CommentPost>(comment);
+            var commandModel = new Domain.CommandModels.CommentPost 
+            {
+                CommentId = comment.CommentId,
+                UserPostId = comment.UserPostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentPosts.Update(commandModel);
             _context.SaveChanges();
 

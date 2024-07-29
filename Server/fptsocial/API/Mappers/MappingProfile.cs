@@ -280,6 +280,12 @@ namespace Application.Mappers
                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Command.UserPostVideo, UpdateUserVideoPostCommandResult>()
                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.UserPost, UpdateUserPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.UserPostPhoto, UpdateUserPhotoPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.UserPostVideo, UpdateUserVideoPostCommandResult>()
+               .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             CreateMap<Query.CommentPost, GetCommentByPostIdQueryResult>();
             CreateMap<Query.CommentPost, CommentDto>()
@@ -296,6 +302,9 @@ namespace Application.Mappers
             CreateMap<Command.GroupPost, UpdateGroupPostCommandResult>();
             CreateMap<Command.GroupPostVideo, UpdateGroupVideoPostCommandResult>();
             CreateMap<Command.GroupPostPhoto, UpdateGroupPhotoPostCommandResult>();
+            CreateMap<Query.GroupPost, UpdateGroupPostCommandResult>();
+            CreateMap<Query.GroupPostVideo, UpdateGroupVideoPostCommandResult>();
+            CreateMap<Query.GroupPostPhoto, UpdateGroupPhotoPostCommandResult>();
 
             CreateMap<UserPost, UserPostDTO>()
             .ForMember(dest => dest.UserPostId, opt => opt.MapFrom(src => src.UserPostId))
@@ -335,6 +344,12 @@ namespace Application.Mappers
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
             CreateMap<Command.CommentVideoPost, UpdateCommentUserVideoPostCommandResult>()
                 .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.CommentPost, UpdateCommentUserPostCommandResult>()
+            .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.CommentPhotoPost, UpdateCommentUserPhotoPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
+            CreateMap<Query.CommentVideoPost, UpdateCommentUserVideoPostCommandResult>()
+                .ForMember(dest => dest.BannedWords, opt => opt.Ignore());
 
             //user react
             CreateMap<Command.ReactPost, CreateReactUserPostCommandResult>();
@@ -371,6 +386,9 @@ namespace Application.Mappers
             CreateMap<Command.CommentGroupPost, UpdateCommentGroupPostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupVideoPost, UpdateCommentGroupVideoPostCommandResult>().ReverseMap();
             CreateMap<Command.CommentPhotoGroupPost, UpdateCommentGroupPhotoPostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentGroupPost, UpdateCommentGroupPostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentGroupVideoPost, UpdateCommentGroupVideoPostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentPhotoGroupPost, UpdateCommentGroupPhotoPostCommandResult>().ReverseMap();
 
             //SharePost
             CreateMap<SharePost, ShareUserPostCommandResult>().ReverseMap();
@@ -387,12 +405,17 @@ namespace Application.Mappers
             CreateMap<Command.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.CommentGroupSharePost, CreateCommentForGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Command.GroupSharePost, UpdateGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentSharePost, UpdateCommentSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentGroupSharePost, UpdateCommentGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.CommentGroupSharePost, CreateCommentForGroupSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.GroupSharePost, UpdateGroupSharePostCommandResult>().ReverseMap();
             CreateMap<Query.CommentGroupSharePost, GetCommentByGroupSharePostQueryResult>().ReverseMap();
             CreateMap<CommentSharePost, GetCommentBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactSharePost, GetReactBySharePostQueryResult>().ReverseMap();
             CreateMap<ReactGroupSharePost, GetReactByGroupSharePostQueryResult>().ReverseMap();
             CreateMap<Command.CommentSharePost, CreateCommentForSharePostCommandResult>().ReverseMap();
             CreateMap<Command.SharePost, UpdateSharePostCommandResult>().ReverseMap();
+            CreateMap<Query.SharePost, UpdateSharePostCommandResult>().ReverseMap();
         }
     }
 }

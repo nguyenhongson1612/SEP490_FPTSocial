@@ -51,7 +51,14 @@ namespace Application.Commands.CreateReactGroupPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Group clicked the same react type again -> Remove it
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPost, Domain.CommandModels.ReactGroupPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPost
+                    {
+                        ReactGroupPostId = existingReact.ReactGroupPostId,
+                        GroupPostId = existingReact.GroupPostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
                     _context.ReactGroupPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
@@ -66,9 +73,14 @@ namespace Application.Commands.CreateReactGroupPost
                 else
                 {
                     // Group changed react type -> Update
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now; // Optionally update timestamp
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactGroupPost, Domain.CommandModels.ReactGroupPost>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupPost
+                    {
+                        ReactGroupPostId = existingReact.ReactGroupPostId,
+                        GroupPostId = existingReact.GroupPostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactGroupPosts.Update(commandReact);
                 }
             }
@@ -90,7 +102,15 @@ namespace Application.Commands.CreateReactGroupPost
                     postReactCount.ReactCount++;
                 }
             }
-            var prc = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(postReactCount);
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
             _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 

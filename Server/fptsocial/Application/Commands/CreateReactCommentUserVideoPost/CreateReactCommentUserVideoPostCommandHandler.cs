@@ -61,15 +61,29 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPostComment, Domain.CommandModels.ReactVideoPostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactVideoPostComment
+                    {
+                        ReactVideoPostCommentId = existingReact.ReactVideoPostCommentId,
+                        UserPostVideoId = existingReact.UserPostVideoId,
+                        CommentVideoPostId = existingReact.CommentVideoPostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
                     _context.ReactVideoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
-                    var commandReact = ModelConverter.Convert<Domain.QueryModels.ReactVideoPostComment, Domain.CommandModels.ReactVideoPostComment>(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactVideoPostComment
+                    {
+                        ReactVideoPostCommentId = existingReact.ReactVideoPostCommentId,
+                        UserPostVideoId = existingReact.UserPostVideoId,
+                        CommentVideoPostId = existingReact.CommentVideoPostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
                     _context.ReactVideoPostComments.Update(commandReact);
                 }
             }

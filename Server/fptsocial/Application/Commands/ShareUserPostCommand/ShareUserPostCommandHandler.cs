@@ -98,7 +98,17 @@ namespace Application.Commands.ShareUserPostCommand
             if (countUserPost != null)
             {
                 countUserPost.ShareCount++;
-                var commandModel = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(countUserPost);
+                var commandModel = new Domain.CommandModels.PostReactCount
+                {
+                    PostReactCountId = countUserPost.PostReactCountId,
+                    UserPostId = countUserPost.UserPostId,
+                    UserPostPhotoId = countUserPost.UserPostPhotoId,
+                    ReactCount = countUserPost.ReactCount,
+                    CommentCount = countUserPost.CommentCount,
+                    ShareCount = countUserPost.ShareCount,
+                    CreateAt = countUserPost.CreateAt,
+                    UpdateAt = countUserPost.UpdateAt,
+                };
                 _context.PostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
@@ -113,7 +123,15 @@ namespace Application.Commands.ShareUserPostCommand
             if (countGroupPost != null)
             {
                 countGroupPost.ShareCount++;
-                var commandModel = ModelConverter.Convert<Domain.QueryModels.GroupPostReactCount, Domain.CommandModels.GroupPostReactCount>(countGroupPost);
+                var commandModel = new Domain.CommandModels.GroupPostReactCount
+                {
+                    GroupPostReactCountId = countGroupPost.GroupPostReactCountId,
+                    GroupPostId = countGroupPost.GroupPostId,
+                    GroupPostPhotoId = countGroupPost.GroupPostPhotoId,
+                    ReactCount = countGroupPost.ReactCount,
+                    CommentCount = countGroupPost.CommentCount,
+                    ShareCount = countGroupPost.ShareCount,
+                };
                 _context.GroupPostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }

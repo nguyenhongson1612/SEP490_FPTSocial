@@ -45,8 +45,19 @@ namespace Application.Commands.DeleteCommentGroupSharePost
                 }
                 else
                 {
-                    userComment.IsHide = true;
-                    var cgsp = ModelConverter.Convert<Domain.QueryModels.CommentGroupSharePost, Domain.CommandModels.CommentGroupSharePost>(userComment);
+                    var cgsp = new Domain.CommandModels.CommentGroupSharePost
+                    {
+                        CommentGroupSharePostId = userComment.CommentGroupSharePostId,
+                        GroupSharePostId = userComment.CommentGroupSharePostId,
+                        UserId = userComment.UserId,
+                        Content = userComment.Content,
+                        ParentCommentId = userComment.CommentGroupSharePostId,
+                        ListNumber = userComment.ListNumber,
+                        LevelCmt = userComment.LevelCmt,
+                        IsHide = true,
+                        CreateDate = userComment.CreateDate,
+                        IsBanned = userComment.IsBanned,
+                    };
                     _context.CommentGroupSharePosts.Update(cgsp);
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
