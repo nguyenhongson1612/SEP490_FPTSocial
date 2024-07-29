@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,14 +21,16 @@ namespace Application.Commands.CreateUserCommentPhotoPost
     public class CreateUserCommentPhotoPostCommandHandler : ICommandHandler<CreateUserCommentPhotoPostCommand, CreateUserCommentPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -37,7 +40,7 @@ namespace Application.Commands.CreateUserCommentPhotoPost
         public async Task<Result<CreateUserCommentPhotoPostCommandResult>> Handle(CreateUserCommentPhotoPostCommand request, CancellationToken cancellationToken)
         {
             // Check if context is null
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -50,13 +53,13 @@ namespace Application.Commands.CreateUserCommentPhotoPost
 
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.PostReactCounts.Where(prc => prc.UserPostPhotoId == request.UserPostPhotoId).FirstOrDefaultAsync();
+            var postReactCount = await _queryContext.PostReactCounts.Where(prc => prc.UserPostPhotoId == request.UserPostPhotoId).FirstOrDefaultAsync();
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
             {
                 // Find the parent comment
-                var parentComment = await _context.CommentPhotoPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentPhotoPosts.FindAsync(request.ParentCommentId.Value);
 
                 // If parent comment doesn't exist, throw error
                 if (parentComment == null || parentComment.IsHide == true)
@@ -108,6 +111,18 @@ namespace Application.Commands.CreateUserCommentPhotoPost
             }
 
             // Add comment to the database and save changes
+            var prc = new Domain.CommandModels.PostReactCount 
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = DateTime.Now,
+            };
+            _context.PostReactCounts.Update(prc);
             await _context.CommentPhotoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 

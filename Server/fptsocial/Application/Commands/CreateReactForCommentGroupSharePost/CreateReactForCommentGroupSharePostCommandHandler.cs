@@ -42,8 +42,14 @@ namespace Application.Commands.CreateReactForCommentGroupSharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            var comment = await _querycontext.ReactGroupSharePostComments.FirstOrDefaultAsync(c => c.CommentGroupSharePostId == request.CommentGroupSharePostId, cancellationToken);
+            if (comment == null)
+            {
+                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
+            }
+
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactGroupSharePostComments
+            var existingReact = await _querycontext.ReactGroupSharePostComments
                 .FirstOrDefaultAsync(r =>
                     r.GroupSharePostId == request.GroupSharePostId &&
                     r.CommentGroupSharePostId == request.CommentGroupSharePostId &&
@@ -58,13 +64,30 @@ namespace Application.Commands.CreateReactForCommentGroupSharePost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactGroupSharePostComments.Remove(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePostComment
+                    {
+                        ReactGroupSharePosCommentId = existingReact.ReactGroupSharePosCommentId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        CommentGroupSharePostId = existingReact.CommentGroupSharePostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = existingReact.CreateDate,
+                    };
+                    _context.ReactGroupSharePostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreateDate = DateTime.Now;
+                    var commandReact = new Domain.CommandModels.ReactGroupSharePostComment
+                    {
+                        ReactGroupSharePosCommentId = existingReact.ReactGroupSharePosCommentId,
+                        GroupSharePostId = existingReact.GroupSharePostId,
+                        CommentGroupSharePostId = existingReact.CommentGroupSharePostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreateDate = DateTime.Now
+                    };
+                    _context.ReactGroupSharePostComments.Update(commandReact);
                 }
             }
             else
@@ -84,13 +107,6 @@ namespace Application.Commands.CreateReactForCommentGroupSharePost
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            // 4. Lấy thông tin comment
-            var comment = await _querycontext.ReactGroupSharePostComments.FirstOrDefaultAsync(c => c.CommentGroupSharePostId == request.CommentGroupSharePostId, cancellationToken);
-            if (comment == null)
-            {
-                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
-            }
 
             // 5. Trả về kết quả
             var result = existingReact != null

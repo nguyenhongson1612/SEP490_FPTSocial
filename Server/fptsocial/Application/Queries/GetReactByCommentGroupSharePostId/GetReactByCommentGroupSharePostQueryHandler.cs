@@ -19,15 +19,13 @@ namespace Application.Queries.GetReactByCommentGroupSharePostId
 {
     public class GetReactByCommentGroupSharePostQueryHandler : IQueryHandler<GetReactByCommentGroupSharePostQuery, GetReactByCommentGroupSharePostQueryResult>
     {
-        private readonly fptforumCommandContext _context;
-        private readonly fptforumQueryContext _querycontext;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public GetReactByCommentGroupSharePostQueryHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public GetReactByCommentGroupSharePostQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
-            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }

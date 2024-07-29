@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -26,7 +27,7 @@ namespace Application.Commands.DeleteGroupSharePost
         }
         public async Task<Result<DeleteGroupSharePostCommandResult>> Handle(DeleteGroupSharePostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -45,8 +46,29 @@ namespace Application.Commands.DeleteGroupSharePost
                 }
                 else
                 {
-                    userPost.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var gsp = new Domain.CommandModels.GroupSharePost
+                    {
+                        GroupSharePostId = userPost.GroupSharePostId,
+                        UserId = userPost.UserId,
+                        Content = userPost.Content,
+                        UserPostId = userPost.UserPostId,
+                        UserPostVideoId = userPost.UserPostVideoId,
+                        UserPostPhotoId = userPost.UserPostPhotoId,
+                        GroupPostId = userPost.GroupPostId,
+                        GroupPostPhotoId = userPost.GroupPostPhotoId,
+                        GroupPostVideoId = userPost.GroupPostVideoId,
+                        SharedToUserId = userPost.SharedToUserId,
+                        CreateDate = userPost.CreateDate,
+                        IsHide = true,
+                        GroupStatusId = userPost.GroupStatusId,
+                        UpdateDate = userPost.UpdateDate,
+                        IsBanned = userPost.IsBanned,
+                        GroupId = userPost.GroupId,
+                        UserSharedId = userPost.UserSharedId,
+                        IsPending = userPost.IsPending,
+                    };
+                    _context.GroupSharePosts.Update(gsp);
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

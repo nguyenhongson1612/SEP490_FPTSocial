@@ -9,6 +9,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -21,14 +22,16 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
     public class UpdateCommentUserPhotoPostCommandHandler : ICommandHandler<UpdateCommentUserPhotoPostCommand, UpdateCommentUserPhotoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentUserPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentUserPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -38,7 +41,7 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
         public async Task<Result<UpdateCommentUserPhotoPostCommandResult>> Handle(UpdateCommentUserPhotoPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -48,7 +51,7 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var UserPhotoPost = await _context.CommentPhotoPosts.FindAsync(request.CommentPhotoPostId);
+            var UserPhotoPost = await _querycontext.CommentPhotoPosts.FindAsync(request.CommentPhotoPostId);
             if (UserPhotoPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -59,7 +62,7 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -70,6 +73,21 @@ namespace Application.Commands.UpdateCommentUserPhotoPost
                     comment.IsHide = true;
                 }
             }
+
+            var csp = new Domain.CommandModels.CommentPhotoPost 
+            {
+                CommentPhotoPostId = comment.CommentPhotoPostId,
+                UserPostPhotoId = comment.UserPostPhotoId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
+            _context.CommentPhotoPosts.Update(csp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentUserPhotoPostCommandResult>(comment);
             result.BannedWords = bannedWords;

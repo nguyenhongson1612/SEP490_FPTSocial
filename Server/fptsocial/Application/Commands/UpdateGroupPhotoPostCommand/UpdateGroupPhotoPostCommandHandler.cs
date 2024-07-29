@@ -29,9 +29,10 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateGroupPhotoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateGroupPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -39,17 +40,17 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
         }
         public async Task<Result<UpdateGroupPhotoPostCommandResult>> Handle(UpdateGroupPhotoPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var GroupPostPhoto = await _context.GroupPostPhotos.FindAsync(request.GroupPostPhotoId);
+            var GroupPostPhoto = await _queryContext.GroupPostPhotos.FindAsync(request.GroupPostPhotoId);
             if (GroupPostPhoto == null)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
-            var userId = await _context.GroupPosts
+            var userId = await _queryContext.GroupPosts
                                       .Where(a => a.GroupPostId == request.GroupPostId)
                                       .Select(a => a.UserId)
                                       .FirstOrDefaultAsync();
@@ -59,7 +60,7 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photoPost = _context.GroupPostPhotos.Where(x => x.GroupPostPhotoId == request.GroupPostPhotoId).FirstOrDefault();
+            var photoPost = _queryContext.GroupPostPhotos.Where(x => x.GroupPostPhotoId == request.GroupPostPhotoId).FirstOrDefault();
             if (photoPost != null) 
             {
                 photoPost.Content = request.Content;
@@ -71,6 +72,24 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
                 photoPost.IsBanned = true;
                 photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
             }
+
+            var commandModel = new Domain.CommandModels.GroupPostPhoto 
+            {
+                GroupPostPhotoId = photoPost.GroupPostPhotoId,
+                GroupPostId = photoPost.GroupPostId,
+                Content = photoPost.Content,
+                GroupPhotoId = photoPost.GroupPhotoId,
+                GroupStatusId = photoPost.GroupStatusId,
+                GroupPostPhotoNumber = photoPost.GroupPostPhotoNumber,
+                IsHide = photoPost.IsHide,
+                CreatedAt = photoPost.CreatedAt,
+                UpdatedAt = photoPost.UpdatedAt,
+                PostPosition = photoPost.PostPosition,
+                IsBanned = photoPost.IsBanned,
+                GroupId = photoPost.GroupId,
+                IsPending = photoPost.IsPending,
+            };
+            _context.GroupPostPhotos.Update(commandModel);
             await _context.SaveChangesAsync();
 
             var result = _mapper.Map<UpdateGroupPhotoPostCommandResult>(photoPost);

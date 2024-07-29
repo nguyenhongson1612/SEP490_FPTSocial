@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -25,12 +26,14 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
         }
         public async Task<Result<DeleteCommentUserPhotoPostCommandResult>> Handle(DeleteCommentUserPhotoPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
             var UserPhotoComment = _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostPhotoId == UserPhotoComment.UserPostPhotoId).FirstOrDefault();
+
             var result = new DeleteCommentUserPhotoPostCommandResult();
             if (UserPhotoComment == null)
             {
@@ -44,8 +47,41 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
                 }
                 else
                 {
-                    UserPhotoComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var cpp = new Domain.CommandModels.CommentPhotoPost
+                    {
+                        CommentPhotoPostId = UserPhotoComment.CommentPhotoPostId,
+                        UserPostPhotoId = UserPhotoComment.UserPostPhotoId,
+                        UserId = UserPhotoComment.UserId,
+                        Content = UserPhotoComment.Content,
+                        ParentCommentId = UserPhotoComment.ParentCommentId,
+                        ListNumber = UserPhotoComment.ListNumber,
+                        LevelCmt = UserPhotoComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = UserPhotoComment.CreatedDate,
+                        IsBanned = UserPhotoComment.IsBanned,
+
+                    };
+                    _context.CommentPhotoPosts.Update(cpp);
+                    if (postReactCount != null)
+                    {
+                        if (postReactCount.CommentCount > 0)
+                        {
+                            postReactCount.CommentCount--;
+                        }
+                        var prc = new Domain.CommandModels.PostReactCount
+                        {
+                            PostReactCountId = postReactCount.PostReactCountId,
+                            UserPostId = postReactCount.UserPostId,
+                            UserPostPhotoId = postReactCount.UserPostPhotoId,
+                            ReactCount = postReactCount.ReactCount,
+                            CommentCount = postReactCount.CommentCount,
+                            ShareCount = postReactCount.ShareCount,
+                            CreateAt = postReactCount.CreateAt,
+                            UpdateAt = postReactCount.UpdateAt,
+                        };
+                        _context.PostReactCounts.Update(prc);
+                    }
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }
