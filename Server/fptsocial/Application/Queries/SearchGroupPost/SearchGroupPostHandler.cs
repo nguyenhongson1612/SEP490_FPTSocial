@@ -33,14 +33,21 @@ namespace Application.Queries.SearchGroupPost
             _mapper = mapper;
         }
 
-        private bool SubstringMatch(string content, string[] searchWords)
+        private bool SubstringMatch(string? content, string[] searchWords)
         {
+            if (content == null) {
+                return false;
+            }
             var normalizedContent = content.RemoveDiacritics().ToLower();
             return searchWords.Any(word => normalizedContent.Contains(word));
         }
 
-        private bool ContainsMostWords(string content, string[] searchWords)
+        private bool ContainsMostWords(string? content, string[] searchWords)
         {
+            if (content == null)
+            {
+                return false;
+            }
             var postWords = content.RemoveDiacritics().ToLower().Split(' ');
             return searchWords.Count(word => postWords.Contains(word)) > searchWords.Length / 2;
         }
