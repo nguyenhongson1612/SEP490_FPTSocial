@@ -2,6 +2,7 @@ import { Avatar } from '@mui/material'
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
 import { uploadImage } from '~/apis'
+import UserAvatar from '~/components/UI/UserAvatar'
 import { singleFileValidator } from '~/utils/validators'
 
 function ImageArea({ register, setValue, watch, user }) {
@@ -24,7 +25,7 @@ function ImageArea({ register, setValue, watch, user }) {
     fileData.append('file', file)
     const url = URL.createObjectURL(file)
     confirmFile({
-      title: (<div>Confirm using this file?<img src={url} /></div>),
+      title: (<div className='flex flex-col'>Confirm using this file?<div className='flex justify-center'><img src={url} /></div></div>),
       description: ('Are you sure you want to add this file? This file will be add into cloud if you click Confirm and cannot undo? '),
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
@@ -45,12 +46,10 @@ function ImageArea({ register, setValue, watch, user }) {
               onChange: (e) => handleUploadFile(e, 'avataphoto')
             })
             } />
-          <label htmlFor='avatarUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
+          <label htmlFor='avatarUpload' className='interceptor-loading text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
         </div>
         <div className='flex justify-center items-center '>
-          <div className='w-[170px] bg-white rounded-[50%] aspect-square flex justify-center items-center'>
-            <Avatar alt="avatar" src={user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl} sx={{ width: 170, height: 170, border: '6px solid white' }} />
-          </div>
+          <UserAvatar avatarSrc={user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl} isOther={true} size='10' />
         </div>
       </div>
 
@@ -62,7 +61,7 @@ function ImageArea({ register, setValue, watch, user }) {
               onChange: (e) => handleUploadFile(e, 'coverImage')
             })
             } />
-          <label htmlFor='coverUpload' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
+          <label htmlFor='coverUpload' className='interceptor-loading text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
         </div>
         <div className='flex justify-center items-center '>
           <div id='profile-cover'

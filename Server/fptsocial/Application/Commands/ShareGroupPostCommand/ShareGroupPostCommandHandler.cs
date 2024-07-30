@@ -68,12 +68,12 @@ namespace Application.Commands.ShareGroupPostCommand
             //    throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
             //}
             bool statusGroup = true;
-            var groupSettingName = (from g in _context.GroupFpts
-                                    join gsu in _context.GroupSettingUses
+            var groupSettingName = (from g in _querycontext.GroupFpts
+                                    join gsu in _querycontext.GroupSettingUses
                                         on g.GroupId equals gsu.GroupId
-                                    join groupSetting in _context.GroupSettings
+                                    join groupSetting in _querycontext.GroupSettings
                                         on gsu.GroupSettingId equals groupSetting.GroupSettingId
-                                    join groupStatus in _context.GroupStatuses // Join với bảng GroupStatuses
+                                    join groupStatus in _querycontext.GroupStatuses // Join với bảng GroupStatuses
                                         on gsu.GroupStatusId equals groupStatus.GroupStatusId
                                     where g.GroupId == request.GroupId
                                     select new
@@ -86,7 +86,7 @@ namespace Application.Commands.ShareGroupPostCommand
                 statusGroup = false;
             }
 
-            Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
+            Guid groupStatusId = (Guid)_querycontext.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
 
             Domain.CommandModels.GroupSharePost sharePost = new Domain.CommandModels.GroupSharePost
             {
@@ -118,12 +118,22 @@ namespace Application.Commands.ShareGroupPostCommand
             if (countUserPost != null)
             {
                 countUserPost.ShareCount++;
-                var commandModel = ModelConverter.Convert<Domain.QueryModels.PostReactCount, Domain.CommandModels.PostReactCount>(countUserPost);
+                var commandModel = new Domain.CommandModels.PostReactCount
+                {
+                    PostReactCountId = countUserPost.PostReactCountId,
+                    UserPostId = countUserPost.UserPostId,
+                    UserPostPhotoId = countUserPost.UserPostPhotoId,
+                    ReactCount = countUserPost.ReactCount,
+                    CommentCount = countUserPost.CommentCount,
+                    ShareCount = countUserPost.ShareCount,
+                    CreateAt = countUserPost.CreateAt,
+                    UpdateAt = countUserPost.UpdateAt,
+                };
                 _context.PostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 
-            var countGroupPost = _context.GroupPostReactCounts.FirstOrDefault(x =>
+            var countGroupPost = _querycontext.GroupPostReactCounts.FirstOrDefault(x =>
                                 (x.GroupPostId == request.GroupPostId && x.GroupPostPhotoId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostPhotoId == request.GroupPostPhotoId && x.GroupPostId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostVideoId == request.GroupPostVideoId && x.GroupPostId == null && x.GroupPostPhotoId == null)
@@ -133,6 +143,16 @@ namespace Application.Commands.ShareGroupPostCommand
             if (countGroupPost != null)
             {
                 countGroupPost.ShareCount++;
+                var commandModel = new Domain.CommandModels.GroupPostReactCount
+                {
+                    GroupPostReactCountId = countGroupPost.GroupPostReactCountId,
+                    GroupPostId = countGroupPost.GroupPostId,
+                    GroupPostPhotoId = countGroupPost.GroupPostPhotoId,
+                    ReactCount = countGroupPost.ReactCount,
+                    CommentCount = countGroupPost.CommentCount,
+                    ShareCount = countGroupPost.ShareCount,
+                };
+                _context.GroupPostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 

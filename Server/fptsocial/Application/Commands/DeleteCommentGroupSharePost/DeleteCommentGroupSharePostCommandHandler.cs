@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -25,7 +26,7 @@ namespace Application.Commands.DeleteCommentGroupSharePost
         }
         public async Task<Result<DeleteCommentGroupSharePostCommandResult>> Handle(DeleteCommentGroupSharePostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -44,8 +45,21 @@ namespace Application.Commands.DeleteCommentGroupSharePost
                 }
                 else
                 {
-                    userComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var cgsp = new Domain.CommandModels.CommentGroupSharePost
+                    {
+                        CommentGroupSharePostId = userComment.CommentGroupSharePostId,
+                        GroupSharePostId = userComment.CommentGroupSharePostId,
+                        UserId = userComment.UserId,
+                        Content = userComment.Content,
+                        ParentCommentId = userComment.CommentGroupSharePostId,
+                        ListNumber = userComment.ListNumber,
+                        LevelCmt = userComment.LevelCmt,
+                        IsHide = true,
+                        CreateDate = userComment.CreateDate,
+                        IsBanned = userComment.IsBanned,
+                    };
+                    _context.CommentGroupSharePosts.Update(cgsp);
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

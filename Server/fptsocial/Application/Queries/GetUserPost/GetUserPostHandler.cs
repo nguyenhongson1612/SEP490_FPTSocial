@@ -14,6 +14,7 @@ using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,136 +43,86 @@ namespace Application.Queries.GetUserPost
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
-
-            var combine = new List<GetUserPostDTO>();
-
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var userPosts = await _context.UserPosts
                 .AsNoTracking()
-                .Include(x => x.UserStatus)
-                .Include(x => x.Photo)
-                .Include(x => x.Video)
-                .Include(x => x.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
-                    .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
-                    .ThenInclude(x => x.Video)
                 .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
-                .ToListAsync(cancellationToken);
+                .Select(post => new GetUserPostDTO
+                {
+                    PostId = post.UserPostId,
+                    UserId = post.UserId,
+                    Content = post.Content,
+                    UserPostNumber = post.UserPostNumber,
+                    UserStatus = new GetUserStatusDTO
+                    {
+                        UserStatusId = post.UserStatusId,
+                        UserStatusName = post.UserStatus.StatusName
+                    },
+                    IsAvataPost = post.IsAvataPost,
+                    IsHide = post.IsHide,
+                    IsBanned = post.IsBanned,
+                    IsShare = false,
+                    CreatedAt = post.CreatedAt,
+                    UpdateAt = post.UpdatedAt,
+                    PhotoId = post.PhotoId,
+                    VideoId = post.VideoId,
+                    Photo = _mapper.Map<PhotoDTO>(post.Photo),
+                    Video = _mapper.Map<VideoDTO>(post.Video),
+                    UserPostPhoto = post.UserPostPhotos
+                        .Where(upp => upp.IsHide != true && upp.IsBanned != true)
+                        .Select(upp => new UserPostPhotoDTO
+                        {
+                            UserPostPhotoId = upp.UserPostPhotoId,
+                            UserPostId = upp.UserPostId,
+                            PhotoId = upp.PhotoId,
+                            Content = upp.Content,
+                            UserPostPhotoNumber = upp.UserPostPhotoNumber,
+                            UserStatusId = upp.UserStatusId,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            Photo = _mapper.Map<PhotoDTO>(upp.Photo),
+                        }).ToList(),
+                    UserPostVideo = post.UserPostVideos
+                        .Where(upp => upp.IsHide != true && upp.IsBanned != true)
+                        .Select(upp => new UserPostVideoDTO
+                        {
+                            UserPostVideoId = upp.UserPostVideoId,
+                            UserPostId = upp.UserPostId,
+                            VideoId = upp.VideoId,
+                            Content = upp.Content,
+                            UserPostVideoNumber = upp.UserPostVideoNumber,
+                            UserStatusId = upp.UserStatusId,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            Video = _mapper.Map<VideoDTO>(upp.Video),
+                        }).ToList(),
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = post.PostReactCounts.Sum(r => r.ReactCount),
+                        CommentNumber = post.PostReactCounts.Sum(r => r.CommentCount),
+                        ShareNumber = post.PostReactCounts.Sum(r => r.ShareCount),
+                    }
+                }).ToListAsync(cancellationToken);
 
             var avt = await _context.AvataPhotos
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.IsUsed == true);
+                .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.IsUsed == true, cancellationToken);
 
             var user = await _context.UserProfiles
                 .AsNoTracking()
                 .Where(x => x.UserId == request.UserId)
-                .Select(x => x.FirstName+ " " + x.LastName)
+                .Select(x => x.FirstName + " " + x.LastName)
                 .FirstOrDefaultAsync(cancellationToken);
-            
-            foreach (var item in userPosts)
-            {
-                var react =  _context.PostReactCounts
-                .AsNoTracking()
-                .FirstOrDefault(x => x.UserPostId == item.UserPostId);
-
-                combine.Add(new GetUserPostDTO
-                {
-                    PostId = item.UserPostId,
-                    UserId = item.UserId,
-                    Content = item.Content,
-                    UserPostNumber = item.UserPostNumber,
-                    UserStatus = new GetUserStatusDTO
-                    {
-                        UserStatusId = item.UserStatusId,
-                        UserStatusName = item.UserStatus.StatusName
-                    },
-                    IsAvataPost = item.IsAvataPost,
-                    IsHide = item.IsHide,
-                    IsBanned = item.IsBanned,
-                    IsShare = false,
-                    CreatedAt = item.CreatedAt,
-                    UpdateAt = item.UpdatedAt,
-                    PhotoId = item.PhotoId,
-                    VideoId = item.VideoId,
-                    Photo = _mapper.Map<PhotoDTO>(item.Photo),
-                    Video = _mapper.Map<VideoDTO>(item.Video),
-                    UserPostPhoto = item.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
-                    {
-                        UserPostPhotoId = upp.UserPostPhotoId,
-                        UserPostId = upp.UserPostId,
-                        PhotoId = upp.PhotoId,
-                        Content = upp.Content,
-                        UserPostPhotoNumber = upp.UserPostPhotoNumber,
-                        UserStatusId = upp.UserStatusId,
-                        IsHide = upp.IsHide,
-                        CreatedAt = upp.CreatedAt,
-                        UpdatedAt = upp.UpdatedAt,
-                        PostPosition = upp.PostPosition,
-                        Photo = _mapper.Map<PhotoDTO>(upp.Photo),
-                    }).ToList(),
-                    UserPostVideo = item.UserPostVideos?.Select(upp => new UserPostVideoDTO
-                    {
-                        UserPostVideoId = upp.UserPostVideoId,
-                        UserPostId = upp.UserPostId,
-                        VideoId = upp.VideoId,
-                        Content = upp.Content,
-                        UserPostVideoNumber = upp.UserPostVideoNumber,
-                        UserStatusId = upp.UserStatusId,
-                        IsHide = upp.IsHide,
-                        CreatedAt = upp.CreatedAt,
-                        UpdatedAt = upp.UpdatedAt,
-                        PostPosition = upp.PostPosition,
-                        Video = _mapper.Map<VideoDTO>(upp.Video),
-                    }).ToList(),
-                    UserName = user,
-                    UserAvatar = _mapper.Map<GetUserAvatar>(avt),
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = react?.ReactCount ?? 0,
-                        CommentNumber = react?.CommentCount ?? 0,
-                        ShareNumber = react?.ShareCount ?? 0,
-                    }
-                });
-            }
 
             var sharePosts = await _context.SharePosts
                 .AsNoTracking()
-                .Include(x => x.UserStatus)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostPhotos)
-                        .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPost)
-                    .ThenInclude(x => x.UserPostVideos)
-                        .ThenInclude(x => x.Video)
-                .Include(x => x.UserPostPhoto)
-                    .ThenInclude(x => x.Photo)
-                .Include(x => x.UserPostVideo)
-                    .ThenInclude(x => x.Video)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostPhotos)
-                        .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPost)
-                    .ThenInclude(x => x.GroupPostVideos)
-                        .ThenInclude(x => x.GroupVideo)
-                .Include(x => x.GroupPostPhoto)
-                    .ThenInclude(x => x.GroupPhoto)
-                .Include(x => x.GroupPostVideo)
-                    .ThenInclude(x => x.GroupVideo)
                 .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
-                .ToListAsync(cancellationToken);
-
-            foreach (var item in sharePosts)
-            {
-                var userShare = await _context.UserProfiles
-                    .AsNoTracking()
-                    .Where(x => x.UserId == item.UserSharedId)
-                    .Select(x => x.FirstName + " " + x.LastName)
-                    .FirstOrDefaultAsync(cancellationToken);
-
-                var avtShare = await _context.AvataPhotos
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
-
-                combine.Add(new GetUserPostDTO
+                .Select(item => new GetUserPostDTO
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -194,8 +145,13 @@ namespace Application.Queries.GetUserPost
                     UserPostShare = _mapper.Map<UserPostDTO>(item.UserPost),
                     UserPostPhotoShare = _mapper.Map<UserPostPhotoDTO>(item.UserPostPhoto),
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
-                    UserNameShare = userShare,
-                    UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
+                    UserNameShare = _context.UserProfiles
+                        .AsNoTracking()
+                        .Where(x => x.UserId == item.UserSharedId)
+                        .Select(x => x.FirstName + " " + x.LastName)
+                        .FirstOrDefault(),
+                    UserAvatarShare = _mapper.Map<GetUserAvatar>(_context.AvataPhotos.AsNoTracking()
+                        .FirstOrDefault(x => x.UserId == item.UserSharedId && x.IsUsed == true)),
                     UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     UserStatus = new GetUserStatusDTO
@@ -205,25 +161,27 @@ namespace Application.Queries.GetUserPost
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber =  _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
-                        CommentNumber =  _context.CommentSharePosts
-                        .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
+                        ReactNumber = _context.ReactSharePosts.AsNoTracking().Count(x => x.SharePostId == item.SharePostId),
+                        CommentNumber = _context.CommentSharePosts.AsNoTracking().Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
                         ShareNumber = 0,
                     }
-                });
-            }
+                }).ToListAsync(cancellationToken);
 
-            var getuserpost = new GetUserPostResult();
-            getuserpost.totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize);
+            var combine = userPosts.Concat(sharePosts).ToList();
 
-            combine = combine.OrderByDescending(x => x.CreatedAt)
-                            .Skip((request.Page - 1) * request.PageSize)
-                            .Take(request.PageSize)
-                            .ToList();
-
-            getuserpost.result = combine;
+            var getuserpost = new GetUserPostResult
+            {
+                totalPage = (int)Math.Ceiling((double)combine.Count() / request.PageSize),
+                result = combine.OrderByDescending(x => x.CreatedAt)
+                                .Skip((request.Page - 1) * request.PageSize)
+                                .Take(request.PageSize)
+                                .ToList()
+            };
+            stopwatch.Stop();
+            Debug.WriteLine($"Thời gian thực hiện truy vấn: {stopwatch.ElapsedMilliseconds} ms");
             return Result<GetUserPostResult>.Success(getuserpost);
         }
+
 
     }
 }

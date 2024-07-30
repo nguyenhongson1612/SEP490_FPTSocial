@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -25,12 +26,14 @@ namespace Application.Commands.DeleteCommentUserVideoPost
         }
         public async Task<Result<DeleteCommentUserVideoPostCommandResult>> Handle(DeleteCommentUserVideoPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
             var UserVideoComment = _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostVideoId == UserVideoComment.UserPostVideoId).FirstOrDefault();
+
             var result = new DeleteCommentUserVideoPostCommandResult();
             if (UserVideoComment == null)
             {
@@ -45,7 +48,43 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                 else
                 {
                     UserVideoComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var csp = new Domain.CommandModels.CommentVideoPost
+                    {
+                        CommentVideoPostId = UserVideoComment.CommentVideoPostId,
+                        UserPostVideoId = UserVideoComment.UserPostVideoId,
+                        UserId = UserVideoComment.UserId,
+                        Content = UserVideoComment.Content,
+                        ParentCommentId = UserVideoComment.ParentCommentId,
+                        ListNumber = UserVideoComment.ListNumber,
+                        LevelCmt = UserVideoComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = UserVideoComment.CreatedDate,
+                        IsBanned = UserVideoComment.IsBanned,
+                    };
+                    _context.CommentVideoPosts.Update(csp);
+                    if (postReactCount != null)
+                    {
+                        if (postReactCount.CommentCount > 0)
+                        {
+                            postReactCount.CommentCount--;
+                        }
+
+                        var prc = new Domain.CommandModels.PostReactCount
+                        {
+                            PostReactCountId = postReactCount.PostReactCountId,
+                            UserPostId = postReactCount.UserPostId,
+                            UserPostPhotoId = postReactCount.UserPostPhotoId,
+                            UserPostVideoId = postReactCount.UserPostVideoId,
+                            ReactCount = postReactCount.ReactCount,
+                            CommentCount = postReactCount.CommentCount,
+                            ShareCount = postReactCount.ShareCount,
+                            CreateAt = postReactCount.CreateAt,
+                            UpdateAt = DateTime.Now,
+                        };
+
+                        _context.PostReactCounts.Update(prc);
+                    }
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,14 @@ namespace Application.Commands.CreateReactGroupVideoPost
     public class CreateReactGroupVideoPostCommandHandler : ICommandHandler<CreateReactGroupVideoPostCommand, CreateReactGroupVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactGroupVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,16 +40,24 @@ namespace Application.Commands.CreateReactGroupVideoPost
             }
 
             // 1. Kiểm tra phản ứng hiện có
-            var existingReact = await _context.ReactGroupVideoPosts
+            var existingReact = await _queryContext.ReactGroupVideoPosts
                 .FirstOrDefaultAsync(r => r.GroupPostVideoId == request.GroupPostVideoId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.GroupPostReactCounts
+            var postReactCount = await _queryContext.GroupPostReactCounts
                 .FirstOrDefaultAsync(prc => prc.GroupPostVideoId == request.GroupPostVideoId);
             if (existingReact != null)
             {
                 // 2. Xử lý phản ứng hiện có
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
-                    _context.ReactGroupVideoPosts.Remove(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactGroupVideoPost
+                    {
+                        ReactGroupVideoPostId = existingReact.ReactGroupVideoPostId,
+                        GroupPostVideoId = existingReact.GroupPostVideoId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
+                    _context.ReactGroupVideoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -60,8 +71,15 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 else
                 {
                     // Khác loại phản ứng -> Cập nhật
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = new Domain.CommandModels.ReactGroupVideoPost
+                    {
+                        ReactGroupVideoPostId = existingReact.ReactGroupVideoPostId,
+                        GroupPostVideoId = existingReact.GroupPostVideoId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
+                    _context.ReactGroupVideoPosts.Update(commandReact);
                 }
             }
             else
@@ -83,6 +101,16 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 }
             }
 
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
+            _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Trả về kết quả

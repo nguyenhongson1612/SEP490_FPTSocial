@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -25,12 +26,14 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
         }
         public async Task<Result<DeleteCommentGroupVideoPostCommandResult>> Handle(DeleteCommentGroupVideoPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
             var GroupVideoComment = _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefault();
+            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostVideoId == GroupVideoComment.GroupPostVideoId).FirstOrDefault();
+
             var result = new DeleteCommentGroupVideoPostCommandResult();
             if (GroupVideoComment == null)
             {
@@ -44,8 +47,38 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
                 }
                 else
                 {
-                    GroupVideoComment.IsHide = true;
-                    _querycontext.SaveChanges();
+                    var cgvs = new Domain.CommandModels.CommentGroupVideoPost
+                    {
+                        CommentGroupVideoPostId = GroupVideoComment.CommentGroupVideoPostId,
+                        GroupPostVideoId = GroupVideoComment.GroupPostVideoId,
+                        UserId = GroupVideoComment.UserId,
+                        Content = GroupVideoComment.Content,
+                        ParentCommentId = GroupVideoComment.ParentCommentId,
+                        ListNumber = GroupVideoComment.ListNumber,
+                        LevelCmt = GroupVideoComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = GroupVideoComment?.CreatedDate,
+                        IsBanned = GroupVideoComment?.IsBanned,
+                    };
+                    _context.CommentGroupVideoPosts.Update(cgvs);
+                    if (groupPostReactCount != null)
+                    {
+                        if (groupPostReactCount.CommentCount > 0)
+                        {
+                            groupPostReactCount.CommentCount--;
+                        }
+                        var prc = new Domain.CommandModels.GroupPostReactCount
+                        {
+                            GroupPostReactCountId = groupPostReactCount.GroupPostReactCountId,
+                            GroupPostId = groupPostReactCount.GroupPostId,
+                            GroupPostPhotoId = groupPostReactCount.GroupPostPhotoId,
+                            ReactCount = groupPostReactCount.ReactCount,
+                            CommentCount = groupPostReactCount.CommentCount,
+                            ShareCount = groupPostReactCount.ShareCount,
+                        };
+                        _context.GroupPostReactCounts.Update(prc);
+                    }
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

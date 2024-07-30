@@ -22,7 +22,7 @@ namespace Application.Queries.GetReactByCommentVideoId
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public GetReactByCommentVideoIdQueryHandler(fptforumQueryContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public GetReactByCommentVideoIdQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

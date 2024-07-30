@@ -11,6 +11,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,16 @@ namespace Application.Commands.CreateUserCommentPost
     public class CreateUserCommentPostCommandHandler : ICommandHandler<CreateUserCommentPostCommand, CreateUserCommentPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -40,7 +43,7 @@ namespace Application.Commands.CreateUserCommentPost
         public async Task<Result<CreateUserCommentPostCommandResult>> Handle(CreateUserCommentPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -53,11 +56,11 @@ namespace Application.Commands.CreateUserCommentPost
 
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.PostReactCounts.Where(prc => prc.UserPostId == request.UserPostId).FirstOrDefaultAsync();
+            var postReactCount = await _queryContext.PostReactCounts.Where(prc => prc.UserPostId == request.UserPostId).FirstOrDefaultAsync();
             // If the request has a ParentCommentId, find the parent comment
             if (request.ParentCommentId.HasValue)
             {
-                var parentComment = await _context.CommentPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentPosts.FindAsync(request.ParentCommentId.Value);
 
                 // Check if the parent comment exists
                 if (parentComment == null || parentComment.IsHide == true)
@@ -109,6 +112,18 @@ namespace Application.Commands.CreateUserCommentPost
             }
 
             // Add the comment to the context and save changes
+            var prc = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = DateTime.Now,
+            };
+            _context.PostReactCounts.Update(prc);
             await _context.CommentPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 

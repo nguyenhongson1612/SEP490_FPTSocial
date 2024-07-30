@@ -48,10 +48,10 @@ namespace Application.Queries.GetNotifications
             {
                 GetAvatarSenderDTO getAvatarSenderDTO = new();
                 var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
-                if (_querycontext == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
-                }
+                //if (_querycontext == null)
+                //{
+                //    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+                //}
                 var user = _querycontext.UserProfiles.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)));
                 var avatarUrl = _querycontext.AvataPhotos.FirstOrDefault(x => x.UserId.Equals(Guid.Parse(senderId)) && x.IsUsed == true);
                 if (avatarUrl == null)
@@ -64,11 +64,6 @@ namespace Application.Queries.GetNotifications
                     getAvatarSenderDTO.UserProfile = user;
                     getAvatarSenderDTO.SenderAvatarURL = avatarUrl.AvataPhotosUrl;
                 }
-                if (user == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
-
 
 
                 return getAvatarSenderDTO;
@@ -90,10 +85,6 @@ namespace Application.Queries.GetNotifications
                                                         .OrderByDescending(x => x.CreatedAt)
                                                         .Take(10)
                                                         .ToList();
-                if (notice == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
                 return notice;
             }
         }
@@ -140,10 +131,6 @@ namespace Application.Queries.GetNotifications
                                          CreatedAt = (DateTime)n.CreatedAt,
                                      }).ToList();
 
-                if (notifications == null || notifications.Count == 0)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
 
                 return notifications;
             }
@@ -186,10 +173,6 @@ namespace Application.Queries.GetNotifications
                     throw new ErrorException(StatusCodeEnum.Context_Not_Found);
                 }
                 var notice = _querycontext.Notifications.Where(x => x.SenderId.Equals(Guid.Parse(senderId))).ToList();
-                if (notice == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
                 return notice;
             }
         }
@@ -199,16 +182,12 @@ namespace Application.Queries.GetNotifications
             using (var scope = _serviceProvider.CreateScope())
             {
                 var _querycontext = scope.ServiceProvider.GetRequiredService<fptforumQueryContext>();
-                if (_querycontext == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
-                }
+                //if (_querycontext == null)
+                //{
+                //    throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+                //}
                 var user = _querycontext.GroupMembers.Where(x => x.GroupId.Equals(Guid.Parse(groupId)) && x.IsJoined == true).ToList();
 
-                if (user == null)
-                {
-                    throw new ErrorException(StatusCodeEnum.U01_Not_Found);
-                }
                 return user;
             }
 

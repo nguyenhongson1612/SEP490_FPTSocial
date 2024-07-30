@@ -5,9 +5,10 @@ import { useForm } from 'react-hook-form'
 import Step2 from './Step2'
 import Step3 from './Step3'
 import Progress from './Progress'
-import { createByLogin } from '~/apis'
+import { createByLogin, createUserChat } from '~/apis'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { DEFAULT_AVATAR } from '~/utils/constants'
 
 function FirstTimeLogin() {
   const [step, setStep] = useState(0)
@@ -52,7 +53,7 @@ function FirstTimeLogin() {
 
   const submitData = (data) => {
     // console.log(data)
-    const initialSubmitData = {
+    const submitData1 = {
       'useId': null,
       'firstName': data?.firstName,
       'lastName': data?.lastName,
@@ -76,7 +77,7 @@ function FirstTimeLogin() {
       'homeTown': data?.homeTown,
       'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : null,
       'userNumber': profileFedi?.userId,
-      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : null,
+      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
       'userSetting': [{
         'settingId': null
       }],
@@ -88,9 +89,16 @@ function FirstTimeLogin() {
         'webAffiliationUrl': null
       }]
     }
+    const submitData2 = {
+      "firstName": data?.firstName,
+      "lastName": data?.lastName,
+      "email": data?.email,
+      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
+    }
     // console.log(initialSubmitData)
     toast.promise(
-      createByLogin(initialSubmitData),
+      createByLogin(submitData1),
+      createUserChat(submitData2),
       { pending: 'Creating...' }
     ).then(() => {
       navigate('/')

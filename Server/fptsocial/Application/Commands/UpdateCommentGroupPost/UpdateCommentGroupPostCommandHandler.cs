@@ -21,14 +21,16 @@ namespace Application.Commands.UpdateCommentGroupPost
     public class UpdateCommentGroupPostCommandHandler : ICommandHandler<UpdateCommentGroupPostCommand, UpdateCommentGroupPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public UpdateCommentGroupPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public UpdateCommentGroupPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -48,7 +50,7 @@ namespace Application.Commands.UpdateCommentGroupPost
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
             }
-            var GroupPost = await _context.CommentGroupPosts.FindAsync(request.CommentGroupPostId);
+            var GroupPost = await _querycontext.CommentGroupPosts.FindAsync(request.CommentGroupPostId);
             if (GroupPost == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -59,7 +61,7 @@ namespace Application.Commands.UpdateCommentGroupPost
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var comment = await _context.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).FirstOrDefaultAsync();
+            var comment = await _querycontext.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).FirstOrDefaultAsync();
             List<CheckingBadWord.BannedWord> bannedWords = _checkContent.Compare2String(request.Content);
 
             if (comment != null) 
@@ -70,6 +72,20 @@ namespace Application.Commands.UpdateCommentGroupPost
                     comment.IsHide = true;
                 }
             }
+            var cgp = new Domain.CommandModels.CommentGroupPost 
+            {
+                CommentGroupPostId = comment.CommentGroupPostId,
+                GroupPostId = comment.GroupPostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
+            _context.CommentGroupPosts.Update(cgp);
             await _context.SaveChangesAsync();
             var result = _mapper.Map<UpdateCommentGroupPostCommandResult>(comment);
             result.BannedWords = bannedWords;

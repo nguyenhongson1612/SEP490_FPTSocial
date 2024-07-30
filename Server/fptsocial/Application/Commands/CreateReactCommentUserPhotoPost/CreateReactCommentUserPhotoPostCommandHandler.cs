@@ -40,7 +40,7 @@ namespace Application.Commands.CreateReactCommentUserPostPhoto
             }
 
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactPhotoPostComments
+            var existingReact = await _querycontext.ReactPhotoPostComments
                 .FirstOrDefaultAsync(r =>
                     r.UserPostPhotoId == request.UserPostPhotoId &&
                     r.CommentPhotoPostId == request.CommentPhotoPostId &&
@@ -55,13 +55,30 @@ namespace Application.Commands.CreateReactCommentUserPostPhoto
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactPhotoPostComments.Remove(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactPhotoPostComment
+                    {
+                        ReactPhotoPostCommentId = existingReact.ReactPhotoPostCommentId,
+                        UserPostPhotoId = existingReact.UserPostPhotoId,
+                        CommentPhotoPostId = existingReact.CommentPhotoPostId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate
+                    };
+                    _context.ReactPhotoPostComments.Remove(commandReact);
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = new Domain.CommandModels.ReactPhotoPostComment
+                    {
+                        ReactPhotoPostCommentId = existingReact.ReactPhotoPostCommentId,
+                        UserPostPhotoId = existingReact.UserPostPhotoId,
+                        CommentPhotoPostId = existingReact.CommentPhotoPostId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
+                    _context.ReactPhotoPostComments.Update(commandReact);
                 }
             }
             else

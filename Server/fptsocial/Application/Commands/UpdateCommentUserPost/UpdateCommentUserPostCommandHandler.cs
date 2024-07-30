@@ -40,7 +40,7 @@ namespace Application.Commands.UpdateCommentUserPost
         public async Task<Result<UpdateCommentUserPostCommandResult>> Handle(UpdateCommentUserPostCommand request, CancellationToken cancellationToken)
         {
             // Check if the context is null
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -70,7 +70,19 @@ namespace Application.Commands.UpdateCommentUserPost
                 comment.IsHide = true;
             }
 
-            var commandModel = ModelConverter.Convert<Domain.QueryModels.CommentPost, Domain.CommandModels.CommentPost>(comment);
+            var commandModel = new Domain.CommandModels.CommentPost 
+            {
+                CommentId = comment.CommentId,
+                UserPostId = comment.UserPostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                ParentCommentId = comment.ParentCommentId,
+                ListNumber = comment.ListNumber,
+                LevelCmt = comment.LevelCmt,
+                IsHide = comment.IsHide,
+                CreatedDate = comment.CreatedDate,
+                IsBanned = comment.IsBanned,
+            };
             _context.CommentPosts.Update(commandModel);
             _context.SaveChanges();
 

@@ -7,6 +7,7 @@ using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,14 +21,16 @@ namespace Application.Commands.CreateUserCommentGroupVideoPost
     public class CreateUserCommentGroupVideoPostCommandHandler : ICommandHandler<CreateUserCommentGroupVideoPostCommand, CreateUserCommentGroupVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
         private readonly IConfiguration _configuration;
         private readonly CheckingBadWord _checkContent;
 
-        public CreateUserCommentGroupVideoPostCommandHandler(fptforumCommandContext context, IMapper mapper, IConfiguration configuration)
+        public CreateUserCommentGroupVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext queryContext, IMapper mapper, IConfiguration configuration)
         {
             _context = context;
+            _queryContext = queryContext;
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
@@ -37,7 +40,7 @@ namespace Application.Commands.CreateUserCommentGroupVideoPost
         public async Task<Result<CreateUserCommentGroupVideoPostCommandResult>> Handle(CreateUserCommentGroupVideoPostCommand request, CancellationToken cancellationToken)
         {
             // Check for null context
-            if (_context == null)
+            if (_context == null || _queryContext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -51,13 +54,13 @@ namespace Application.Commands.CreateUserCommentGroupVideoPost
             // Initialize comment level and list number
             int levelCmt = 1;
             string listNumber = null;
-            var postReactCount = await _context.GroupPostReactCounts.Where(prc => prc.GroupPostVideoId == request.GroupPostVideoId).FirstOrDefaultAsync();
+            var postReactCount = await _queryContext.GroupPostReactCounts.Where(prc => prc.GroupPostVideoId == request.GroupPostVideoId).FirstOrDefaultAsync();
 
             // Check if there's a parent comment
             if (request.ParentCommentId.HasValue)
             {
                 // Find parent comment in the database
-                var parentComment = await _context.CommentGroupVideoPosts.FindAsync(request.ParentCommentId.Value);
+                var parentComment = await _queryContext.CommentGroupVideoPosts.FindAsync(request.ParentCommentId.Value);
 
                 // If parent comment doesn't exist, throw an error
                 if (parentComment == null || parentComment.IsHide == true)
@@ -109,6 +112,16 @@ namespace Application.Commands.CreateUserCommentGroupVideoPost
             }
 
             // Add comment to the database and save changes
+            var prc = new Domain.CommandModels.GroupPostReactCount
+            {
+                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                GroupPostId = postReactCount.GroupPostId,
+                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+            };
+            _context.GroupPostReactCounts.Update(prc);
             await _context.CommentGroupVideoPosts.AddAsync(comment);
             await _context.SaveChangesAsync();
 

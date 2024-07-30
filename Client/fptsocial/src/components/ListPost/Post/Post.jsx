@@ -33,22 +33,22 @@ function Post({ postData }) {
   if (postData?.isShare) {
     if (postData?.userPostShareId) {
       postShareType = POST_TYPES.PROFILE_POST
-      postShareData = { ...postData?.userPostShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.userPostVideoShareId) {
       postShareType = POST_TYPES.VIDEO_POST
-      postShareData = { ...postData?.userPostVideoShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostVideoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.userPostPhotoShareId) {
       postShareType = POST_TYPES.PHOTO_POST
-      postShareData = { ...postData?.userPostPhotoShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostPhotoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.groupPostShareId) {
       postShareType = POST_TYPES.GROUP_SHARE_POST
-      postShareData = { ...postData?.groupPostShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.groupPostShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.groupPostPhotoShareId) {
       postShareType = POST_TYPES.GROUP_PHOTO_POST
-      postShareData = { ...postData?.groupPostPhotoShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.groupPostPhotoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else {
       postShareType = POST_TYPES.GROUP_VIDEO_POST
-      postShareData = { ...postData?.groupPostVideoShare, userNameShare: postData?.userNameShare, userAvatarShare: postData?.userAvatarShare }
+      postShareData = { ...postData?.groupPostVideoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
     }
   }
   const isProfile = postType == POST_TYPES.PROFILE_POST

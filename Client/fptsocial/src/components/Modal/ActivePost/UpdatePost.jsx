@@ -147,6 +147,7 @@ function UpdatePost() {
     } : isGroup ? {
       'userId': currentUser?.userId,
       'groupPostId': currentActivePost?.postId,
+      'groupId': currentActivePost?.groupId,
       'content': content,
       'groupStatusId': choseStatus?.groupStatusId,
       'photos': listMedias?.filter(e => e.type == 'image')?.map(e => e?.url),
@@ -158,6 +159,7 @@ function UpdatePost() {
       'content': content
     } : isGroupShare && {
       'groupSharePostId': currentActivePost?.postId,
+      'groupId': currentActivePost?.groupId,
       'userId': currentUser?.userId,
       'content': content
     }

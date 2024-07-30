@@ -41,7 +41,7 @@ namespace Application.Commands.UpdateUserPostCommand
 
         public async Task<Result<UpdateUserPostCommandResult>> Handle(UpdateUserPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -124,32 +124,61 @@ namespace Application.Commands.UpdateUserPostCommand
 
             foreach (var photoUrl in photosToDelete)
             {
-                var photoToDelete = await _context.Photos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
+                var photoToDelete = await _querycontext.Photos.FirstOrDefaultAsync(p => p.PhotoUrl == photoUrl);
                 if (photoToDelete != null)
                 {
-                    var userPostPhotosToHide = await _context.UserPostPhotos
+                    var userPostPhotosToHide = await _querycontext.UserPostPhotos
                         .Where(upp => upp.PhotoId == photoToDelete.PhotoId)
                         .ToListAsync();
 
                     foreach (var userPostPhoto in userPostPhotosToHide)
                     {
-                        userPostPhoto.IsHide = true; // Mark as hidden instead of deleting
+                        var upp = new Domain.CommandModels.UserPostPhoto 
+                        {
+                            UserPostPhotoId = userPostPhoto.UserPostPhotoId,
+                            UserPostId = userPostPhoto.UserPostId,
+                            PhotoId = userPostPhoto.PhotoId,
+                            Content = userPostPhoto.Content,
+                            UserPostPhotoNumber = userPostPhoto.UserPostPhotoNumber,
+                            UserStatusId = userPostPhoto.UserStatusId,
+                            IsHide = true,
+                            CreatedAt = userPostPhoto.CreatedAt,
+                            UpdatedAt = userPostPhoto.UpdatedAt,
+                            PostPosition = userPostPhoto.PostPosition,
+                            IsBanned = userPostPhoto.IsBanned,
+                        };
+                        _context.UserPostPhotos.Update(upp);
                     }
                 }
             }
 
             foreach (var videoUrl in videosToDelete)
             {
-                var videoToDelete = await _context.Videos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
+                var videoToDelete = await _querycontext.Videos.FirstOrDefaultAsync(v => v.VideoUrl == videoUrl);
                 if (videoToDelete != null)
                 {
-                    var userPostVideosToHide = await _context.UserPostVideos
+                    var userPostVideosToHide = await _querycontext.UserPostVideos
                         .Where(upv => upv.VideoId == videoToDelete.VideoId)
                         .ToListAsync();
 
                     foreach (var userPostVideo in userPostVideosToHide)
                     {
                         userPostVideo.IsHide = true; // Mark as hidden instead of deleting
+                        var upv = new Domain.CommandModels.UserPostVideo 
+                        {
+                            UserPostVideoId = userPostVideo.UserPostVideoId,
+                            UserPostId = userPostVideo.UserPostId,
+                            VideoId = userPostVideo.VideoId,
+                            Content = userPostVideo.Content,
+                            UserPostVideoNumber = userPostVideo.UserPostVideoNumber,
+                            UserStatusId = userPostVideo.UserStatusId,
+                            IsHide = true,
+                            CreatedAt = userPostVideo.CreatedAt,
+                            UpdatedAt = userPostVideo.UpdatedAt,
+                            PostPosition = userPostVideo.PostPosition,
+                            IsBanned = userPostVideo.IsBanned,
+                        };
+                        _context.UserPostVideos.Update(upv);
                     }
                 }
             }
@@ -215,8 +244,8 @@ namespace Application.Commands.UpdateUserPostCommand
             if (numberPost > 1)
             {
                 int postPosition = Math.Max(
-                    _context.UserPostPhotos.Where(upp => upp.UserPostId == userPost.UserPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
-                    _context.UserPostVideos.Where(upv => upv.UserPostId == userPost.UserPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
+                    _querycontext.UserPostPhotos.Where(upp => upp.UserPostId == userPost.UserPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
+                    _querycontext.UserPostVideos.Where(upv => upv.UserPostId == userPost.UserPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
                 );
 
                 if (newPhotos.Any())

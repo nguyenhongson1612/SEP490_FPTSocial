@@ -40,9 +40,12 @@ namespace Application.Queries.GetUserNotificationsList
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
+            var skip = (request.Page - 1) * request.PageSize;
             List<Domain.QueryModels.Notification> notifys = await _context.Notifications
                                     .Include(x => x.NotificationType)
                                     .Where(x => x.UserId.Equals(request.UserId))
+                                    .Skip(skip)
+                                    .Take(request.PageSize)
                                     .ToListAsync(cancellationToken);
             List<GetUserNotificationsListQueryResult> result = new();
             if (notifys == null)

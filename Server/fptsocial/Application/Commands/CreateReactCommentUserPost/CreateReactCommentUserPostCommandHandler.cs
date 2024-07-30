@@ -38,8 +38,14 @@ namespace Application.Commands.CreateReactCommentUserPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            var comment = await _querycontext.CommentPosts.FirstOrDefaultAsync(c => c.CommentId == request.CommentId, cancellationToken);
+            if (comment == null)
+            {
+                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
+            }
+
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
-            var existingReact = await _context.ReactComments
+            var existingReact = await _querycontext.ReactComments
                 .FirstOrDefaultAsync(r =>
                     r.UserPostId == request.UserPostId &&
                     r.CommentId == request.CommentId &&
@@ -54,13 +60,32 @@ namespace Application.Commands.CreateReactCommentUserPost
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
                     // Nếu cùng loại reaction, xóa phản ứng
-                    _context.ReactComments.Remove(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactComment
+                    {
+                        ReactCommentId = existingReact.ReactCommentId,
+                        UserPostId = existingReact.UserPostId,
+                        CommentId = existingReact.CommentId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
+                    _context.ReactComments.Remove(commandReact);
+
                 }
                 else
                 {
                     // Nếu khác loại, cập nhật loại reaction và thời gian
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = new Domain.CommandModels.ReactComment
+                    {
+                        ReactCommentId = existingReact.ReactCommentId,
+                        UserPostId = existingReact.UserPostId,
+                        CommentId = existingReact.CommentId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
+                    _context.ReactComments.Update(commandReact);
+
                 }
             }
             else
@@ -81,12 +106,6 @@ namespace Application.Commands.CreateReactCommentUserPost
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            // 4. Lấy thông tin comment
-            var comment = await _querycontext.CommentPosts.FirstOrDefaultAsync(c => c.CommentId == request.CommentId, cancellationToken);
-            if (comment == null)
-            {
-                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
-            }
 
             // 5. Trả về kết quả
             var result = existingReact != null

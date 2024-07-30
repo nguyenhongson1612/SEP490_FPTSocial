@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { getGender, getInterest, getRelationships, getStatus, updateUserProfile } from '~/apis'
+import { getGender, getInterest, getRelationships, getStatus, updateUserChat, updateUserProfile } from '~/apis'
 import Contact from './Contact'
 import Information from './Information'
 import Gender from './Gender'
@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { getUserByUserId } from '~/redux/user/userSlice'
 import { IconX } from '@tabler/icons-react'
+import { DEFAULT_AVATAR } from '~/utils/constants'
 
 function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
   const { watch, reset, register, setValue, handleSubmit, formState: { errors } } = useForm()
@@ -106,9 +107,18 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
         return acc
       }, [])
     }
+
+    const submitDataChat = {
+      "userId": user?.userId,
+      "firstName": data?.firstName,
+      "lastName": data?.lastName,
+      "email": user?.email,
+      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
+    }
     // console.log(submitData, 'submitdata')
     toast.promise(
       updateUserProfile(submitData),
+      updateUserChat(submitDataChat),
       { pending: 'Updating is in progress...' }
     ).then(() => {
       setIsOpenModalUpdateProfile(false)

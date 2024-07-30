@@ -19,12 +19,14 @@ namespace Application.Commands.CreateReactUserVideoPost
     public class CreateReactUserVideoPostCommandHandler : ICommandHandler<CreateReactUserVideoPostCommand, CreateReactUserVideoPostCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _queryContext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
         public CreateReactUserVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _queryContext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -37,16 +39,24 @@ namespace Application.Commands.CreateReactUserVideoPost
             }
 
             // 1. Kiểm tra phản ứng hiện có
-            var existingReact = await _context.ReactVideoPosts
+            var existingReact = await _queryContext.ReactVideoPosts
                 .FirstOrDefaultAsync(r => r.UserPostVideoId == request.UserPostVideoId && r.UserId == request.UserId, cancellationToken);
-            var postReactCount = await _context.PostReactCounts
+            var postReactCount = await _queryContext.PostReactCounts
                 .FirstOrDefaultAsync(prc => prc.UserPostVideoId == request.UserPostVideoId);
             if (existingReact != null)
             {
                 // 2. Xử lý phản ứng hiện có
                 if (existingReact.ReactTypeId == request.ReactTypeId)
                 {
-                    _context.ReactVideoPosts.Remove(existingReact);
+                    var commandReact = new Domain.CommandModels.ReactVideoPost
+                    {
+                        ReactVideoPostId = existingReact.ReactVideoPostId,
+                        UserPostVideoId = existingReact.UserPostVideoId,
+                        ReactTypeId = existingReact.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = existingReact.CreatedDate,
+                    };
+                    _context.ReactVideoPosts.Remove(commandReact);
                     if (postReactCount != null)
                     {
                         postReactCount.ReactCount--;
@@ -60,8 +70,15 @@ namespace Application.Commands.CreateReactUserVideoPost
                 else
                 {
                     // Khác loại phản ứng -> Cập nhật
-                    existingReact.ReactTypeId = request.ReactTypeId;
-                    existingReact.CreatedDate = DateTime.Now;
+                    var commandReact = new Domain.CommandModels.ReactVideoPost
+                    {
+                        ReactVideoPostId = existingReact.ReactVideoPostId,
+                        UserPostVideoId = existingReact.UserPostVideoId,
+                        ReactTypeId = request.ReactTypeId,
+                        UserId = existingReact.UserId,
+                        CreatedDate = DateTime.Now
+                    };
+                    _queryContext.ReactVideoPosts.Update(existingReact);
                 }
             }
             else
@@ -82,7 +99,20 @@ namespace Application.Commands.CreateReactUserVideoPost
                     postReactCount.ReactCount++;
                 }
             }
+            var prc = new Domain.CommandModels.PostReactCount
+            {
+                PostReactCountId = postReactCount.PostReactCountId,
+                UserPostId = postReactCount.UserPostId,
+                UserPostPhotoId = postReactCount.UserPostPhotoId,
+                UserPostVideoId = postReactCount.UserPostVideoId,
+                ReactCount = postReactCount.ReactCount,
+                CommentCount = postReactCount.CommentCount,
+                ShareCount = postReactCount.ShareCount,
+                CreateAt = postReactCount.CreateAt,
+                UpdateAt = DateTime.Now,
+            };
 
+            _context.PostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
             // 4. Trả về kết quả

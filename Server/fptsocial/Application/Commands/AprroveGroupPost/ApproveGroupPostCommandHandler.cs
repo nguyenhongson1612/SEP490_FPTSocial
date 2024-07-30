@@ -49,7 +49,7 @@ namespace Application.Commands.AprroveGroupPost
             if (checkRole.ToString() == "Admin" || checkRole.ToString() == "Moderator")
             {
                 var groupPost = await _querycontext.GroupPosts.Where(x => x.GroupPostId == request.GroupPostId).FirstOrDefaultAsync();
-                var groupSharePost = await _querycontext.GroupSharePosts.Where(x => x.GroupPostId == request.GroupPostId).FirstOrDefaultAsync();
+                var groupSharePost = await _querycontext.GroupSharePosts.Where(x => x.GroupSharePostId == request.GroupSharePostId).FirstOrDefaultAsync();
 
                 Domain.CommandModels.GroupPost gp = new Domain.CommandModels.GroupPost();
                 Domain.CommandModels.GroupSharePost gsp = new Domain.CommandModels.GroupSharePost();

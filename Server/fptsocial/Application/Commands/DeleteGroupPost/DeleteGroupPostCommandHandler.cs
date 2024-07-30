@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Core.Helper;
 using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
@@ -27,7 +28,7 @@ namespace Application.Commands.DeleteGroupPost
         }
         public async Task<Result<DeleteGroupPostCommandResult>> Handle(DeleteGroupPostCommand request, CancellationToken cancellationToken)
         {
-            if (request == null || _querycontext == null) 
+            if (_context == null || _querycontext == null) 
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
@@ -46,18 +47,69 @@ namespace Application.Commands.DeleteGroupPost
                 }
                 else
                 {
-                    groupPost.IsHide = true;
+                    var gp = new Domain.CommandModels.GroupPost 
+                    {
+                        GroupPostId = groupPost.GroupPostId,
+                        UserId = groupPost.UserId,
+                        Content = groupPost.Content,
+                        GroupPostNumber = groupPost.GroupPostNumber,
+                        GroupStatusId = groupPost.GroupStatusId,
+                        CreatedAt = groupPost.CreatedAt,
+                        IsHide = true,
+                        UpdatedAt = groupPost.UpdatedAt,
+                        GroupPhotoId = groupPost.GroupPhotoId,
+                        GroupVideoId = groupPost.GroupVideoId,
+                        NumberPost = groupPost.NumberPost,
+                        IsBanned = groupPost.IsBanned,
+                        GroupId = groupPost.GroupId,
+                        IsPending = groupPost.IsPending,
+                    };
+                    _context.GroupPosts.Update(gp);
+
                     var GroupPhotoPost = _querycontext.GroupPostPhotos.Where(x => x.GroupPostId == request.GroupPostId).ToList();
                     foreach (var photoPost in GroupPhotoPost) 
                     {
-                        photoPost.IsHide = true;
+                        var gpp = new Domain.CommandModels.GroupPostPhoto
+                        {
+                            GroupPostPhotoId = photoPost.GroupPostPhotoId,
+                            GroupPostId = photoPost.GroupPostId,
+                            Content = photoPost.Content,
+                            GroupPhotoId = photoPost.GroupPhotoId,
+                            GroupStatusId= photoPost.GroupStatusId,
+                            GroupPostPhotoNumber = photoPost.GroupPostPhotoNumber,
+                            IsHide= true,
+                            CreatedAt = photoPost.CreatedAt,
+                            UpdatedAt = photoPost.UpdatedAt,
+                            PostPosition = photoPost.PostPosition,
+                            IsBanned= photoPost.IsBanned,
+                            GroupId = photoPost.GroupId,
+                            IsPending= photoPost.IsPending,
+
+                        };
+                        _context.GroupPostPhotos.Update(gpp);
                     }
                     var GroupVideoPost = _querycontext.GroupPostVideos.Where(x => x.GroupPostId == request.GroupPostId).ToList();
                     foreach (var videoPost in GroupVideoPost)
                     {
-                        videoPost.IsHide = true;
+                        var gpp = new Domain.CommandModels.GroupPostVideo
+                        {
+                            GroupPostVideoId = videoPost.GroupPostVideoId,
+                            GroupPostId = videoPost.GroupPostId,
+                            Content = videoPost.Content,
+                            GroupVideoId = videoPost.GroupPostId,
+                            GroupStatusId = videoPost.GroupStatusId,
+                            GroupPostVideoNumber = videoPost.GroupPostVideoNumber,
+                            IsHide= true,
+                            CreatedAt = videoPost.CreatedAt,
+                            UpdatedAt = videoPost.UpdatedAt,
+                            PostPosition = videoPost.PostPosition,
+                            IsBanned = videoPost.IsBanned,
+                            GroupId = videoPost.GroupId,
+                            IsPending= videoPost.IsPending,
+                        };
+                        _context.GroupPostVideos.Update(gpp);
                     }
-                    _querycontext.SaveChanges();
+                    _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }

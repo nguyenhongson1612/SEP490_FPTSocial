@@ -39,12 +39,12 @@ namespace Application.Commands.ShareUserPostCommand
 
         public async Task<Result<ShareUserPostCommandResult>> Handle(ShareUserPostCommand request, CancellationToken cancellationToken)
         {
-            if (_context == null)
+            if (_context == null || _querycontext == null)
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var userPost = await _context.UserPosts
+            var userPost = await _querycontext.UserPosts
                                 .Include(up => up.UserPostPhotos)
                                 .Include(up => up.UserPostVideos)
                                 .FirstOrDefaultAsync(up => up.UserPostId == request.UserPostId, cancellationToken);
@@ -89,7 +89,7 @@ namespace Application.Commands.ShareUserPostCommand
                 UserSharedId = request.UserSharedId,
             };
 
-            var countUserPost = _context.PostReactCounts.FirstOrDefault(x =>
+            var countUserPost = _querycontext.PostReactCounts.FirstOrDefault(x =>
                                 (x.UserPostId == request.UserPostId && x.UserPostPhotoId == null && x.UserPostVideoId == null) ||
                                 (x.UserPostPhotoId == request.UserPostPhotoId && x.UserPostId == null && x.UserPostVideoId == null) ||
                                 (x.UserPostVideoId == request.UserPostVideoId && x.UserPostId == null && x.UserPostPhotoId == null)
@@ -98,10 +98,22 @@ namespace Application.Commands.ShareUserPostCommand
             if (countUserPost != null)
             {
                 countUserPost.ShareCount++;
+                var commandModel = new Domain.CommandModels.PostReactCount
+                {
+                    PostReactCountId = countUserPost.PostReactCountId,
+                    UserPostId = countUserPost.UserPostId,
+                    UserPostPhotoId = countUserPost.UserPostPhotoId,
+                    ReactCount = countUserPost.ReactCount,
+                    CommentCount = countUserPost.CommentCount,
+                    ShareCount = countUserPost.ShareCount,
+                    CreateAt = countUserPost.CreateAt,
+                    UpdateAt = countUserPost.UpdateAt,
+                };
+                _context.PostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 
-            var countGroupPost = _context.GroupPostReactCounts.FirstOrDefault(x =>
+            var countGroupPost = _querycontext.GroupPostReactCounts.FirstOrDefault(x =>
                                 (x.GroupPostId == request.GroupPostId && x.GroupPostPhotoId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostPhotoId == request.GroupPostPhotoId && x.GroupPostId == null && x.GroupPostVideoId == null) ||
                                 (x.GroupPostVideoId == request.GroupPostVideoId && x.GroupPostId == null && x.GroupPostPhotoId == null)
@@ -111,6 +123,16 @@ namespace Application.Commands.ShareUserPostCommand
             if (countGroupPost != null)
             {
                 countGroupPost.ShareCount++;
+                var commandModel = new Domain.CommandModels.GroupPostReactCount
+                {
+                    GroupPostReactCountId = countGroupPost.GroupPostReactCountId,
+                    GroupPostId = countGroupPost.GroupPostId,
+                    GroupPostPhotoId = countGroupPost.GroupPostPhotoId,
+                    ReactCount = countGroupPost.ReactCount,
+                    CommentCount = countGroupPost.CommentCount,
+                    ShareCount = countGroupPost.ShareCount,
+                };
+                _context.GroupPostReactCounts.Update(commandModel);
                 _context.SaveChanges();
             }
 

@@ -18,15 +18,13 @@ namespace Application.Queries.GetReactByCommentId
 {
     public class GetReactByCommentIdQueryHandler : IQueryHandler<GetReactByCommentIdQuery, GetReactByCommentIdQueryResult>
     {
-        private readonly fptforumCommandContext _context;
-        private readonly fptforumQueryContext _querycontext;
+        private readonly fptforumQueryContext _context;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public GetReactByCommentIdQueryHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
+        public GetReactByCommentIdQueryHandler(fptforumQueryContext context, IMapper mapper)
         {
             _context = context;
-            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }

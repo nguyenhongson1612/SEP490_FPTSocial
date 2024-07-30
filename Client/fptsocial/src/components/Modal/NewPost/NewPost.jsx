@@ -95,7 +95,7 @@ function NewPost({ postType, groupId }) {
   }
   return (
     <div id="new-post"
-      className="w-full sm:w-[500px] flex flex-col gap-2 border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
+      className="w-full sm:w-[500px] flex flex-col gap-2 p-4 rounded-lg shadow-lg bg-white"
     >
       <div className="flex gap-4 items-center w-full ">
         <Link
