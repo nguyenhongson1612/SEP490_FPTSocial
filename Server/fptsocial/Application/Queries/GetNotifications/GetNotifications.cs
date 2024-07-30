@@ -109,6 +109,7 @@ namespace Application.Queries.GetNotifications
                                      orderby n.CreatedAt descending
                                      select new
                                      {
+                                         n.NotificationId,
                                          n.SenderId,
                                          SenderName = s.FirstName + " " + s.LastName,
                                          n.NotiMessage,
@@ -122,6 +123,7 @@ namespace Application.Queries.GetNotifications
                                      }).Take(10).AsEnumerable() // Convert to in-memory collection to allow for nullable string property assignment
                                      .Select(n => new NotificationOutDTO
                                      {
+                                         NotificationId = n.NotificationId,
                                          SenderId = n.SenderId.ToString(),
                                          SenderName = n.SenderName,
                                          SenderAvatar = n.SenderAvatar ?? string.Empty,
