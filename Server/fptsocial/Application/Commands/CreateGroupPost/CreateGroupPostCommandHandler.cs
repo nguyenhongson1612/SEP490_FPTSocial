@@ -1,4 +1,6 @@
 ﻿using Application.Commands.CreateUserInterest;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -42,8 +44,8 @@ namespace Application.Commands.CreateGroupPost
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var photos = request.Photos ?? new List<string>();
-            var videos = request.Videos ?? new List<string>();
+            var photos = request.Photos ?? new List<PhotoAddOnPost>();
+            var videos = request.Videos ?? new List<VideoAddOnPost>();
 
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
@@ -71,11 +73,11 @@ namespace Application.Commands.CreateGroupPost
 
             if (photos.Count() == 1 && numberPost == 1)
             {
-                PhotoIdSingle = await UploadImage(photos.First(), request.GroupId);
+                PhotoIdSingle = await UploadImage(photos.First().PhotoUrl, request.GroupId);
             }
             if (videos.Count() == 1 && numberPost == 1)
             {
-                VideoIdSingle = await UploadVideo(videos.First(), request.GroupId);
+                VideoIdSingle = await UploadVideo(videos.First().VideoUrl, request.GroupId);
             }
 
             Domain.CommandModels.GroupPost groupPost = new Domain.CommandModels.GroupPost
@@ -126,10 +128,9 @@ namespace Application.Commands.CreateGroupPost
 
             if (numberPost > 1)
             {
-                int postPosition = 0;
                 foreach (var photo in photos)
                 {
-                    Guid photoId = await UploadImage(photo, request.GroupId);
+                    Guid photoId = await UploadImage(photo.PhotoUrl, request.GroupId);
                     Domain.CommandModels.GroupPostPhoto groupPostPhoto = new Domain.CommandModels.GroupPostPhoto
                     {
                         GroupPostPhotoId = _helper.GenerateNewGuid(),
@@ -142,12 +143,12 @@ namespace Application.Commands.CreateGroupPost
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1,
+                        PostPosition = photo.Position,
                         IsPending = statusGroup,
+                        IsBanned = false,
                     };
                     await _context.GroupPostPhotos.AddAsync(groupPostPhoto);
                     await _context.SaveChangesAsync();
-                    postPosition++;
 
                     Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {
@@ -163,7 +164,7 @@ namespace Application.Commands.CreateGroupPost
 
                 foreach (var video in videos)
                 {
-                    Guid videoId = await UploadVideo(video, request.GroupId);
+                    Guid videoId = await UploadVideo(video.VideoUrl, request.GroupId);
                     Domain.CommandModels.GroupPostVideo groupPostVideo = new Domain.CommandModels.GroupPostVideo
                     {
                         GroupPostVideoId = _helper.GenerateNewGuid(),
@@ -176,12 +177,12 @@ namespace Application.Commands.CreateGroupPost
                         IsHide = groupPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1,
+                        PostPosition = video.Position,
                         IsPending = statusGroup,
+                        IsBanned = false,
                     };
                     await _context.GroupPostVideos.AddAsync(groupPostVideo);
                     await _context.SaveChangesAsync();
-                    postPosition++;
 
                     Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
                     {

@@ -19,4 +19,10 @@ namespace Application.DTO.UserPostPhotoDTO
         public DateTime? UpdatedAt { get; set; }
     }
 
+    public class PhotoAddOnPost
+    {
+        public string? PhotoUrl { get; set; }
+        public int Position { get; set; }
+    }
+
 }

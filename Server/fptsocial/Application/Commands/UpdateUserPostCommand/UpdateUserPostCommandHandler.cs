@@ -1,4 +1,6 @@
 ﻿using Application.Commands.Post;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -52,13 +54,13 @@ namespace Application.Commands.UpdateUserPostCommand
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }
 
-            if(request.UserId != userPost.UserId)
+            if (request.UserId != userPost.UserId)
             {
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photos = request.Photos ?? new List<string>();
-            var videos = request.Videos ?? new List<string>();
+            var photos = request.Photos ?? new List<PhotoAddOnPost>();
+            var videos = request.Videos ?? new List<VideoAddOnPost>();
 
             var existingPhotoUrls = _querycontext.UserPostPhotos
                 .Where(p => p.UserPostId == userPost.UserPostId)
@@ -70,11 +72,14 @@ namespace Application.Commands.UpdateUserPostCommand
                 .Select(v => v.Video.VideoUrl)
                 .ToList();
 
-            var newPhotos = photos.Except(existingPhotoUrls).ToList();
-            var newVideos = videos.Except(existingVideoUrls).ToList();
+            var newPhotoUrls = photos.Select(p => p.PhotoUrl).ToList();
+            var newVideoUrls = videos.Select(v => v.VideoUrl).ToList();
 
-            var photosToDelete = existingPhotoUrls.Except(photos).ToList();
-            var videosToDelete = existingVideoUrls.Except(videos).ToList();
+            var newPhotos = newPhotoUrls.Except(existingPhotoUrls).ToList();
+            var newVideos = newVideoUrls.Except(existingVideoUrls).ToList();
+
+            var photosToDelete = existingPhotoUrls.Except(newPhotoUrls).ToList();
+            var videosToDelete = existingVideoUrls.Except(newVideoUrls).ToList();
 
             if (userPost.PhotoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
             {
@@ -95,7 +100,7 @@ namespace Application.Commands.UpdateUserPostCommand
                     NumberPost = userPost.NumberPost,
                     IsBanned = userPost.IsBanned,
                 };
-                _context.UserPosts.Update(upp   );
+                _context.UserPosts.Update(upp);
                 _context.SaveChanges();
             }
 
@@ -133,7 +138,7 @@ namespace Application.Commands.UpdateUserPostCommand
 
                     foreach (var userPostPhoto in userPostPhotosToHide)
                     {
-                        var upp = new Domain.CommandModels.UserPostPhoto 
+                        var upp = new Domain.CommandModels.UserPostPhoto
                         {
                             UserPostPhotoId = userPostPhoto.UserPostPhotoId,
                             UserPostId = userPostPhoto.UserPostId,
@@ -164,7 +169,7 @@ namespace Application.Commands.UpdateUserPostCommand
                     foreach (var userPostVideo in userPostVideosToHide)
                     {
                         userPostVideo.IsHide = true; // Mark as hidden instead of deleting
-                        var upv = new Domain.CommandModels.UserPostVideo 
+                        var upv = new Domain.CommandModels.UserPostVideo
                         {
                             UserPostVideoId = userPostVideo.UserPostVideoId,
                             UserPostId = userPostVideo.UserPostId,
@@ -191,11 +196,11 @@ namespace Application.Commands.UpdateUserPostCommand
 
             if (photos.Count() == 1 && numberPost == 1)
             {
-                PhotoIdSingle = await UploadImage(photos.First(), request.UserId, request.UserStatusId);
+                PhotoIdSingle = await UploadImage(photos.First().PhotoUrl, request.UserId, request.UserStatusId);
             }
             if (videos.Count() == 1 && numberPost == 1)
             {
-                VideoIdSingle = await UploadVideo(videos.First(), request.UserId, request.UserStatusId);
+                VideoIdSingle = await UploadVideo(videos.First().VideoUrl, request.UserId, request.UserStatusId);
             }
 
             userPost.Content = request.Content;
@@ -243,56 +248,56 @@ namespace Application.Commands.UpdateUserPostCommand
 
             if (numberPost > 1)
             {
-                int postPosition = Math.Max(
-                    _querycontext.UserPostPhotos.Where(upp => upp.UserPostId == userPost.UserPostId && upp.IsHide == false).Max(upp => (int?)upp.PostPosition) ?? 0,
-                    _querycontext.UserPostVideos.Where(upv => upv.UserPostId == userPost.UserPostId && upv.IsHide == false).Max(upv => (int?)upv.PostPosition) ?? 0
-                );
-
+                // Use the positions provided in request.Photos and request.Videos
                 if (newPhotos.Any())
                 {
-                    foreach (var photo in newPhotos)
+                    foreach (var photo in photos)
                     {
-                        Guid photoId = await UploadImage(photo, request.UserId, request.UserStatusId);
-                        Domain.CommandModels.UserPostPhoto userPostPhoto = new Domain.CommandModels.UserPostPhoto
+                        if (newPhotos.Contains(photo.PhotoUrl))
                         {
-                            UserPostPhotoId = _helper.GenerateNewGuid(),
-                            UserPostId = userPost.UserPostId,
-                            PhotoId = photoId,
-                            Content = string.Empty,
-                            UserPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-",""),
-                            UserStatusId = userPost.UserStatusId,
-                            IsHide = userPost.IsHide,
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
-                            PostPosition = postPosition + 1
-                        };
-                        await _context.UserPostPhotos.AddAsync(userPostPhoto);
-                        await _context.SaveChangesAsync();
-                        postPosition++;
+                            Guid photoId = await UploadImage(photo.PhotoUrl, request.UserId, request.UserStatusId);
+                            Domain.CommandModels.UserPostPhoto userPostPhoto = new Domain.CommandModels.UserPostPhoto
+                            {
+                                UserPostPhotoId = _helper.GenerateNewGuid(),
+                                UserPostId = userPost.UserPostId,
+                                PhotoId = photoId,
+                                Content = string.Empty,
+                                UserPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
+                                UserStatusId = userPost.UserStatusId,
+                                IsHide = userPost.IsHide,
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now,
+                                PostPosition = photo.Position,
+                            };
+                            await _context.UserPostPhotos.AddAsync(userPostPhoto);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
 
                 if (newVideos.Any())
                 {
-                    foreach (var video in newVideos)
+                    foreach (var video in videos)
                     {
-                        Guid videoId = await UploadVideo(video, request.UserId, request.UserStatusId);
-                        Domain.CommandModels.UserPostVideo userPostVideo = new Domain.CommandModels.UserPostVideo
+                        if (newVideos.Contains(video.VideoUrl))
                         {
-                            UserPostVideoId = _helper.GenerateNewGuid(),
-                            UserPostId = userPost.UserPostId,
-                            VideoId = videoId,
-                            Content = string.Empty,
-                            UserPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
-                            UserStatusId = userPost.UserStatusId,
-                            IsHide = userPost.IsHide,
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
-                            PostPosition = postPosition + 1
-                        };
-                        await _context.UserPostVideos.AddAsync(userPostVideo);
-                        await _context.SaveChangesAsync();
-                        postPosition++;
+                            Guid videoId = await UploadVideo(video.VideoUrl, request.UserId, request.UserStatusId);
+                            Domain.CommandModels.UserPostVideo userPostVideo = new Domain.CommandModels.UserPostVideo
+                            {
+                                UserPostVideoId = _helper.GenerateNewGuid(),
+                                UserPostId = userPost.UserPostId,
+                                VideoId = videoId,
+                                Content = string.Empty,
+                                UserPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
+                                UserStatusId = userPost.UserStatusId,
+                                IsHide = userPost.IsHide,
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now,
+                                PostPosition = video.Position
+                            };
+                            await _context.UserPostVideos.AddAsync(userPostVideo);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                 }
             }
@@ -308,11 +313,6 @@ namespace Application.Commands.UpdateUserPostCommand
             {
                 return Result<UpdateUserPostCommandResult>.Success(result);
             }
-        }
-
-        private bool AreListsEqual(List<string> list1, List<string> list2)
-        {
-            return list1.Count == list2.Count && !list1.Except(list2).Any();
         }
 
         private async Task<Guid> UploadImage(string photoUrl, Guid userId, Guid userStatusId)
@@ -361,6 +361,5 @@ namespace Application.Commands.UpdateUserPostCommand
             }
             return content;
         }
-
     }
 }

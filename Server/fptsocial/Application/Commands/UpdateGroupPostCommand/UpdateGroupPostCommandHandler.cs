@@ -1,4 +1,6 @@
 ﻿using Application.Commands.Post;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -57,8 +59,8 @@ namespace Application.Commands.UpdateGroupPostCommand
                 throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
             }
 
-            var photos = request.Photos ?? new List<string>();
-            var videos = request.Videos ?? new List<string>();
+            var photos = request.Photos ?? new List<PhotoAddOnPost>();
+            var videos = request.Videos ?? new List<VideoAddOnPost>();
 
             var existingPhotoUrls = _querycontext.GroupPostPhotos
                 .Where(p => p.GroupPostId == GroupPost.GroupPostId)
@@ -70,12 +72,11 @@ namespace Application.Commands.UpdateGroupPostCommand
                 .Select(v => v.GroupVideo.VideoUrl)
                 .ToList();
 
-            var newPhotos = photos.Except(existingPhotoUrls).ToList();
-            var newVideos = videos.Except(existingVideoUrls).ToList();
+            var newPhotos = photos.Where(p => !existingPhotoUrls.Contains(p.PhotoUrl)).ToList();
+            var newVideos = videos.Where(v => !existingVideoUrls.Contains(v.VideoUrl)).ToList();
 
-            var photosToDelete = existingPhotoUrls.Except(photos).ToList();
-            var videosToDelete = existingVideoUrls.Except(videos).ToList();
-
+            var photosToDelete = existingPhotoUrls.Except(photos.Select(p => p.PhotoUrl)).ToList();
+            var videosToDelete = existingVideoUrls.Except(videos.Select(v => v.VideoUrl)).ToList();
 
             Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == GroupPost.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
 
@@ -87,7 +88,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                     UserId = GroupPost.UserId,
                     Content = GroupPost.Content,
                     GroupPostNumber = GroupPost.GroupPostNumber,
-                    GroupStatusId  = groupStatusId,
+                    GroupStatusId = groupStatusId,
                     IsHide = GroupPost.IsHide,
                     CreatedAt = GroupPost.CreatedAt,
                     UpdatedAt = DateTime.Now,
@@ -148,6 +149,10 @@ namespace Application.Commands.UpdateGroupPostCommand
                             CreatedAt = GroupPostPhoto.CreatedAt,
                             UpdatedAt = DateTime.Now,
                             PostPosition = GroupPostPhoto.PostPosition,
+                            GroupId = GroupPostPhoto.GroupId,
+                            IsBanned = GroupPostPhoto.IsBanned,
+                            IsPending = GroupPostPhoto.IsPending,
+
                         };
                         _context.GroupPostPhotos.Update(gpp);
                     }
@@ -177,6 +182,9 @@ namespace Application.Commands.UpdateGroupPostCommand
                             CreatedAt = GroupPostVideo.CreatedAt,
                             UpdatedAt = DateTime.Now,
                             PostPosition = GroupPostVideo.PostPosition,
+                            GroupId = GroupPostVideo.GroupId,
+                            IsBanned = GroupPostVideo.IsBanned,
+                            IsPending = GroupPostVideo.IsPending,
                         };
                         _context.GroupPostVideos.Update(gpv);
                     }
@@ -191,11 +199,11 @@ namespace Application.Commands.UpdateGroupPostCommand
 
             if (photos.Count() == 1 && numberPost == 1)
             {
-                PhotoIdSingle = await UploadImage(photos.First(), (Guid)GroupPost.GroupId);
+                PhotoIdSingle = await UploadImage(photos.First().PhotoUrl, (Guid)GroupPost.GroupId);
             }
             if (videos.Count() == 1 && numberPost == 1)
             {
-                VideoIdSingle = await UploadVideo(videos.First(), (Guid)GroupPost.GroupId);
+                VideoIdSingle = await UploadVideo(videos.First().VideoUrl, (Guid)GroupPost.GroupId);
             }
 
             GroupPost.Content = request.Content;
@@ -252,14 +260,14 @@ namespace Application.Commands.UpdateGroupPostCommand
                 {
                     foreach (var photo in newPhotos)
                     {
-                        Guid photoId = await UploadImage(photo, (Guid)GroupPost.GroupId);
+                        Guid photoId = await UploadImage(photo.PhotoUrl, (Guid)GroupPost.GroupId);
                         Domain.CommandModels.GroupPostPhoto GroupPostPhoto = new Domain.CommandModels.GroupPostPhoto
                         {
                             GroupPostPhotoId = _helper.GenerateNewGuid(),
                             GroupPostId = GroupPost.GroupPostId,
                             GroupPhotoId = photoId,
                             Content = string.Empty,
-                            GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-",""),
+                            GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                             GroupStatusId = groupStatusId,
                             IsHide = GroupPost.IsHide,
                             CreatedAt = DateTime.Now,
@@ -276,7 +284,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                 {
                     foreach (var video in newVideos)
                     {
-                        Guid videoId = await UploadVideo(video, (Guid)GroupPost.GroupId);
+                        Guid videoId = await UploadVideo(video.VideoUrl, (Guid)GroupPost.GroupId);
                         Domain.CommandModels.GroupPostVideo GroupPostVideo = new Domain.CommandModels.GroupPostVideo
                         {
                             GroupPostVideoId = _helper.GenerateNewGuid(),
@@ -310,16 +318,16 @@ namespace Application.Commands.UpdateGroupPostCommand
             }
         }
 
-        private async Task<Guid> UploadImage(string photoUrl, Guid userId)
+        private async Task<Guid> UploadImage(string photoUrl, Guid groupId)
         {
             var photoEntity = new Domain.CommandModels.GroupPhoto
             {
                 GroupPhotoId = _helper.GenerateNewGuid(),
-                GroupId = userId,
+                GroupId = groupId,
                 PhotoUrl = photoUrl,
                 GroupPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
             };
 
             await _context.GroupPhotos.AddAsync(photoEntity);
@@ -337,7 +345,7 @@ namespace Application.Commands.UpdateGroupPostCommand
                 VideoUrl = videoUrl,
                 GroupVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
             };
 
             await _context.GroupVideos.AddAsync(videoEntity);

@@ -17,4 +17,10 @@ namespace Application.DTO.UserPostVideoDTO
         public DateTime? UpdatedAt { get; set; }
     }
 
+    public class VideoAddOnPost
+    {
+        public string? VideoUrl { get; set; }
+        public int Position { get; set; }
+    }
+
 }
