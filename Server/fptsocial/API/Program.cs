@@ -136,7 +136,7 @@ builder.Services.AddSingleton(cloudinary);
 builder.Services.AddSingleton<CheckingBadWord>();
 builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 builder.Services.AddHttpClient<ChatEngineService>();
-
+builder.Services.AddHttpClient<FptAccountServices>();
 var app = builder.Build();
 var connectionString = app.Configuration.GetConnectionString("QueryConnection");
 
