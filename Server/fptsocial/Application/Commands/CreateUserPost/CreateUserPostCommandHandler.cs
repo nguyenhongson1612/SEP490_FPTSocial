@@ -1,4 +1,6 @@
 ﻿using Application.Commands.CreateUserInterest;
+using Application.DTO.UserPostPhotoDTO;
+using Application.DTO.UserPostVideoDTO;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -37,8 +39,8 @@ namespace Application.Commands.Post
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var photos = request.Photos ?? new List<string>();
-            var videos = request.Videos ?? new List<string>();
+            var photos = request.Photos ?? new List<PhotoAddOnPost>();
+            var videos = request.Videos ?? new List<VideoAddOnPost>();
 
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
@@ -101,7 +103,6 @@ namespace Application.Commands.Post
 
             if (numberPost > 1)
             {
-                int postPosition = 0;
                 foreach (var photo in photos)
                 {
                     Guid photoId = await UploadImage(photo, request.UserId, request.UserStatusId);
@@ -116,11 +117,10 @@ namespace Application.Commands.Post
                         IsHide = userPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1
+                        PostPosition = photo.Position
                     };
                     await _context.UserPostPhotos.AddAsync(userPostPhoto);
                     await _context.SaveChangesAsync();
-                    postPosition++;
 
                     Domain.CommandModels.PostReactCount photoPostReactCount = new Domain.CommandModels.PostReactCount
                     {
@@ -149,11 +149,10 @@ namespace Application.Commands.Post
                         IsHide = userPost.IsHide,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        PostPosition = postPosition + 1
+                        PostPosition = video.Position,
                     };
                     await _context.UserPostVideos.AddAsync(userPostVideo);
                     await _context.SaveChangesAsync();
-                    postPosition++;
 
                     Domain.CommandModels.PostReactCount videoPostReactCount = new Domain.CommandModels.PostReactCount
                     {
@@ -181,13 +180,13 @@ namespace Application.Commands.Post
             }
         }
 
-        private async Task<Guid> UploadImage(string photoUrl, Guid userId, Guid userStatusId)
+        private async Task<Guid> UploadImage(PhotoAddOnPost photo, Guid userId, Guid userStatusId)
         {
             var photoEntity = new Domain.CommandModels.Photo
             {
                 PhotoId = _helper.GenerateNewGuid(),
                 UserId = userId,
-                PhotoUrl = photoUrl,
+                PhotoUrl = photo.PhotoUrl,
                 UserStatusId = userStatusId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
@@ -199,13 +198,13 @@ namespace Application.Commands.Post
             return photoEntity.PhotoId;
         }
 
-        private async Task<Guid> UploadVideo(string videoUrl, Guid userId, Guid userStatusId)
+        private async Task<Guid> UploadVideo(VideoAddOnPost video, Guid userId, Guid userStatusId)
         {
             var videoEntity = new Domain.CommandModels.Video
             {
                 VideoId = _helper.GenerateNewGuid(),
                 UserId = userId,
-                VideoUrl = videoUrl,
+                VideoUrl = video.VideoUrl,
                 UserStatusId = userStatusId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
