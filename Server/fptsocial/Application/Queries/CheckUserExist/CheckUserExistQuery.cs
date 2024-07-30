@@ -12,5 +12,6 @@ namespace Application.Queries.CheckUserExist
     public class CheckUserExistQuery : IQuery<CheckUserExistQueryResult>
     {
         public Guid? UserId { get; set; }
+        public string RoleName { get; set; }
     }
 }

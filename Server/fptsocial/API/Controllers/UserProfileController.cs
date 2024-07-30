@@ -107,6 +107,7 @@ namespace API.Controllers
             }
             var input = new CheckUserExistQuery();
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            input.RoleName = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "role").Value;
             //input.FeId = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "feid").Value;
             var res = await _sender.Send(input);
             return Success(res.Value);
