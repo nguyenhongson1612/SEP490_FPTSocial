@@ -8,6 +8,7 @@ using Application.Queries.GetAllFriend;
 using Application.Queries.GetAllFriendOtherProfiel;
 using Application.Queries.GetAllRequestFriend;
 using Application.Queries.GetButtonFriend;
+using Application.Queries.GetButtonSendMessage;
 using Application.Queries.GetInvatedJoinGroup;
 using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
@@ -357,6 +358,27 @@ namespace API.Controllers
                 return BadRequest();
             }
             var input = new GetUserIsBlockedQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getbuttonsendmessage")]
+        public async Task<IActionResult> GetButtonSendMessage(GetButtonSendMessageQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
             input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);
