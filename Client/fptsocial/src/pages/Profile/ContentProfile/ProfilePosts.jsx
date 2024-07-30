@@ -9,7 +9,7 @@ function ProfilePosts({ listPost, user }) {
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div
         id='info'
-        className='w-full sm:w-[500px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
+        className='w-full mt-8 sm:w-[500px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
         <div className='flex flex-col p-4 gap-3'>
           <h3 className='text-xl font-bold'>Profile</h3>
           <div className='flex gap-1'><IconUser stroke={2} color='#c8d3e1' /><span className='font-semibold'>{user?.firstName + ' ' + user?.lastName || 'No information'}</span></div>
@@ -19,7 +19,7 @@ function ProfilePosts({ listPost, user }) {
           <div className='flex gap-1'><IconCake stroke={2} color='#c8d3e1' /> Birthday&nbsp;&nbsp;<span className='font-semibold'>{new Date(user?.birthDay).toLocaleDateString() || 'No information'}</span></div>
         </div>
       </div>
-      <div className=' flex flex-col gap-3'>
+      <div className='flex flex-col gap-3'>
         <NewPost postType={POST_TYPES.PROFILE_POST} />
         <ListPost listPost={listPost} />
       </div>

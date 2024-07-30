@@ -7,21 +7,9 @@ export default {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    screens: {
-      'xs': '480px',
-      'sm': '640px',
-      'md': '768px',
-      'lg': '1024px',
-      'xl': '1280px',
-      '2xl': '1536px',
-    },
     extend: {
-      // fontFamily: {
-      //   Karla: ['Karla', 'sans-serif']
-      // },
       boxShadow: {
         '4edges': '3px 3px 5px rgb(0 0 0 / 0.2), -3px -3px 5px rgb(0 0 0 / 0.2)'
-
       },
       colors: {
         'orangeFpt': '#F27125',
@@ -110,12 +98,17 @@ export default {
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
+        facebook: ['Segoe UI Historic', 'Segoe UI', 'Helvetica', 'Arial', 'sans-seriff']
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1.5' }],
         sm: ['0.875rem', { lineHeight: '1.5715' }],
-        base: ['1rem', { lineHeight: '1.5', letterSpacing: '-0.01em' }],
-        lg: ['1.125rem', { lineHeight: '1.5', letterSpacing: '-0.01em' }],
+        base: ['15px', {
+          lineHeight: '1.25rem',
+          letterSpacing: '-0.01em',
+          fontWeight: '500',
+        }],
+        lg: ['17px', { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '600' }],
         xl: ['1.25rem', { lineHeight: '1.5', letterSpacing: '-0.01em' }],
         '2xl': ['1.5rem', { lineHeight: '1.33', letterSpacing: '-0.01em' }],
         '3xl': ['1.88rem', { lineHeight: '1.33', letterSpacing: '-0.01em' }],
@@ -144,20 +137,6 @@ export default {
       zIndex: {
         60: '60',
       },
-      // keyframes: {
-      //   slideDown: {
-      //     '0%': { transform: 'translateY(-100%)' },
-      //     '100%': { transform: 'translateY(0)' },
-      //   },
-      //   fadeIn: {
-      //     from: { opacity: 0 },
-      //     to: { opacity: 1 }
-      //   }
-      // },
-      // animation: {
-      //   slideDown: 'slideDown .5s ease-in-out',
-      //   fadeIn: 'fadeIn .5s ease-in-out',
-      // }
     },
   },
   // corePlugins: {

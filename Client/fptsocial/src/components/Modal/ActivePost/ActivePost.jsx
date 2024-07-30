@@ -129,7 +129,7 @@ function ActivePost() {
         open={isShowActivePost}
         onClose={() => dispatch(clearAndHireCurrentActivePost())}
       >
-        <div className='flex flex-col items-center gap-3 w-[95%] sm:w-[600px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
+        <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
         h-[90%] bg-white border-gray-300 shadow-md rounded-md'>
           <div id='post-detail-author'
             className='h-[60px] w-full flex justify-between items-center px-4'>

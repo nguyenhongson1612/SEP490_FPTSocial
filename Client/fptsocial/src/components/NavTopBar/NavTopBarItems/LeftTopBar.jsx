@@ -52,11 +52,12 @@ function LeftTopBar() {
     className="flex gap-1 md:gap-5 justify-around items-center"
   >
     {!isSearch &&
-      <Link to={'/home'} className="flex items-center">
+      <Link to={'/home'} className="flex items-center rounded-full border border-white">
         <img
-          src={FPTUen}
+          // src={FPTUen}
+          src='https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/25/a3/fd/25a3fd67-a758-8e6f-99e2-c0c2f629d04c/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.webp'
           alt="home-img"
-          className="w-[85px]"
+          className="w-[45px] rounded-full"
         />
       </Link>
     }

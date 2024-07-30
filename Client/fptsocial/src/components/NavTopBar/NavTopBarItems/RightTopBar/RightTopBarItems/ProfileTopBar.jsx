@@ -32,7 +32,9 @@ function ProfileTopBar() {
     className="relative"
   >
     <div className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer" ref={profileNavBarRef} onClick={handleClick}>
-      <CurrentUserAvatar />
+      <div className='rounded-3xl border border-white'>
+        <CurrentUserAvatar />
+      </div>
     </div>
     <Popover
       open={isOpenPopover}

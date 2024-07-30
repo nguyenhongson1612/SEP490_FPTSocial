@@ -10,23 +10,10 @@
 @import 'tailwindcss/utilities';
 
 body {
-  @apply font-sans text-base font-normal text-black bg-fbWhite
+  @apply font-facebook text-base
 }
 
-@layer base {
-  h1 {
-  @apply text-2xl font-bold;
-  }
-  h2 {
-  @apply text-xl;
-  }
-  h3 {
-  @apply text-lg;
-  }
-
-}
 @layer utilities {
-  
   .tiptap p.is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -45,30 +32,26 @@ body {
     @apply text-xs text-center rounded-full px-1;
   }
   
-  /* .epr-body::-webkit-scrollbar {
-    width: 10px !important;
-    height: 15px !important;
+  .custom-gradient {
+    background: linear-gradient(
+      to right,
+      #124DA3 1%,
+      #F37022 30%,
+      #F37022 70%,
+      #4EB748 99%
+    );
   }
-
-  .epr-body {
-      scrollbar-gutter: auto !important;
+  .custom-border-gradient {
+    border-image: linear-gradient(to right,#124DA3 20%,
+    #F37022 40%,
+    #F37022 60%,
+    #4EB748 80%);
+    border-image-slice: 1;
+    border-radius: 50%
   }
-
-  .epr-body::-webkit-scrollbar-thumb {
-      background: transparent !important;
-      border-radius: 100vh !important;
-      border: 1px solid #f6f7ed !important;
-  }
-
-  .epr-body:hover::-webkit-scrollbar-thumb {
-      background: rgb(242,113,36) !important;
-  } */
-  /* .m_539e827b:where([data-active]){
-    border-bottom: 2px solid red !important;
-  } */
 
   .scrollbar-none-track::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
     height: 15px;
   }
   .scrollbar-none-track{
