@@ -20,11 +20,10 @@ function HomePage() {
         <HomeLeftSideBar isShowHomeLeftSideBar={isShowHomeLeftSideBar} user={user} />
         {
           !isShowHomeLeftSideBar && <>
-            <div className='h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-6/12 overflow-y-auto scrollbar-none-track
+            <div className='h-[calc(100vh_-_55px)] basis-11/12 md:basis-9/12 xl:basis-7/12 overflow-y-auto scrollbar-none-track
               flex flex-col items-center gap-4'>
-              <div className='mt-8'>
-                <NewPost postType={POST_TYPES.PROFILE_POST} />
-              </div>
+              <NewPost postType={POST_TYPES.PROFILE_POST} />
+
               <ListPost />
             </div>
             <HomeRightSideBar />

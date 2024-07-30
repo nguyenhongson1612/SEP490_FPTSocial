@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             cancellationButtonProps: { color: 'inherit' },
             confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
           }}>
-            <CssBaseline />
+            {/* <CssBaseline /> */}
             <App />
             <ToastContainer position="bottom-left" theme="dark" autoClose={2000} hideProgressBar limit={2} newestOnTop />
           </ConfirmProvider>

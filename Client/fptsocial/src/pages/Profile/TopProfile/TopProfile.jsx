@@ -46,7 +46,8 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           MsgCode: 'User-001',
           Receiver: user?.userId,
           Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
-          AdditionsMsd: ''
+          AdditionsMsd: '',
+          ActionId: 'true'
         };
         console.log(signalRData);
         await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));

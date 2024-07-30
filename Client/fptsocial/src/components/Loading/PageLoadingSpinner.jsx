@@ -1,7 +1,10 @@
 function PageLoadingSpinner() {
   return (
     <div className="flex justify-center items-center h-full">
-      <div className='size-16 border-4 border-orangeFpt border-l-transparent rounded-full animate-spin'></div>
+      <div className='rounded-full overflow-hidden'>
+        <div className='size-16 border-4 rounded-full custom-border-gradient border-l-transparent animate-spin'></div>
+
+      </div>
     </div>
   )
 }

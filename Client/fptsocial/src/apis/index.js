@@ -137,3 +137,8 @@ export const searchAll = async ({ search, type = SEARCH_TYPE.ALL }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchAll?SearchContent=${search}&Type=${type}`)
   return response.data?.data
 }
+export const updateReadNotification = async (id) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/Notifications/UpdateNotificationStatusbynotificationid?NotificationId=${id}`)
+  return response.data?.data
+}
+

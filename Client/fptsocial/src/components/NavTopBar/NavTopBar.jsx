@@ -23,9 +23,13 @@ function NavTopBar() {
             // console.log('mes', message)
             if (!message.includes('connected success!'))
               toast.info('You have a new notification', { position: 'top-right' })
+            connectionSignalR.on('listReceiveNotification', message => {
+              // console.log('mes lis', message, Object.keys(JSON.parse(message)).length) 
+              dispatch(addLatestNotification(JSON.parse(message)))
+            })
           })
           connectionSignalR.on('listReceiveNotification', message => {
-            // console.log('mes lis', message, Object.keys(JSON.parse(message)).length)
+            console.log('mes lis', message, Object.keys(JSON.parse(message)).length)
             dispatch(addLatestNotification(JSON.parse(message)))
           })
         } catch (err) {
@@ -55,7 +59,9 @@ function NavTopBar() {
 
   return (
     <>
-      <div className="fixed top-0 h-[55px] w-full flex items-center bg-white border-b shadow-gray-300 shadow-sm z-50">
+      <div className="fixed top-0 h-[55px] w-full flex items-center
+      custom-gradient
+      border-b shadow-sm z-50">
         <div
           className="mx-3 flex w-full justify-evenly xs:justify-between items-center">
           <LeftTopBar />
