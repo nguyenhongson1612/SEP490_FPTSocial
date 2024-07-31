@@ -29,7 +29,6 @@ function Step0({ handleNext }) {
         </div>
       </div>
     </div>
-
   </div>
 }
 

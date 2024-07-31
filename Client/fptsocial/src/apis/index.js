@@ -69,6 +69,7 @@ export const getButtonFriend = async (userId, friendId) => {
   return response.data?.data
 }
 
+
 export const updateFriendStatus = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/friendstatus`, data)
   return response.data?.data
@@ -88,6 +89,15 @@ export const updateUserChat = async (data) => {
   return response.data?.data
 }
 
+
+export const createAccount = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/FptAccount/createaccount`, data)
+  return response.data?.data
+}
+export const resetPassword = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/FptAccount/resetpassword`, data)
+  return response.data?.data
+}
 export const createByLogin = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/createbylogin`, data)
   return response.data?.data

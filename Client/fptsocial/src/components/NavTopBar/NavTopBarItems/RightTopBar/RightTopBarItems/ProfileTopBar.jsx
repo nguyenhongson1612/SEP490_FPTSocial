@@ -12,8 +12,7 @@ function ProfileTopBar() {
 
   const handleLogout = async () => {
     try {
-      signOutRedirect()
-
+      await signOutRedirect()
     } catch (error) {
       toast.error('Error during logout')
     }
