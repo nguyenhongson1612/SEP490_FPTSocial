@@ -59,8 +59,11 @@ function NavTopBar() {
 
   return (
     <>
-      <div className="fixed top-0 h-[55px] w-full flex items-center
+      {/* <div className="fixed top-0 h-[55px] w-full flex items-center
       custom-gradient
+      border-b shadow-sm z-50"> */}
+      <div className="fixed top-0 h-[55px] w-full flex items-center
+      bg-orangeFpt
       border-b shadow-sm z-50">
         <div
           className="mx-3 flex w-full justify-evenly xs:justify-between items-center">

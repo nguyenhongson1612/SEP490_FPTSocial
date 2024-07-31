@@ -1,12 +1,13 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { useConfirm } from 'material-ui-confirm'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { AuthProvider } from 'oidc-react'
+import { useSelector } from 'react-redux'
 import Login from './pages/Auth/Login'
 import HomePage from './pages/HomePage/HomePage'
 import Profile from './pages/Profile/Profile'
 import NotFound from './pages/404/NotFound'
-import { AuthProvider } from 'oidc-react'
 import oidcConfig from './utils/authOidc'
 import FirstTimeLogin from './pages/FirstTimeLogin/FirstTimeLogin'
-import { useSelector } from 'react-redux'
 import { selectCurrentUser } from './redux/user/userSlice'
 import PageLoadingSpinner from './components/Loading/PageLoadingSpinner'
 import AccountCheckExist from './pages/Auth/AccountCheckExist'
@@ -19,11 +20,13 @@ import Media from './pages/Media'
 import Post from './pages/Post/_id'
 import ChatsPage from './pages/ChatsPage'
 import Dashboard from './pages/DashBoard/DashBoard'
+import Register from './pages/Auth/Register'
+import ForgotPassword from './pages/Auth/ForgotPassword'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
 const ProtectedRouteByJWT = ({ jwtToken }) => {
-  if (!jwtToken) return <Navigate to='/login' replace={true} />
+  if (!jwtToken) return window.location.assign('/login');
   return <Outlet />
 }
 
@@ -33,7 +36,10 @@ const ProtectedRouteByUser = ({ user }) => {
 }
 
 const UnauthorizeRoute = ({ jwtToken }) => {
-  if (jwtToken) return <Navigate to='/' replace={true} />
+  const location = useLocation()
+  if (!!(jwtToken && location.pathname === '/login')) {
+    return <Navigate to='/' replace={true} />
+  }
   return <Outlet />
 }
 
@@ -47,19 +53,22 @@ const Home = () => {
   else return <Navigate to='/' />
 }
 
-// const Logout = () => {
-//   if (!jwtToken) return <PageLoadingSpinner />
-//   else return <Navigate to='/' />
-// }
-
-
 function App() {
   const currentUser = useSelector(selectCurrentUser)
 
   return (
-    <AuthProvider {...oidcConfig}>
-      <Routes >
-        {/* Check after FEID login page*/}
+    <Routes>
+      {/* Unprotected Route */}
+      <Route element={<UnauthorizeRoute jwtToken={jwtToken} />}>
+        {/* Authentication */}
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/forgot' element={<ForgotPassword />} />
+      </Route>
+
+      {/* AuthProvider Wrapper */}
+      <Route element={<AuthProvider {...oidcConfig}><Outlet /></AuthProvider>}>
+        {/* Check after FEID login page */}
         <Route path='/home' element={<Home />} />
 
         {/* Protected Route */}
@@ -112,22 +121,13 @@ function App() {
 
             <Route exact path="/dashboard" element={<Dashboard />} />
           </Route>
-
-          {/* Auth */}
-
-        </Route>
-
-        {/* Unprotected Route */}
-        <Route element={<UnauthorizeRoute jwtToken={jwtToken} />}>
-          {/* Authentication */}
-          <Route path='/login' element={<Login />} />
         </Route>
 
         {/* 404 not found */}
         <Route path='/notavailable' element={<NotAvailable />} />
         <Route path='*' element={<NotFound />} />
-      </Routes>
-    </AuthProvider>
+      </Route>
+    </Routes>
   )
 }
 
