@@ -3,6 +3,10 @@ using Application.Commands.CreateReportPost;
 using Application.Commands.CreateReportProfile;
 using Application.Commands.CreateReportType;
 using Application.Commands.CreateUserGender;
+using Application.Queries.GetListReportComment;
+using Application.Queries.GetListReportGroup;
+using Application.Queries.GetListReportPost;
+using Application.Queries.GetListReportUser;
 using Application.Queries.GetReportType;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -99,6 +103,38 @@ namespace API.Controllers
             }
             command.ReportById = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getListReportUser")]
+        public async Task<IActionResult> GetListReportUser([FromQuery]GetListReportUserQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getListReportGroup")]
+        public async Task<IActionResult> GetListReportGroup([FromQuery] GetListReportGroupQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getListReportPost")]
+        public async Task<IActionResult> GetListReportPost([FromQuery] GetListReportPostQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getListReportComment")]
+        public async Task<IActionResult> GetListReportComment([FromQuery] GetListReportCommentQuery input)
+        {
+            var res = await _sender.Send(input);
             return Success(res.Value);
         }
     }
