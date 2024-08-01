@@ -17,12 +17,14 @@ namespace Application.Commands.CreateReportComment
     public class CreateReportCommentCommandHandler : ICommandHandler<CreateReportCommentCommand, CreateReportCommentCommandResult>
     {
         private readonly fptforumCommandContext _context;
+        private readonly fptforumQueryContext _querycontext;
         private readonly IMapper _mapper;
         private readonly GuidHelper _helper;
 
-        public CreateReportCommentCommandHandler(fptforumCommandContext context, IMapper mapper)
+        public CreateReportCommentCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
+            _querycontext = querycontext;
             _mapper = mapper;
             _helper = new GuidHelper();
         }
@@ -45,11 +47,22 @@ namespace Application.Commands.CreateReportComment
             reportCmt.CommentPhotoPostId =  request.CommentPhotoPostId;
             reportCmt.CommentVideoPostId = request.CommentVideoPostId;
             reportCmt.CommentGroupPostId = request.CommentGroupPostId;
-            reportCmt.CommentPhotoPostId =  request.CommentPhotoPostId;
+            reportCmt.CommentPhotoGroupPostId =  request.CommentPhotoGroupPostId;
             reportCmt.CommentGroupVideoPostId = request.CommentGroupVideoPostId;
             reportCmt.CommentSharePostId = request.CommentSharePostId;
             reportCmt.CommentGroupSharePostId =request.CommentGroupSharePostId;
             reportCmt.Content = request.Content;
+
+            reportCmt.Content = request.CommentId != null ? _querycontext.CommentPosts.Where(x => x.CommentId == request.CommentId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentPhotoPostId != null ? _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentVideoPostId != null ? _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentGroupPostId != null? _querycontext.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentPhotoGroupPostId != null ? _querycontext.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentGroupVideoPostId != null ? _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentSharePostId != null ? _querycontext.CommentSharePosts.Where(x => x.CommentSharePostId == request.CommentSharePostId).Select(x => x.Content).FirstOrDefault() :
+                        request.CommentGroupSharePostId != null ? _querycontext.CommentGroupSharePosts.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId).Select(x => x.Content).FirstOrDefault() :
+                        string.Empty;
+
             reportCmt.ReportById = (Guid) request.ReportById;
             reportCmt.ReportStatus = null;
             reportCmt.CreatedDate = DateTime.Now;
