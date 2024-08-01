@@ -22,6 +22,7 @@ import ChatsPage from './pages/ChatsPage'
 import Dashboard from './pages/DashBoard/DashBoard'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
+import Unauthorization from './pages/404/Unauthorization'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -32,6 +33,11 @@ const ProtectedRouteByJWT = ({ jwtToken }) => {
 
 const ProtectedRouteByUser = ({ user }) => {
   if (!user) return <Navigate to='/checkexist' replace={true} />
+  else if (user?.role == 'Societe-admin') return <Navigate to='/dashboard' replace={true} />
+  return <Outlet />
+}
+const ProtectedAdminRoute = ({ user }) => {
+  if (user?.role !== 'Societe-admin') return <Navigate to='/unauthorization' replace={true} />
   return <Outlet />
 }
 
@@ -77,6 +83,7 @@ function App() {
           <Route path='/chats-page' element={<ChatsPage />} />
           <Route element={<UnCheckUser user={currentUser} />}>
             <Route path='/firstlogin' element={<FirstTimeLogin />} />
+            <Route path='/updateadmin' element={<FirstTimeLogin />} />
           </Route>
 
           {/* Route need existed user */}
@@ -118,13 +125,23 @@ function App() {
               <Route path='pending-posts' element={<Group />} />
               <Route path='post/:postId' element={<Group />} />
             </Route>
-
-            <Route exact path="/dashboard" element={<Dashboard />} />
+          </Route>
+          <Route element={<ProtectedAdminRoute user={currentUser} />} >
+            <Route path="/dashboard" element={<Dashboard />} >
+              <Route path='users' element={<Dashboard />} />
+              <Route path='reports' element={<Dashboard />} >
+                <Route path='users' element={<Dashboard />} />
+                <Route path='groups' element={<Dashboard />} />
+                <Route path='posts' element={<Dashboard />} />
+                <Route path='comments' element={<Dashboard />} />
+              </Route>
+            </Route>
           </Route>
         </Route>
 
         {/* 404 not found */}
         <Route path='/notavailable' element={<NotAvailable />} />
+        <Route path='/unauthorization' element={<Unauthorization />} />
         <Route path='*' element={<NotFound />} />
       </Route>
     </Routes>

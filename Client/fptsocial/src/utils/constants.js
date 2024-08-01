@@ -1,7 +1,8 @@
 let apiRoot = "";
 // dev environment
 if (process.env.BUILD_MODE === "dev") {
-  apiRoot = "https://localhost:44329";
+  // apiRoot = "https://localhost:44329";
+  apiRoot = "https://fptforum-h0gtf0cmbhb8dkgq.eastus-01.azurewebsites.net";
 }
 // deploy environment
 if (process.env.BUILD_MODE === "production") {

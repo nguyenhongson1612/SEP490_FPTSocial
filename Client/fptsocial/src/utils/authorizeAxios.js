@@ -3,7 +3,9 @@ import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatters'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
-let authorizedAxiosInstance = axios.create()
+let authorizedAxiosInstance = axios.create({
+  // withCredentials: true
+})
 
 function getCookie(name) {
   const cookies = document.cookie.split(';');
@@ -22,7 +24,7 @@ const X_XSRF_TOKEN = getCookie('XSRF-TOKEN')
 authorizedAxiosInstance.defaults.timeout = 1000 * 60 * 10
 // authorizedAxiosInstance.defaults.headers.common['X-XSRF-TOKEN'] = `${X_XSRF_TOKEN}`
 authorizedAxiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + jwtToken
-
+// authorizedAxiosInstance.defaults.withCredentials = true;
 authorizedAxiosInstance.interceptors.request.use((config) => {
   // Do something before request is sent
   interceptorLoadingElements(true)

@@ -3,8 +3,8 @@ import { IconArrowRight } from '@tabler/icons-react';
 
 
 function Step0({ handleNext }) {
-  return <div className='grid grid-cols-12 h-full'>
-    <div className='img-bg col-span-12 lg:col-span-8 min-h-[10rem] max-lg:rounded-t-2xl lg:rounded-tl-2xl lg:rounded-bl-2xl'></div>
+  return <div className='grid grid-cols-12 h-screen w-screen'>
+    <div className='img-bg col-span-12 lg:col-span-8 min-h-[10rem]'></div>
     <div className='col-span-12 lg:col-span-4'>
       <div className='flex flex-col items-center gap-3 px-2 h-full'>
         <div className='flex flex-col items-center gap-2'>

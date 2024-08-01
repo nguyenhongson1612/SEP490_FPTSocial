@@ -4,26 +4,37 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { checkUserExist } from '~/apis'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
-import { getUserByUserId } from '~/redux/user/userSlice'
+import { addUser, getUserByUserId } from '~/redux/user/userSlice'
 
 function AccountCheckExist() {
+  const profileFeId = JSON.parse(sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.profile
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
     checkUserExist().then((resData) => {
-      if (resData?.data?.enumcode === 4)
-        navigate('/firstlogin')
+      if (resData?.data?.enumcode === 4) {
+        if (!resData?.data?.isAdmin)
+          navigate('/firstlogin')
+        else if (resData?.data?.isAdmin)
+          navigate('/updateadmin')
+      }
       else if (resData?.data?.enumcode === 7) {
-        toast.promise(
-          dispatch(getUserByUserId()),
-          { pending: 'Checking...' }
-        )
-          .then(res => {
-            if (!res.error) {
-              navigate('/')
-              toast.success('Welcome to FPT Social!')
-            }
-          })
+        if (resData?.data?.isAdmin) {
+          dispatch(addUser(profileFeId))
+          navigate('/dashboard')
+        }
+        else {
+          toast.promise(
+            dispatch(getUserByUserId()),
+            { pending: 'Checking...' }
+          )
+            .then(res => {
+              if (!res.error) {
+                navigate('/')
+                toast.success('Welcome to FPT Social!')
+              }
+            })
+        }
       }
     })
   }, [])

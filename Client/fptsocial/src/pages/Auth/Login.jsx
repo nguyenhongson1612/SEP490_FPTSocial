@@ -1,16 +1,14 @@
 import { IconArrowRight, IconLogin2 } from '@tabler/icons-react'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import FPTUen from '~/assets/img/FPTUen.png'
-import IconGoogle from '~/assets/svg/iconGoogle'
 import { logoutCurrentUser, selectCurrentUser } from '~/redux/user/userSlice'
 
 function Login() {
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   useEffect(() => {
-    console.log('🚀 ~ useEffect ~ currentUser:', currentUser)
     currentUser &&
       dispatch(logoutCurrentUser())
   }, [])

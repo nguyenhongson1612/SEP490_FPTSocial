@@ -19,7 +19,7 @@ import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, 
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
-function ActivePost() {
+function ActivePost({ isReportPost = false }) {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
@@ -66,10 +66,13 @@ function ActivePost() {
   }
 
   useEffect(() => {
-    isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId).then(data => setListComment(data?.posts))
-      : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId).then(data => setListComment(data?.posts))
-        : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId).then(data => setListComment(data?.posts))
-          : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId).then(data => setListComment(data?.posts))
+    if (!isReportPost) {
+      isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId).then(data => setListComment(data?.posts))
+        : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId).then(data => setListComment(data?.posts))
+          : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId).then(data => setListComment(data?.posts))
+            : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId).then(data => setListComment(data?.posts))
+    }
+
   }, [reloadComment])
   // console.log(currentActivePost)
   const handleCommentPost = () => {
@@ -156,23 +159,31 @@ function ActivePost() {
             }
             {!currentActivePost?.isShare && <PostMedia postData={currentActivePost} postType={postType} />}
             {/* <PostMedia postData={currentActivePost} postType={postType} /> */}
-            <PostReactStatus postData={currentActivePost} postType={postType} postReact={postReactStatus} />
-            <PostComment comment={listComment} postType={postType} />
+            {
+              !isReportPost && <>
+                <PostReactStatus postData={currentActivePost} postType={postType} postReact={postReactStatus} />
+                <PostComment comment={listComment} postType={postType} />
+              </>
+            }
+
           </div>
-          <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
-            <CurrentUserAvatar />
-            <div className='rounded-lg pt-2 w-full'>
-              <Tiptap
-                setContent={setContent}
-                content={content}
-                listPhotos={listPhotos}
-                setListPhotos={setListPhotos}
-                listVideos={listVideos}
-                setListVideos={setListVideos}
-                editorType={EDITOR_TYPE.COMMENT}
-              />
-            </div>
-          </form>
+          {
+            !isReportPost && <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
+              <CurrentUserAvatar />
+              <div className='rounded-lg pt-2 w-full'>
+                <Tiptap
+                  setContent={setContent}
+                  content={content}
+                  listPhotos={listPhotos}
+                  setListPhotos={setListPhotos}
+                  listVideos={listVideos}
+                  setListVideos={setListVideos}
+                  editorType={EDITOR_TYPE.COMMENT}
+                />
+              </div>
+            </form>
+          }
+
         </div>
       </Modal>
     </>

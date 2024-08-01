@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import SearchModal from '~/components/ModalSearch'
-import Notifications from '~/components/DropdownNotifications'
-import Help from '~/components/DropdownHelp'
-import UserMenu from '~/components/DropdownProfile'
+import UserMenu from './DropdownProfile'
+import { IconSearch } from '@tabler/icons-react';
 
 function Header({
   sidebarOpen,
@@ -13,7 +12,7 @@ function Header({
   const [searchModalOpen, setSearchModalOpen] = useState(false)
 
   return (
-    <header className={`sticky top-0 before:absolute before:inset-0 before:backdrop-blur-md max-lg:before:bg-white/90 dark:max-lg:before:bg-gray-800/90 before:-z-10 z-30 ${variant === 'v2' || variant === 'v3' ? 'before:bg-white after:absolute after:h-px after:inset-x-0 after:top-full after:bg-gray-200 dark:after:bg-gray-700/60 after:-z-10' : 'max-lg:shadow-sm lg:before:bg-gray-100/90 dark:lg:before:bg-gray-900/90'} ${variant === 'v2' ? 'dark:before:bg-gray-800' : ''} ${variant === 'v3' ? 'dark:before:bg-gray-900' : ''}`}>
+    <header className={`sticky top-0 before:-z-10 z-30 bg-fbWhite`}>
       <div className="px-4 sm:px-6 lg:px-8">
         <div className={`flex items-center justify-between h-16 ${variant === 'v2' || variant === 'v3' ? '' : 'lg:border-b border-gray-200 dark:border-gray-700/60'}`}>
 
@@ -30,25 +29,13 @@ function Header({
                 aria-controls="search-modal"
               >
                 <span className="sr-only">Search</span>
-                <svg
-                  className="fill-current text-gray-500/80 dark:text-gray-400/80"
-                  width={16}
-                  height={16}
-                  viewBox="0 0 16 16"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M7 14c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7ZM7 2C4.243 2 2 4.243 2 7s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5Z" />
-                  <path d="m13.314 11.9 2.393 2.393a.999.999 0 1 1-1.414 1.414L11.9 13.314a8.019 8.019 0 0 0 1.414-1.414Z" />
-                </svg>
+                <IconSearch />
               </button>
               <SearchModal id="search-modal" searchId="search" modalOpen={searchModalOpen} setModalOpen={setSearchModalOpen} />
             </div>
-            <Notifications align="right" />
-            <Help align="right" />
             {/*  Divider */}
             <hr className="w-px h-6 bg-gray-200 dark:bg-gray-700/60 border-none" />
             <UserMenu align="right" />
-
           </div>
 
         </div>
