@@ -43,6 +43,7 @@ namespace Application.Queries.CheckUserExist
                 {
                     result.enumcode = StatusCodeEnum.U01_Not_Found;
                     result.Message = StatusCodeEnum.U01_Not_Found.GetDescription();
+                    result.IsAdmin = true;
                     return Result<CheckUserExistQueryResult>.Success(result);
                 }
                 if (admin.IsActive == false)
@@ -65,6 +66,7 @@ namespace Application.Queries.CheckUserExist
                 {
                     result.enumcode = StatusCodeEnum.U01_Not_Found;
                     result.Message = StatusCodeEnum.U01_Not_Found.GetDescription();
+                    result.IsAdmin = false;
                     return Result<CheckUserExistQueryResult>.Success(result);
                 }
                 if (user.IsActive == false)
