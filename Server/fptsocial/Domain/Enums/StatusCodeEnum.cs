@@ -128,5 +128,9 @@ namespace Domain.Enums
         UC01_User_Chat_Is_Exist,
         [Description("User is not existed in chat!")]
         UC02_User_Chat_Is_Not_Exist,
+        [Description("Invalid report type!")]
+        PR01_Invalid_Report_Type,
+        [Description("Report not found!")]
+        RP01_Report_Not_Found,
     }
 }

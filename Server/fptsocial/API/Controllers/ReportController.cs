@@ -3,6 +3,7 @@ using Application.Commands.CreateReportPost;
 using Application.Commands.CreateReportProfile;
 using Application.Commands.CreateReportType;
 using Application.Commands.CreateUserGender;
+using Application.Commands.ProcessReportCommand;
 using Application.Queries.GetListReportComment;
 using Application.Queries.GetListReportGroup;
 using Application.Queries.GetListReportPost;
@@ -135,6 +136,14 @@ namespace API.Controllers
         public async Task<IActionResult> GetListReportComment([FromQuery] GetListReportCommentQuery input)
         {
             var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("processReport")]
+        public async Task<IActionResult> ProcessReport([FromQuery] ProcessReportCommand command)
+        {
+            var res = await _sender.Send(command);
             return Success(res.Value);
         }
     }
