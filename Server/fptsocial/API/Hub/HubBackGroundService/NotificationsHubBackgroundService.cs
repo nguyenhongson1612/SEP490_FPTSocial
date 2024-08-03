@@ -219,8 +219,6 @@ namespace API.Hub
         {
 
             var receiverConnectId = _connections.GetConnections(userId);
-
-            HttpContext _httpContext = context.GetHttpContext();
             List<NotificationOutDTO> rawNotice = _getNotifications.GetNotifyByUserIds(userId);
             string jsonNotice = System.Text.Json.JsonSerializer.Serialize(rawNotice);
 
