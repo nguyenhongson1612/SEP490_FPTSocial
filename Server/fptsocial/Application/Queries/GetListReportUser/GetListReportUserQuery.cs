@@ -9,6 +9,7 @@ namespace Application.Queries.GetListReportUser
 {
     public class GetListReportUserQuery : IQuery<GetListReportUserResult>
     {
+        public Guid UserId { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

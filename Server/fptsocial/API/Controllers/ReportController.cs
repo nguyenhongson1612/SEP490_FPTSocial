@@ -8,7 +8,9 @@ using Application.Queries.GetListReportComment;
 using Application.Queries.GetListReportGroup;
 using Application.Queries.GetListReportPost;
 using Application.Queries.GetListReportUser;
+using Application.Queries.GetReportGroup;
 using Application.Queries.GetReportType;
+using Application.Queries.GetReportUser;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -108,8 +110,24 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [Route("getReportUser")]
+        public async Task<IActionResult> GetReportUser([FromQuery] GetReportUserQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
         [Route("getListReportUser")]
         public async Task<IActionResult> GetListReportUser([FromQuery]GetListReportUserQuery input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getReportGroup")]
+        public async Task<IActionResult> GetReportGroup([FromQuery] GetReportGroupQuery input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
