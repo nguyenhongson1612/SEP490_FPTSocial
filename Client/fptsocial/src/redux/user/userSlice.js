@@ -26,6 +26,10 @@ export const userSlice = createSlice({
     logoutCurrentUser: (state, action) => {
       console.log('vao day');
       state.currentUser = null
+    },
+    addUser: (state, action) => {
+      console.log('vao day');
+      state.currentUser = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -36,7 +40,7 @@ export const userSlice = createSlice({
   }
 })
 
-export const { logoutCurrentUser } = userSlice.actions
+export const { logoutCurrentUser, addUser } = userSlice.actions
 export const selectCurrentUser = (state) => {
   return state.user.currentUser
 }

@@ -1,10 +1,7 @@
-import { useConfirm } from 'material-ui-confirm'
-
 const oidcConfig = {
   onSignIn: () => {
     window.location.href = '/home'
   },
-
   authority: 'https://feid.ptudev.net',
   clientId: 'societe-front-end',
   redirectUri: 'http://localhost:3000/home',

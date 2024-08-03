@@ -103,6 +103,10 @@ export const createByLogin = async (data) => {
   return response.data?.data
 }
 
+export const createAdminProfile = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Admin/createadminprofile`, data)
+  return response.data?.data
+}
 export const updateUserProfile = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/updateprofile`, data)
   return response.data?.data
