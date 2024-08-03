@@ -15,6 +15,7 @@ using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserIsBlocked;
 using Application.Queries.GetUserProfile;
 using Application.Queries.SuggestFriend;
+using Application.Queries.SuggestionGroup;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -258,6 +259,26 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("suggestionGroup")]
+        public async Task<IActionResult> SuggesstionGroup([FromQuery]SuggestionGroupQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
 
         [HttpGet]
