@@ -1,9 +1,15 @@
-﻿using Application.DTO.GetUserProfileDTO;
+﻿using Application.DTO.FriendDTO;
+using Application.DTO.GetUserProfileDTO;
+using Application.DTO.GroupDTO;
 using Application.DTO.GroupFPTDTO;
+using Application.DTO.GroupPostDTO;
 using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
+using Application.Queries.FindUserByName;
+using Application.Queries.GetGroupPostByGroupId;
 using Application.Queries.GetPost;
+using Application.Queries.GetUserPost;
 using Application.Services;
 using AutoMapper;
 using Core.CQRS;
@@ -21,6 +27,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Queries.SearchFunction
@@ -39,6 +46,25 @@ namespace Application.Queries.SearchFunction
             _mapper = mapper;
             _helper = new GuidHelper();
             _configuration = configuration;
+        }
+        private bool SubstringMatch(string? content, string[] searchWords)
+        {
+            if (content == null)
+            {
+                return false;
+            }
+            var normalizedContent = content.RemoveDiacritics().ToLower();
+            return searchWords.Any(word => normalizedContent.Contains(word));
+        }
+
+        private bool ContainsMostWords(string? content, string[] searchWords)
+        {
+            if (content == null)
+            {
+                return false;
+            }
+            var postWords = content.RemoveDiacritics().ToLower().Split(' ');
+            return searchWords.Count(word => postWords.Contains(word)) > searchWords.Length / 2;
         }
 
         public async Task<Result<SearchFunctionQueryResult>> Handle(SearchFunctionQuery request, CancellationToken cancellationToken)
@@ -59,213 +85,458 @@ namespace Application.Queries.SearchFunction
             switch (request.Type)
             {
                 case "All": // Search across all entities
-                    queryResult.groups = await searchGroup(searchContent);
-                    queryResult.userProfiles = await searchUsers(searchContent);
-                    queryResult.userPosts = await searchUserPosts(searchContent, request);
+                    queryResult.groups = await searchGroup(request);
+                    queryResult.userProfiles = await searchUsers(request);
+                    queryResult.userPosts = await searchUserPosts(request);
 
                     break;
 
                 case "Group": // Search groups only
-                    queryResult.groups = await searchGroup(searchContent);
+                    var groupList = await searchGroup(request);
+
+                    queryResult.groups = groupList
+                                        .Skip((request.Page - 1) * request.PageSize)
+                                        .Take(request.PageSize)
+                                        .ToList();
+                    queryResult.totalPage = (int)Math.Ceiling((double)groupList.Count() / request.PageSize);
+
                     break;
 
                 case "User": // Search friends (UserProfiles) only
-                    queryResult.userProfiles = await searchUsers(searchContent);
+                    var userList = await searchUsers(request);
+
+                    queryResult.totalPage = (int)Math.Ceiling((double)userList.Count() / request.PageSize);
+                    queryResult.userProfiles = userList
+                                .Skip((request.Page - 1) * request.PageSize)
+                                .Take(request.PageSize)
+                                .ToList();
+
                     break;
 
                 case "Post": // Search posts only
-                    queryResult.userPosts = await searchUserPosts(searchContent, request);
+                    var postList = await searchUserPosts(request);
+
+                    queryResult.totalPage = (int)Math.Ceiling((double)postList.Count() / request.PageSize);
+                    queryResult.userPosts = postList
+                                .Skip((request.Page - 1) * request.PageSize)
+                                .Take(request.PageSize)
+                                .ToList();
                     break;
-                    // Consider adding a default case to handle invalid request types
+                // Consider adding a default case to handle invalid request types
+                default:
+                    throw new ErrorException("Type search is not vaid!");
             }
 
             return Result<SearchFunctionQueryResult>.Success(queryResult);
         }
 
-        public async Task<List<GroupFPTDTO>> searchGroup (string content)
+        public async Task<List<GroupFPTDTO>> searchGroup (SearchFunctionQuery request)
         {
-            List<GroupFPTDTO> groups = await _context.GroupFpts
+            if (string.IsNullOrEmpty(request.SearchContent))
+            {
+                throw new ErrorException("Search content is required");
+            }
+
+            var groupList = await _context.GroupFpts
                                                      .Where(x => x.IsDelete != true)
-                                                     .Select(group => new GroupFPTDTO
-                                                     {
-                                                         GroupId = group.GroupId,
-                                                         GroupNumber = group.GroupNumber,
-                                                         GroupName = group.GroupName,
-                                                         GroupDescription = group.GroupDescription,
-                                                         CreatedById = group.CreatedById,
-                                                         CreatedDate = group.CreatedDate,
-                                                         UpdateAt = group.UpdateAt,
-                                                         GroupTypeId = group.GroupTypeId,
-                                                         CoverImage = group.CoverImage,
-                                                         GroupStatusId = group.GroupStatusId
-                                                     })
                                                      .ToListAsync();
 
             // Chuẩn hóa nội dung tìm kiếm
-            string normalizedContent = NormalizeString(content);
+            var normalizedSearchString = request.SearchContent.RemoveDiacritics();
+            var searchWords = normalizedSearchString.SplitIntoWords();
 
             // Lọc danh sách các nhóm theo nội dung tìm kiếm
-            List<GroupFPTDTO> filteredGroups = groups
-                .Where(group => NormalizeString(group.GroupName).Contains(normalizedContent))
-                .ToList();
+            var listFind = groupList
+                            .Select(g => new
+                            {
+                                User = g,
+                                NormalizedName = g.GroupName.RemoveDiacritics().ToLower(),
+                                NameWords = g.GroupName.RemoveDiacritics().ToLower().SplitIntoWords(),
+                                Permutations = g.GroupName.RemoveDiacritics().ToLower().SplitIntoWords().GetAllPermutations()
+                            })
+                            .Select(g => new
+                            {
+                                g.User,
+                                g.NormalizedName,
+                                g.NameWords,
+                                g.Permutations,
+                                ExactMatch = g.NormalizedName.Equals(normalizedSearchString),
+                                NoDiacriticsMatch = g.NormalizedName == normalizedSearchString,
+                                ReverseNameMatch = string.Join(" ", g.NameWords.Reverse()) == normalizedSearchString,
+                                ReverseNoDiacriticsMatch = string.Join(" ", g.NameWords.Reverse()) == normalizedSearchString,
+                                PermutationMatch = g.Permutations.Contains(normalizedSearchString),
+                                ContainsMostWords = searchWords.Count(word => g.NameWords.Contains(word)),
+                                ContainsAnyWords = searchWords.All(word => g.NameWords.Contains(word)),
+                                SubstringMatch = searchWords.Any(word => g.NormalizedName.Contains(word))
+                            })
+                            .Where(u => u.ExactMatch || u.NoDiacriticsMatch || u.ReverseNameMatch ||
+                                        u.ReverseNoDiacriticsMatch || u.PermutationMatch ||
+                                        u.ContainsMostWords > 0 || u.ContainsAnyWords || u.SubstringMatch)
+                            .OrderByDescending(u => u.ExactMatch)
+                            .ThenByDescending(u => u.NoDiacriticsMatch)
+                            .ThenByDescending(u => u.ReverseNameMatch)
+                            .ThenByDescending(u => u.ReverseNoDiacriticsMatch)
+                            .ThenByDescending(u => u.PermutationMatch)
+                            .ThenByDescending(u => u.ContainsMostWords)
+                            .ThenByDescending(u => u.ContainsAnyWords)
+                            .ThenByDescending(u => u.SubstringMatch)
+                            .ThenBy(u => u.NormalizedName)
+                            .Select(u => u.User)
+                            .ToList();
 
-            return filteredGroups;
-        }
+            var result = new List<GroupFPTDTO>();
 
-        public async Task<List<UserDTO>> searchUsers(string searchContent)
-        {
-            // Chuẩn hóa nội dung tìm kiếm **ngoài query**
-            string normalizedSearchContent = NormalizeString(searchContent);
-
-            // Sử dụng LINQ để thực hiện LEFT JOIN với DefaultIfEmpty để xử lý trường hợp null
-            var filteredUsers = await (
-                from userProfile in _context.UserProfiles
-                join avataPhoto in _context.AvataPhotos.Where(ap => ap.IsUsed) on userProfile.UserId equals avataPhoto.UserId into userAvataGroup
-                from avata in userAvataGroup.DefaultIfEmpty()
-                select new { UserProfile = userProfile, AvataPhoto = avata } // Chọn một anonymous type chứa cả UserProfile và AvataPhoto
-            ).ToListAsync();
-
-            // Lọc và ánh xạ kết quả sau khi đã lấy dữ liệu
-            var result = filteredUsers
-                .Where(x => NormalizeString(x.UserProfile.FirstName + " " + x.UserProfile.LastName).Contains(normalizedSearchContent))
-                .Select(x => new UserDTO
+            foreach (var group in listFind)
+            {
+                var newFind = new GroupFPTDTO
                 {
-                    UserName = x.UserProfile.FirstName + " " + x.UserProfile.LastName,
-                    UserId = x.UserProfile.UserId,
-                    AvataUrl = x.AvataPhoto != null ? x.AvataPhoto.AvataPhotosUrl : null
-                })
-                .ToList();
+                    GroupId = group.GroupId,
+                    GroupNumber = group.GroupNumber,
+                    GroupName = group.GroupName,
+                    GroupDescription  = group.GroupDescription,
+                    CreatedById = group.CreatedById,
+                    CreatedDate = group.CreatedDate,
+                    UpdateAt = group.UpdateAt,
+                    GroupTypeId = group.GroupTypeId,
+                    CoverImage = group.CoverImage,
+                    GroupStatusId = group.GroupStatusId,
+                };
+
+                result.Add(newFind);
+            }
 
             return result;
         }
 
-        public async Task<List<GetPostDTO>> searchUserPosts(string searchContent, SearchFunctionQuery request)
+        public async Task<List<UserDTO>> searchUsers(SearchFunctionQuery request)
         {
-            // Chuẩn hóa chuỗi tìm kiếm
-            var normalizedSearchContent = NormalizeString(searchContent);
+            if (string.IsNullOrEmpty(request.SearchContent))
+            {
+                throw new ErrorException("Search content is required");
+            }
 
-            // Lấy danh sách bạn bè
+            var normalizedSearchString = request.SearchContent.RemoveDiacritics();
+            var searchWords = normalizedSearchString.SplitIntoWords();
+
+            var users = await _context.UserProfiles.Include(x => x.AvataPhotos).Where(x => x.IsActive == true).ToListAsync();
+
+            var listFind = users
+                            .Select(user => new
+                            {
+                                User = user,
+                                NormalizedName = user.FullName.RemoveDiacritics().ToLower(),
+                                NameWords = user.FullName.RemoveDiacritics().ToLower().SplitIntoWords(),
+                                Permutations = user.FullName.RemoveDiacritics().ToLower().SplitIntoWords().GetAllPermutations()
+                            })
+                            .Select(user => new
+                            {
+                                user.User,
+                                user.NormalizedName,
+                                user.NameWords,
+                                user.Permutations,
+                                ExactMatch = user.NormalizedName.Equals(normalizedSearchString),
+                                NoDiacriticsMatch = user.NormalizedName == normalizedSearchString,
+                                ReverseNameMatch = string.Join(" ", user.NameWords.Reverse()) == normalizedSearchString,
+                                ReverseNoDiacriticsMatch = string.Join(" ", user.NameWords.Reverse()) == normalizedSearchString,
+                                PermutationMatch = user.Permutations.Contains(normalizedSearchString),
+                                ContainsMostWords = searchWords.Count(word => user.NameWords.Contains(word)),
+                                ContainsAnyWords = searchWords.All(word => user.NameWords.Contains(word)),
+                                SubstringMatch = searchWords.Any(word => user.NormalizedName.Contains(word))
+                            })
+                            .Where(u => u.ExactMatch || u.NoDiacriticsMatch || u.ReverseNameMatch ||
+                                        u.ReverseNoDiacriticsMatch || u.PermutationMatch ||
+                                        u.ContainsMostWords > 0 || u.ContainsAnyWords || u.SubstringMatch)
+                            .OrderByDescending(u => u.ExactMatch)
+                            .ThenByDescending(u => u.NoDiacriticsMatch)
+                            .ThenByDescending(u => u.ReverseNameMatch)
+                            .ThenByDescending(u => u.ReverseNoDiacriticsMatch)
+                            .ThenByDescending(u => u.PermutationMatch)
+                            .ThenByDescending(u => u.ContainsMostWords)
+                            .ThenByDescending(u => u.ContainsAnyWords)
+                            .ThenByDescending(u => u.SubstringMatch)
+                            .ThenBy(u => u.NormalizedName)
+                            .Select(u => u.User)
+                            .ToList();
+
+            var result = new List<UserDTO>();
+
+            foreach (var user in listFind)
+            {
+                var newFind = new UserDTO
+                {
+                    UserName = user.FullName,
+                    UserId = user.UserId,
+                    AvataUrl = user.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                };
+
+                var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync();
+
+                if (!blockUserList.Contains(user.UserId))
+                {
+                    result.Add(newFind);
+                }
+            }
+                return result;
+        }
+
+        public async Task<List<GetPostDTO>> searchUserPosts(SearchFunctionQuery request)
+        {
+            if (string.IsNullOrEmpty(request.SearchContent))
+            {
+                throw new ErrorException("Search content is required");
+            }
+
+            var blockUserList = await _context.BlockUsers
+                .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
+                .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
+                .ToListAsync();
+
+
+            //var combine = new List<GetGroupPostByGroupIdDTO>();
+
+            var normalizedSearchString = request.SearchContent.RemoveDiacritics().ToLower();
+            var searchWords = normalizedSearchString.SplitIntoWords();
+
+            // Retrieve the list of friend UserIds
             var friendUserIds = await _context.Friends
                                               .Where(f => (f.UserId == request.UserId || f.FriendId == request.UserId) && f.Confirm == true)
                                               .Select(f => f.UserId == request.UserId ? f.FriendId : f.UserId)
                                               .ToListAsync();
 
-            // Lấy trạng thái Public và Friend
             var userStatuses = await _context.UserStatuses
-                                             .Where(x => x.StatusName == "Public" || x.StatusName == "Friend")
-                                             .ToListAsync();
+                                              .Where(x => x.StatusName == "Public" || x.StatusName == "Friend")
+                                              .ToListAsync();
 
             var statusPublic = userStatuses.FirstOrDefault(x => x.StatusName == "Public");
             var statusFriend = userStatuses.FirstOrDefault(x => x.StatusName == "Friend");
 
-            // Lấy các bài viết theo điều kiện trạng thái mà không chuẩn hóa nội dung
             var posts = await _context.UserPosts
-                                      .Where(p => p.IsBanned == false && p.IsHide == false)
-                                      //.Where(p => friendUserIds.Contains(p.UserId) &&
-                                      //            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) &&
-                                      //            p.IsHide != true)
-                                      .Include(p => p.Photo)
-                                      .Include(p => p.Video)
-                                      .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true))
-                                          .ThenInclude(upp => upp.Photo)
-                                      .Include(p => p.UserPostVideos.Where(x => x.IsHide != true))
-                                          .ThenInclude(upv => upv.Video)
-                                      .ToListAsync();
+                .AsNoTracking()
+                .Include(p => p.UserStatus)
+                .Include(p => p.Photo)
+                .Include(p => p.Video)
+                .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
+                    .ThenInclude(upp => upp.Photo)
+                .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
+                    .ThenInclude(upv => upv.Video)
+                .Where(p => friendUserIds.Contains(p.UserId) && !blockUserList.Contains(p.UserId) &&
+                            (p.UserStatusId == statusPublic.UserStatusId || p.UserStatusId == statusFriend.UserStatusId) && p.IsHide != true && p.IsBanned != true)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
 
-            // Lọc các bài viết dựa trên nội dung chuẩn hóa trong bộ nhớ
-            var filteredPosts = posts
-                .Where(p => NormalizeString(p.Content).Contains(normalizedSearchContent, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            // Lấy ra id của setting Group Status
+            var groupStatus = await _context.GroupSettings
+                                    .AsNoTracking()
+                                    .Where(x => x.GroupSettingName.Contains("Group Status"))
+                                    .Select(x => x.GroupSettingId)
+                                    .FirstOrDefaultAsync();
 
-            // Tải các đối tượng cần thiết khác
-            var counts = await _context.PostReactCounts.ToListAsync();
-            var avatars = await _context.AvataPhotos
-                                        .Where(x => x.IsUsed)
-                                        .ToDictionaryAsync(x => x.UserId);
-            var users = await _context.UserProfiles.ToDictionaryAsync(p => p.UserId);
+            // Lấy ra id của GroupStatuc ở Public
+            var groupStatusPublicId = await _context.GroupStatuses
+                                    .AsNoTracking()
+                                    .Where(x => x.GroupStatusName.Contains("Public"))
+                                    .Select(x => x.GroupStatusId)
+                                    .FirstOrDefaultAsync();
 
-            // Chuyển đổi danh sách các bài viết thành danh sách các UserPostDTO
-            var result = filteredPosts.Select(userPost =>
+            // Lấy ra những group mà friend join nhưng ở chế độ public
+            var groupStatusPublic = await _context.GroupSettingUses
+                                    .AsNoTracking()
+                                    .Where(x => x.GroupSettingId == groupStatus && x.GroupStatusId == groupStatusPublicId)
+                                    .Select(x => x.GroupId)
+                                    .ToListAsync();
+
+            // Lấy ra id của những group mà user đã join hoặc là của những friend đã join nhưng ở chế độ public
+            var groupMemberIds = await _context.GroupMembers
+                                    .AsNoTracking()
+                                    .Where(x => x.UserId == request.UserId)
+                                    .Select(x => x.GroupId)
+                                    .ToListAsync();
+
+            // Truy vấn bảng GroupPost theo những thông tin cần tìm kiếm
+            var groupPost = await _context.GroupPosts
+                                    .AsNoTracking()
+                                    .Include(x => x.GroupStatus)
+                                    .Include(x => x.Group)
+                                    .Include(x => x.GroupPhoto)
+                                    .Include(x => x.GroupVideo)
+                                    .Include(x => x.GroupPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
+                                        .ThenInclude(x => x.GroupPhoto)
+                                    .Include(x => x.GroupPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
+                                        .ThenInclude(x => x.GroupVideo)
+                                    .Where(x => (groupMemberIds.Contains((Guid)x.GroupId) && !blockUserList.Contains(x.UserId) && x.Group.IsDelete != true && x.IsHide != true && x.IsBanned != true))
+                                    .ToListAsync();
+
+            var combinePost = new List<GetPostDTO>();
+
+            foreach (var item in posts)
             {
-                var user = users.TryGetValue(userPost.UserId, out var userProfile) ? userProfile : null;
-                var avatar = avatars.TryGetValue(userPost.UserId, out var avataPhoto) ? avataPhoto : null;
+                bool isMatch = false;
+                var content = string.Empty;
 
-                return new GetPostDTO
+                content = item.Content;
+                isMatch = SubstringMatch(content, searchWords) || ContainsMostWords(content, searchWords);
+
+                if (isMatch)
                 {
-                    PostId = userPost.UserPostId,
-                    UserId = userPost.UserId,
-                    Content = userPost.Content,
-                    UserPostNumber = userPost.UserPostNumber,
-                    UserStatus = new GetUserStatusDTO
-                    {
-                        UserStatusId = userPost.UserStatusId,
-                        UserStatusName = _context.UserStatuses.Where(x => x.UserStatusId == userPost.UserStatusId).Select(x => x.StatusName).FirstOrDefault()
-                    },
-                    IsAvataPost = userPost.IsAvataPost,
-                    IsCoverPhotoPost = userPost.IsCoverPhotoPost,
-                    IsHide = userPost.IsHide,
-                    CreatedAt = userPost.CreatedAt,
-                    UpdateAt = userPost.UpdatedAt,
-                    PhotoId = userPost.PhotoId,
-                    VideoId = userPost.VideoId,
-                    NumberPost = userPost.NumberPost,
-                    Photo = _mapper.Map<PhotoDTO>(userPost.Photo),
-                    Video = _mapper.Map<VideoDTO>(userPost.Video),
-                    UserPostPhoto = userPost.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
-                    {
-                        UserPostPhotoId = upp.UserPostPhotoId,
-                        UserPostId = upp.UserPostId,
-                        PhotoId = upp.PhotoId,
-                        Content = upp.Content,
-                        UserPostPhotoNumber = upp.UserPostPhotoNumber,
-                        UserStatusId = upp.UserStatusId,
-                        IsHide = upp.IsHide,
-                        CreatedAt = upp.CreatedAt,
-                        UpdatedAt = upp.UpdatedAt,
-                        PostPosition = upp.PostPosition,
-                        Photo = _mapper.Map<PhotoDTO>(upp.Photo),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                            CommentNumber = _context.CommentPhotoPosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                            ShareNumber = _context.SharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId) +
-                                        _context.GroupSharePosts.Count(x => x.UserPostPhotoId == upp.UserPostPhotoId),
-                        },
-                    }).ToList(),
-                    UserPostVideo = userPost.UserPostVideos?.Select(upp => new UserPostVideoDTO
-                    {
-                        UserPostVideoId = upp.UserPostVideoId,
-                        UserPostId = upp.UserPostId,
-                        VideoId = upp.VideoId,
-                        Content = upp.Content,
-                        UserPostVideoNumber = upp.UserPostVideoNumber,
-                        UserStatusId = upp.UserStatusId,
-                        IsHide = upp.IsHide,
-                        CreatedAt = upp.CreatedAt,
-                        UpdatedAt = upp.UpdatedAt,
-                        PostPosition = upp.PostPosition,
-                        Video = _mapper.Map<VideoDTO>(upp.Video),
-                        ReactCount = new DTO.ReactDTO.ReactCount
-                        {
-                            ReactNumber = _context.ReactVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                            CommentNumber = _context.CommentVideoPosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                            ShareNumber = _context.SharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId) +
-                                        _context.GroupSharePosts.Count(x => x.UserPostVideoId == upp.UserPostVideoId),
-                        },
-                    }).ToList(),
-                    EdgeRank = 0,
-                    UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
-                    UserName = user != null ? $"{user.FirstName} {user.LastName}" : null,
-                    ReactCount = new DTO.ReactDTO.ReactCount
-                    {
-                        ReactNumber = counts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ReactCount).FirstOrDefault(),
-                        CommentNumber = counts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.CommentCount).FirstOrDefault(),
-                        ShareNumber = counts.Where(x => x.UserPostId == userPost.UserPostId).Select(x => x.ShareCount).FirstOrDefault(),
-                    }
-                };
-            }).ToList();
+                    var user = _context.UserProfiles.Where(x => x.UserId == item.UserId)
+                                                .Select(x => x.FirstName + " " + x.LastName)
+                                                .FirstOrDefault();
+                    var avatar = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
 
-            return result;
+                    var reactCounts = _context.PostReactCounts
+                                            .FirstOrDefault(x => x.UserPostId == item.UserPostId);
+
+                    combinePost.Add(new GetPostDTO
+                    {
+                        PostId = item.UserPostId,
+                        UserId = item.UserId,
+                        Content = item.Content,
+                        CreatedAt = item.CreatedAt,
+                        UpdateAt = item.UpdatedAt,
+                        IsHide = item.IsHide,
+                        IsBanned = item.IsBanned,
+                        IsShare = false,
+                        IsGroupPost = false,
+                        UserPostNumber = item.UserPostNumber,
+                        UserStatusId = item.UserStatusId,
+                        IsAvataPost = item.IsAvataPost,
+                        IsCoverPhotoPost = item.IsCoverPhotoPost,
+                        PhotoId = item.PhotoId,
+                        VideoId = item.VideoId,
+                        NumberPost = item.NumberPost,
+                        Photo = _mapper.Map<PhotoDTO>(item.Photo),
+                        Video = _mapper.Map<VideoDTO>(item.Video),
+                        UserPostPhoto = item.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
+                        {
+                            UserPostPhotoId = upp.UserPostPhotoId,
+                            UserPostId = upp.UserPostId,
+                            PhotoId = upp.PhotoId,
+                            Content = upp.Content,
+                            UserPostPhotoNumber = upp.UserPostPhotoNumber,
+                            UserStatusId = upp.UserStatusId,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            Photo = _mapper.Map<PhotoDTO>(upp.Photo),
+                        }).ToList(),
+                        UserPostVideo = item.UserPostVideos?.Select(upp => new UserPostVideoDTO
+                        {
+                            UserPostVideoId = upp.UserPostVideoId,
+                            UserPostId = upp.UserPostId,
+                            VideoId = upp.VideoId,
+                            Content = upp.Content,
+                            UserPostVideoNumber = upp.UserPostVideoNumber,
+                            UserStatusId = upp.UserStatusId,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            Video = _mapper.Map<VideoDTO>(upp.Video),
+                        }).ToList(),
+                        UserName = user,
+                        UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
+                        UserStatus = new GetUserStatusDTO
+                        {
+                            UserStatusId = item.UserStatusId,
+                            UserStatusName = item.UserStatus.StatusName,
+                        },
+                        ReactCount = new DTO.ReactDTO.ReactCount
+                        {
+                            ReactNumber = reactCounts?.ReactCount ?? 0,
+                            CommentNumber = reactCounts?.CommentCount ?? 0,
+                            ShareNumber = reactCounts?.ShareCount ?? 0,
+                        },
+                        EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCounts?.ReactCount ?? 0, reactCounts?.CommentCount ?? 0, reactCounts?.ShareCount ?? 0, item?.CreatedAt ?? DateTime.Now)
+                    });
+                }
+            }
+
+            foreach (var item in groupPost)
+            {
+                bool isMatch = false;
+                var content = string.Empty;
+
+                content = item.Content;
+                isMatch = SubstringMatch(content, searchWords) || ContainsMostWords(content, searchWords);
+
+                if (isMatch)
+                {
+                    var user = _context.UserProfiles.Where(x => x.UserId == item.UserId)
+                                                    .Select(x => x.FirstName + " " + x.LastName)
+                                                    .FirstOrDefault();
+                    var avatar = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+
+                    var groupreactCounts = _context.PostReactCounts
+                                            .FirstOrDefault(x => x.UserPostId == item.GroupPostId);
+                    combinePost.Add(new GetPostDTO
+                    {
+                        PostId = item.GroupPostId,
+                        UserId = item.UserId,
+                        Content = item.Content,
+                        CreatedAt = item.CreatedAt,
+                        UpdateAt = item.UpdatedAt,
+                        IsHide = item.IsHide,
+                        IsBanned = item.IsBanned,
+                        IsShare = false,
+                        IsGroupPost = true,
+                        GroupPostNumber = item.GroupPostNumber,
+                        GroupStatus = new GetGroupStatusDTO
+                        {
+                            GroupStatusId = item.GroupStatusId,
+                            GroupStatusName = item.GroupStatus.GroupStatusName,
+                        },
+                        NumberGroupPost = item.NumberPost,
+                        GroupPhoto = _mapper.Map<GroupPhotoDTO>(item.GroupPhoto),
+                        GroupVideo = _mapper.Map<GroupVideoDTO>(item.GroupVideo),
+                        GroupPostPhoto = item.GroupPostPhotos?.Select(upp => new GroupPostPhotoDTO
+                        {
+                            GroupPostPhotoId = upp.GroupPostPhotoId,
+                            GroupPostId = upp.GroupPostId,
+                            Content = upp.Content,
+                            GroupPhotoId = upp.GroupPhotoId,
+                            GroupStatusId = upp.GroupStatusId,
+                            GroupPostPhotoNumber = upp.GroupPostPhotoNumber,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            GroupPhoto = _mapper.Map<GroupPhotoDTO>(upp.GroupPhoto),
+                        }).ToList(),
+                        GroupPostVideo = item.GroupPostVideos?.Select(upp => new GroupPostVideoDTO
+                        {
+                            GroupPostVideoId = upp.GroupPostVideoId,
+                            GroupPostId = upp.GroupPostId,
+                            Content = upp.Content,
+                            GroupVideoId = upp.GroupVideoId,
+                            GroupStatusId = upp.GroupStatusId,
+                            GroupPostVideoNumber = upp.GroupPostVideoNumber,
+                            IsHide = upp.IsHide,
+                            CreatedAt = upp.CreatedAt,
+                            UpdatedAt = upp.UpdatedAt,
+                            PostPosition = upp.PostPosition,
+                            GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
+                        }).ToList(),
+                        GroupId = item.GroupId,
+                        GroupName = item.Group.GroupName,
+                        GroupCorverImage = item.Group.CoverImage,
+                        UserName = user,
+                        UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
+                        ReactCount = new DTO.ReactDTO.ReactCount
+                        {
+                            ReactNumber = groupreactCounts?.ReactCount ?? 0,
+                            CommentNumber = groupreactCounts?.CommentCount ?? 0,
+                            ShareNumber = groupreactCounts?.ShareCount ?? 0,
+                        },
+                        EdgeRank = GetEdgeRankAlo.GetEdgeRank(groupreactCounts?.ReactCount ?? 0, groupreactCounts?.CommentCount ?? 0, groupreactCounts?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
+                    });
+                }
+            }
+
+            return combinePost;
         }
 
         static string NormalizeString(string input)
