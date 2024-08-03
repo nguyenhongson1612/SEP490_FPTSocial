@@ -19,6 +19,7 @@ namespace Application.Queries.SearchFunction
         public List<GroupFPTDTO>? groups { get; set; }
         public List<GetPostDTO>? userPosts { get; set; }
         public List<UserDTO>? userProfiles { get; set; }
+        public int? totalPage { get; set; }
 
     }
 

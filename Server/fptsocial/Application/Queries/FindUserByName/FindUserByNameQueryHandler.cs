@@ -57,6 +57,9 @@ namespace Application.Queries.FindUserByName
                                 ContainsAnyWords = searchWords.All(word => user.NameWords.Contains(word)),
                                 SubstringMatch = searchWords.Any(word => user.NormalizedName.Contains(word))
                             })
+                            .Where(u => u.ExactMatch || u.NoDiacriticsMatch || u.ReverseNameMatch ||
+                                        u.ReverseNoDiacriticsMatch || u.PermutationMatch ||
+                                        u.ContainsMostWords > 0 || u.ContainsAnyWords || u.SubstringMatch)
                             .OrderByDescending(u => u.ExactMatch)
                             .ThenByDescending(u => u.NoDiacriticsMatch)
                             .ThenByDescending(u => u.ReverseNameMatch)

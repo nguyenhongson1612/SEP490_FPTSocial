@@ -43,8 +43,7 @@ namespace Application.Queries.GetUserPost
             {
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+
             var userPosts = await _context.UserPosts
                 .AsNoTracking()
                 .Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
@@ -177,8 +176,6 @@ namespace Application.Queries.GetUserPost
                                 .Take(request.PageSize)
                                 .ToList()
             };
-            stopwatch.Stop();
-            Debug.WriteLine($"Thời gian thực hiện truy vấn: {stopwatch.ElapsedMilliseconds} ms");
             return Result<GetUserPostResult>.Success(getuserpost);
         }
 

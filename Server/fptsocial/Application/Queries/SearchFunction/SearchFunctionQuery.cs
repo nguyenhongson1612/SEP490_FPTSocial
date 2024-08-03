@@ -12,5 +12,7 @@ namespace Application.Queries.SearchFunction
         public Guid UserId { get; set; }
         public string? SearchContent { get; set; }
         public string Type { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
     }
 }
