@@ -36,7 +36,7 @@ namespace Application.Queries.GetListReportGroup
             var reportListQuery = await _context.ReportProfiles
                 .Include(x => x.Group)
                 .Include(x => x.ReportBy)
-                .Where(x => x.GroupId != null && x.Processing == true)
+                .Where(x => x.GroupId != null && x.GroupId == request.GroupId && x.Processing == true)
                 .ToListAsync(cancellationToken);
 
             var reportList = reportListQuery.Select(x => new GetReportGroup
