@@ -24,7 +24,9 @@ namespace Application.Queries.GetListReportComment
         public Guid? CommentSharePostId { get; set; }
         public Guid? CommentGroupSharePostId { get; set; }
         public string? Content { get; set; }
-        public Guid ReportById { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? AvatarUrl { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }

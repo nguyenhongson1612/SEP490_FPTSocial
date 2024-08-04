@@ -1,13 +1,18 @@
-﻿using Core.CQRS.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetListReportPost
+namespace Application.Queries.GetReportPost
 {
-    public class GetListReportPostQuery : IQuery<GetListReportPostResult>
+    public class GetReportPostResult
+    {
+        public List<GetReportPost>? result { get; set; }
+        public int? totalPage { get; set; }
+    }
+
+    public class GetReportPost
     {
         public Guid? UserPostId { get; set; }
         public Guid? UserPostPhotoId { get; set; }
@@ -17,7 +22,6 @@ namespace Application.Queries.GetListReportPost
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? SharePostId { get; set; }
         public Guid? GroupSharePostId { get; set; }
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        public int NumberReporter { get; set; }
     }
 }

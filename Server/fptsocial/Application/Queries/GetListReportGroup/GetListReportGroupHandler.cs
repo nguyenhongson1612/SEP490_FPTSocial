@@ -36,7 +36,7 @@ namespace Application.Queries.GetListReportGroup
             var reportListQuery = await _context.ReportProfiles
                 .Include(x => x.Group)
                 .Include(x => x.ReportBy)
-                .Where(x => x.GroupId != null && x.GroupId == request.GroupId && x.Processing == true)
+                .Where(x => x.GroupId == request.GroupId && x.Processing == true)
                 .ToListAsync(cancellationToken);
 
             var reportList = reportListQuery.Select(x => new GetReportGroup
@@ -45,7 +45,7 @@ namespace Application.Queries.GetListReportGroup
                 ReportTypeId = x.ReportTypeId,
                 UserId = x.ReportBy.UserId,
                 UserName = x.ReportBy.FullName,
-                AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportBy.UserId).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
+                AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportBy.UserId && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
                 ReportedGroupId = x.Group.GroupId,
                 ReportedGroupName = x.Group.GroupName,
                 ReportedGroupCoverImage = x.Group.CoverImage,

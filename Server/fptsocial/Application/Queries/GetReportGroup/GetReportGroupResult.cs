@@ -8,7 +8,7 @@ namespace Application.Queries.GetReportGroup
 {
     public class GetReportGroupResult
     {
-        public List<GetReportGroup>? result {  get; set; }
+        public List<GetReportGroup>? result { get; set; }
         public int? totalPage { get; set; }
     }
 
@@ -19,5 +19,4 @@ namespace Application.Queries.GetReportGroup
         public string GroupCoverImage { get; set; }
         public int NumberReporter { get; set; }
     }
-}
 }
