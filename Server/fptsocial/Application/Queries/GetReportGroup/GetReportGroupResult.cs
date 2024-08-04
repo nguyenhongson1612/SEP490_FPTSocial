@@ -20,3 +20,4 @@ namespace Application.Queries.GetReportGroup
         public int NumberReporter { get; set; }
     }
 }
+
