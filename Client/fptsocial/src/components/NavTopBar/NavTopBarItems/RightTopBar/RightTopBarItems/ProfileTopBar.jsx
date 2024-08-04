@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { logoutCurrentUser, selectCurrentUser } from '~/redux/user/userSlice'
 import { useAuth } from 'oidc-react'
 import { toast } from 'react-toastify'
-import CurrentUserAvatar from '~/components/UI/UserAvatar'
+import UserAvatar from '~/components/UI/UserAvatar'
 import { Popover } from '@mui/material'
 
 function ProfileTopBar() {
@@ -32,7 +32,7 @@ function ProfileTopBar() {
   >
     <div className="text-gray-500 hover:text-gray-950 flex items-center justify-center gap-3 cursor-pointer" ref={profileNavBarRef} onClick={handleClick}>
       <div className='rounded-3xl border border-white'>
-        <CurrentUserAvatar />
+        <UserAvatar isOther={false} />
       </div>
     </div>
     <Popover
@@ -48,7 +48,7 @@ function ProfileTopBar() {
         <div className='w-[90%] py-4'>
           <Link to={`/profile?id=${currentUser?.userId}`} >
             <div className="flex justify-start items-center mb-2 gap-3 p-2 hover:bg-fbWhite rounded-md shadow-4edges font-bold">
-              <CurrentUserAvatar />
+              <UserAvatar isOther={false} />
               <span>{currentUser?.firstName + ' ' + currentUser?.lastName}</span>
             </div>
           </Link>
@@ -59,13 +59,13 @@ function ProfileTopBar() {
               </svg>
               <span>Setting</span>
             </Link>
-            <div className='icon-side-bar flex gap-3'>
+            <a href="mailto:dichvusinhvien@fe.edu.vn" className='icon-side-bar flex gap-3'>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
                 <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
               </svg>
               <span>Feed Back</span>
-            </div>
+            </a>
             <div className='interceptor-loading icon-side-bar ' onClick={handleLogout}>
               <div className='flex gap-3'>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">

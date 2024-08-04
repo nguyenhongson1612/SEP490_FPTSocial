@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import FPTUen from '~/assets/img/FPTUen.png'
 import { IconCaretLeftFilled, IconSearch } from '@tabler/icons-react'
 import { searchAll } from '~/apis'
@@ -46,18 +46,25 @@ function LeftTopBar() {
     //     })
   }
   const debounceSearchAll = useDebounceFn(handleInputSearchChange, 1000)
+  const navigate = useNavigate()
+  const handlePressEnter = (e) => {
+    console.log('🚀 ~ handlePressEnter ~ e:', e)
+    if (e.key == 'Enter' && !!e.target?.value?.trim())
+      navigate(`/search/?q=${e.target?.value?.trim()}`)
+  }
 
   return <div id='left-top-bar'
     ref={refModal}
     className="flex gap-1 md:gap-5 justify-around items-center"
   >
     {!isSearch &&
-      <Link to={'/home'} className="flex items-center rounded-full border border-white">
+      <Link to={'/home'} className="flex items-center">
         <img
-          // src={FPTUen}
-          src='https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/25/a3/fd/25a3fd67-a758-8e6f-99e2-c0c2f629d04c/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.webp'
+          src={FPTUen}
+          // src='https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/25/a3/fd/25a3fd67-a758-8e6f-99e2-c0c2f629d04c/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.webp'
           alt="home-img"
-          className="w-[45px] rounded-full"
+          // className="w-[45px] rounded-full"
+          className="h-[55px]"
         />
       </Link>
     }
@@ -83,6 +90,7 @@ function LeftTopBar() {
                 className="w-full h-[24px] bg-fbWhite p-2 text-base focus:outline-none"
                 placeholder="Search..."
                 onChange={debounceSearchAll}
+                onKeyDown={handlePressEnter}
               />
             </div>
           </div>
@@ -133,6 +141,9 @@ function LeftTopBar() {
                     )
                   )
                 }
+                {
+                  searchData.length > 0 && <div>View All</div>
+                }
               </div>
             </div>
           </div>
@@ -155,6 +166,7 @@ function LeftTopBar() {
           className={`hidden md:!block ${isSearch && '!block '} w-[196px] h-[24px] bg-fbWhite p-2 text-base focus:outline-none `}
           placeholder="Search..."
           onChange={debounceSearchAll}
+          onKeyDown={handlePressEnter}
         />
       </div>
     </div>

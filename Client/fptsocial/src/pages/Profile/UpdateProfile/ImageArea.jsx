@@ -6,7 +6,8 @@ import UserAvatar from '~/components/UI/UserAvatar'
 import { singleFileValidator } from '~/utils/validators'
 
 function ImageArea({ register, setValue, watch, user }) {
-  const coverImage = user?.coverImage
+
+  const coverImage = watch('coverImage')
   const backgroundStyle = coverImage
     ? { backgroundImage: `url(${coverImage})` }
     : {
@@ -49,7 +50,7 @@ function ImageArea({ register, setValue, watch, user }) {
           <label htmlFor='avatarUpload' className='interceptor-loading text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
         </div>
         <div className='flex justify-center items-center '>
-          <UserAvatar avatarSrc={user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl} isOther={true} size='10' />
+          <UserAvatar avatarSrc={watch('avataphoto')} isOther={true} size='10' />
         </div>
       </div>
 

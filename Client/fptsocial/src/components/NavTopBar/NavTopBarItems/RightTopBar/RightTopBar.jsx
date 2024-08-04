@@ -9,12 +9,34 @@ import { selectLatestNotification } from '~/redux/notification/notificationSlice
 import { compareDateTime } from '~/utils/formatters'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { updateReadNotification } from '~/apis'
+import { useTranslation } from 'react-i18next'
+import i18n from '~/utils/i18n'
+import { LANGUAGES } from '~/utils/constants'
 
 function RightTopBar() {
   const dispatch = useDispatch()
   const listLatestNotification = useSelector(selectLatestNotification)
   const notificationRef = useRef()
   const [isOpenPopover, setIsOpenPopover] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null)
+
+  const handleClick2 = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
+  const { t } = useTranslation()
+  const handleChangeLang = (lang_code) => {
+    i18n.changeLanguage(lang_code)
+    handleClose()
+  };
+
 
   const handleClick = () => {
     setIsOpenPopover(!isOpenPopover)
@@ -28,19 +50,19 @@ function RightTopBar() {
     <div className=''>
       <ul className="flex items-center gap-1 md:gap-3">
         <li className='lg:hidden'>
-          <IconCategoryFilled onClick={() => dispatch(triggerHomeLeftSideBar())} className='size-10 p-2 text-white bg-[#F27125] rounded-full cursor-pointer' />
+          <IconCategoryFilled onClick={() => dispatch(triggerHomeLeftSideBar())} className='size-10 p-2 text-orangeFpt rounded-full cursor-pointer' />
         </li>
         <li id='message-top-bar'
           className="">
           <Link to={'/home'} className="flex items-center">
-            <IconBrandMessenger className='size-10 p-1 text-white rounded-full' />
+            <IconBrandMessenger className='size-10 p-1 text-orangeFpt rounded-full' />
           </Link>
         </li>
 
         <li id='notification-top-bar '
           className="mr-2">
           <div className="flex items-center relative cursor-pointer" onClick={handleClick} ref={notificationRef}>
-            <IconBell className='size-10 p-1 text-white rounded-full' />
+            <IconBell className='size-10 p-1 text-orangeFpt rounded-full' />
             <span className="absolute right-2 top-1 font-bold bg-red-600 text-white rounded-full border size-2 flex justify-center">
               {/* <span className='text-xs'>{listLatestNotification?.length ?? 0}</span> */}
             </span>
@@ -78,6 +100,39 @@ function RightTopBar() {
                 </div>
               </div>
             </div>
+          </Popover>
+        </li>
+        <li>
+          <img src={LANGUAGES.find(e => e.code == i18n.language).flag || LANGUAGES[0].flag}
+            className='size-6 cursor-pointer'
+            onClick={handleClick2} />
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            {/* <select defaultValue={i18n.language} onChange={onChangeLang}> */}
+            <div className='flex flex-col gap-2 p-1'>
+              {LANGUAGES.map(e => (
+                <div key={e.code} className='flex gap-2 cursor-pointer rounded-md py-2 px-3 hover:bg-fbWhite-500'
+                  onClick={() => handleChangeLang(e.code)}
+                >
+                  <img src={e.flag} className='size-6' />
+                  <span className='font-semibold'>{e.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* </select> */}
           </Popover>
         </li>
         <ProfileTopBar />

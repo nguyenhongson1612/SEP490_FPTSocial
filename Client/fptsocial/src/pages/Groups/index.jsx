@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react'
 import { getGroupByUserId } from '~/apis/groupApis'
 import GroupSideBar from './GroupsSideBar/GroupSideBar'
 import GroupCreate from './GroupsCreate/GroupCreate'
+import GroupsDiscover from './GroupsDiscover/GroupDiscover'
+import GroupJoins from './GroupsJoins/GroupJoins'
 
 
 function Groups() {
   const location = useLocation()
   const isCreate = location.pathname === '/groups/create'
-  const isFeed = location.pathname === '/groups' || location.pathname === '/groups/feed'
+  const isDiscover = location.pathname === '/groups' || location.pathname === '/groups/discover'
+  const isJoin = location.pathname === '/groups/joins'
   const [listPost, setListPost] = useState(null)
   const [listPersonalGroup, setListPersonalGroup] = useState({})
 
@@ -23,10 +26,9 @@ function Groups() {
       <NavTopBar />
       <div className='flex h-[calc(100vh_-_55px)] bg-fbWhite'>
         <GroupSideBar listPersonalGroup={listPersonalGroup} />
-        {isFeed && <div className='max-h-[calc(100vh_-_55px)]  basis-11/12 md:basis-8/12 lg:basis-6/12 overflow-y-auto scrollbar-none-track'>
-          <ListPost listPost={listPost} />
-        </div>}
         {isCreate && <GroupCreate />}
+        {isDiscover && <GroupsDiscover />}
+        {isJoin && <GroupJoins />}
       </div>
     </>
   )

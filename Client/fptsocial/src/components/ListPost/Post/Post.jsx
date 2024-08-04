@@ -88,7 +88,7 @@ function Post({ postData }) {
 
   return (
     <div id="post"
-      className="w-full sm:w-[700px] flex flex-col items-center bg-white shadow-md rounded-md">
+      className="w-full lg:w-[700px] flex flex-col items-center bg-white shadow-md rounded-md">
       <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} />
       <PostContents postData={postData} postType={postType} />
       {

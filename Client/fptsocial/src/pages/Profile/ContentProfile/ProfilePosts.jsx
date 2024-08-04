@@ -1,17 +1,19 @@
 import { IconCake, IconHeartFilled, IconHomeFilled, IconManFilled, IconUser } from '@tabler/icons-react'
+import { useTranslation } from 'react-i18next'
 import ListPost from '~/components/ListPost/ListPost'
 import NewPost from '~/components/Modal/NewPost/NewPost'
 import { POST_TYPES } from '~/utils/constants'
 
 function ProfilePosts({ listPost, user }) {
+  const { t } = useTranslation()
   return (
     <div id=''
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div
         id='info'
-        className='w-full mt-8 sm:w-[500px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
+        className='w-full mt-8 lg:w-[700px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
         <div className='flex flex-col p-4 gap-3'>
-          <h3 className='text-xl font-bold'>Profile</h3>
+          <h3 className='text-xl font-bold'>{t('standard.profile.about')}</h3>
           <div className='flex gap-1'><IconUser stroke={2} color='#c8d3e1' /><span className='font-semibold'>{user?.firstName + ' ' + user?.lastName || 'No information'}</span></div>
           <div className='flex gap-1'><IconHomeFilled stroke={2} color='#c8d3e1' /><span>Lives in&nbsp;</span><span className='font-semibold'>{user?.homeTown || 'No information'}</span></div>
           <div className='flex gap-1'><IconManFilled stroke={2} color='#c8d3e1' />Gender&nbsp;&nbsp;<span className='font-semibold'>{user?.userGender?.genderName || 'No information'}</span></div>
@@ -19,7 +21,7 @@ function ProfilePosts({ listPost, user }) {
           <div className='flex gap-1'><IconCake stroke={2} color='#c8d3e1' /> Birthday&nbsp;&nbsp;<span className='font-semibold'>{new Date(user?.birthDay).toLocaleDateString() || 'No information'}</span></div>
         </div>
       </div>
-      <div className='flex flex-col gap-3'>
+      <div className='flex flex-col items-center gap-3 w-full lg:w-fit'>
         <NewPost postType={POST_TYPES.PROFILE_POST} />
         <ListPost listPost={listPost} />
       </div>

@@ -1,5 +1,3 @@
-import React from 'react'
-import LazyImage from '~/components/LazyImage'
 import { cleanAndParseHTML } from '~/utils/formatters'
 
 function PostContents({ postData, postType }) {
@@ -9,7 +7,7 @@ function PostContents({ postData, postType }) {
     <div id="post-description"
       className="flex flex-col w-full gap-3 px-4 pb-4"
     >
-      <div className="">
+      <div className="w-full">
         {cleanHtml}
       </div>
     </div>

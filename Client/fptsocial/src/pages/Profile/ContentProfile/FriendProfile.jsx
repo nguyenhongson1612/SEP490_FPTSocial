@@ -1,5 +1,6 @@
 import { IconSearch } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAllFriend, getAllFriendOtherProfile, searchFriendByName } from '~/apis';
@@ -13,7 +14,7 @@ function FriendProfile({ user }) {
   const currentUser = useSelector(selectCurrentUser)
   const isYourProfile = currentUser?.userId == user?.userId
   const [loading, setLoading] = useState(false)
-
+  const { t } = useTranslation()
 
   const handleInputSearchChange = (event) => {
     const searchValue = event.target?.value
@@ -68,7 +69,7 @@ function FriendProfile({ user }) {
                 />
                 <div className='flex flex-col gap-2'>
                   <span className='capitalize font-semibold'>{friend?.friendName}</span>
-                  <span>{friend?.mutualFriends} mutualFriends</span>
+                  <span>{friend?.mutualFriends} {t('sideText.mutualFriend')}</span>
                 </div>
               </Link>
             ))}

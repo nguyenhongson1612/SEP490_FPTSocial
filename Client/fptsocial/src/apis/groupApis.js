@@ -3,6 +3,10 @@ import { API_ROOT } from '~/utils/constants'
 
 
 
+export const suggestionGroup = async ({ userId, showAll = true }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/suggestionGroup?UserId=${userId}&ShowAll=${showAll}`)
+  return response.data?.data
+}
 export const searchGroupPost = async ({ groupId, search, page = 1, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchGroupPost?GroupId=${groupId}&SearchString=${search}&Page=${page}&PageSize=${pageSize}`)
   return response.data?.data

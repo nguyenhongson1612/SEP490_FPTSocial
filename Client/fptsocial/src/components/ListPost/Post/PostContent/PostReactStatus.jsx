@@ -184,8 +184,8 @@ function PostReactStatus({ postData, postType }) {
             postReact?.listReact?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
               if (react?.numberReact > 0) {
                 if (react?.reactTypeName == 'like')
-                  return <img key={i} className={`size-6 ${i > 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
-                else return <img key={i} className={`size-6 ${i > 0 ? '-ml-2' : 'z-10'}interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
+                  return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
+                else return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
               }
             })
           }

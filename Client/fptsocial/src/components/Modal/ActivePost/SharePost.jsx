@@ -140,7 +140,7 @@ function SharePost() {
                 </div>
                 <div className='mx-4'>
                   <div className='flex items-center h-[40] py-2 gap-2 '>
-                    <UserAvatar />
+                    <UserAvatar isOther={false} />
                     <div className='flex flex-col w-full '>
                       <span className='font-bold'>{user?.firstName + ' ' + user?.lastName}</span>
                       <div className='flex gap-2'>
@@ -189,12 +189,7 @@ function SharePost() {
                   </div>
                 </div>
                 <div className='pb-1 text-2xl' >
-                  <Tiptap
-                    setContent={setContent}
-                    content={content}
-                    editorType={EDITOR_TYPE.SHARE}
-                    actionType={CREATE}
-                  />
+                  <Tiptap setContent={setContent} content={content} postType={POST_TYPES.SHARE_POST} actionType={CREATE} />
                 </div >
 
                 {/* <div className='interceptor-loading py-4 flex justify-center items-center'>
@@ -213,10 +208,10 @@ function SharePost() {
                 <div className='border-t-2 mb-2'>
                   <div className='px-4 pt-2 text-lg font-semibold'>Share in chat</div>
                   <div className='flex gap px-2'>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' />AB</div>
+                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
+                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
+                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
+                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
                   </div>
                   <div className='px-4 pt-2 text-lg font-semibold'>Share to</div>
                   <div className='flex gap px-2'>

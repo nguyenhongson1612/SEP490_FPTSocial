@@ -40,7 +40,7 @@ function Profile() {
       getOtherUserPost(paramUserId).then((data) => setListPost(data?.result))
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
-  }, [paramUserId, isReload])
+  }, [paramUserId, isReload, currentUser])
 
   useEffect(() => {
     userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)
@@ -61,7 +61,7 @@ function Profile() {
           sx={{ overflowY: 'auto' }}
         >
           <div className='bg-white w-full md:w-fit absolute rounded-md  left-1/2 -translate-x-1/2 mt-5 '>
-            <UpdateProfile user={userProfile} onClose={close} navigate={navigate} setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} />
+            <UpdateProfile user={userProfile} onClose={close} setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} />
           </div>
         </Modal>
       </div >

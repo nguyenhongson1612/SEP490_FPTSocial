@@ -1,14 +1,21 @@
-let apiRoot = "";
+let apiRoot = ""
 // dev environment
 if (process.env.BUILD_MODE === "dev") {
-  // apiRoot = "https://localhost:44329";
-  apiRoot = "https://fptforum-h0gtf0cmbhb8dkgq.eastus-01.azurewebsites.net";
+  apiRoot = "https://localhost:44329"
+  // apiRoot = "https://fptforum-h0gtf0cmbhb8dkgq.eastus-01.azurewebsites.net"
 }
 // deploy environment
 if (process.env.BUILD_MODE === "production") {
-  apiRoot = "";
+  apiRoot = "https://fptforum-h0gtf0cmbhb8dkgq.eastus-01.azurewebsites.net"
 }
 export const API_ROOT = apiRoot;
+
+import ukFlag from '~/assets/img/ukFlag.png'
+import vnflag from '~/assets/img/vnFlag.png'
+export const LANGUAGES = [
+  { label: "English", code: "en", flag: ukFlag },
+  { label: "Tiếng Việt", code: "vn", flag: vnflag }
+]
 
 export const POST_TYPES = {
   SHARE_POST: "share",
