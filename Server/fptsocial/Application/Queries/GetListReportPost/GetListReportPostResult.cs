@@ -16,7 +16,6 @@ namespace Application.Queries.GetListReportPost
     {
         public Guid ReportPostId { get; set; }
         public Guid ReportTypeId { get; set; }
-        public Guid ReportById { get; set; }
         public Guid? UserPostId { get; set; }
         public Guid? UserPostPhotoId { get; set; }
         public Guid? UserPostVideoId { get; set; }
@@ -25,6 +24,9 @@ namespace Application.Queries.GetListReportPost
         public Guid? GroupPostPhotoId { get; set; }
         public Guid? SharePostId { get; set; }
         public Guid? GroupSharePostId { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? AvatarUrl { get; set; }
         public DateTime? CreatedDate { get; set; }   
     }
 }

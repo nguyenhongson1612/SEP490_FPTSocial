@@ -34,7 +34,7 @@ namespace Application.Queries.GetListReportUser
             var reportListQuery = await _context.ReportProfiles
                 .Include(x => x.User)
                 .Include(x => x.ReportBy)
-                .Where(x => x.UserId != null && x.Processing == true)
+                .Where(x => x.UserId != null && x.UserId == request.UserId && x.Processing == true)
                 .ToListAsync(cancellationToken);
 
             var reportList = reportListQuery.Select(x => new GetReportUser
@@ -43,10 +43,10 @@ namespace Application.Queries.GetListReportUser
                 ReportTypeId = x.ReportTypeId,
                 UserId = x.ReportBy.UserId,
                 UserName = x.ReportBy.FullName,
-                AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportBy.UserId).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
+                AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportBy.UserId && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
                 ReportedUserId = x.User.UserId,
                 ReportedUserName = x.User.FullName,
-                ReportedAvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.User.UserId).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
+                ReportedAvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.User.UserId && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
                 CreatedDate = x.CreatedDate,
             }).ToList();
 

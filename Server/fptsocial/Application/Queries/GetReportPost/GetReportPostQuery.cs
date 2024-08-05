@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetListReportGroup
+namespace Application.Queries.GetReportPost
 {
-    public class GetListReportGroupQuery : IQuery<GetListReportGroupResult>
+    public class GetReportPostQuery : IQuery<GetReportPostResult>
     {
-        public Guid GroupId { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }

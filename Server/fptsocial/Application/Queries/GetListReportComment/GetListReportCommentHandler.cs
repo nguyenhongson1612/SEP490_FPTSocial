@@ -35,15 +35,48 @@ namespace Application.Queries.GetListReportComment
                 throw new ErrorException(StatusCodeEnum.RQ01_Request_Is_Null);
             }
 
-            var repostListQuery = await _context.ReportComments
+            var reportListQuery = _context.ReportComments
                 .AsNoTracking()
-                .Where(x => x.Processing == true)
-                .ToListAsync(cancellationToken);
+                .Include(x => x.ReportBy)
+                .Where(x => x.Processing == true);
 
-            var reportList = repostListQuery.Select(x => new GetReportComment {
+            // Áp dụng các điều kiện where tùy theo giá trị trong request
+            if (request.CommentId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentId == request.CommentId);
+            }
+            else if (request.CommentPhotoPostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId);
+            }
+            else if (request.CommentVideoPostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentVideoPostId == request.CommentVideoPostId);
+            }
+            else if (request.CommentGroupPostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentGroupPostId == request.CommentGroupPostId);
+            }
+            else if (request.CommentGroupVideoPostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId);
+            }
+            else if (request.CommentPhotoGroupPostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId);
+            }
+            else if (request.CommentSharePostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentSharePostId == request.CommentSharePostId);
+            }
+            else if (request.CommentGroupSharePostId != null)
+            {
+                reportListQuery = reportListQuery.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId);
+            }
+
+            var reportList = reportListQuery.Select(x => new GetReportComment {
                 ReportCommentId = x.ReportCommentId,
                 ReportTypeId = x.ReportTypeId,
-                ReportById = x.ReportById,
                 CommentId = x.CommentId,
                 CommentPhotoPostId = x.CommentPhotoPostId,
                 CommentVideoPostId = x.CommentVideoPostId,
@@ -53,6 +86,9 @@ namespace Application.Queries.GetListReportComment
                 CommentSharePostId = x.CommentSharePostId, 
                 CommentGroupSharePostId = x.CommentGroupSharePostId,
                 Content = x.Content,
+                UserId = x.ReportById,
+                UserName = x.ReportBy.FullName,
+                AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportById && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
                 CreatedDate = x.CreatedDate,  
             }).ToList();
 
