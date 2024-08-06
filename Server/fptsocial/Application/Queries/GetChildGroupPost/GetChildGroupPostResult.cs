@@ -25,9 +25,7 @@ namespace Application.Queries.GetChildGroupPost
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
         public string? GroupMediaType { get; set; }
-        public bool? IsReact { get; set; }
-        public ReactTypeCountDTO? UserReactType { get; set; }
-        public List<ReactTypeCountDTO>? Top2React { get; set; }
+
         public GroupPhotoDTO? GroupPhoto { get; set; }
         public GroupVideoDTO? GroupVideo { get; set; }
 

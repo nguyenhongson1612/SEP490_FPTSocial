@@ -9,6 +9,6 @@ namespace Application.Commands.SearchUserForChat
 {
     public class SearchUserForChatQueryResult
     {
-        public ProfileUser
+        //public ProfileUser
     }
 }

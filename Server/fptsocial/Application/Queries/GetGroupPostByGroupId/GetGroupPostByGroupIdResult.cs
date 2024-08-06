@@ -31,10 +31,6 @@ namespace Application.Queries.GetGroupPostByGroupId
         public bool? IsBanned { get; set; }
         public bool? IsShare { get; set; }
         public bool? IsPending { get; set; }
-        public bool? IsReact { get; set; }
-        public ReactTypeCountDTO? UserReactType { get; set; }
-        public List<ReactTypeCountDTO>? Top2React { get; set; }
-
         public string? GroupPostNumber { get; set; }
         public int? NumberGroupPost { get; set; }
         public virtual GroupPhotoDTO? GroupPhoto { get; set; }

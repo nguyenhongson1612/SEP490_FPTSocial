@@ -20,7 +20,7 @@ namespace Application.DTO.UserPostVideoDTO
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
         public virtual VideoDTO Video { get; set; } = null!;
-        public ReactCount ReactCount { get; set; }
+        //public ReactCount ReactCount { get; set; }
     }
 
 }

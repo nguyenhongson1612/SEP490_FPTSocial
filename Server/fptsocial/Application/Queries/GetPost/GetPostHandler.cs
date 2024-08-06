@@ -124,7 +124,6 @@ namespace Application.Queries.GetPost
                     IsBanned = item.IsBanned,
                     IsShare = false,
                     IsGroupPost = false,
-                    IsReact = isReact != null ? true : false,
                     UserPostNumber = item.UserPostNumber,
                     UserStatusId = item.UserStatusId,
                     IsAvataPost = item.IsAvataPost,
@@ -174,28 +173,22 @@ namespace Application.Queries.GetPost
                         ReactNumber = reactCounts?.ReactCount ?? 0,
                         CommentNumber = reactCounts?.CommentCount ?? 0,
                         ShareNumber = reactCounts?.ShareCount ?? 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     },
                     EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCounts?.ReactCount ?? 0, reactCounts?.CommentCount ?? 0, reactCounts?.ShareCount ?? 0, item?.CreatedAt ?? DateTime.Now)
                 };
-                if (isReact != null)
-                {
-                    post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    post.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combinePost.Add(post);
 
@@ -275,7 +268,6 @@ namespace Application.Queries.GetPost
                     IsBanned = item.IsBanned,
                     IsShare = false,
                     IsGroupPost = true,
-                    IsReact = isReact != null ? true : false,
                     GroupPostNumber = item.GroupPostNumber,
                     GroupStatus = new GetGroupStatusDTO {
                         GroupStatusId = item.GroupStatusId,
@@ -321,29 +313,22 @@ namespace Application.Queries.GetPost
                         ReactNumber = groupreactCounts?.ReactCount ?? 0,
                         CommentNumber = groupreactCounts?.CommentCount ?? 0,
                         ShareNumber = groupreactCounts?.ShareCount ?? 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     },
                     EdgeRank = GetEdgeRankAlo.GetEdgeRank(groupreactCounts?.ReactCount ?? 0, groupreactCounts?.CommentCount ?? 0, groupreactCounts?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
                 };
-
-                if (isReact != null)
-                {
-                    post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    post.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combinePost.Add(post);
             }
@@ -432,7 +417,6 @@ namespace Application.Queries.GetPost
                     IsBanned = item.IsBanned,
                     IsShare = true,
                     IsGroupPost = false,
-                    IsReact = isReact != null ? true : false,
                     GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
                     GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
                     GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
@@ -456,29 +440,22 @@ namespace Application.Queries.GetPost
                         ReactNumber =  reactNumber,
                         CommentNumber =  commentNumber,
                         ShareNumber =  0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     },
                     EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, 0, item.CreatedDate ?? DateTime.Now)
                 };
-
-                if (isReact != null)
-                {
-                    post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    post.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combinePost.Add(post);
             }

@@ -218,7 +218,6 @@ namespace Application.Queries.GetGroupPostByGroupId
                     IsShare = false,
                     IsBanned = item.IsBanned,
                     IsPending = item.IsPending,
-                    IsReact = isReact != null ? true : false,
                     GroupPostNumber = item.GroupPostNumber,
                     NumberGroupPost = item.NumberPost,
                     GroupPhoto = _mapper.Map<GroupPhotoDTO>(item.GroupPhoto),
@@ -265,30 +264,23 @@ namespace Application.Queries.GetGroupPostByGroupId
                     {
                         ReactNumber = react?.ReactCount ?? 0,
                         CommentNumber = react?.CommentCount ?? 0,
-                        ShareNumber = react?.ShareCount ?? 0
+                        ShareNumber = react?.ShareCount ?? 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     },
                     EdgeRank = GetEdgeRankAlo.GetEdgeRank(react?.ReactCount ?? 0, react?.CommentCount ?? 0, react?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
                 };
-
-                if (isReact != null)
-                {
-                    groupPost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    groupPost.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combine.Add(groupPost);
             }
@@ -342,7 +334,6 @@ namespace Application.Queries.GetGroupPostByGroupId
                     IsBanned = item.IsBanned,
                     IsShare = true,
                     IsPending = item.IsPending,
-                    IsReact = isReact != null ? true : false,
                     GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
                     GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
                     GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
@@ -368,30 +359,23 @@ namespace Application.Queries.GetGroupPostByGroupId
                     {
                         ReactNumber = reactCount,
                         CommentNumber = commentCount,
-                        ShareNumber = 0
+                        ShareNumber = 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     },
                     EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCount, commentCount, 0, item.CreateDate ?? DateTime.Now)
                 };
-
-                if (isReact != null)
-                {
-                    groupSharePost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    groupSharePost.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combine.Add(groupSharePost);
             }

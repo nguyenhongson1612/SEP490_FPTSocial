@@ -11,5 +11,8 @@ namespace Application.DTO.ReactDTO
         public int? ReactNumber { get; set; }
         public int? CommentNumber { get; set; }
         public int? ShareNumber{ get; set; }
+        public bool? IsReact { get; set; }
+        public ReactTypeCountDTO? UserReactType { get; set; }
+        public List<ReactTypeCountDTO>? Top2React { get; set; }
     }
 }
