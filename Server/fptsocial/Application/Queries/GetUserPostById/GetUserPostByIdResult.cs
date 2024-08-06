@@ -31,6 +31,9 @@ namespace Application.Queries.GetUserPostById
         public virtual ICollection<UserPostVideoDTO>? UserPostVideos { get; set; }
         public virtual GetUserAvatar? Avatar { get; set; }
         public string? FullName { get; set; }
+        public bool? IsReact { get; set; }
+        public ReactTypeCountDTO? UserReactType { get; set; }
+        public List<ReactTypeCountDTO>? Top2React { get; set; }
         public ReactCount? ReactCount { get; set; }
     }
 }

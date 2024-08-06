@@ -1,4 +1,5 @@
 ﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.ReactDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using AutoMapper;
@@ -120,6 +121,44 @@ namespace Application.Queries.GetUserPostById
                     ShareNumber = react?.ShareCount ?? 0,
                 }
             };
+
+            var isReact = await _context.ReactPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostId == request.UserPostId && x.UserId == request.UserId);
+
+            var topReact = await _context.ReactPosts
+            .Include(x => x.ReactType)
+            .Where(x => x.UserPostId == request.UserPostId)
+            .GroupBy(x => x.ReactTypeId)
+            .Select(g => new {
+                ReactTypeId = g.Key,
+                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                Count = g.Count()
+            })
+            .OrderByDescending(r => r.Count)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+
+            result.IsReact = isReact != null ? true : false;
+            if (isReact != null)
+            {
+                result.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                {
+                    ReactTypeId = isReact.ReactTypeId,
+                    ReactTypeName = isReact.ReactType.ReactTypeName,
+                    NumberReact = 1
+                };
+            }
+
+            if (topReact != null)
+            {
+                result.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                {
+                    ReactTypeId = x.ReactTypeId,
+                    ReactTypeName = x.ReactTypeName,
+                    NumberReact = x.Count
+                }).ToList();
+            }
             return Result<GetUserPostByIdResult>.Success(result);
         }
     }

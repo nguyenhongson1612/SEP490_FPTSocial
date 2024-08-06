@@ -1,5 +1,6 @@
 ﻿using Application.DTO.GetUserProfileDTO;
 using Application.DTO.GroupPostDTO;
+using Application.DTO.ReactDTO;
 using Application.Queries.GetGroupPostByGroupId;
 using AutoMapper;
 using Core.CQRS;
@@ -66,6 +67,12 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                                         .ThenInclude(x => x.GroupVideo)
                                     .Include(x => x.Group)
                                     .FirstOrDefaultAsync(x => x.GroupPostId == request.GroupPostId && x.IsHide != true && x.IsBanned != true);
+
+            if(groupPost == null)
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
+            }
+
             var avt = _context.AvataPhotos.FirstOrDefault(x => x.UserId == groupPost.UserId && x.IsUsed == true);
             var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == groupPost.UserId);
             var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == groupPost.GroupPostId);
@@ -124,7 +131,7 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                     UpdatedAt = upp.UpdatedAt,
                     PostPosition = upp.PostPosition,
                     GroupVideo = _mapper.Map<GroupVideoDTO>(upp.GroupVideo),
-                    ReactCount = new DTO.ReactDTO.ReactCount
+                    ReactCount = new ReactCount
                     {
                         ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
                         CommentNumber = _context.ReactGroupVideoPostComments.Count(x => x.GroupPostVideoId == upp.GroupPostVideoId),
@@ -133,17 +140,58 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                     }
                 }).ToList(),
                 UserAvata = _mapper.Map<GetUserAvatar>(avt),
-                UserName = user.FirstName + " " + user.LastName,
+                UserName = user?.FirstName + " " + user?.LastName,
                 GroupId = groupPost.GroupId,
-                GroupName = groupPost.Group.GroupName,
-                GroupCorverImage = groupPost.Group.CoverImage,
-                ReactCount = new DTO.ReactDTO.ReactCount
+                GroupName = groupPost.Group?.GroupName,
+                GroupCorverImage = groupPost.Group?.CoverImage,
+                ReactCount = new ReactCount
                 {
-                    ReactNumber = react.ReactCount,
-                    CommentNumber = react.CommentCount,
-                    ShareNumber = react.ShareCount
+                    ReactNumber = react?.ReactCount ?? 0,
+                    CommentNumber = react?.CommentCount ?? 0,
+                    ShareNumber = react?.ShareCount ?? 0
                 }
             };
+
+            var isReact = await _context.ReactGroupPosts
+                    .AsNoTracking()
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.GroupPostId == request.GroupPostId && x.UserId == request.UserId);
+
+            var topReact = await _context.ReactGroupPosts
+            .AsNoTracking()
+            .Include(x => x.ReactType)
+            .Where(x => x.GroupPostId == request.GroupPostId)
+            .GroupBy(x => x.ReactTypeId)
+            .Select(g => new {
+                ReactTypeId = g.Key,
+                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                Count = g.Count()
+            })
+            .OrderByDescending(r => r.Count)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+
+            result.IsReact = isReact != null ? true : false;
+
+            if (isReact != null)
+            {
+                result.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                {
+                    ReactTypeId = isReact.ReactTypeId,
+                    ReactTypeName = isReact.ReactType.ReactTypeName,
+                    NumberReact = 1
+                };
+            }
+
+            if (topReact != null)
+            {
+                result.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                {
+                    ReactTypeId = x.ReactTypeId,
+                    ReactTypeName = x.ReactTypeName,
+                    NumberReact = x.Count
+                }).ToList();
+            }
 
             return Result<GetGroupPostByGroupPostIdResult>.Success(result);
         }

@@ -1,5 +1,6 @@
 ﻿using Application.DTO.GetUserProfileDTO;
 using Application.DTO.GroupPostDTO;
+using Application.DTO.ReactDTO;
 using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
@@ -8,6 +9,7 @@ using Application.Queries.GetUserByUserId;
 using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Query;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
@@ -70,11 +72,29 @@ namespace Application.Queries.GetUserPost
 
             foreach (var item in userPosts)
             {
-                var react = _context.PostReactCounts
+                var react = await _context.PostReactCounts
                 .AsNoTracking()
-                .FirstOrDefault(x => x.UserPostId == item.UserPostId);
+                .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId);
 
-                combine.Add(new GetUserPostDTO
+                var isReact = await _context.ReactPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId && x.UserId == request.UserId);
+
+                var topReact = await _context.ReactPosts
+                .AsNoTracking()
+                .Include(x => x.ReactType)
+                .Where(x => x.UserPostId == item.UserPostId)
+                .GroupBy(x => x.ReactTypeId)
+                .Select(g => new {
+                    ReactTypeId = g.Key,
+                    ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                    Count = g.Count()
+                })
+                .OrderByDescending(r => r.Count)
+                .Take(2)
+                .ToListAsync(cancellationToken);
+
+                var userPost = new GetUserPostDTO
                 {
                     PostId = item.UserPostId,
                     UserId = item.UserId,
@@ -89,6 +109,7 @@ namespace Application.Queries.GetUserPost
                     IsHide = item.IsHide,
                     IsBanned = item.IsBanned,
                     IsShare = false,
+                    IsReact = isReact != null ? true : false,
                     CreatedAt = item.CreatedAt,
                     UpdateAt = item.UpdatedAt,
                     PhotoId = item.PhotoId,
@@ -131,7 +152,29 @@ namespace Application.Queries.GetUserPost
                         CommentNumber = react?.CommentCount ?? 0,
                         ShareNumber = react?.ShareCount ?? 0,
                     }
-                });
+                };
+
+                if(isReact != null)
+                {
+                    userPost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    };
+                }
+
+                if(topReact != null)
+                {
+                    userPost.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList();
+                }
+
+                combine.Add(userPost);
             }
 
             var sharePosts = await _context.SharePosts
@@ -172,7 +215,26 @@ namespace Application.Queries.GetUserPost
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
 
-                combine.Add(new GetUserPostDTO
+                var isReact = await _context.ReactSharePosts
+                    .AsNoTracking()
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.SharePostId == item.UserPostId && x.UserId == request.UserId);
+
+                var topReact = await _context.ReactSharePosts
+                .AsNoTracking()
+                .Include(x => x.ReactType)
+                .Where(x => x.SharePostId == item.UserPostId)
+                .GroupBy(x => x.ReactTypeId)
+                .Select(g => new {
+                    ReactTypeId = g.Key,
+                    ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                    Count = g.Count()
+                })
+                .OrderByDescending(r => r.Count)
+                .Take(2)
+                .ToListAsync(cancellationToken);
+
+                var sharePost = new GetUserPostDTO
                 {
                     PostId = item.SharePostId,
                     UserId = item.UserId,
@@ -189,6 +251,7 @@ namespace Application.Queries.GetUserPost
                     IsHide = item.IsHide,
                     IsBanned = item.IsBanned,
                     IsShare = true,
+                    IsReact = isReact != null ? true : false,
                     GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
                     GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
                     GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
@@ -211,7 +274,29 @@ namespace Application.Queries.GetUserPost
                         .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
                         ShareNumber = 0,
                     }
-                });
+                };
+
+                if (isReact != null)
+                {
+                    sharePost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    };
+                }
+
+                if (topReact != null)
+                {
+                    sharePost.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList();
+                }
+
+                combine.Add(sharePost);
             }
 
             var getuserpost = new GetUserPostResult();

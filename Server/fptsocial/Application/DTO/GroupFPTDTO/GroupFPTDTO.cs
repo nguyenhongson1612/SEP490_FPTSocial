@@ -18,5 +18,6 @@ namespace Application.DTO.GroupFPTDTO
         public Guid GroupTypeId { get; set; }
         public string? CoverImage { get; set; }
         public Guid? GroupStatusId { get; set; }
+        public bool? isJoined { get; set; }
     }
 }

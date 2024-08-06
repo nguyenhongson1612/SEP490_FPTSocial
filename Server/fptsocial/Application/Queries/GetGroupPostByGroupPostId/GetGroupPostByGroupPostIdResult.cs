@@ -24,7 +24,9 @@ namespace Application.Queries.GetGroupPostByGroupPostId
         public Guid? GroupVideoId { get; set; }
         public int? NumberPost { get; set; }
         public bool? IsBanned { get; set; }
-
+        public bool? IsReact { get; set; }
+        public ReactTypeCountDTO? UserReactType { get; set; }
+        public List<ReactTypeCountDTO>? Top2React { get; set; }
         public virtual GroupPhotoDTO? GroupPhoto { get; set; }
         public virtual GroupVideoDTO? GroupVideo { get; set; }
         public virtual ICollection<GroupPostPhotoDTO>? GroupPostPhoto { get; set; }
