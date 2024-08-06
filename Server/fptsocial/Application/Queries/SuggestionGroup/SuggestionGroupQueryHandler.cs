@@ -37,7 +37,16 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
         }
 
         // Lấy ID của các bạn bè
-        var friendIds = user.FriendUsers.Select(f => f.FriendId).ToList();
+        var friendIds = await _queryContext.Friends
+        .Where(f => (f.UserId == request.UserId || f.FriendId == request.UserId) && f.Confirm)
+        .Select(f => f.UserId == request.UserId ? f.FriendId : f.UserId)
+        .ToListAsync(cancellationToken);
+
+        // Lấy danh sách nhóm mà người dùng đã tham gia
+        var userJoinedGroupIds = await _queryContext.GroupMembers
+            .Where(gm => gm.UserId == request.UserId && gm.IsJoined)
+            .Select(gm => gm.GroupId)
+            .ToListAsync(cancellationToken);
 
         // Đếm số lượng nhóm theo từng group type
         var groupTypeGroupCount = (from gm in _queryContext.GroupMembers
@@ -54,25 +63,30 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
         // Đếm số lượng bạn bè tham gia trong mỗi nhóm
         var friendsInGroups = (from gm in _queryContext.GroupMembers
                                join g in _queryContext.GroupFpts on gm.GroupId equals g.GroupId
+                               join gs in _queryContext.GroupStatuses on g.GroupStatusId equals gs.GroupStatusId
                                where gm.UserId == request.UserId && gm.IsJoined
                                select new
                                {
                                    Group = g,
-                                   FriendCount = _queryContext.GroupMembers.Count(gm2 => friendIds.Contains(gm2.UserId) && gm2.GroupId == g.GroupId)
+                                   FriendCount = _queryContext.GroupMembers.Count(gm2 => friendIds.Contains(gm2.UserId) && gm2.GroupId == g.GroupId),
+                                   GroupStatusName = gs.GroupStatusName
                                }).ToList();
 
         // Sắp xếp các nhóm theo thứ tự ưu tiên
         var prioritizedGroups = friendsInGroups
-            .OrderByDescending(g => groupTypeGroupCount.FindIndex(gt => gt.GroupType == g.Group.GroupTypeId))
-            .ThenByDescending(g => g.FriendCount)
-            .Select(g => g.Group)
-            .ToList();
+        .OrderByDescending(g => groupTypeGroupCount.FindIndex(gt => gt.GroupType == g.Group.GroupTypeId))
+        .ThenByDescending(g => g.FriendCount)
+        .Where(g => !userJoinedGroupIds.Contains(g.Group.GroupId))
+        .Select(g => g.Group)
+        .ToList();
 
         // Nếu không có nhóm nào mà người dùng tham gia hoặc không có bạn bè nào tham gia trong các nhóm đó, tìm các nhóm có trạng thái công khai
         if (!prioritizedGroups.Any())
         {
             prioritizedGroups = _queryContext.GroupFpts
-                .Where(g => g.GroupStatus != null && g.GroupStatus.Equals("Public"))
+                .Include(g => g.GroupStatus)
+                .Where(g => g.GroupStatus != null && g.GroupStatus.GroupStatusName.Equals("Public"))
+                .Where(g => !userJoinedGroupIds.Contains(g.GroupId))
                 .ToList();
         }
 
@@ -82,7 +96,8 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
             GroupId = g.GroupId,
             GroupName = g.GroupName,
             NumberOfMember = _queryContext.GroupMembers.Count(m => m.GroupId == g.GroupId),
-            GroupStatus = g.GroupStatus?.ToString() ?? "Unknown" // Kiểm tra null và cung cấp giá trị mặc định
+            GroupStatus = g.GroupStatus?.GroupStatusName ?? "Unknown", // Kiểm tra null và cung cấp giá trị mặc định
+            CoverImage = g.CoverImage,
         }).ToList();
 
         if (!request.ShowAll)

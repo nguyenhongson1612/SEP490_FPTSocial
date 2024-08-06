@@ -12,5 +12,6 @@ namespace Application.DTO.GroupFPTDTO
         public string? GroupName { get; set; }
         public int NumberOfMember { get; set; }
         public string? GroupStatus { get; set; }
+        public string? CoverImage { get; set; }
     }
 }
