@@ -59,57 +59,144 @@ namespace Application.Commands.ProcessReportCommand
 
             return Result<ProcessReportCommandResult>.Success(new ProcessReportCommandResult
             {
-                ReportId = request.ReportId,
                 Success = true
             });
         }
 
         private async Task ProcessCommentReport(ProcessReportCommand request)
         {
-            var report = await _context.ReportComments.FirstOrDefaultAsync(r => r.ReportCommentId == request.ReportId);
+            var report = new List<Domain.CommandModels.ReportComment>();
+            if (request.CommentId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentId == request.CommentId).ToListAsync();
+            }
+            else if (request.CommentPhotoPostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentPhotoPostId == request.CommentPhotoPostId).ToListAsync();
+            }
+            else if (request.CommentVideoPostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentVideoPostId == request.CommentVideoPostId).ToListAsync();
+            }
+            else if (request.CommentGroupPostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentGroupPostId == request.CommentGroupPostId).ToListAsync();
+            }
+            else if (request.CommentPhotoGroupPostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).ToListAsync();
+            }
+            else if (request.CommentGroupVideoPostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentGroupVideoPostId == request.CommentGroupVideoPostId).ToListAsync();
+            }
+            else if (request.CommentSharePostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentSharePostId == request.CommentSharePostId).ToListAsync();
+            }
+            else if (request.CommentGroupSharePostId != null)
+            {
+                report = await _context.ReportComments.Where(r => r.CommentGroupSharePostId == request.CommentGroupSharePostId).ToListAsync();
+            }
+            else
+            {
+                throw new ErrorException("CommentId must be required!");
+            }
+
             if (report == null)
             {
                 throw new ErrorException(StatusCodeEnum.RP01_Report_Not_Found);
             }
 
-            report.ReportStatus = false;
-            report.Processing = false;
+            foreach (var item in report)
+            {
+                item.ReportStatus = false;
+                item.Processing = false;
 
-            if (request.IsAccepted == true) {
-                report.ReportStatus = true;
+                if (request.IsAccepted == true)
+                {
+                    item.ReportStatus = true;
+                }
             }
-            
         }
 
         private async Task ProcessPostReport(ProcessReportCommand request)
         {
-            var report = await _context.ReportPosts.FirstOrDefaultAsync(r => r.ReportPostId == request.ReportId);
+            var report = new List<Domain.CommandModels.ReportPost>();
+            if(request.UserPostId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.UserPostId == request.UserPostId).ToListAsync();
+            }
+            else if (request.UserPostPhotoId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.UserPostPhotoId == request.UserPostPhotoId).ToListAsync();
+            }
+            else if (request.UserPostVideoId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.UserPostVideoId == request.UserPostVideoId).ToListAsync();
+            }
+            else if (request.GroupPostId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.GroupPostId == request.GroupPostId).ToListAsync();
+            }
+            else if (request.GroupPostPhotoId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.GroupPostPhotoId == request.GroupPostPhotoId).ToListAsync();
+            }
+            else if (request.GroupPostVideoId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.UserPostId == request.UserPostId).ToListAsync();
+            }
+            else if (request.SharePostId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.SharePostId == request.SharePostId).ToListAsync();
+            }
+            else if (request.GroupSharePostId != null)
+            {
+                report = await _context.ReportPosts.Where(r => r.GroupSharePostId == request.GroupSharePostId).ToListAsync();
+            }
+            else
+            {
+                throw new ErrorException("PostId must be required!");
+            }
+
             if (report == null)
             {
                 throw new ErrorException(StatusCodeEnum.RP01_Report_Not_Found);
             }
-            report.ReportStatus = false;
-            report.Processing = false;
 
-            if (request.IsAccepted == true)
+            foreach(var item in report)
             {
-                report.ReportStatus = true;
+                item.ReportStatus = false;
+                item.Processing = false;
+
+                if (request.IsAccepted == true)
+                {
+                    item.ReportStatus = true;
+                }
             }
         }
 
         private async Task ProcessUserReport(ProcessReportCommand request)
         {
-            var report = await _context.ReportProfiles.FirstOrDefaultAsync(r => r.ReportProfileId == request.ReportId);
+            if (request.UserId == null)
+            {
+                throw new ErrorException("UserId must be required!");
+            }
+            var report = await _context.ReportProfiles.Where(r => r.UserId == request.UserId).ToListAsync();
             if (report == null)
             {
                 throw new ErrorException(StatusCodeEnum.RP01_Report_Not_Found);
             }
-            report.ReportStatus = false;
-            report.Processing = false;
-
-            if (request.IsAccepted == true)
+            foreach(var item in report)
             {
-                report.ReportStatus = true;
+                item.ReportStatus = false;
+                item.Processing = false;
+
+                if (request.IsAccepted == true)
+                {
+                    item.ReportStatus = true;
+                }
             }
 
             // Deactivate user
@@ -122,17 +209,25 @@ namespace Application.Commands.ProcessReportCommand
 
         private async Task ProcessGroupReport(ProcessReportCommand request)
         {
-            var report = await _context.ReportProfiles.FirstOrDefaultAsync(r => r.ReportProfileId == request.ReportId);
+            if (request.GroupId == null)
+            {
+                throw new ErrorException("GroupId must be required!");
+            }
+
+            var report = await _context.ReportProfiles.Where(r => r.GroupId == request.GroupId).ToListAsync();
             if (report == null)
             {
                 throw new ErrorException(StatusCodeEnum.RP01_Report_Not_Found);
             }
-            report.ReportStatus = false;
-            report.Processing = false;
-
-            if (request.IsAccepted == true)
+            foreach (var item in report)
             {
-                report.ReportStatus = true;
+                item.ReportStatus = false;
+                item.Processing = false;
+
+                if (request.IsAccepted == true)
+                {
+                    item.ReportStatus = true;
+                }
             }
         }
     }

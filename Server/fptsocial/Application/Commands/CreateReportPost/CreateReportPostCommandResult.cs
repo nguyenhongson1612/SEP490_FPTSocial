@@ -17,6 +17,8 @@ namespace Application.Commands.CreateReportPost
         public Guid? UserPostVideoId { get; set; }
         public Guid? GroupPostVideoId { get; set; }
         public Guid? GroupPostPhotoId { get; set; }
+        public Guid? SharePostId { get; set; }
+        public Guid? GroupSharePostId { get; set; }
         public bool? ReportStatus { get; set; }
         public DateTime? CreatedDate { get; set; }
         public bool? Processing { get; set; }
