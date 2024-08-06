@@ -98,7 +98,7 @@ function ListPost() {
       )
       Promise.all(dataListPost)
         .then(results => {
-          console.log('🚀 ~ results:', results)
+          // console.log('🚀 ~ results:', results)
           if (isReload != 0)
             dispatch(updateCurrentActiveListPost(results))
           else

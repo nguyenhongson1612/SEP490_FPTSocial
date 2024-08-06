@@ -1,26 +1,25 @@
 // import React from 'react'
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import { motion } from 'framer-motion'
 import { getStatus } from '~/apis'
-import { FormControl, FormControlLabel, FormLabel, Modal, Popover, Radio, RadioGroup } from '@mui/material'
-import { IconCaretDownFilled, IconChevronLeft, IconX } from '@tabler/icons-react'
-import { createPost, updateSharePost, updateUserPost } from '~/apis/postApis'
+import { FormControl, FormControlLabel, Modal, Popover, Radio, RadioGroup } from '@mui/material'
+import { IconCaretDownFilled, IconX } from '@tabler/icons-react'
+import { updateSharePost, updateUserPost } from '~/apis/postApis'
 import { clearAndHireCurrentActivePost, selectCurrentActivePost, selectIsShowModalUpdatePost } from '~/redux/activePost/activePostSlice'
-import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
-import TipTapUpdatePost from '~/components/TitTap/TipTapUpdatePost'
 import { triggerReload } from '~/redux/ui/uiSlice'
-import { EDITOR_TYPE, POST_TYPES, PUBLIC, UPDATE } from '~/utils/constants'
+import { POST_TYPES } from '~/utils/constants'
 import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup/activeGroupSlice'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import { updateGroupPost, updateGroupSharePost } from '~/apis/groupPostApis'
+import EditMedia from '../EditMedia'
+import { useTranslation } from 'react-i18next'
+import Tiptap from '~/components/TitTap/TitTap'
 
 
 function UpdatePost() {
@@ -34,7 +33,9 @@ function UpdatePost() {
   const isGroup = postType == POST_TYPES.GROUP_POST
   const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
 
-  console.log('🚀 ~ UpdatePost ~ currentActivePost:', currentActivePost)
+  const { t } = useTranslation()
+
+  // console.log('🚀 ~ UpdatePost ~ currentActivePost:', currentActivePost)
   const dispatch = useDispatch()
   const [isEdit, setIsEdit] = useState(false)
 
@@ -66,7 +67,7 @@ function UpdatePost() {
     }
   }
 
-  const [listMedias, setListMedias] = useState(() => {
+  const [listMedia, setListMedia] = useState(() => {
     let photos = []
     let videos = []
     if (isProfile) {
@@ -83,26 +84,20 @@ function UpdatePost() {
     }
     return [...photos, ...videos]
   })
-  // console.log('🚀 ~ const[listMedias,setListMedias]=useState ~ listMedias:', listMedias)
+  // console.log('🚀 ~ const[listMedia,setListMedia]=useState ~ listMedia:', listMedia)
 
   const [anchorEl, setAnchorEl] = useState(null)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
-  };
+  }
 
   const handleClose = () => {
     setAnchorEl(null)
-  };
+  }
 
   const open = Boolean(anchorEl)
   const id = open ? 'simple-popover' : undefined
-
-
-  // const handleUpdateListMedia = () => {
-
-  // }
-
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState({})
 
@@ -129,29 +124,31 @@ function UpdatePost() {
   }
 
   const handleRemove = (index) => {
-    setListMedias(listMedias?.filter((e, i) => i !== index))
+    setListMedia(listMedia?.filter((e, i) => i !== index))
   }
   useEffect(() => {
-    if (listMedias.length == 0 && isEdit)
+    if (listMedia.length == 0 && isEdit)
       setIsEdit(false)
-  }, [listMedias])
+  }, [listMedia])
   const submitPost = () => {
-    // console.log(listMedias)
+    const listPhoto = listMedia.filter(media => media.type === 'image').map((media, index) => ({ photoUrl: media.url, position: index }))
+    const listVideo = listMedia.filter(media => media.type === 'video').map((media, index) => ({ videoUrl: media.url, position: index }))
+    // console.log(listMedia)
     const submitData = isProfile ? {
       'userId': currentUser?.userId,
       'userPostId': currentActivePost?.postId || currentActivePost?.userPostId,
       'content': content,
       'userStatusId': choseStatus?.userStatusId,
-      'photos': listMedias?.filter(e => e.type == 'image')?.map(e => e?.url),
-      'videos': listMedias?.filter(e => e.type == 'video')?.map(e => e?.url)
+      'photos': listPhoto,
+      'videos': listVideo
     } : isGroup ? {
       'userId': currentUser?.userId,
       'groupPostId': currentActivePost?.postId,
       'groupId': currentActivePost?.groupId,
       'content': content,
       'groupStatusId': choseStatus?.groupStatusId,
-      'photos': listMedias?.filter(e => e.type == 'image')?.map(e => e?.url),
-      'videos': listMedias?.filter(e => e.type == 'video')?.map(e => e?.url)
+      'photos': listPhoto,
+      'videos': listVideo
     } : isShare ? {
       'sharePostId': currentActivePost?.postId || currentActivePost?.userPostId,
       'userId': currentUser?.userId,
@@ -185,21 +182,22 @@ function UpdatePost() {
       open={isShowUpdatePost}
       onClose={() => dispatch(clearAndHireCurrentActivePost())}
     >
-      <div className={`flex w-[90%] sm:w-70% md:w-[60%] ${isEdit ? 'w-[90%] h-[90%]' : ''} justify-center items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`}>
-        <div className='w-full h-full bg-white shadow-4edges rounded-lg flex flex-col'>
+      <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
+        h-[90%] bg-white border-gray-300 shadow-md rounded-md'>
+        <div className='w-full h-full bg-white shadow-4edges rounded-lg flex flex-col overflow-y-auto scrollbar-none-track'>
           {!isEdit ? (
             <form onSubmit={handleSubmit(submitPost)} >
               <div className='flex flex-col'>
                 <div className='h-[40px] flex justify-between items-center px-2 border-b '>
                   <span></span>
-                  <span className='text-xl font-bold'>Edit post</span>
+                  <span className='text-xl font-bold'>{t('standard.newPost.editPost')}</span>
                   <IconX
                     onClick={() => dispatch(clearAndHireCurrentActivePost())}
                     className='bg-orangeFpt text-white rounded-full  cursor-pointer hover:bg-orange-700' />
                 </div>
                 <div className='mx-4'>
                   <div className='flex items-center h-[40] py-2 gap-2 '>
-                    <UserAvatar />
+                    <UserAvatar isOther={false} />
                     <div className='flex flex-col w-full'>
                       <span className='font-bold'>{currentUser?.firstName + ' ' + currentUser?.lastName}</span>
                       <div
@@ -241,20 +239,8 @@ function UpdatePost() {
                     </div>
                   </div>
                 </div>
-                <div className='pb-1 text-2xl' >
-                  <TipTapUpdatePost
-                    setContent={setContent}
-                    content={content}
-                    setListMedia={setListMedias}
-                    listMedia={listMedias}
-                    handleEdit={handleEdit}
-                  />
-                  {/* <Tiptap
-                    setContent={setContent}
-                    content={content}
-                    editorType={(isShare || isGroupShare) && EDITOR_TYPE.SHARE}
-                    actionType={UPDATE}
-                  /> */}
+                <div className='pb-1 ' >
+                  <Tiptap setContent={setContent} content={content} postType={postType} listMedia={listMedia} setListMedia={setListMedia} handleEdit={handleEdit} />
                 </div >
                 {(isShare || isGroupShare) &&
                   <div className='px-2'>
@@ -268,50 +254,22 @@ function UpdatePost() {
                       </div>
                     </div>
                   </div>
-
                 }
-
                 <div className='interceptor-loading py-4 flex justify-center items-center'>
                   <button className='h-9 w-full  mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
-                  >
-                    Save
+                    style={{
+                      opacity: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
+                      pointerEvents: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
+                    }}
+                  >{t('standard.newPost.savePost')}
                   </button>
                 </div>
               </div >
             </form >
           )
             : isEdit && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className='flex flex-col h-full'
-              >
-                <div className='h-[10%] flex justify-between items-center border-b p-4'>
-                  <IconChevronLeft className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={handleEdit} />
-                  <span className='text-2xl font-bold'>Edit photo</span>
-                  <span></span>
-                </div>
-                <div className='h-[90%] overflow-y-auto no-scrollbar px-4 pb-10 grid grid-cols-12 bg-fbWhite gap-1 py-1' >
-                  {
-                    listMedias?.map((e, i) => (
-                      <div key={i} className={`col-span-12 md:col-span-6 lg:col-span-4 ${listMedias?.length <= 2 && '!col-span-12'} 
-                      relative bg-white rounded-md`}>
-                        <IconX
-                          onClick={() => { handleRemove(i) }}
-                          className='absolute z-20 right-1 top-1 bg-orangeFpt text-white rounded-full cursor-pointer hover:bg-orange-700' />
-                        {
-                          e?.type == 'image'
-                            ? <img src={e?.url} className='h-full w-full object-contain' />
-                            : <video src={e?.url} className='h-full w-full object-contain ' controls />
-                        }
-                      </div>
-                    ))
-                  }
-                </div >
-              </motion.div>)
-
-          }
+              <EditMedia handleEdit={handleEdit} handleRemove={handleRemove} listMedia={listMedia} setListMedia={setListMedia} />
+            )}
         </div >
       </div >
     </Modal>

@@ -1,32 +1,34 @@
-import { useEffect, useState } from 'react';
-import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis';
-import { useConfirm } from 'material-ui-confirm';
-import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react';
-import { Link } from 'react-router-dom';
-import connectionSignalR from '~/utils/signalRConnection';
-import { Avatar, Menu, MenuItem, Popover } from '@mui/material';
-import { toast } from 'react-toastify';
-import { handleCoverImg } from '~/utils/formatters';
-import { useDispatch } from 'react-redux';
-import { addReport, openModalReport } from '~/redux/report/reportSlice';
-import { REPORT_TYPES } from '~/utils/constants';
+import { useEffect, useState } from 'react'
+import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
+import { useConfirm } from 'material-ui-confirm'
+import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react'
+import { Link } from 'react-router-dom'
+import connectionSignalR from '~/utils/signalRConnection'
+import { Avatar, Menu, MenuItem, Popover } from '@mui/material'
+import { toast } from 'react-toastify'
+import { handleCoverImg } from '~/utils/formatters'
+import { useDispatch } from 'react-redux'
+import { addReport, openModalReport } from '~/redux/report/reportSlice'
+import { REPORT_TYPES } from '~/utils/constants'
+import { useTranslation } from 'react-i18next'
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
 
   const backgroundStyle = handleCoverImg(user?.coverImage)
   const dispatch = useDispatch()
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [hoveredFriendId, setHoveredFriendId] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [hoveredFriendId, setHoveredFriendId] = useState(null)
+  const { t } = useTranslation()
 
   const handlePopoverOpen = (event, friendId) => {
-    setAnchorEl(event.currentTarget);
-    setHoveredFriendId(friendId);
-  };
+    setAnchorEl(event.currentTarget)
+    setHoveredFriendId(friendId)
+  }
 
   const handlePopoverClose = () => {
-    setAnchorEl(null);
-    setHoveredFriendId(null);
-  };
+    setAnchorEl(null)
+    setHoveredFriendId(null)
+  }
 
   const [anchorEl2, setAnchorEl2] = useState(null)
   const open = Boolean(anchorEl2)
@@ -39,8 +41,8 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
 
   const handleAddFriend = async () => {
     try {
-      const response = await sendFriend({ userId: currentUser?.userId, friendId: user?.userId });
-      forceUpdate();
+      const response = await sendFriend({ userId: currentUser?.userId, friendId: user?.userId })
+      forceUpdate()
       if (response) {
         const signalRData = {
           MsgCode: 'User-001',
@@ -48,21 +50,21 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
           AdditionsMsd: '',
           ActionId: 'true'
-        };
-        console.log(signalRData);
-        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));
+        }
+        console.log(signalRData)
+        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
       }
     } catch (err) {
-      console.error('Error while starting connection: ', err);
+      console.error('Error while starting connection: ', err)
     }
-  };
+  }
 
   const handleResponse = (data_) => {
     const data = {
       userId: currentUser?.userId,
       friendId: user?.userId,
       ...data_
-    };
+    }
     updateFriendStatus(data)
       .then((data) => {
         if (data?.confirm) {
@@ -71,14 +73,14 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             Receiver: `${user?.userId}`,
             Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
             AdditionsMsd: ''
-          };
-          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));
+          }
+          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
         }
       })
-      .then(forceUpdate);
-  };
+      .then(forceUpdate)
+  }
 
-  const confirmUnfriend = useConfirm();
+  const confirmUnfriend = useConfirm()
   const openDeleteModal = () =>
     confirmUnfriend({
       title: 'Unfriend this account?',
@@ -93,7 +95,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           reject: true
         })
       )
-      .catch(() => { });
+      .catch(() => { })
 
   return (
     <div id="top-profile" className="bg-white shadow-md w-full flex flex-col items-center">
@@ -175,7 +177,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
               <span></span>
               <span className="font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2">
                 <IconEdit />
-                Update Your Profile
+                {t('standard.profile.updateProfile')}
               </span>
             </div>
           ) : buttonProfile?.friend ? (
@@ -185,7 +187,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                 className="font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2"
               >
                 <IconUserCheck stroke={3} />
-                Friend
+                {t('standard.profile.friend')}
               </span>
             </div>
           ) : buttonProfile?.request ? (
@@ -201,14 +203,14 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             >
               <span className="font-bold text-lg text-white p-2 rounded-md  bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
                 <IconUserX stroke={3} />
-                Cancel request
+                {t('standard.profile.cancelRequest')}
               </span>
             </div>
           ) : !buttonProfile?.confirm ? (
             <div onClick={handleAddFriend} className="flex flex-col justify-end mb-4 cursor-pointer">
               <span className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
                 <IconUserPlus stroke={3} />
-                Add friend
+                {t('standard.profile.addFriend')}
               </span>
             </div>
           ) : (
@@ -224,7 +226,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                   }
                   className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700"
                 >
-                  Confirm request
+                  {t('standard.profile.confirmRequest')}
                 </span>
                 <span
                   onClick={() =>
@@ -236,7 +238,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                   }
                   className="font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500"
                 >
-                  Delete request
+                  {t('standard.profile.deleteRequest')}
                 </span>
               </div>
             </div>
@@ -263,16 +265,15 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                     handleClose()
                   }}
                   sx={{ gap: '5px' }}>
-                  <IconMessageReport /> Report
+                  <IconMessageReport />{t('standard.profile.report')}
                 </MenuItem>
-
               </Menu>
             </div>
           }
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default TopProfile;
+export default TopProfile

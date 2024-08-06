@@ -285,7 +285,7 @@ function Comment({ comment, postType }) {
   return (
     <div className={`${comment?.level !== 1 && 'pl-[15%] mt-3'} `}>
       <div className='flex gap-1'>
-        <UserAvatar avatarSrc={comment?.url} isOther={true} />
+        <UserAvatar avatarSrc={comment?.url} />
         <div className='flex flex-col gap-1'>
           {
             !isEditContent &&
@@ -326,7 +326,7 @@ function Comment({ comment, postType }) {
                   }}
                 >
                   <form onSubmit={handleSubmit(handleRelyComment)} className='my-4 w-full flex gap-2 px-4'>
-                    <UserAvatar />
+                    <UserAvatar isOther={false} />
                     <div className='rounded-lg pt-2'>
                       <Tiptap
                         setContent={setContent}

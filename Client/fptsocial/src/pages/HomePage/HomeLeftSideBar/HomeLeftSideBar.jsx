@@ -11,6 +11,7 @@ import friendIcon from '~/assets/img/friend.png'
 import groupIcon from '~/assets/img/group.png'
 import feedIcon from '~/assets/img/activity-feed.png'
 import UserAvatar from '~/components/UI/UserAvatar'
+import { useTranslation } from 'react-i18next'
 
 function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
   const [isMore, setIsMore] = useState(false)
@@ -19,6 +20,7 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
   useEffect(() => {
     getGroupByUserId().then(data => setListGroup([...data?.listGroupAdmin || [], ...data?.listGroupMember || []]))
   }, [])
+  const { t } = useTranslation()
 
 
   return (
@@ -29,29 +31,29 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
         >
           <Link to={`/profile?id=${currentUser?.userId}`}
             className="w-full px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
-            <UserAvatar size='1.75' />
+            <UserAvatar size='1.75' isOther={false} />
             <span className="capitalize">{user?.firstName + ' ' + user?.lastName}</span>
           </Link>
           <Link className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer ">
             <img src={feedIcon} className='size-7' />
-            <span className="">Feeds</span>
+            <span className="">{t('standard.home.sidebar.feeds')}</span>
           </Link>
           <Link to={'/friends'} className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img src={friendIcon} className='size-7' />
-            <span className="">Friends</span>
+            <span className="">{t('standard.home.sidebar.friends')}</span>
           </Link>
 
           <Link to={'/groups'}
             className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img src={groupIcon} className='size-7' />
-            <span className="">Groups</span>
+            <span className="">{t('standard.home.sidebar.groups')}</span>
           </Link>
         </div>
 
         <div id="group"
           className="flex flex-col items-start mb-5"
         >
-          <p className="text-gray-500">Group</p>
+          <p className="text-gray-500">{t('standard.home.sidebar.your_shortcut')}</p>
           {
             listGroup?.map(group => (
               <Link

@@ -28,7 +28,6 @@ export const userSlice = createSlice({
       state.currentUser = null
     },
     addUser: (state, action) => {
-      console.log('vao day');
       state.currentUser = action.payload
     }
   },

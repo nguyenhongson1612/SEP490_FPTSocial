@@ -7,7 +7,6 @@ import { EDITOR_TYPE } from '~/utils/constants'
 
 const Toolbar = ({ editor, handleOpenChoseFile, postType, isChooseFile }) => {
   const [isOpenEmoji, setIsOpenEmoji] = useState(false)
-
   if (!editor) {
     return null
   }
@@ -94,7 +93,7 @@ const Toolbar = ({ editor, handleOpenChoseFile, postType, isChooseFile }) => {
             <button
               type="button"
               onClick={handleOpenChoseFile}
-              className={`text-orange-300 hover:text-orangeFpt ${isChooseFile && 'text-orangeFpt'}`}
+              className={`text-orange-300 hover:text-orangeFpt ${isChooseFile && '!text-orangeFpt'}`}
             >
               <IconPhotoUp className='w-5 h-5' />
             </button>

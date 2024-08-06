@@ -2,6 +2,10 @@ import { useState } from 'react'
 import SearchModal from '~/components/ModalSearch'
 import UserMenu from './DropdownProfile'
 import { IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+import { LANGUAGES } from '~/utils/constants';
+import i18n from '~/utils/i18n';
+import { Popover } from '@mui/material';
 
 function Header({
   sidebarOpen,
@@ -9,7 +13,25 @@ function Header({
   variant = 'default'
 }) {
 
+  const [anchorEl, setAnchorEl] = useState(null)
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
   const [searchModalOpen, setSearchModalOpen] = useState(false)
+  const { t } = useTranslation()
+  const handleChangeLang = (lang_code) => {
+    i18n.changeLanguage(lang_code)
+    handleClose()
+  };
+
 
   return (
     <header className={`sticky top-0 before:-z-10 z-30 bg-fbWhite`}>
@@ -18,8 +40,9 @@ function Header({
 
           {/* Header: Left side */}
           <div className="flex">
-          </div>
 
+          </div>
+          <span className="">{t("title")}</span>
           {/* Header: Right side */}
           <div className="flex items-center space-x-3">
             <div>
@@ -29,12 +52,40 @@ function Header({
                 aria-controls="search-modal"
               >
                 <span className="sr-only">Search</span>
+
                 <IconSearch />
               </button>
               <SearchModal id="search-modal" searchId="search" modalOpen={searchModalOpen} setModalOpen={setSearchModalOpen} />
             </div>
             {/*  Divider */}
             <hr className="w-px h-6 bg-gray-200 dark:bg-gray-700/60 border-none" />
+            <div>
+              <img src={LANGUAGES.find(e => e.code == i18n.language).flag || LANGUAGES[0].flag} className='size-6' onClick={handleClick} />
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+              >
+                {/* <select defaultValue={i18n.language} onChange={onChangeLang}> */}
+                <div className='flex flex-col gap-2 p-1'>
+                  {LANGUAGES.map(e => (
+                    <div key={e.code} className='flex gap-2 cursor-pointer rounded-md py-2 px-3 hover:bg-fbWhite-500'
+                      onClick={() => handleChangeLang(e.code)}
+                    >
+                      <img src={e.flag} className='size-6' />
+                      <span className='font-semibold'>{e.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* </select> */}
+              </Popover>
+            </div>
             <UserMenu align="right" />
           </div>
 

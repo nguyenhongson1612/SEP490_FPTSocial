@@ -14,9 +14,15 @@ import { toast } from 'react-toastify'
 import { getUserByUserId } from '~/redux/user/userSlice'
 import { IconX } from '@tabler/icons-react'
 import { DEFAULT_AVATAR } from '~/utils/constants'
+import { triggerReload } from '~/redux/ui/uiSlice'
 
-function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
-  const { watch, reset, register, setValue, handleSubmit, formState: { errors } } = useForm()
+function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
+  const { watch, register, control, setValue, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      avataphoto: user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl,
+      coverImage: user?.coverImage
+    }
+  })
   const [listGender, setListGender] = useState([])
   const [listStatus, setListStatus] = useState([])
   const [listInterest, setListInterest] = useState([])
@@ -37,14 +43,16 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
     getRelationships().then(data => setListRelationship(data))
   }, [])
 
-  useEffect(() => reset({
-    workplaceStatus: user?.workPlaces[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
-    contactStatus: user?.contactInfo?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
-    genderStatus: user?.userGender?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
-    webAffiliationsStatus: user?.webAffiliations[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
-    relationshipStatus: user?.userRelationship?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId,
-    interestStatus: user?.userInterests[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId
-  }), [listStatus])
+  useEffect(() => {
+    if (listStatus) {
+      setValue('workplaceStatus', user?.workPlaces[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+      setValue('contactStatus', user?.contactInfo?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+      setValue('genderStatus', user?.userGender?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+      setValue('webAffiliationsStatus', user?.webAffiliations[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+      setValue('relationshipStatus', user?.userRelationship?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+      setValue('interestStatus', user?.userInterests[0]?.userStatusId ?? listStatus.find(e => e?.statusName?.toLowerCase() === 'public')?.userStatusId);
+    }
+  }, [listStatus, user, setValue])
 
 
   // const validateData = (data) => {
@@ -123,7 +131,6 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
     ).then(() => {
       setIsOpenModalUpdateProfile(false)
       dispatch(getUserByUserId())
-      navigate('/')
       toast.success('Account updated successfully')
     })
   }
@@ -140,7 +147,7 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user, navigate }) {
       <ImageArea register={register} setValue={setValue} user={user} watch={watch} />
       <Information register={register} user={user} errors={errors} />
       <Contact errors={errors} listStatus={listStatus} register={register} user={user} watch={watch} setValue={setValue} />
-      <Gender listGender={listGender} listStatus={listStatus} user={user} errors={errors} register={register} setValue={setValue} watch={watch} />
+      <Gender listGender={listGender} listStatus={listStatus} user={user} errors={errors} register={register} control={control} setValue={setValue} watch={watch} />
       <Relationship listRelationship={listRelationship} listStatus={listStatus} user={user} errors={errors} register={register} setValue={setValue} watch={watch} />
       <Interests listInterest={listInterest} listStatus={listStatus} user={user} register={register} setValue={setValue} watch={watch} />
       <Workspace errors={errors} listStatus={listStatus} register={register} user={user} setValue={setValue} watch={watch} />

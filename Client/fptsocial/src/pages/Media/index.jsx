@@ -279,7 +279,7 @@ function Media() {
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='pb-4 pt-2 border-t w-full flex gap-2 px-4'>
             {/* <form className='mb-4 w-full flex gap-2 px-4'> */}
-            <UserAvatar />
+            <UserAvatar isOther={false} />
             <div className='rounded-lg pt-2 w-full bg-fbWhite'>
               <Tiptap
                 setContent={setContent}

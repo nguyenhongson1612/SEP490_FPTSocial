@@ -11,12 +11,14 @@ import { compareDateTime } from '~/utils/formatters'
 import connectionSignalR from '~/utils/signalRConnection'
 import bellImg from '~/assets/img/bell2.png'
 import noIdeaImg from '~/assets/img/no-idea.png'
+import { useTranslation } from 'react-i18next'
 
 function HomeRightSideBar() {
   const currentUser = useSelector(selectCurrentUser)
   const listLatestNotification = useSelector(selectLatestNotification)
   const [listFriend, setListFriend] = useState([])
   const [listFriendSuggestion, setListFriendSuggestion] = useState([])
+  const { t } = useTranslation()
 
   useEffect(() => {
     getAllFriend().then(data => setListFriend(data?.allFriend))
@@ -75,14 +77,14 @@ function HomeRightSideBar() {
           <div id="suggestion"
             className="flex flex-col items-start "
           >
-            <p className=" text-gray-500 pb-2 font-semibold">Suggestions for you</p>
+            <p className=" text-gray-500 pb-2 font-semibold">{t('standard.home.rightSidebar.suggestion')}</p>
             {listFriendSuggestion?.map(friend => (
               <Link key={friend?.friendId} to={`/profile?id=${friend?.friendId}`} className="w-full h-[52px] px-2 py-3 hover:bg-fbWhite-500  flex items-center justify-between cursor-pointer rounded-md">
                 <div className='flex items-center gap-2'>
                   <UserAvatar avatarSrc={friend?.avata} isOther={true} />
                   <div className='flex flex-col'>
                     <span className="font-semibold capitalize">{friend?.friendName}</span>
-                    <span className="text-xs">{friend?.mutualFriends ?? 0} mutual friend</span>
+                    <span className="text-xs">{friend?.mutualFriends ?? 0} {t('sideText.mutualFriend')}</span>
                   </div>
                 </div>
                 <IconButton color="primary" onClick={(e) => { e.preventDefault(); handleAddFriend(friend?.friendId) }}><IconUserPlus /></IconButton>
@@ -93,7 +95,7 @@ function HomeRightSideBar() {
               <div className='flex flex-col justify-center w-full'>
                 <img src={noIdeaImg} className='size-10' />
                 <span className='font-semibold text-sm text-gray-500'>
-                  No suggestions are suitable for you
+                  {t('sideText.noneSuggestion')}
                 </span>
               </div>
             }
@@ -104,7 +106,7 @@ function HomeRightSideBar() {
           <div id="suggestion"
             className="flex flex-col items-start gap-1"
           >
-            <p className=" text-gray-500 pb-2 font-semibold">Latest notifications</p>
+            <p className=" text-gray-500 pb-2 font-semibold">{t('standard.home.rightSidebar.notification')}</p>
             {
               listLatestNotification?.slice(0, 3)?.map((notification, i) => (
                 <Link to={notification?.Url} onClick={() => handleCheckReadNotification(notification?.NotificationId)} key={i} className='flex items-center gap-2 min-h-12 hover:bg-fbWhite-500 rounded-md p-1 w-full'>
@@ -123,11 +125,11 @@ function HomeRightSideBar() {
               ))
             }
             {
-              listLatestNotification?.length == 0 &&
+              listLatestNotification?.length == 0 || !listFriendSuggestion &&
               <div className='flex flex-col justify-center w-full'>
                 <img src={bellImg} className='size-10' />
                 <span className='font-semibold text-sm text-gray-500'>
-                  You have no notifications
+                  {t('sideText.noneNotification')}
                 </span>
               </div>
             }
@@ -138,7 +140,7 @@ function HomeRightSideBar() {
           <div id="people"
             className="flex flex-col items-start "
           >
-            <p className=" text-gray-500 font-semibold">Contacts</p>
+            <p className=" text-gray-500 font-semibold">{t('standard.home.rightSidebar.contact')}</p>
             {listFriend?.map(friend => (
               <Link key={friend?.friendId} to={`/profile?id=${friend?.friendId}`} className="w-full h-[52px] px-2 py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer rounded-md">
                 <UserAvatar avatarSrc={friend?.avata} isOther={true} />
@@ -147,11 +149,7 @@ function HomeRightSideBar() {
             ))}
           </div>
         </div>
-
       </div>
-
-
-
     </div>
   )
 }

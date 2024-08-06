@@ -22,6 +22,7 @@ import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 function ActivePost({ isReportPost = false }) {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
+  console.log('🚀 ~ ActivePost ~ currentActivePost:', currentActivePost)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const postReactStatus = useSelector(selectPostReactStatus)
   const currentUser = useSelector(selectCurrentUser)
@@ -46,22 +47,22 @@ function ActivePost({ isReportPost = false }) {
   if (currentActivePost?.isShare) {
     if (currentActivePost?.userPostShareId) {
       postShareType = POST_TYPES.PROFILE_POST
-      postShareData = { ...currentActivePost?.userPostShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostVideoShareId) {
       postShareType = POST_TYPES.VIDEO_POST
-      postShareData = { ...currentActivePost?.userPostVideoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostPhotoShareId) {
       postShareType = POST_TYPES.PHOTO_POST
-      postShareData = { ...currentActivePost?.userPostPhotoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.groupPostShareId) {
       postShareType = POST_TYPES.GROUP_SHARE_POST
-      postShareData = { ...currentActivePost?.groupPostShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.groupPostPhotoShareId) {
       postShareType = POST_TYPES.GROUP_PHOTO_POST
-      postShareData = { ...currentActivePost?.groupPostPhotoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else {
       postShareType = POST_TYPES.GROUP_VIDEO_POST
-      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, userAvatarShare: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     }
   }
 
@@ -133,7 +134,7 @@ function ActivePost({ isReportPost = false }) {
         onClose={() => dispatch(clearAndHireCurrentActivePost())}
       >
         <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
-        h-[90%] bg-white border-gray-300 shadow-md rounded-md'>
+        h-[90%] bg-white border-gray-300 shadow-md rounded-md overflow-y-auto scrollbar-none-track'>
           <div id='post-detail-author'
             className='h-[60px] w-full flex justify-between items-center px-4'>
             <div></div>

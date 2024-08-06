@@ -98,7 +98,7 @@ export default {
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
-        facebook: ['Segoe UI Historic', 'Segoe UI', 'Helvetica', 'Arial', 'sans-seriff']
+        facebook: ['Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica', 'Arial', 'sans-serif']
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1.5' }],

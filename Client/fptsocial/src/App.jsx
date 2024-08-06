@@ -23,6 +23,7 @@ import Dashboard from './pages/DashBoard/DashBoard'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import Unauthorization from './pages/404/Unauthorization'
+import Search from './pages/Search'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -94,6 +95,11 @@ function App() {
 
             {/* Home page */}
             <Route path='/homepage' element={<HomePage />} />
+            <Route path='/search' element={<Search />} >
+              <Route path='user' element={<Search />} />
+              <Route path='group' element={<Search />} />
+              <Route path='post' element={<Search />} />
+            </Route>
 
             {/* Photo, Video post */}
             <Route path='/photo/:photoId' element={<Media />} />

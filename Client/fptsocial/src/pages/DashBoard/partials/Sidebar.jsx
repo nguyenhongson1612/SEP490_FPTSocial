@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom"
 
 import SidebarLinkGroup from "./SidebarLinkGroup"
 import { IconChevronDown, IconChevronUp, IconLayoutDashboardFilled, IconMessageReport, IconUsers } from '@tabler/icons-react'
+import { useTranslation } from 'react-i18next'
 
 function Sidebar({
   sidebarOpen,
@@ -11,7 +12,7 @@ function Sidebar({
 }) {
   const location = useLocation()
   const { pathname } = location
-
+  const { t } = useTranslation()
   const trigger = useRef(null)
   const sidebar = useRef(null)
 
@@ -79,7 +80,7 @@ function Sidebar({
               <span className="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6" aria-hidden="true">
                 •••
               </span>
-              <span className=" 2xl:block">Manages</span>
+              <span className=" 2xl:block">{t('admin.sidebar.manage')}</span>
             </h3>
             <ul className="mt-3">
               {/* Dashboard */}
@@ -193,7 +194,7 @@ function Sidebar({
                           <div className="flex items-center">
                             <IconMessageReport className='text-fp' />
                             <span className="text-sm font-medium ml-4  2xl:opacity-100 duration-200">
-                              Reports Manager
+                              {t('admin.sidebar.report.report_manage')}
                             </span>
                           </div>
                           <div className="flex shrink-0 ml-2">

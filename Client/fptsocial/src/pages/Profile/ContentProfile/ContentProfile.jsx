@@ -5,11 +5,12 @@ import { IconArticle, IconFriends, IconPhoto, IconUserCircle } from '@tabler/ico
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { useState } from 'react'
 import FriendProfile from './FriendProfile'
+import { useTranslation } from 'react-i18next'
 
 
 function ContentProfile({ listPost, user }) {
   const [value, setValue] = useState('1')
-
+  const { t } = useTranslation()
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
@@ -22,16 +23,17 @@ function ContentProfile({ listPost, user }) {
       <Box sx={{
         width: '100%',
         typography: 'body1',
+        '.MuiTabs-root': { position: 'sticky', top: '60px', zIndex: 1 },
         '.MuiTabs-flexContainer': { backgroundColor: 'white', display: 'flex', justifyContent: 'center' },
         '.MuiButtonBase-root': { display: 'flex', justifyContent: 'center' }
       }}>
         <TabContext value={value}>
           <div>
             <TabList onChange={handleChange} >
-              <Tab icon={<IconArticle stroke={2} />} iconPosition="start" label="Posts" value="1" />
-              <Tab icon={<IconUserCircle stroke={2} />} iconPosition="start" label="About" value="2" />
-              <Tab icon={<IconFriends stroke={2} />} iconPosition="start" label="Friends" value="3" />
-              <Tab icon={<IconPhoto stroke={2} />} iconPosition="start" label="Photos" value="4" />
+              <Tab icon={<IconArticle stroke={2} />} iconPosition="start" label={t('standard.profile.posts')} value="1" />
+              <Tab icon={<IconUserCircle stroke={2} />} iconPosition="start" label={t('standard.profile.about')} value="2" />
+              <Tab icon={<IconFriends stroke={2} />} iconPosition="start" label={t('standard.profile.friends')} value="3" />
+              <Tab icon={<IconPhoto stroke={2} />} iconPosition="start" label={t('standard.profile.photos')} value="4" />
             </TabList>
           </div>
           <TabPanel value="1">
