@@ -9,11 +9,13 @@ using Application.Queries.GetAllFriendOtherProfiel;
 using Application.Queries.GetAllRequestFriend;
 using Application.Queries.GetButtonFriend;
 using Application.Queries.GetButtonSendMessage;
+using Application.Queries.GetImageByUserId;
 using Application.Queries.GetInvatedJoinGroup;
 using Application.Queries.GetOtherUser;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserIsBlocked;
 using Application.Queries.GetUserProfile;
+using Application.Queries.GetVideoByUserId;
 using Application.Queries.SuggestFriend;
 using Application.Queries.SuggestionGroup;
 using MediatR;
@@ -388,6 +390,48 @@ namespace API.Controllers
         [HttpGet]
         [Route("getbuttonsendmessage")]
         public async Task<IActionResult> GetButtonSendMessage(GetButtonSendMessageQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getImageByUserId")]
+        public async Task<IActionResult> GetImageByUserId ([FromQuery]GetImageByUserIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+
+        }
+
+        [HttpGet]
+        [Route("getVideoByUserId")]
+        public async Task<IActionResult> GetVideoByUserId([FromQuery] GetVideoByUserIdQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
