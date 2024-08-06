@@ -46,6 +46,8 @@ namespace Application.Commands.CreateReportPost
             reportPost.GroupPostId = request.GroupPostId;
             reportPost.GroupPostPhotoId = request.GroupPostPhotoId;
             reportPost.UserPostVideoId = request.UserPostVideoId;
+            reportPost.SharePostId = request.SharePostId;
+            reportPost.GroupSharePostId = request.GroupSharePostId;
             reportPost.ReportStatus = null;
             reportPost.CreatedDate = DateTime.Now;
             reportPost.Processing = true;

@@ -8,7 +8,6 @@ namespace Application.Commands.ProcessReportCommand
 {
     public class ProcessReportCommandResult
     {
-        public Guid ReportId { get; set; }
         public bool Success { get; set; }
     }
 }
