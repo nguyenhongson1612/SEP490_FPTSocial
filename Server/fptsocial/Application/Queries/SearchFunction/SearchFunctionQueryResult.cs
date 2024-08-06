@@ -28,5 +28,6 @@ namespace Application.Queries.SearchFunction
         public string? UserName { get; set; }
         public Guid? UserId { get; set; }
         public string? AvataUrl { get; set; }
+        public bool? isFriended { get; set; }
     }
 }

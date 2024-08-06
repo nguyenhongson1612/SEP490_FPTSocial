@@ -24,18 +24,20 @@ namespace Application.Queries.GetChildGroupPost
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
-        public string GroupMediaType { get; set; }
-
+        public string? GroupMediaType { get; set; }
+        public bool? IsReact { get; set; }
+        public ReactTypeCountDTO? UserReactType { get; set; }
+        public List<ReactTypeCountDTO>? Top2React { get; set; }
         public GroupPhotoDTO? GroupPhoto { get; set; }
         public GroupVideoDTO? GroupVideo { get; set; }
 
         public Guid UserId { get; set; }
         public string? FullName { get; set; }
-        public GetUserAvatar Avatar { get; set; }
+        public GetUserAvatar? Avatar { get; set; }
         public Guid? GroupId { get; set; }
         public string? GroupName { get; set; }
         public string? GroupCoverImge { get; set; }
-        public ReactCount ReactCount { get; set; }
+        public ReactCount? ReactCount { get; set; }
 
         public Guid? PreviousId { get; set; }
         public string? PreviousType { get; set; }

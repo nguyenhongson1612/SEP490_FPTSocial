@@ -3,6 +3,7 @@ using Application.DTO.GetUserProfileDTO;
 using Application.DTO.GroupDTO;
 using Application.DTO.GroupFPTDTO;
 using Application.DTO.GroupPostDTO;
+using Application.DTO.ReactDTO;
 using Application.DTO.UserPostDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
@@ -200,8 +201,14 @@ namespace Application.Queries.SearchFunction
                     GroupTypeId = group.GroupTypeId,
                     CoverImage = group.CoverImage,
                     GroupStatusId = group.GroupStatusId,
+                    isJoined = false
                 };
 
+                var isJoin = await _context.GroupMembers.AnyAsync(x => x.GroupId == group.GroupId && x.UserId == request.UserId);
+                if (isJoin)
+                {
+                    newFind.isJoined = true;
+                }
                 result.Add(newFind);
             }
 
@@ -266,7 +273,8 @@ namespace Application.Queries.SearchFunction
                 {
                     UserName = user.FullName,
                     UserId = user.UserId,
-                    AvataUrl = user.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl
+                    AvataUrl = user.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl,
+                    isFriended =  false
                 };
 
                 var blockUserList = await _context.BlockUsers
@@ -274,6 +282,13 @@ namespace Application.Queries.SearchFunction
                 .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
                 .ToListAsync();
 
+                var isFriend = await _context.Friends.AnyAsync(x => (x.UserId == request.UserId && x.FriendId == user.UserId)
+                                                                        || (x.UserId == user.UserId && x.FriendId == request.UserId)
+                                                                        && x.Confirm == true);
+                if (isFriend)
+                {
+                    newFind.isFriended = true;
+                }
                 if (!blockUserList.Contains(user.UserId))
                 {
                     result.Add(newFind);
@@ -389,7 +404,25 @@ namespace Application.Queries.SearchFunction
                     var reactCounts = _context.PostReactCounts
                                             .FirstOrDefault(x => x.UserPostId == item.UserPostId);
 
-                    combinePost.Add(new GetPostDTO
+                    var isReact = await _context.ReactPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId && x.UserId == request.UserId);
+
+                    var topReact = await _context.ReactPosts
+                    .AsNoTracking()
+                    .Include(x => x.ReactType)
+                    .Where(x => x.UserPostId == item.UserPostId)
+                    .GroupBy(x => x.ReactTypeId)
+                    .Select(g => new {
+                        ReactTypeId = g.Key,
+                        ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                        Count = g.Count()
+                    })
+                    .OrderByDescending(r => r.Count)
+                    .Take(2)
+                    .ToListAsync();
+
+                    var post = new GetPostDTO
                     {
                         PostId = item.UserPostId,
                         UserId = item.UserId,
@@ -400,6 +433,7 @@ namespace Application.Queries.SearchFunction
                         IsBanned = item.IsBanned,
                         IsShare = false,
                         IsGroupPost = false,
+                        IsReact = isReact != null ? true : false,
                         UserPostNumber = item.UserPostNumber,
                         UserStatusId = item.UserStatusId,
                         IsAvataPost = item.IsAvataPost,
@@ -451,7 +485,29 @@ namespace Application.Queries.SearchFunction
                             ShareNumber = reactCounts?.ShareCount ?? 0,
                         },
                         EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCounts?.ReactCount ?? 0, reactCounts?.CommentCount ?? 0, reactCounts?.ShareCount ?? 0, item?.CreatedAt ?? DateTime.Now)
-                    });
+                    };
+
+                    if (isReact != null)
+                    {
+                        post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        };
+                    }
+
+                    if (topReact != null)
+                    {
+                        post.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList();
+                    }
+
+                    combinePost.Add(post);
                 }
             }
 
@@ -472,7 +528,25 @@ namespace Application.Queries.SearchFunction
 
                     var groupreactCounts = _context.PostReactCounts
                                             .FirstOrDefault(x => x.UserPostId == item.GroupPostId);
-                    combinePost.Add(new GetPostDTO
+
+                    var isReact = await _context.ReactGroupPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.GroupPostId == item.GroupPostId && x.UserId == request.UserId);
+
+                    var topReact = await _context.ReactGroupPosts
+                    .AsNoTracking()
+                    .Include(x => x.ReactType)
+                    .Where(x => x.GroupPostId == item.GroupPostId)
+                    .GroupBy(x => x.ReactTypeId)
+                    .Select(g => new {
+                        ReactTypeId = g.Key,
+                        ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                        Count = g.Count()
+                    })
+                    .OrderByDescending(r => r.Count)
+                    .Take(2)
+                    .ToListAsync();
+                    var post = new GetPostDTO
                     {
                         PostId = item.GroupPostId,
                         UserId = item.UserId,
@@ -483,6 +557,7 @@ namespace Application.Queries.SearchFunction
                         IsBanned = item.IsBanned,
                         IsShare = false,
                         IsGroupPost = true,
+                        IsReact = isReact != null ? true : false,
                         GroupPostNumber = item.GroupPostNumber,
                         GroupStatus = new GetGroupStatusDTO
                         {
@@ -532,7 +607,29 @@ namespace Application.Queries.SearchFunction
                             ShareNumber = groupreactCounts?.ShareCount ?? 0,
                         },
                         EdgeRank = GetEdgeRankAlo.GetEdgeRank(groupreactCounts?.ReactCount ?? 0, groupreactCounts?.CommentCount ?? 0, groupreactCounts?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
-                    });
+                    };
+
+                    if (isReact != null)
+                    {
+                        post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        };
+                    }
+
+                    if (topReact != null)
+                    {
+                        post.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList();
+                    }
+
+                    combinePost.Add(post);
                 }
             }
 

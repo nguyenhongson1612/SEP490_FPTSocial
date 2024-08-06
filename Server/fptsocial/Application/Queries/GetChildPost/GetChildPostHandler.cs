@@ -1,4 +1,5 @@
 ﻿using Application.DTO.GetUserProfileDTO;
+using Application.DTO.ReactDTO;
 using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using AutoMapper;
@@ -81,7 +82,26 @@ namespace Application.Queries.GetChildPost
             {
                 var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == photo.UserPost.UserId);
                 var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == photo.UserPost.UserId && x.IsUsed == true);
-                combinedResults.Add(new GetChildPostResult
+
+                var isReact = await _context.ReactPhotoPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.UserId == request.UserId);
+
+                var topReact = await _context.ReactPhotoPosts
+                .AsNoTracking()
+                .Include(x => x.ReactType)
+                .Where(x => x.UserPostPhotoId == photo.UserPostPhotoId)
+                .GroupBy(x => x.ReactTypeId)
+                .Select(g => new {
+                    ReactTypeId = g.Key,
+                    ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                    Count = g.Count()
+                })
+                .OrderByDescending(r => r.Count)
+                .Take(2)
+                .ToListAsync(cancellationToken);
+
+                var post = new GetChildPostResult
                 {
                     UserPostMediaId = photo.UserPostPhotoId,
                     UserPostId = photo.UserPostId,
@@ -98,6 +118,7 @@ namespace Application.Queries.GetChildPost
                     UpdatedAt = photo.UpdatedAt,
                     PostPosition = photo.PostPosition,
                     MediaType = "Photo",
+                    IsReact = isReact != null ? true : false,
                     Photo = _mapper.Map<PhotoDTO>(photo.Photo),
                     UserId = user.UserId,
                     FullName = user.FirstName + " " + user.LastName,
@@ -110,7 +131,29 @@ namespace Application.Queries.GetChildPost
                         ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.IsHide != true && x.IsBanned != true) +
                                         _context.SharePosts.Count(x => x.UserPostPhotoId == photo.UserPostPhotoId && x.IsHide != true && x.IsBanned != true)
                     }
-                });
+                };
+
+                if (isReact != null)
+                {
+                    post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    };
+                }
+
+                if (topReact != null)
+                {
+                    post.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList();
+                }
+
+                combinedResults.Add(post);
             }
 
             var userPostVideo = await _context.UserPostVideos
@@ -124,7 +167,26 @@ namespace Application.Queries.GetChildPost
             {
                 var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == video.UserPost.UserId);
                 var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == video.UserPost.UserId && x.IsUsed == true);
-                combinedResults.Add(new GetChildPostResult
+
+                var isReact = await _context.ReactVideoPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostVideoId == video.UserPostVideoId && x.UserId == request.UserId);
+
+                var topReact = await _context.ReactVideoPosts
+                .AsNoTracking()
+                .Include(x => x.ReactType)
+                .Where(x => x.UserPostVideoId == video.UserPostVideoId)
+                .GroupBy(x => x.ReactTypeId)
+                .Select(g => new {
+                    ReactTypeId = g.Key,
+                    ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                    Count = g.Count()
+                })
+                .OrderByDescending(r => r.Count)
+                .Take(2)
+                .ToListAsync(cancellationToken);
+
+                var post = new GetChildPostResult
                 {
                     UserPostMediaId = video.UserPostVideoId,
                     UserPostId = video.UserPostId,
@@ -141,6 +203,7 @@ namespace Application.Queries.GetChildPost
                     UpdatedAt = video.UpdatedAt,
                     PostPosition = video.PostPosition,
                     MediaType = "Video",
+                    IsReact = isReact != null ? true : false,
                     Video = _mapper.Map<VideoDTO>(video.Video),
                     UserId = user.UserId,
                     FullName = user.FirstName + " " + user.LastName,
@@ -153,7 +216,29 @@ namespace Application.Queries.GetChildPost
                         ShareNumber = _context.GroupSharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId && x.IsHide != true && x.IsBanned != true) +
                                         _context.SharePosts.Count(x => x.UserPostVideoId == video.UserPostVideoId && x.IsHide != true && x.IsBanned != true)
                     }
-                });
+                };
+
+                if (isReact != null)
+                {
+                    post.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    };
+                }
+
+                if (topReact != null)
+                {
+                    post.Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList();
+                }
+
+                combinedResults.Add(post);
             }
 
             combinedResults = combinedResults.OrderBy(x => x.PostPosition).ToList();
@@ -183,6 +268,10 @@ namespace Application.Queries.GetChildPost
             }
 
             var result = combinedResults.FirstOrDefault(x => x.UserPostMediaId == request.UserPostMediaId);
+            if(result == null)
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
+            }
             return Result<GetChildPostResult>.Success(result);
         }
     }

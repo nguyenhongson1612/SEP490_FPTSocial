@@ -31,6 +31,9 @@ namespace Application.Queries.GetPost
         public bool? IsBanned { get; set; }
         public bool? IsShare { get; set; }
         public bool? IsGroupPost { get; set; }
+        public bool? IsReact { get; set; }
+        public ReactTypeCountDTO? UserReactType { get; set; }
+        public List<ReactTypeCountDTO>? Top2React { get; set; }
 
         // Specific to UserPost
         public string? UserPostNumber { get; set; }
