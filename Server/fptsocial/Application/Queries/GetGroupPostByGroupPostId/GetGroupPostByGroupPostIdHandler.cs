@@ -77,6 +77,25 @@ namespace Application.Queries.GetGroupPostByGroupPostId
             var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == groupPost.UserId);
             var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == groupPost.GroupPostId);
 
+            var isReact = await _context.ReactGroupPosts
+                    .AsNoTracking()
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.GroupPostId == request.GroupPostId && x.UserId == request.UserId);
+
+            var topReact = await _context.ReactGroupPosts
+            .AsNoTracking()
+            .Include(x => x.ReactType)
+            .Where(x => x.GroupPostId == request.GroupPostId)
+            .GroupBy(x => x.ReactTypeId)
+            .Select(g => new {
+                ReactTypeId = g.Key,
+                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                Count = g.Count()
+            })
+            .OrderByDescending(r => r.Count)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+
             var result = new GetGroupPostByGroupPostIdResult
             {
                 GroupPostId = groupPost.GroupPostId,
@@ -148,50 +167,22 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                 {
                     ReactNumber = react?.ReactCount ?? 0,
                     CommentNumber = react?.CommentCount ?? 0,
-                    ShareNumber = react?.ShareCount ?? 0
+                    ShareNumber = react?.ShareCount ?? 0,
+                    IsReact = isReact != null ? true : false,
+                    UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    },
+                    Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList()
                 }
             };
-
-            var isReact = await _context.ReactGroupPosts
-                    .AsNoTracking()
-                    .Include(x => x.ReactType)
-                    .FirstOrDefaultAsync(x => x.GroupPostId == request.GroupPostId && x.UserId == request.UserId);
-
-            var topReact = await _context.ReactGroupPosts
-            .AsNoTracking()
-            .Include(x => x.ReactType)
-            .Where(x => x.GroupPostId == request.GroupPostId)
-            .GroupBy(x => x.ReactTypeId)
-            .Select(g => new {
-                ReactTypeId = g.Key,
-                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
-                Count = g.Count()
-            })
-            .OrderByDescending(r => r.Count)
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-            result.IsReact = isReact != null ? true : false;
-
-            if (isReact != null)
-            {
-                result.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                {
-                    ReactTypeId = isReact.ReactTypeId,
-                    ReactTypeName = isReact.ReactType.ReactTypeName,
-                    NumberReact = 1
-                };
-            }
-
-            if (topReact != null)
-            {
-                result.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                {
-                    ReactTypeId = x.ReactTypeId,
-                    ReactTypeName = x.ReactTypeName,
-                    NumberReact = x.Count
-                }).ToList();
-            }
 
             return Result<GetGroupPostByGroupPostIdResult>.Success(result);
         }

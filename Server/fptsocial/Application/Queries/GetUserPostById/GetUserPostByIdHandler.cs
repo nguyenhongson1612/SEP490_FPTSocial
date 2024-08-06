@@ -60,9 +60,32 @@ namespace Application.Queries.GetUserPostById
                 .Where(x => x.UserPostId == request.UserPostId && x.IsHide != true)
                 .FirstOrDefaultAsync(cancellationToken);
 
+            if (userPost == null)
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
+            }
+
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == userPost.UserId && x.IsUsed == true);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == userPost.UserId);
             var react = await _context.PostReactCounts.FirstOrDefaultAsync(x => x.UserPostId == request.UserPostId);
+
+            var isReact = await _context.ReactPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostId == request.UserPostId && x.UserId == request.UserId);
+
+            var topReact = await _context.ReactPosts
+            .Include(x => x.ReactType)
+            .Where(x => x.UserPostId == request.UserPostId)
+            .GroupBy(x => x.ReactTypeId)
+            .Select(g => new {
+                ReactTypeId = g.Key,
+                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                Count = g.Count()
+            })
+            .OrderByDescending(r => r.Count)
+            .Take(2)
+            .ToListAsync(cancellationToken);
+
             var result = new GetUserPostByIdResult
             {
                 UserPostId = userPost.UserPostId,
@@ -119,46 +142,23 @@ namespace Application.Queries.GetUserPostById
                     ReactNumber = react?.ReactCount ?? 0,
                     CommentNumber = react?.CommentCount ?? 0,
                     ShareNumber = react?.ShareCount ?? 0,
+                    IsReact = isReact != null ? true : false,
+                    UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                    {
+                        ReactTypeId = isReact.ReactTypeId,
+                        ReactTypeName = isReact.ReactType.ReactTypeName,
+                        NumberReact = 1
+                    },
+                    Top2React = topReact.Select(x => new ReactTypeCountDTO
+                    {
+                        ReactTypeId = x.ReactTypeId,
+                        ReactTypeName = x.ReactTypeName,
+                        NumberReact = x.Count
+                    }).ToList()
                 }
             };
 
-            var isReact = await _context.ReactPosts
-                    .Include(x => x.ReactType)
-                    .FirstOrDefaultAsync(x => x.UserPostId == request.UserPostId && x.UserId == request.UserId);
-
-            var topReact = await _context.ReactPosts
-            .Include(x => x.ReactType)
-            .Where(x => x.UserPostId == request.UserPostId)
-            .GroupBy(x => x.ReactTypeId)
-            .Select(g => new {
-                ReactTypeId = g.Key,
-                ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
-                Count = g.Count()
-            })
-            .OrderByDescending(r => r.Count)
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-            result.IsReact = isReact != null ? true : false;
-            if (isReact != null)
-            {
-                result.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                {
-                    ReactTypeId = isReact.ReactTypeId,
-                    ReactTypeName = isReact.ReactType.ReactTypeName,
-                    NumberReact = 1
-                };
-            }
-
-            if (topReact != null)
-            {
-                result.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                {
-                    ReactTypeId = x.ReactTypeId,
-                    ReactTypeName = x.ReactTypeName,
-                    NumberReact = x.Count
-                }).ToList();
-            }
+            
             return Result<GetUserPostByIdResult>.Success(result);
         }
     }

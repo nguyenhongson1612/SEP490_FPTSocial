@@ -109,7 +109,6 @@ namespace Application.Queries.GetUserPost
                     IsHide = item.IsHide,
                     IsBanned = item.IsBanned,
                     IsShare = false,
-                    IsReact = isReact != null ? true : false,
                     CreatedAt = item.CreatedAt,
                     UpdateAt = item.UpdatedAt,
                     PhotoId = item.PhotoId,
@@ -151,28 +150,21 @@ namespace Application.Queries.GetUserPost
                         ReactNumber = react?.ReactCount ?? 0,
                         CommentNumber = react?.CommentCount ?? 0,
                         ShareNumber = react?.ShareCount ?? 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null :new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     }
                 };
-
-                if(isReact != null)
-                {
-                    userPost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if(topReact != null)
-                {
-                    userPost.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combine.Add(userPost);
             }
@@ -251,7 +243,6 @@ namespace Application.Queries.GetUserPost
                     IsHide = item.IsHide,
                     IsBanned = item.IsBanned,
                     IsShare = true,
-                    IsReact = isReact != null ? true : false,
                     GroupPostShare = _mapper.Map<GroupPostDTO>(item.GroupPost),
                     GroupPostPhotoShare = _mapper.Map<GroupPostPhotoDTO>(item.GroupPostPhoto),
                     GroupPostVideoShare = _mapper.Map<GroupPostVideoDTO>(item.GroupPostVideo),
@@ -273,28 +264,21 @@ namespace Application.Queries.GetUserPost
                         CommentNumber = _context.CommentSharePosts
                         .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
                         ShareNumber = 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
                     }
                 };
-
-                if (isReact != null)
-                {
-                    sharePost.UserReactType = new DTO.ReactDTO.ReactTypeCountDTO
-                    {
-                        ReactTypeId = isReact.ReactTypeId,
-                        ReactTypeName = isReact.ReactType.ReactTypeName,
-                        NumberReact = 1
-                    };
-                }
-
-                if (topReact != null)
-                {
-                    sharePost.Top2React = topReact.Select(x => new ReactTypeCountDTO
-                    {
-                        ReactTypeId = x.ReactTypeId,
-                        ReactTypeName = x.ReactTypeName,
-                        NumberReact = x.Count
-                    }).ToList();
-                }
 
                 combine.Add(sharePost);
             }

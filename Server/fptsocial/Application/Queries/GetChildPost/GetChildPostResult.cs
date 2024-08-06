@@ -23,9 +23,6 @@ namespace Application.Queries.GetChildPost
         public DateTime? UpdatedAt { get; set; }
         public int? PostPosition { get; set; }
         public string MediaType { get; set; }
-        public bool? IsReact { get; set; }
-        public ReactTypeCountDTO? UserReactType { get; set; }
-        public List<ReactTypeCountDTO>? Top2React { get; set; }
         public PhotoDTO? Photo { get; set; }
         public VideoDTO? Video { get; set; }
 
