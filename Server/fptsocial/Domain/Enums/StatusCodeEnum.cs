@@ -132,5 +132,7 @@ namespace Domain.Enums
         PR01_Invalid_Report_Type,
         [Description("Report not found!")]
         RP01_Report_Not_Found,
+        [Description("Can not send message with user!")]
+        CH01_Can_Not_Chat,
     }
 }

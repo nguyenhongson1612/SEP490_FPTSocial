@@ -2,6 +2,8 @@
 using Application.Commands.CreateUserChat;
 using Application.Commands.CreateUserInterest;
 using Application.Commands.UpdateUserChat;
+using Application.Queries.GetChatDetails;
+using Application.Queries.GetUserByUserId;
 using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -81,6 +83,26 @@ namespace API.Controllers
             }
             userchat.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(userchat);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getchatdetailbyid")]
+        public async Task<IActionResult> GetChatDetailsById([FromQuery] GetChatDetailsQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
             return Success(res.Value);
         }
     }

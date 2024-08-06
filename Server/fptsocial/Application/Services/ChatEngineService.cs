@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Domain.QueryModels;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,11 +16,13 @@ namespace Application.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly fptforumQueryContext _context;
 
-        public ChatEngineService(HttpClient httpClient, IConfiguration configuration)
+        public ChatEngineService(HttpClient httpClient, IConfiguration configuration, fptforumQueryContext context)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _context = context;
         }
 
         public async Task<string> CreateUserAsync(string username, string email, string firstname, string lastname, string avata)
@@ -199,6 +203,43 @@ namespace Application.Services
             }
 
         }
+
+        public async Task<string> GetChatDetails(string chatid, string uname)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.chatengine.io/chats/{chatid}/");
+            request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+            request.Headers.Add("User-Name", uname);
+            request.Headers.Add("User-Secret", uname);
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("Access Forbidden: Ensure your Private Key is correct.");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> SearchUserByName()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Patch, "https://api.chatengine.io/users/");
+            request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("Access Forbidden: Ensure your Private Key is correct.");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
     }
 
 }
