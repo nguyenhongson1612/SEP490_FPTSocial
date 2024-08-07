@@ -1,20 +1,10 @@
-image: node:16.5.0
+default:
+  image:
+    name: aikidosecurity/local-scanner:v1.0.21
+    entrypoint: [""]
 
-pages:
-  stage: deploy
-  cache:
-    key:
-      files:
-        - package-lock.json
-      prefix: npm
-    paths:
-      - node_modules/
+run_aikido_selfscanner:
   script:
-    - npm install
-    - npm run build
-    - cp -a dist/. public/
-    - cp public/index.html public/404.html  # Add this line to handle client-side routing
-  artifacts:
-    paths:
-      - public
-  when: manual
+  - aikido-local-scanner scan ./ --apikey AIK_CI_ojAGrGTmTaFV2NfuXCOLH3Nhp88Qj8hbM2HrMhKT4KCB9gMUQwI2rPCaO4qaJsie --repositoryname https://gitlab.com/manhnc2/g3_sep490_su2024 --branchname develop
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
