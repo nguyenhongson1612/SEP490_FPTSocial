@@ -45,6 +45,7 @@ using Application.Queries.GetCommentByPostId;
 using Application.Queries.GetGroupPostByGroupId;
 using Application.Queries.GetGroupPostByGroupPostId;
 using Application.Queries.GetGroupPostIdPendingByGroupId;
+using Application.Queries.GetShareGroupPostById;
 using Application.Queries.SearchGroupPost;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -156,6 +157,18 @@ namespace API.Controllers
         [Route("getGroupPostByGroupPostId")]
         public async Task<IActionResult> GetGroupPostByGroupPostId([FromQuery] GetGroupPostByGroupPostIdQuery input)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
@@ -539,6 +552,26 @@ namespace API.Controllers
             var res = await _sender.Send(command);
             return Success(res.Value);
 
+        }
+
+        [HttpGet]
+        [Route("getGroupSharePostByGroupPostId")]
+        public async Task<IActionResult> GetGroupSharePostByGroupPostId([FromQuery] GetShareGroupPostByIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
         }
     }
 }

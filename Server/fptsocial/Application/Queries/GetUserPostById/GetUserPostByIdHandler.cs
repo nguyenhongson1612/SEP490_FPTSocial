@@ -41,6 +41,7 @@ namespace Application.Queries.GetUserPostById
             }
 
             var blockUserList = await _context.BlockUsers
+                .AsNoTracking()
                 .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
                 .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
                 .ToListAsync(cancellationToken);
@@ -50,7 +51,37 @@ namespace Application.Queries.GetUserPostById
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
 
+            var isPrivate = await _context.UserPosts
+                    .Include(x => x.UserStatus)
+                    .AnyAsync(x => x.UserStatus.StatusName == "Private" && x.UserPostId == request.UserPostId && x.UserId != request.UserId);
+
+            if (isPrivate)
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
+            var userId = await _context.UserPosts
+                .AsNoTracking()
+                .Where(x => x.UserPostId == request.UserPostId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var isFriend = await _context.Friends
+                    .AnyAsync(x => ((x.UserId == userId && x.FriendId == request.UserId)
+                                    || (x.UserId == request.UserId && x.FriendId == userId))
+                                    && x.Confirm == true);
+
+            var isFriendStatus = await _context.UserPosts
+                    .Include(x => x.UserStatus)
+                    .AnyAsync(x => x.UserStatus.StatusName == "Friend" && x.UserPostId == request.UserPostId && x.UserId != request.UserId && !isFriend);
+
+            if (isFriendStatus)
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
             var userPost = await _context.UserPosts
+                .AsNoTracking()
                 .Include(x => x.Photo)
                 .Include(x => x.Video)
                 .Include(x => x.UserPostPhotos.Where(x => x.IsHide != true))

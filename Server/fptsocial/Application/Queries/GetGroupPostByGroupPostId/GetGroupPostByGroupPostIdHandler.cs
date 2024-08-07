@@ -43,11 +43,19 @@ namespace Application.Queries.GetGroupPostByGroupPostId
             }
 
             var blockUserList = await _context.BlockUsers
+                .AsNoTracking()
                 .Where(x => (x.UserId == request.UserId || x.UserIsBlockedId == request.UserId) && x.IsBlock == true)
                 .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
                 .ToListAsync(cancellationToken);
 
             var userId = await _context.GroupPosts
+                .AsNoTracking()
+                .Where(x => x.GroupPostId == request.GroupPostId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var groupId = await _context.GroupPosts
+                .AsNoTracking()
                 .Where(x => x.GroupPostId == request.GroupPostId)
                 .Select(x => x.UserId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -55,6 +63,21 @@ namespace Application.Queries.GetGroupPostByGroupPostId
             if (blockUserList.Contains(userId))
             {
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
+            // Kiểm tra xem user có trong group hay không
+            var isJoin = await _context.GroupMembers
+                    .AsNoTracking()
+                    .AnyAsync(x => x.GroupId == groupId && x.UserId == request.UserId);
+
+            var isPrivate = await _context.GroupPosts
+                    .AsNoTracking()
+                    .Include(x => x.GroupStatus)
+                    .AnyAsync(x => x.GroupStatus.GroupStatusName == "Private" && x.GroupPostId == request.GroupPostId && x.UserId != request.UserId && !isJoin);
+
+            if (isPrivate)
+            {
+                throw new ErrorException(StatusCodeEnum.GR16_User_Not_Exist_In_Group);
             }
 
             var groupPost = await _context.GroupPosts

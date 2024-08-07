@@ -50,8 +50,8 @@ namespace Application.Queries.GetUserPost
             public Guid? GroupPostPhotoShareId { get; set; }
             public Guid? GroupPostVideoShareId { get; set; }
             public Guid? SharedToUserId { get; set; }
-            public virtual GroupPhotoDTO? GroupPhotoShare { get; set; }
-            public virtual GroupVideoDTO? GroupVideoShare { get; set; }
+            /*public virtual GroupPhotoDTO? GroupPhotoShare { get; set; }
+            public virtual GroupVideoDTO? GroupVideoShare { get; set; }*/
 
             //public virtual UserProfile? SharedToUser { get; set; }
             public virtual UserPostDTO? UserPostShare { get; set; }

@@ -40,6 +40,7 @@ using Application.Commands.UpdateCommentSharePost;
 using Application.Commands.DeleteCommentSharePost;
 using Application.Commands.UpdateSharePost;
 using Application.Commands.DeleteSharePost;
+using Application.Queries.GetSharePostById;
 
 namespace API.Controllers
 {
@@ -567,5 +568,24 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("getSharePostById")]
+        public async Task<IActionResult> GetSharePostById([FromQuery] GetSharePostByIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
