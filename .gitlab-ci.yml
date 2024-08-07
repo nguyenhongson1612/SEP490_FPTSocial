@@ -5,6 +5,6 @@ default:
 
 run_aikido_selfscanner:
   script:
-  - aikido-local-scanner scan ./ --apikey $AIKIDO_LOCAL_SCANNER_TOKEN --repositoryname DemoApp --branchname main
+  - aikido-local-scanner scan ./ --apikey $AIKIDO_LOCAL_SCANNER_TOKEN --repositoryname g3_sep490_su2024 --branchname main
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
