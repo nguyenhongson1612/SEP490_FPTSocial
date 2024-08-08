@@ -16,6 +16,8 @@ namespace Application.Commands.Post
         public Guid UserId { get; set; }
         public string Content { get; set; }
         public Guid UserStatusId { get; set; }
+        public bool IsAvataPost { get; set; }
+        public bool IsCoverPhotoPost { get; set; }
         public List<PhotoAddOnPost>? Photos { get; set; }
         public List<VideoAddOnPost>? Videos { get; set; }
 

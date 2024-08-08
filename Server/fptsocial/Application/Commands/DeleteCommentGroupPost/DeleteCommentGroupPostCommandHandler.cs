@@ -36,6 +36,7 @@ namespace Application.Commands.DeleteCommentGroupPost
             var GroupComment = _querycontext.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).FirstOrDefault();
             var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostId == GroupComment.GroupPostId).FirstOrDefault();
             var result = new DeleteCommentGroupPostCommandResult();
+
             if (GroupComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -48,6 +49,8 @@ namespace Application.Commands.DeleteCommentGroupPost
                 }
                 else
                 {
+                    int totalCommentsDeleted = DeleteCommentAndChildren(GroupComment.CommentGroupPostId);
+
                     var cgp = new Domain.CommandModels.CommentGroupPost
                     {
                         CommentGroupPostId = GroupComment.CommentGroupPostId,
@@ -62,11 +65,17 @@ namespace Application.Commands.DeleteCommentGroupPost
                         IsBanned = GroupComment.IsBanned,
                     };
                     _context.CommentGroupPosts.Update(cgp);
+                    totalCommentsDeleted += 1;
+
                     if (groupPostReactCount != null)
                     {
-                        if (groupPostReactCount.CommentCount > 0)
+                        if (groupPostReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            groupPostReactCount.CommentCount--;
+                            groupPostReactCount.CommentCount -= totalCommentsDeleted;
+                        }
+                        else
+                        {
+                            groupPostReactCount.CommentCount = 0;
                         }
                         var prc = new Domain.CommandModels.GroupPostReactCount
                         {
@@ -87,5 +96,39 @@ namespace Application.Commands.DeleteCommentGroupPost
 
             return Result<DeleteCommentGroupPostCommandResult>.Success(result);
         }
+
+
+        private int DeleteCommentAndChildren(Guid commentGroupPostId)
+        {
+            var childComments = _querycontext.CommentGroupPosts
+                                .Where(x => x.ParentCommentId == commentGroupPostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentGroupPostId);
+
+                var cgp = new Domain.CommandModels.CommentGroupPost
+                {
+                    CommentGroupPostId = childComment.CommentGroupPostId,
+                    GroupPostId = childComment.GroupPostId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentGroupPosts.Update(cgp);
+                countDeleted++;
+            }
+
+            return countDeleted;
+        }
+
     }
 }

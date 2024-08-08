@@ -18,12 +18,13 @@ namespace Application.Commands.DeleteCommentSharePost
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
+
         public DeleteCommentSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
-
         }
+
         public async Task<Result<DeleteCommentSharePostCommandResult>> Handle(DeleteCommentSharePostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
@@ -32,6 +33,7 @@ namespace Application.Commands.DeleteCommentSharePost
             }
 
             var userComment = _querycontext.CommentSharePosts.Where(x => x.CommentSharePostId == request.CommentSharePostId).FirstOrDefault();
+
             var result = new DeleteCommentSharePostCommandResult();
             if (userComment == null)
             {
@@ -45,6 +47,8 @@ namespace Application.Commands.DeleteCommentSharePost
                 }
                 else
                 {
+                    int totalCommentsDeleted = DeleteCommentAndChildren(userComment.CommentSharePostId);
+
                     var csp = new Domain.CommandModels.CommentSharePost
                     {
                         CommentSharePostId = userComment.CommentSharePostId,
@@ -59,6 +63,8 @@ namespace Application.Commands.DeleteCommentSharePost
                         IsBanned = userComment.IsBanned,
                     };
                     _context.CommentSharePosts.Update(csp);
+                    totalCommentsDeleted += 1;
+
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
@@ -66,6 +72,38 @@ namespace Application.Commands.DeleteCommentSharePost
             }
 
             return Result<DeleteCommentSharePostCommandResult>.Success(result);
+        }
+
+        private int DeleteCommentAndChildren(Guid commentSharePostId)
+        {
+            var childComments = _querycontext.CommentSharePosts
+                                .Where(x => x.ParentCommentId == commentSharePostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentSharePostId);
+
+                var csp = new Domain.CommandModels.CommentSharePost
+                {
+                    CommentSharePostId = childComment.CommentSharePostId,
+                    SharePostId = childComment.SharePostId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreateDate = childComment.CreateDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentSharePosts.Update(csp);
+                countDeleted++;
+            }
+
+            return countDeleted;
         }
     }
 }

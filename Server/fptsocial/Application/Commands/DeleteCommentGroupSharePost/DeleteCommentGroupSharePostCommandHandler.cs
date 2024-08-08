@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using Application.Commands.DeleteGroup;
+using Application.Commands.DeleteUserPost;
+using AutoMapper;
 using Core.CQRS;
 using Core.CQRS.Command;
 using Core.Helper;
@@ -7,9 +9,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Commands.DeleteCommentGroupSharePost
@@ -18,12 +18,13 @@ namespace Application.Commands.DeleteCommentGroupSharePost
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
+
         public DeleteCommentGroupSharePostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
-
         }
+
         public async Task<Result<DeleteCommentGroupSharePostCommandResult>> Handle(DeleteCommentGroupSharePostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
@@ -33,6 +34,7 @@ namespace Application.Commands.DeleteCommentGroupSharePost
 
             var userComment = _querycontext.CommentGroupSharePosts.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId).FirstOrDefault();
             var result = new DeleteCommentGroupSharePostCommandResult();
+
             if (userComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -45,13 +47,15 @@ namespace Application.Commands.DeleteCommentGroupSharePost
                 }
                 else
                 {
-                    var cgsp = new Domain.CommandModels.CommentGroupSharePost
+                    int totalCommentsDeleted = DeleteCommentAndChildren(userComment.CommentGroupSharePostId);
+
+                    Domain.CommandModels.CommentGroupSharePost cgsp = new Domain.CommandModels.CommentGroupSharePost
                     {
                         CommentGroupSharePostId = userComment.CommentGroupSharePostId,
-                        GroupSharePostId = userComment.CommentGroupSharePostId,
+                        GroupSharePostId = userComment.GroupSharePostId,
                         UserId = userComment.UserId,
                         Content = userComment.Content,
-                        ParentCommentId = userComment.CommentGroupSharePostId,
+                        ParentCommentId = userComment.ParentCommentId,
                         ListNumber = userComment.ListNumber,
                         LevelCmt = userComment.LevelCmt,
                         IsHide = true,
@@ -59,6 +63,10 @@ namespace Application.Commands.DeleteCommentGroupSharePost
                         IsBanned = userComment.IsBanned,
                     };
                     _context.CommentGroupSharePosts.Update(cgsp);
+                    totalCommentsDeleted += 1;
+
+                    // Optionally: Update Comment Count in GroupSharePost
+
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
@@ -66,6 +74,38 @@ namespace Application.Commands.DeleteCommentGroupSharePost
             }
 
             return Result<DeleteCommentGroupSharePostCommandResult>.Success(result);
+        }
+
+        private int DeleteCommentAndChildren(Guid commentId)
+        {
+            var childComments = _querycontext.CommentGroupSharePosts
+                .Where(x => x.ParentCommentId == commentId)
+                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentGroupSharePostId);
+
+                Domain.CommandModels.CommentGroupSharePost cgsp = new Domain.CommandModels.CommentGroupSharePost
+                {
+                    CommentGroupSharePostId = childComment.CommentGroupSharePostId,
+                    GroupSharePostId = childComment.GroupSharePostId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreateDate = childComment.CreateDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentGroupSharePosts.Update(cgsp);
+                countDeleted++;
+            }
+
+            return countDeleted;
         }
     }
 }
