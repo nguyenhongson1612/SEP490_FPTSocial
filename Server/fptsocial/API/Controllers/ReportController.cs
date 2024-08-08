@@ -177,7 +177,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("processReport")]
-        public async Task<IActionResult> ProcessReport([FromQuery] ProcessReportCommand command)
+        public async Task<IActionResult> ProcessReport([FromBody] ProcessReportCommand command)
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
