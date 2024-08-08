@@ -72,7 +72,7 @@ function HomeRightSideBar() {
 
   return (
     <div className="h-[calc(100vh_-_55px)] w-[380px] hidden lg:!flex flex-col overflow-y-auto scrollbar-none-track ">
-      <div className='flex flex-col gap-5 mt-8 px-3'>
+      <div className='flex flex-col gap-5 mt-8 '>
         <div className="bg-white rounded-lg shadow-md px-3 py-2">
           <div id="suggestion"
             className="flex flex-col items-start "

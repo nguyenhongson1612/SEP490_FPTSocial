@@ -1,17 +1,23 @@
 import { IconCake, IconHeartFilled, IconHomeFilled, IconManFilled, IconUser } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { getOtherUserPost, getUserPostByUserId } from '~/apis/postApis'
 import ListPost from '~/components/ListPost/ListPost'
 import NewPost from '~/components/Modal/NewPost/NewPost'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 import { POST_TYPES } from '~/utils/constants'
 
-function ProfilePosts({ listPost, user }) {
+function ProfilePosts({ user }) {
   const { t } = useTranslation()
+  const currentUser = useSelector(selectCurrentUser)
+  const isYourProfile = user?.userId == currentUser?.userId
+
   return (
     <div id=''
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div
         id='info'
-        className='w-full mt-8 lg:w-[700px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
+        className='w-full mt-8 lg:w-[600px] lg:basis-3/12 h-fit bg-white  rounded-md shadow-md'>
         <div className='flex flex-col p-4 gap-3'>
           <h3 className='text-xl font-bold'>{t('standard.profile.about')}</h3>
           <div className='flex gap-1'><IconUser stroke={2} color='#c8d3e1' /><span className='font-semibold'>{user?.firstName + ' ' + user?.lastName || 'No information'}</span></div>
@@ -23,7 +29,7 @@ function ProfilePosts({ listPost, user }) {
       </div>
       <div className='flex flex-col items-center gap-3 w-full lg:w-fit'>
         <NewPost postType={POST_TYPES.PROFILE_POST} />
-        <ListPost listPost={listPost} />
+        <ListPost getListPostFn={user && (isYourProfile && user ? getUserPostByUserId : ({ page, pageSize }) => getOtherUserPost({ userId: user?.userId, page, pageSize }))} />
       </div>
     </div >
   )

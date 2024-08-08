@@ -15,6 +15,7 @@ import Toolbar from './ToolBar'
 import { useTranslation } from 'react-i18next'
 
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
+  console.log('🚀 ~ Tiptap ~ content:', content)
   const [isChoseFile, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -70,9 +71,9 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
     extensions: [
       StarterKit,
       Underline,
-      Placeholder.configure({ emptyEditorClass: 'is-editor-empty', placeholder: t('standard.newPost.writeSt') }),
+      Placeholder.configure({ placeholder: t('standard.newPost.writeSt') }),
     ],
-    editorProps: { attributes: { class: 'mb-2 rounded-md outline-none', spellcheck: 'false', } },
+    editorProps: { attributes: { class: 'mb-2 text-base rounded-md outline-none', spellcheck: 'false', } },
     onUpdate: ({ editor }) => setContent(editor.getHTML())
   })
 
@@ -164,10 +165,6 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
 
         {(postType === POST_TYPES.SHARE_POST || postType === POST_TYPES.GROUP_SHARE_POST) && actionType === CREATE && (
           <Button type='submit' variant="contained" onClick={handleRemoveCurrentContent} color="warning"
-            style={{
-              opacity: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? '0.5' : 'initial',
-              pointerEvents: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? 'none' : 'initial'
-            }}
           >
             {t('standard.newPost.post')}
           </Button>

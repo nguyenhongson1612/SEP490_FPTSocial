@@ -32,7 +32,7 @@ function GroupsDiscover() {
                 <Link to={`/groups/${suggestion?.groupId}`}>
                   <img
                     className='w-full h-[200px] object-cover rounded-t-md'
-                    src={''}
+                    src={suggestion?.coverImage}
                   />
                 </Link>
                 <div className='p-3 h-full flex flex-col'>

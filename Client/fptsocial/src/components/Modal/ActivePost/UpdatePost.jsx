@@ -153,12 +153,12 @@ function UpdatePost() {
       'sharePostId': currentActivePost?.postId || currentActivePost?.userPostId,
       'userId': currentUser?.userId,
       'userStatusId': choseStatus?.userStatusId,
-      'content': content
+      'content': content || ''
     } : isGroupShare && {
       'groupSharePostId': currentActivePost?.postId,
       'groupId': currentActivePost?.groupId,
       'userId': currentUser?.userId,
-      'content': content
+      'content': content || ''
     }
     // console.log('🚀 ~ submitPost ~ submitData:', submitData)
 
@@ -169,8 +169,8 @@ function UpdatePost() {
             : isGroupShare && updateGroupSharePost(submitData),
       { pending: 'Updating...' }
     ).then(() => {
-      dispatch(triggerReload())
       dispatch(clearAndHireCurrentActivePost())
+      dispatch(triggerReload())
       toast.success('Update post successfully!')
     })
   }
@@ -182,8 +182,8 @@ function UpdatePost() {
       open={isShowUpdatePost}
       onClose={() => dispatch(clearAndHireCurrentActivePost())}
     >
-      <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
-        h-[90%] bg-white border-gray-300 shadow-md rounded-md'>
+      <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] h-fit absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
+         bg-white border-gray-300 shadow-md rounded-md'>
         <div className='w-full h-full bg-white shadow-4edges rounded-lg flex flex-col overflow-y-auto scrollbar-none-track'>
           {!isEdit ? (
             <form onSubmit={handleSubmit(submitPost)} >

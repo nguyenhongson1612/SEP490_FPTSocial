@@ -1,14 +1,16 @@
 import ProfilePosts from './ProfilePosts'
 import About from './About'
 import { Box, Tab, Tabs } from '@mui/material'
-import { IconArticle, IconFriends, IconPhoto, IconUserCircle } from '@tabler/icons-react'
+import { IconArticle, IconFriends, IconMovie, IconPhoto, IconUserCircle } from '@tabler/icons-react'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { useState } from 'react'
 import FriendProfile from './FriendProfile'
 import { useTranslation } from 'react-i18next'
+import Photos from './Photos'
+import Videos from './Videos'
 
 
-function ContentProfile({ listPost, user }) {
+function ContentProfile({ user, blockedUserList }) {
   const [value, setValue] = useState('1')
   const { t } = useTranslation()
   const handleChange = (event, newValue) => {
@@ -34,16 +36,18 @@ function ContentProfile({ listPost, user }) {
               <Tab icon={<IconUserCircle stroke={2} />} iconPosition="start" label={t('standard.profile.about')} value="2" />
               <Tab icon={<IconFriends stroke={2} />} iconPosition="start" label={t('standard.profile.friends')} value="3" />
               <Tab icon={<IconPhoto stroke={2} />} iconPosition="start" label={t('standard.profile.photos')} value="4" />
+              <Tab icon={<IconMovie stroke={2} />} iconPosition="start" label={t('standard.profile.videos')} value="5" />
             </TabList>
           </div>
           <TabPanel value="1">
-            <ProfilePosts listPost={listPost} user={user} />
+            <ProfilePosts user={user} />
           </TabPanel>
           <TabPanel value="2">
             <About user={user} />
           </TabPanel>
-          <TabPanel value="3"><FriendProfile user={user} /></TabPanel>
-          <TabPanel value="4">Item Three</TabPanel>
+          <TabPanel value="3"><FriendProfile user={user} blockedUserList={blockedUserList} /></TabPanel>
+          <TabPanel value="4"><Photos user={user} /></TabPanel>
+          <TabPanel value="5"><Videos user={user} /></TabPanel>
         </TabContext>
       </Box>
     </div>

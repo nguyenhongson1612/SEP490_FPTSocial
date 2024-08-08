@@ -12,14 +12,27 @@ import { POST_TYPES } from '~/utils/constants'
 import { createReactGroupPhotoPost, createReactGroupPost, createReactGroupSharePost, createReactGroupVideoPost } from '~/apis/groupPostApis'
 import { cloneDeep } from 'lodash'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
+import { useCallback } from 'react'
 
-function PostReactStatus({ postData, postType }) {
+function PostReactStatus({ postData, postType, postShareData, postShareType, isCanShare = true }) {
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const currentActivePost = useSelector(selectCurrentActivePost)
-  const postReact = cloneDeep(postData?.postReactStatus)
-  // console.log('🚀 ~ PostReactStatus ~ postType:', postData)
   const listReact = useSelector(selectListReactType)
+  const updateTopReact = useCallback(() => {
+    let top2React = cloneDeep(postData?.reactCount?.top2React) || []
+    listReact?.forEach(item => {
+
+      if (!top2React?.some(e => e?.reactTypeId == item?.reactTypeId))
+        top2React.push({ ...item, numberReact: 0 })
+    })
+    return top2React
+  }, [listReact, postData])
+
+  let postReact = cloneDeep({ ...postData?.reactCount, top2React: updateTopReact() })
+  // console.log('🚀 ~ PostReactStatus ~ postType:', postReact)
+
   const currentUser = useSelector(selectCurrentUser)
+  const isYourPost = currentUser?.userId == postData?.userId
   const dispatch = useDispatch()
   // const [postReact, setPostReact] = useState({})
   const isProfile = postType == POST_TYPES.PROFILE_POST
@@ -80,7 +93,6 @@ function PostReactStatus({ postData, postType }) {
                   }
     toast.promise(
       (async () => {
-        console.log(reactData);
         const data = await (
           isPhoto ? createReactPhotoPost(reactData)
             : isVideo ? createReactVideoPost(reactData)
@@ -107,64 +119,56 @@ function PostReactStatus({ postData, postType }) {
       () => {
         let newPostReact = cloneDeep(postReact)
         let currentReact = ''
-        const isInListReact = newPostReact?.listReact?.some(e => e?.reactTypeId == reaction?.reactTypeId)
+        // const isInListReact = newPostReact?.listReact?.some(e => e?.reactTypeId == reaction?.reactTypeId)
         if (newPostReact?.isReact) {
-          currentReact = newPostReact?.listUserReact?.find(e => e.userId == currentUser?.userId)
+          currentReact = newPostReact?.userReactType
           if (currentReact?.reactTypeId == reaction?.reactTypeId) {
+            console.log(currentReact?.reactTypeId == reaction?.reactTypeId);
             newPostReact = {
+              ...newPostReact,
+              reactNumber: newPostReact.reactNumber - 1,
+              userReactType: null,
               isReact: false,
-              listUserReact: newPostReact?.listUserReact?.filter(e => e.userId !== currentUser?.userId),
-              listReact: newPostReact?.listReact?.map(react => {
+              top2React: newPostReact?.top2React?.map(react => {
                 if (react?.reactTypeId == reaction?.reactTypeId) return { ...react, numberReact: react?.numberReact - 1 }
-                else return react
+                return react
               }),
-              sumOfReact: newPostReact?.sumOfReact - 1,
             }
           }
           else {
-            console.log('🚀 ~ handleReactPost ~ isInListReact:', isInListReact)
-            !isInListReact && newPostReact?.listReact?.push({ reactTypeId: reaction?.reactTypeId, reactTypeName: reaction?.reactTypeName, numberReact: 0 })
+            console.log(currentReact?.reactTypeId == reaction?.reactTypeId);
+
             newPostReact = {
               ...newPostReact,
-              listUserReact: newPostReact?.listUserReact?.map(userReact => {
-                if (userReact.userId == currentUser?.userId)
-                  return { ...userReact, reactTypeId: reaction?.reactTypeId }
-                else return userReact
-              }),
-              listReact: newPostReact?.listReact?.map(react => {
+              isReact: true,
+              userReactType: { ...reaction },
+              top2React: newPostReact?.top2React?.map(react => {
                 if (react?.reactTypeId == currentReact?.reactTypeId)
                   return { ...react, numberReact: react?.numberReact - 1 }
                 else if (react?.reactTypeId == reaction?.reactTypeId)
                   return { ...react, numberReact: react?.numberReact + 1 }
                 else return react
-              }),
+              })
             }
           }
         }
         else {
-          if (isInListReact) {
-            newPostReact = {
-              ...newPostReact,
-              listReact: newPostReact?.listReact?.map(react => {
-                if (react?.reactTypeId == reaction?.reactTypeId)
-                  return { ...react, numberReact: react?.numberReact + 1 }
-                else return react
-              })
-            }
-          }
-          else newPostReact?.listReact?.push({ reactTypeId: reaction?.reactTypeId, numberReact: 1, reactTypeName: reaction?.reactTypeName })
-          newPostReact?.listUserReact?.push({ reactTypeId: reaction?.reactTypeId, userName: currentUser?.firstName, userId: currentUser?.userId })
           newPostReact = {
             ...newPostReact,
+            reactNumber: newPostReact.reactNumber + 1,
             isReact: true,
-            sumOfReact: newPostReact?.sumOfReact + 1,
-            // , listUserReact: newPostReact?.listUserReact?.filter(e => e.userId == currentUser?.userId)
+            userReactType: { ...reaction },
+            top2React: newPostReact?.top2React?.map(react => {
+              if (react?.reactTypeId == reaction?.reactTypeId)
+                return { ...react, numberReact: react?.numberReact + 1 }
+              else return react
+            })
           }
         }
-        let newPostData = cloneDeep(postData)
-        newPostData = { ...newPostData, postReactStatus: newPostReact }
-        console.log('🚀 ~ handleReactPost ~ newPostReact:', newPostReact)
+        console.log(newPostReact);
 
+        let newPostData = cloneDeep(postData)
+        newPostData = { ...newPostData, reactCount: newPostReact }
         if (currentActivePost) {
           dispatch(updateCurrentActivePost(newPostData))
         }
@@ -181,7 +185,7 @@ function PostReactStatus({ postData, postType }) {
         <div className="flex items-center gap-1"
         >
           {
-            postReact?.listReact?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
+            postReact?.top2React?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
               if (react?.numberReact > 0) {
                 if (react?.reactTypeName == 'like')
                   return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
@@ -189,16 +193,16 @@ function PostReactStatus({ postData, postType }) {
               }
             })
           }
-          <span className="text-sm font-thin text-gray-500">{postReact?.sumOfReact !== 0 && postReact?.sumOfReact}</span>
+          <span className="text-sm text-gray-500">{postReact?.reactNumber !== 0 && postReact?.reactNumber}</span>
         </div >
         <div className='flex items-center gap-4'>
           <div className="flex items-center" onClick={handleOpenCurrenPostModal}>
             <IconMessageCircle stroke={1} />
-            <span className="text-sm text-gray-500">{postData?.reactCount?.commentNumber ?? 0}</span>
+            <span className="text-sm text-gray-500">{postReact?.commentNumber ?? 0}</span>
           </div>
           <div className="flex items-center ">
             <IconShare3 stroke={1} />
-            <span className="text-sm text-gray-500">{postData?.reactCount?.shareNumber ?? 0}</span>
+            <span className="text-sm text-gray-500">{postReact?.shareNumber ?? 0}</span>
           </div>
         </div>
       </div>
@@ -207,13 +211,18 @@ function PostReactStatus({ postData, postType }) {
         className="w-full flex items-center justify-between border-t">
         <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md relative  [&>#react-action]:hover:!opacity-100 basis-1/3"
         >
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             {
               postReact?.isReact
-                ? <IconThumbUpFilled className={'text-blue-500'} stroke={1} />
+                ? postReact?.userReactType?.reactTypeName == 'like'
+                  ? <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
+                  : <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
                 : <IconThumbUp stroke={1} />
             }
-            <span className="text-sm text-gray-500">Like</span>
+            <span className={`text-sm font-semibold capitalize 
+              ${postReact?.userReactType?.reactTypeName == 'like' ? 'text-blue-500' : postReact?.userReactType?.reactTypeName == 'dislike' ? 'text-orange-500' : 'text-gray-500'}`}>
+              {postReact?.userReactType?.reactTypeName || 'like'}
+            </span>
           </div>
           <div id='react-action' className='absolute flex gap-1 opacity-0 transition-opacity duration-300 delay-500 top-0 -translate-y-10
            bg-white shadow-4edges rounded-3xl px-2 py-1'>
@@ -235,17 +244,24 @@ function PostReactStatus({ postData, postType }) {
           <IconMessageCircle stroke={1} />
           <span className="text-sm text-gray-500">Comment</span>
         </div>
-        <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md  basis-1/3"
-          onClick={() => {
-            dispatch(showModalSharePost())
-            dispatch(updateCurrentActivePost({ ...postData, postType: postType }))
-          }}
-        >
-          <IconShare3 stroke={1} />
-          <span className="text-sm text-gray-500">Share</span>
-        </div>
+        {
+          (!isYourPost || isShare || isGroupShare) && isCanShare &&
+          <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md  basis-1/3"
+            onClick={() => {
+              dispatch(showModalSharePost())
+              dispatch(updateCurrentActivePost(
+                (isShare || isGroupShare) ? { ...postShareData, postType: postShareType }
+                  : { ...postData, postType: postType }
+              ))
+            }}
+          >
+            <IconShare3 stroke={1} />
+            <span className="text-sm text-gray-500">Share</span>
+          </div>
+        }
+
       </div>
-    </div>
+    </div >
   )
 }
 

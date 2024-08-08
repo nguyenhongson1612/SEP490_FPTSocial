@@ -1,21 +1,28 @@
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { Box, Button, Tab, Tabs } from '@mui/material';
 import { IconSearch } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllFriend, getAllFriendOtherProfile, searchFriendByName } from '~/apis';
+import { cancelBlockUser, getAllFriend, getAllFriendOtherProfile, searchFriendByName } from '~/apis';
 import GroupAvatar from '~/components/UI/GroupAvatar';
 import UserAvatar from '~/components/UI/UserAvatar';
 import { useDebounceFn } from '~/customHooks/useDebounceFn';
+import { triggerReload } from '~/redux/ui/uiSlice';
 import { selectCurrentUser } from '~/redux/user/userSlice';
 
-function FriendProfile({ user }) {
+function FriendProfile({ user, blockedUserList }) {
   const [listFriend, setListFriend] = useState([])
   const currentUser = useSelector(selectCurrentUser)
   const isYourProfile = currentUser?.userId == user?.userId
   const [loading, setLoading] = useState(false)
   const { t } = useTranslation()
+  const [value, setValue] = useState('1');
 
+  const handleChange = (event, newValue) => {
+    setValue(newValue)
+  };
   const handleInputSearchChange = (event) => {
     const searchValue = event.target?.value
     if (!searchValue) return
@@ -41,12 +48,20 @@ function FriendProfile({ user }) {
       : getAllFriendOtherProfile(user?.userId).then(data => setListFriend(data?.allFriend))
   }, [user])
 
+  const dispatch = useDispatch()
+  const handleUnblock = (id) => {
+    const submitData = {
+      "userId": currentUser?.userId,
+      "blockedUserId": id
+    }
+    cancelBlockUser(submitData).then(() => dispatch(triggerReload()))
+  }
+
   return (
-    <div className=' w-full flex justify-center'>
+    <div className=' w-full flex justify-center min-h-[300px]'>
       <div className='w-[95%] sm:w-[600px] bg-white rounded-md p-2'>
-        <div className='flex flex-col gap-6'>
+        <div className='flex flex-col '>
           <div className='flex justify-between'>
-            <span className='font-bold text-lg'>Friends</span>
             <div className="relative text-gray-600" >
               <input className="w-full bg-fbWhite h-10 px-5 pr-16 rounded-xl text-sm font-light focus:outline-none"
                 type="search" placeholder="Search friend"
@@ -55,30 +70,63 @@ function FriendProfile({ user }) {
               <span className='absolute right-2 top-1/2 -translate-y-1/2'><IconSearch className='text-orangeFpt' /></span>
             </div>
           </div>
-          <div className='grid grid-cols-2 gap-2'>
-            {listFriend?.map((friend) => (
-              <Link
-                to={`/profile?id=${friend?.friendId}`}
-                key={friend?.friendId}
-                className='col-span-2 sm:col-span-1 flex gap-4 p-2 border rounded-lg hover:bg-fbWhite'
-              >
-                <GroupAvatar
-                  avatarSrc={friend?.avata || './src/assets/img/avatar_holder.png'}
-                  isOther={true}
-                  size={20}
-                />
-                <div className='flex flex-col gap-2'>
-                  <span className='capitalize font-semibold'>{friend?.friendName}</span>
-                  <span>{friend?.mutualFriends} {t('sideText.mutualFriend')}</span>
+
+          <Box sx={{ width: '100%', typography: 'body1' }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <TabList onChange={handleChange} aria-label="lab API tabs example">
+                  <Tab label="Friends" value="1" />
+                  {isYourProfile && <Tab label="Block users" value="2" />}
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <div className='grid grid-cols-2 gap-2'>
+                  {listFriend?.map((friend) => (
+                    <Link
+                      to={`/profile?id=${friend?.friendId}`}
+                      key={friend?.friendId}
+                      className='col-span-2 sm:col-span-1 flex gap-4 p-2 border rounded-lg hover:bg-fbWhite'
+                    >
+                      <GroupAvatar
+                        avatarSrc={friend?.avata || './src/assets/img/avatar_holder.png'}
+                        isOther={true}
+                        size={20}
+                      />
+                      <div className='flex flex-col gap-2'>
+                        <span className='capitalize font-semibold'>{friend?.friendName}</span>
+                        <span>{friend?.mutualFriends} {t('sideText.mutualFriend')}</span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              </Link>
-            ))}
-          </div>
+              </TabPanel>
+              <TabPanel value="2">
+                <div className='grid grid-cols-2 gap-2'>
+                  {blockedUserList?.map((e) => (
+                    <div
+                      key={e?.userBlockedId}
+                      className='col-span-2 sm:col-span-1 flex gap-4 p-2 border rounded-lg hover:bg-fbWhite'
+                    >
+                      <GroupAvatar
+                        avatarSrc={e?.avata || './src/assets/img/avatar_holder.png'}
+                        isOther={true}
+                        size={20}
+                      />
+                      <div className='flex flex-col gap-2'>
+                        <span className='capitalize font-semibold'>{e?.fullName}</span>
+                        <Button onClick={() => handleUnblock(e?.userBlockedId)} variant='contained' color='warning' size='small'>Unblock</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabPanel>
+            </TabContext>
+          </Box>
         </div>
 
       </div>
 
-    </div>
+    </div >
   )
 }
 

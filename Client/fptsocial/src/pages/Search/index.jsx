@@ -7,12 +7,15 @@ import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import UserAvatar from '~/components/UI/UserAvatar'
 import UserSearch from './UserSearch'
 import GroupSearch from './GroupSearch'
+import PostSearch from './PostSearch'
+import SearchAll from './AllSearch'
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
   const location = useLocation()
   const [searchResults, setSearchResults] = useState([])
   const query = searchParams.get('q')
+
   const { t } = useTranslation()
   useEffect(() => {
     searchAll({ search: query })
@@ -24,9 +27,9 @@ function Search() {
   return (
     <>
       <NavTopBar />
-      <div className={`h-[calc(100vh_-_55px)] w-screen bg-white border-r shadow-inner flex overflow-y-auto scrollbar-none-track font-semibold`}>
+      <div className={`h-[calc(100vh_-_55px)] w-screen bg-white border-r-2 shadow-lg flex overflow-y-auto scrollbar-none-track font-semibold`}>
         <div className="mx-3 mt-8 mb-5  w-[250px]">
-          <div id="explore"
+          <div
             className=" flex flex-col gap-1 items-start mb-8 border-b-2 border-gray-300"
           >
             <span className='text-2xl pb-2 border-b-2 w-full'>{t('standard.search.searchResult')}</span>
@@ -94,10 +97,16 @@ function Search() {
 
         <div className='w-full'>
           {
+            location.pathname == ('/search/') && <SearchAll />
+          }
+          {
             location.pathname.includes('user') && <UserSearch />
           }
           {
             location.pathname.includes('group') && <GroupSearch />
+          }
+          {
+            location.pathname.includes('post') && <PostSearch />
           }
         </div>
       </div>

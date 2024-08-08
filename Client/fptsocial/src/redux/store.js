@@ -9,6 +9,7 @@ import { sideDataReducer } from './sideData/sideDataSlice'
 import { activeGroupReducer } from './activeGroup/activeGroupSlice'
 import { activeListPostReducer } from './activeListPost/activeListPostSlice'
 import { reportReducer } from './report/reportSlice'
+import { blockReducer } from './block/blockSlice'
 
 const rootPersistConfig = {
   key: 'root',
@@ -25,7 +26,8 @@ const reducers = combineReducers({
   uiState: uiStateReducer,
   notification: notificationReducer,
   sideData: sideDataReducer,
-  report: reportReducer
+  report: reportReducer,
+  block: blockReducer
 })
 const persistedReducers = persistReducer(rootPersistConfig, reducers)
 

@@ -19,6 +19,10 @@ export const getListFriendInvited = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getlistfriendinvated?GroupId=${id}`)
   return response.data?.data
 }
+export const getListMemberGroup = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getlistmemberingroup?GroupId=${id}`)
+  return response.data?.data
+}
 
 export const getGroupStatusForCreate = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupEntity/getgroupstatusforcreate`)
