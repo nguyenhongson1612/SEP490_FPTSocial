@@ -30,6 +30,5 @@ namespace Application.DTO.UserPostDTO
         public virtual ICollection<UserPostVideoDTO.UserPostVideoDTO>? UserPostVideos { get; set; }
         public virtual GetUserAvatar? Avatar { get; set; }
         public string? FullName { get; set; }
-        public double alo { get; set; }
     }
 }

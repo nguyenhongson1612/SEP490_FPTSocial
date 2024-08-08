@@ -62,6 +62,9 @@ namespace Application.Queries.GetUserPost
             public virtual GroupPostVideoDTO? GroupPostVideoShare { get; set; }
             public virtual string? UserNameShare { get; set; }
             public virtual GetUserAvatar? UserAvatarShare { get; set; }
+            public Guid? GroupShareId { get; set; }
+            public string? GroupShareName { get; set; }
+            public string? GroupShareCorverImage { get; set; }
             public virtual string? UserName { get; set; }
             public virtual GetUserAvatar? UserAvatar { get; set; }
             public virtual GetUserStatusDTO? UserStatus { get; set; }
