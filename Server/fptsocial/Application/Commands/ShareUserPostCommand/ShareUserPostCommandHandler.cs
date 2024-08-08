@@ -49,12 +49,18 @@ namespace Application.Commands.ShareUserPostCommand
                                 .Include(up => up.UserPostVideos)
                                 .FirstOrDefaultAsync(up => up.UserPostId == request.UserPostId, cancellationToken);
 
-            //if (userPost == null)
-            //{
-            //    throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); // Or a more suitable error code
-            //}
+            var groupPost = await _querycontext.GroupPosts
+                                .Include(up => up.GroupPostPhotos)
+                                .Include(up => up.GroupPostVideos)
+                                .FirstOrDefaultAsync(up => up.GroupPostId == request.GroupPostId, cancellationToken);
 
-            if (userPost.UserId == request.UserId)
+
+            if (userPost == null && groupPost == null)
+            {
+                throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found); // Or a more suitable error code
+            }
+
+            if (userPost != null && userPost.UserId == request.UserId)
             {
                 throw new ErrorException(StatusCodeEnum.UP04_Can_Not_Share_Owner_Post);
             }

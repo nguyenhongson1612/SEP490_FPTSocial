@@ -13,11 +13,13 @@ using Application.Commands.UpdateUserCommand;
 using Application.Queries.GetGroupByGroupId;
 using Application.Queries.GetGroupByUserId;
 using Application.Queries.GetGroupSettingByGroupId;
+using Application.Queries.GetImageByGroupId;
 using Application.Queries.GetListFriendToInvate;
 using Application.Queries.GetListMemberRole;
 using Application.Queries.GetListRequestjoinGroup;
 using Application.Queries.GetMemberInGroup;
 using Application.Queries.GetUserByUserId;
+using Application.Queries.GetVideoByGroupId;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -379,5 +381,48 @@ namespace API.Controllers
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
+
+        [HttpGet]
+        [Route("getImageInGroup")]
+        public async Task<IActionResult> GetImageInGroup([FromQuery] GetImageByGroupIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getVideoInGroup")]
+        public async Task<IActionResult> GetVideoInGroup([FromQuery] GetVideoByGroupIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
+
+
+
 }
