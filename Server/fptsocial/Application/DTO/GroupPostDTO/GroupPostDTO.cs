@@ -15,7 +15,7 @@ namespace Application.DTO.GroupPostDTO
         public Guid UserId { get; set; }
         public string? Content { get; set; }
         public string? GroupPostNumber { get; set; }
-        public GetGroupStatusDTO GroupStatusId { get; set; }
+        public Guid GroupStatusId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool? IsHide { get; set; }
         public DateTime? UpdatedAt { get; set; }
@@ -33,6 +33,6 @@ namespace Application.DTO.GroupPostDTO
         public Guid? GroupId { get; set; }
         public string? GroupName { get; set; }
         public string? GroupCorverImage { get; set; }
-        public ReactCount ReactCount { get; set; }
+        public ReactCount? ReactCount { get; set; }
     }
 }
