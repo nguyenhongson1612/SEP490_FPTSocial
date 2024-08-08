@@ -18,12 +18,13 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
+
         public DeleteCommentGroupVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
-
         }
+
         public async Task<Result<DeleteCommentGroupVideoPostCommandResult>> Handle(DeleteCommentGroupVideoPostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
@@ -31,53 +32,63 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var GroupVideoComment = _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefault();
-            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostVideoId == GroupVideoComment.GroupPostVideoId).FirstOrDefault();
+            var groupVideoComment = _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefault();
+            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostVideoId == groupVideoComment.GroupPostVideoId).FirstOrDefault();
 
             var result = new DeleteCommentGroupVideoPostCommandResult();
-            if (GroupVideoComment == null)
+            if (groupVideoComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
             }
             else
             {
-                if (request.UserId != GroupVideoComment.UserId)
+                if (request.UserId != groupVideoComment.UserId)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
                 else
                 {
+                    int totalCommentsDeleted = DeleteCommentAndChildren(groupVideoComment.CommentGroupVideoPostId);
+
                     var cgvs = new Domain.CommandModels.CommentGroupVideoPost
                     {
-                        CommentGroupVideoPostId = GroupVideoComment.CommentGroupVideoPostId,
-                        GroupPostVideoId = GroupVideoComment.GroupPostVideoId,
-                        UserId = GroupVideoComment.UserId,
-                        Content = GroupVideoComment.Content,
-                        ParentCommentId = GroupVideoComment.ParentCommentId,
-                        ListNumber = GroupVideoComment.ListNumber,
-                        LevelCmt = GroupVideoComment.LevelCmt,
+                        CommentGroupVideoPostId = groupVideoComment.CommentGroupVideoPostId,
+                        GroupPostVideoId = groupVideoComment.GroupPostVideoId,
+                        UserId = groupVideoComment.UserId,
+                        Content = groupVideoComment.Content,
+                        ParentCommentId = groupVideoComment.ParentCommentId,
+                        ListNumber = groupVideoComment.ListNumber,
+                        LevelCmt = groupVideoComment.LevelCmt,
                         IsHide = true,
-                        CreatedDate = GroupVideoComment?.CreatedDate,
-                        IsBanned = GroupVideoComment?.IsBanned,
+                        CreatedDate = groupVideoComment.CreatedDate,
+                        IsBanned = groupVideoComment.IsBanned,
                     };
                     _context.CommentGroupVideoPosts.Update(cgvs);
+                    totalCommentsDeleted += 1;
+
                     if (groupPostReactCount != null)
                     {
-                        if (groupPostReactCount.CommentCount > 0)
+                        if (groupPostReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            groupPostReactCount.CommentCount--;
+                            groupPostReactCount.CommentCount -= totalCommentsDeleted;
+                        }
+                        else
+                        {
+                            groupPostReactCount.CommentCount = 0;
                         }
                         var prc = new Domain.CommandModels.GroupPostReactCount
                         {
                             GroupPostReactCountId = groupPostReactCount.GroupPostReactCountId,
                             GroupPostId = groupPostReactCount.GroupPostId,
                             GroupPostPhotoId = groupPostReactCount.GroupPostPhotoId,
+                            GroupPostVideoId = groupPostReactCount.GroupPostVideoId,
                             ReactCount = groupPostReactCount.ReactCount,
                             CommentCount = groupPostReactCount.CommentCount,
                             ShareCount = groupPostReactCount.ShareCount,
                         };
                         _context.GroupPostReactCounts.Update(prc);
                     }
+
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
@@ -85,6 +96,38 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
             }
 
             return Result<DeleteCommentGroupVideoPostCommandResult>.Success(result);
+        }
+
+        private int DeleteCommentAndChildren(Guid commentGroupVideoPostId)
+        {
+            var childComments = _querycontext.CommentGroupVideoPosts
+                                .Where(x => x.ParentCommentId == commentGroupVideoPostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentGroupVideoPostId);
+
+                var cgvs = new Domain.CommandModels.CommentGroupVideoPost
+                {
+                    CommentGroupVideoPostId = childComment.CommentGroupVideoPostId,
+                    GroupPostVideoId = childComment.GroupPostVideoId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentGroupVideoPosts.Update(cgvs);
+                countDeleted++;
+            }
+
+            return countDeleted;
         }
     }
 }

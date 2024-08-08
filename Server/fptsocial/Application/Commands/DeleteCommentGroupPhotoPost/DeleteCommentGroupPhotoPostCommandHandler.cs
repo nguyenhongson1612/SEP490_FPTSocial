@@ -35,6 +35,7 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
             var GroupPhotoComment = _querycontext.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).FirstOrDefault();
             var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostPhotoId == GroupPhotoComment.GroupPostPhotoId).FirstOrDefault();
             var result = new DeleteCommentGroupPhotoPostCommandResult();
+
             if (GroupPhotoComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
@@ -47,6 +48,8 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
                 }
                 else
                 {
+                    int totalCommentsDeleted = DeleteCommentAndChildren(GroupPhotoComment.CommentPhotoGroupPostId);
+
                     var cpgs = new Domain.CommandModels.CommentPhotoGroupPost
                     {
                         CommentPhotoGroupPostId = GroupPhotoComment.CommentPhotoGroupPostId,
@@ -61,11 +64,17 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
                         IsBanned = GroupPhotoComment.IsBanned,
                     };
                     _context.CommentPhotoGroupPosts.Update(cpgs);
+                    totalCommentsDeleted += 1;
+
                     if (groupPostReactCount != null)
                     {
-                        if (groupPostReactCount.CommentCount > 0)
+                        if (groupPostReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            groupPostReactCount.CommentCount--;
+                            groupPostReactCount.CommentCount -= totalCommentsDeleted;
+                        }
+                        else
+                        {
+                            groupPostReactCount.CommentCount = 0;
                         }
                         var prc = new Domain.CommandModels.GroupPostReactCount
                         {
@@ -79,7 +88,7 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
                         _context.GroupPostReactCounts.Update(prc);
                     }
                     _context.SaveChanges();
-                    
+
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
                 }
@@ -87,5 +96,38 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
 
             return Result<DeleteCommentGroupPhotoPostCommandResult>.Success(result);
         }
+
+        private int DeleteCommentAndChildren(Guid commentPhotoGroupPostId)
+        {
+            var childComments = _querycontext.CommentPhotoGroupPosts
+                                .Where(x => x.ParentCommentId == commentPhotoGroupPostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentPhotoGroupPostId);
+
+                var cpgs = new Domain.CommandModels.CommentPhotoGroupPost
+                {
+                    CommentPhotoGroupPostId = childComment.CommentPhotoGroupPostId,
+                    GroupPostPhotoId = childComment.GroupPostPhotoId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentPhotoGroupPosts.Update(cpgs);
+                countDeleted++;
+            }
+
+            return countDeleted;
+        }
+
     }
 }

@@ -18,12 +18,13 @@ namespace Application.Commands.DeleteCommentUserVideoPost
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
+
         public DeleteCommentUserVideoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
-
         }
+
         public async Task<Result<DeleteCommentUserVideoPostCommandResult>> Handle(DeleteCommentUserVideoPostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
@@ -31,42 +32,49 @@ namespace Application.Commands.DeleteCommentUserVideoPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var UserVideoComment = _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefault();
-            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostVideoId == UserVideoComment.UserPostVideoId).FirstOrDefault();
+            var userVideoComment = _querycontext.CommentVideoPosts.Where(x => x.CommentVideoPostId == request.CommentVideoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostVideoId == userVideoComment.UserPostVideoId).FirstOrDefault();
 
             var result = new DeleteCommentUserVideoPostCommandResult();
-            if (UserVideoComment == null)
+            if (userVideoComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
             }
             else
             {
-                if (request.UserId != UserVideoComment.UserId)
+                if (request.UserId != userVideoComment.UserId)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
                 else
                 {
-                    UserVideoComment.IsHide = true;
-                    var csp = new Domain.CommandModels.CommentVideoPost
+                    int totalCommentsDeleted = DeleteCommentAndChildren(userVideoComment.CommentVideoPostId);
+
+                    Domain.CommandModels.CommentVideoPost commentVideoPost = new Domain.CommandModels.CommentVideoPost
                     {
-                        CommentVideoPostId = UserVideoComment.CommentVideoPostId,
-                        UserPostVideoId = UserVideoComment.UserPostVideoId,
-                        UserId = UserVideoComment.UserId,
-                        Content = UserVideoComment.Content,
-                        ParentCommentId = UserVideoComment.ParentCommentId,
-                        ListNumber = UserVideoComment.ListNumber,
-                        LevelCmt = UserVideoComment.LevelCmt,
+                        CommentVideoPostId = userVideoComment.CommentVideoPostId,
+                        UserPostVideoId = userVideoComment.UserPostVideoId,
+                        UserId = userVideoComment.UserId,
+                        Content = userVideoComment.Content,
+                        ParentCommentId = userVideoComment.ParentCommentId,
+                        ListNumber = userVideoComment.ListNumber,
+                        LevelCmt = userVideoComment.LevelCmt,
                         IsHide = true,
-                        CreatedDate = UserVideoComment.CreatedDate,
-                        IsBanned = UserVideoComment.IsBanned,
+                        CreatedDate = userVideoComment.CreatedDate,
+                        IsBanned = userVideoComment.IsBanned,
                     };
-                    _context.CommentVideoPosts.Update(csp);
+                    _context.CommentVideoPosts.Update(commentVideoPost);
+                    totalCommentsDeleted += 1;
+
                     if (postReactCount != null)
                     {
-                        if (postReactCount.CommentCount > 0)
+                        if (postReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            postReactCount.CommentCount--;
+                            postReactCount.CommentCount -= totalCommentsDeleted;
+                        }
+                        else
+                        {
+                            postReactCount.CommentCount = 0;
                         }
 
                         var prc = new Domain.CommandModels.PostReactCount
@@ -84,6 +92,7 @@ namespace Application.Commands.DeleteCommentUserVideoPost
 
                         _context.PostReactCounts.Update(prc);
                     }
+
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
@@ -91,6 +100,38 @@ namespace Application.Commands.DeleteCommentUserVideoPost
             }
 
             return Result<DeleteCommentUserVideoPostCommandResult>.Success(result);
+        }
+
+        private int DeleteCommentAndChildren(Guid commentVideoPostId)
+        {
+            var childComments = _querycontext.CommentVideoPosts
+                                .Where(x => x.ParentCommentId == commentVideoPostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentVideoPostId);
+
+                Domain.CommandModels.CommentVideoPost commentVideoPost = new Domain.CommandModels.CommentVideoPost
+                {
+                    CommentVideoPostId = childComment.CommentVideoPostId,
+                    UserPostVideoId = childComment.UserPostVideoId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentVideoPosts.Update(commentVideoPost);
+                countDeleted++;
+            }
+
+            return countDeleted;
         }
     }
 }

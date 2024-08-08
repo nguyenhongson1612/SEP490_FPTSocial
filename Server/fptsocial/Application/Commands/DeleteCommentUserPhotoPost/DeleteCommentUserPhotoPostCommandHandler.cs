@@ -18,12 +18,13 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
     {
         private readonly fptforumCommandContext _context;
         private readonly fptforumQueryContext _querycontext;
+
         public DeleteCommentUserPhotoPostCommandHandler(fptforumCommandContext context, fptforumQueryContext querycontext, IMapper mapper)
         {
             _context = context;
             _querycontext = querycontext;
-
         }
+
         public async Task<Result<DeleteCommentUserPhotoPostCommandResult>> Handle(DeleteCommentUserPhotoPostCommand request, CancellationToken cancellationToken)
         {
             if (_context == null || _querycontext == null)
@@ -31,43 +32,51 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var UserPhotoComment = _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefault();
-            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostPhotoId == UserPhotoComment.UserPostPhotoId).FirstOrDefault();
+            var userPhotoComment = _querycontext.CommentPhotoPosts.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId).FirstOrDefault();
+            var postReactCount = _querycontext.PostReactCounts.Where(x => x.UserPostPhotoId == userPhotoComment.UserPostPhotoId).FirstOrDefault();
 
             var result = new DeleteCommentUserPhotoPostCommandResult();
-            if (UserPhotoComment == null)
+            if (userPhotoComment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM04_Comment_Not_Found);
             }
             else
             {
-                if (request.UserId != UserPhotoComment.UserId)
+                if (request.UserId != userPhotoComment.UserId)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
                 else
                 {
-                    var cpp = new Domain.CommandModels.CommentPhotoPost
-                    {
-                        CommentPhotoPostId = UserPhotoComment.CommentPhotoPostId,
-                        UserPostPhotoId = UserPhotoComment.UserPostPhotoId,
-                        UserId = UserPhotoComment.UserId,
-                        Content = UserPhotoComment.Content,
-                        ParentCommentId = UserPhotoComment.ParentCommentId,
-                        ListNumber = UserPhotoComment.ListNumber,
-                        LevelCmt = UserPhotoComment.LevelCmt,
-                        IsHide = true,
-                        CreatedDate = UserPhotoComment.CreatedDate,
-                        IsBanned = UserPhotoComment.IsBanned,
+                    int totalCommentsDeleted = DeleteCommentAndChildren(userPhotoComment.CommentPhotoPostId);
 
+                    Domain.CommandModels.CommentPhotoPost commentPhotoPost = new Domain.CommandModels.CommentPhotoPost
+                    {
+                        CommentPhotoPostId = userPhotoComment.CommentPhotoPostId,
+                        UserPostPhotoId = userPhotoComment.UserPostPhotoId,
+                        UserId = userPhotoComment.UserId,
+                        Content = userPhotoComment.Content,
+                        ParentCommentId = userPhotoComment.ParentCommentId,
+                        ListNumber = userPhotoComment.ListNumber,
+                        LevelCmt = userPhotoComment.LevelCmt,
+                        IsHide = true,
+                        CreatedDate = userPhotoComment.CreatedDate,
+                        IsBanned = userPhotoComment.IsBanned,
                     };
-                    _context.CommentPhotoPosts.Update(cpp);
+                    _context.CommentPhotoPosts.Update(commentPhotoPost);
+                    totalCommentsDeleted += 1;
+
                     if (postReactCount != null)
                     {
-                        if (postReactCount.CommentCount > 0)
+                        if (postReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            postReactCount.CommentCount--;
+                            postReactCount.CommentCount -= totalCommentsDeleted;
                         }
+                        else
+                        {
+                            postReactCount.CommentCount = 0;
+                        }
+
                         var prc = new Domain.CommandModels.PostReactCount
                         {
                             PostReactCountId = postReactCount.PostReactCountId,
@@ -77,10 +86,12 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
                             CommentCount = postReactCount.CommentCount,
                             ShareCount = postReactCount.ShareCount,
                             CreateAt = postReactCount.CreateAt,
-                            UpdateAt = postReactCount.UpdateAt,
+                            UpdateAt = DateTime.Now,
                         };
+
                         _context.PostReactCounts.Update(prc);
                     }
+
                     _context.SaveChanges();
                     result.Message = "Delete successfully";
                     result.IsDelete = true;
@@ -88,6 +99,38 @@ namespace Application.Commands.DeleteCommentUserPhotoPost
             }
 
             return Result<DeleteCommentUserPhotoPostCommandResult>.Success(result);
+        }
+
+        private int DeleteCommentAndChildren(Guid commentPhotoPostId)
+        {
+            var childComments = _querycontext.CommentPhotoPosts
+                                .Where(x => x.ParentCommentId == commentPhotoPostId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                countDeleted += DeleteCommentAndChildren(childComment.CommentPhotoPostId);
+
+                Domain.CommandModels.CommentPhotoPost commentPhotoPost = new Domain.CommandModels.CommentPhotoPost
+                {
+                    CommentPhotoPostId = childComment.CommentPhotoPostId,
+                    UserPostPhotoId = childComment.UserPostPhotoId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentPhotoPosts.Update(commentPhotoPost);
+                countDeleted++;
+            }
+
+            return countDeleted;
         }
     }
 }

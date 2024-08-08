@@ -49,6 +49,8 @@ namespace Application.Commands.DeleteCommentUserPost
                 }
                 else
                 {
+                    int totalCommentsDeleted = DeleteCommentAndChildren(userComment.CommentId);
+
                     Domain.CommandModels.CommentPost commentPost = new Domain.CommandModels.CommentPost
                     {
                         CommentId = userComment.CommentId,
@@ -63,11 +65,16 @@ namespace Application.Commands.DeleteCommentUserPost
                         IsBanned = userComment.IsBanned,
                     };
                     _context.CommentPosts.Update(commentPost);
+                    totalCommentsDeleted += 1;
                     if (postReactCount != null)
                     {
-                        if (postReactCount.CommentCount > 0)
+                        if (postReactCount.CommentCount >= totalCommentsDeleted)
                         {
-                            postReactCount.CommentCount--;
+                            postReactCount.CommentCount -= totalCommentsDeleted;
+                        }
+                        else
+                        {
+                            postReactCount.CommentCount = 0;
                         }
                         var prc = new Domain.CommandModels.PostReactCount 
                         {
@@ -90,5 +97,41 @@ namespace Application.Commands.DeleteCommentUserPost
 
             return Result<DeleteCommentUserPostCommandResult>.Success(result);
         }
+        private int DeleteCommentAndChildren(Guid commentId)
+        {
+            var childComments = _querycontext.CommentPosts
+                                .Where(x => x.ParentCommentId == commentId)
+                                .ToList();
+
+            int countDeleted = 0;
+
+            foreach (var childComment in childComments)
+            {
+                // Đệ quy xóa các comment con của comment này
+                countDeleted += DeleteCommentAndChildren(childComment.CommentId);
+
+                // Đánh dấu xóa comment này
+                Domain.CommandModels.CommentPost commentPost = new Domain.CommandModels.CommentPost
+                {
+                    CommentId = childComment.CommentId,
+                    UserPostId = childComment.UserPostId,
+                    UserId = childComment.UserId,
+                    Content = childComment.Content,
+                    ParentCommentId = childComment.ParentCommentId,
+                    ListNumber = childComment.ListNumber,
+                    LevelCmt = childComment.LevelCmt,
+                    IsHide = true,
+                    CreatedDate = childComment.CreatedDate,
+                    IsBanned = childComment.IsBanned,
+                };
+                _context.CommentPosts.Update(commentPost);
+                countDeleted++;
+            }
+
+            return countDeleted;
+        }
+
     }
+
+
 }
