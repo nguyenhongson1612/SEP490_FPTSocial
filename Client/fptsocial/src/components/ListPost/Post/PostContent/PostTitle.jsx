@@ -109,7 +109,7 @@ function PostTitle({ postData, isYourPost, postType }) {
         </div>
         <div className="flex flex-col gap-1">
           <div className="font-bold font-sans capitalize">
-            {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName || postData?.userNameShare)}
+            {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
           </div>
           <div className="flex justify-start gap-1 text-gray-500 text-sm">
             {((isGroup || isGroupShare) && !isInGroupPath &&

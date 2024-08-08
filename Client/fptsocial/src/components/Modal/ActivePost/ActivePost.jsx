@@ -13,7 +13,7 @@ import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
-import CurrentUserAvatar from '~/components/UI/UserAvatar'
+import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -170,7 +170,7 @@ function ActivePost({ isReportPost = false }) {
           </div>
           {
             !isReportPost && <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
-              <CurrentUserAvatar />
+              <UserAvatar isOther={false} />
               <div className='rounded-lg pt-2 w-full'>
                 <Tiptap
                   setContent={setContent}

@@ -48,7 +48,7 @@ function LeftTopBar() {
   const debounceSearchAll = useDebounceFn(handleInputSearchChange, 1000)
   const navigate = useNavigate()
   const handlePressEnter = (e) => {
-    console.log('🚀 ~ handlePressEnter ~ e:', e)
+    // console.log('🚀 ~ handlePressEnter ~ e:', e)
     if (e.key == 'Enter' && !!e.target?.value?.trim())
       navigate(`/search/?q=${e.target?.value?.trim()}`)
   }

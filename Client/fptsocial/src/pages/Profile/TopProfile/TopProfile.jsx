@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
-import { getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
+import { getBlockedUserList, getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
 import { useConfirm } from 'material-ui-confirm'
-import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react'
+import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCancel, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import connectionSignalR from '~/utils/signalRConnection'
-import { Avatar, Menu, MenuItem, Popover } from '@mui/material'
+import { Avatar, Button, Menu, MenuItem, Popover } from '@mui/material'
 import { toast } from 'react-toastify'
 import { handleCoverImg } from '~/utils/formatters'
 import { useDispatch } from 'react-redux'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { REPORT_TYPES } from '~/utils/constants'
 import { useTranslation } from 'react-i18next'
+import { addBlock, openModalBlock } from '~/redux/block/blockSlice'
+import Block from '~/components/Modal/Block/Block'
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
 
@@ -169,6 +171,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
               ))}
             </div>
           </div>
+
           {user?.userId == currentUser?.userId ? (
             <div
               onClick={() => setIsOpenModalUpdateProfile(true)}
@@ -267,11 +270,21 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                   sx={{ gap: '5px' }}>
                   <IconMessageReport />{t('standard.profile.report')}
                 </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(addBlock(user))
+                    dispatch(openModalBlock())
+                    handleClose()
+                  }}
+                  sx={{ gap: '5px' }}>
+                  <IconUserCancel />{t('standard.profile.block')}
+                </MenuItem>
               </Menu>
             </div>
           }
         </div>
       </div>
+      <Block />
     </div>
   )
 }

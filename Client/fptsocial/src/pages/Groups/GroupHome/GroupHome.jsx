@@ -18,12 +18,13 @@ import AutoCompleteSearch from '~/components/Search/AutoCompleteSearch'
 import SearchInGroup from './Search/SearchInGroup'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { REPORT_TYPES } from '~/utils/constants'
+import GroupMember from './GroupMember/GroupMember'
 
 function GroupHome({ group }) {
+  console.log('🚀 ~ GroupHome ~ group:', group)
   const currentUser = useSelector(selectCurrentUser)
   const [listFriend, setListFriend] = useState([])
   const [listPost, setListPost] = useState([])
-  const location = useLocation()
   const isPostDetail = /^\/groups\/[a-zA-Z0-9-]+\/post\/[a-zA-Z0-9-]+\/?$/.test(location.pathname)
   const { postId } = useParams()
 
@@ -44,19 +45,21 @@ function GroupHome({ group }) {
     setAnchorEl2(null)
   }
   useEffect(() => {
-    getListFriendInvited(group?.groupId).then(data => setListFriend(data))
-    group?.groupId && (
-      isPostDetail && getGroupPostByGroupPostId(postId).then(data => setListPost([data])))
+    group &&
+      getListFriendInvited(group?.groupId).then(data => setListFriend(data))
   }, [group])
 
   const [groupContentTabs, setGroupContentTabs] = useState('discussion')
 
   const sendInvitesFriend = (data) => {
+    console.log('🚀 ~ sendInvitesFriend ~ data:', data)
     const submitData = {
       'userId': currentUser?.userId,
-      'memberId': data?.inviteFriends?.map(e => e?.friendId),
+      'memberId': data?.inviteFriends?.map(e => e?.userId),
       'groupId': group?.groupId
     }
+    console.log('🚀 ~ invitesFriend ~ submitData:', submitData)
+
     invitesFriend(submitData).then(() => {
       dispatch(triggerReload())
       handleClose()
@@ -143,8 +146,8 @@ function GroupHome({ group }) {
                 </div>
                 <div className="flex w-full justify-between items-center">
                   <div className='flex items-center [&>img:not(:first-child)]:-ml-4'>
-                    {group?.groupMember?.map(member => (
-                      <Link to={''} key={member?.userId}>
+                    {group?.groupMember?.map((member, i) => (
+                      <Link to={''} key={i}>
                         <UserAvatar isOther={true} avatarSrc={member?.avata} />
                       </Link>
                     ))}
@@ -201,7 +204,7 @@ function GroupHome({ group }) {
                       aria-labelledby="modal-modal-title"
                       aria-describedby="modal-modal-description"
                     >
-                      <div className="w-[700px] absolute left-1/2 top-1/2 bg-white
+                      <div className="w-[600px] absolute left-1/2 top-1/2 bg-white
                           -translate-x-1/2 -translate-y-1/2 rounded-lg">
                         {/* <form > */}
                         <form onSubmit={handleSubmit(sendInvitesFriend)} >
@@ -325,7 +328,7 @@ function GroupHome({ group }) {
                 <GroupHomeDiscussions group={group} listPost={listPost} isPostDetail={isPostDetail} />
               </TabPanel>
               <TabPanel value="members">
-                {/* <About user={currentUser} /> */}
+                <GroupMember group={group} />
               </TabPanel>
               <TabPanel value="events">Item Three</TabPanel>
               <TabPanel value="media">Item Three</TabPanel>

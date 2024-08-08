@@ -138,7 +138,7 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
   return (
     <form onSubmit={handleSubmit(submitUpdateProfile)}
       id='update-profile'
-      className='w-full md:w-[700px] flex flex-col gap-2 px-4 py-2'>
+      className='w-full md:w-[600px] flex flex-col gap-2 px-4 py-2'>
       <div className='flex justify-between items-center pb-2 border-b-2'>
         <span></span>
         <span className='text-xl font-bold'>Edit Profile</span>

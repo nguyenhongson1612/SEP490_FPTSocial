@@ -33,22 +33,23 @@ function Post({ postData }) {
   if (postData?.isShare) {
     if (postData?.userPostShareId) {
       postShareType = POST_TYPES.PROFILE_POST
-      postShareData = { ...postData?.userPostShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostShare, userName: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.userPostVideoShareId) {
       postShareType = POST_TYPES.VIDEO_POST
-      postShareData = { ...postData?.userPostVideoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostVideoShare, userName: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.userPostPhotoShareId) {
       postShareType = POST_TYPES.PHOTO_POST
-      postShareData = { ...postData?.userPostPhotoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
+      postShareData = { ...postData?.userPostPhotoShare, userName: postData?.userNameShare, avatar: postData?.userAvatarShare }
     } else if (postData?.groupPostShareId) {
-      postShareType = POST_TYPES.GROUP_SHARE_POST
-      postShareData = { ...postData?.groupPostShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
-    } else if (postData?.groupPostPhotoShareId) {
+      postShareType = POST_TYPES.GROUP_POST
+      postShareData = { ...postData?.groupPostShare, userName: postData?.userNameShare, avatar: postData?.userAvatarShare, groupName: postData?.groupShareName, groupCorverImage: postData?.groupShareCorverImage }
+    }
+    else if (postData?.groupPostPhotoShareId) {
       postShareType = POST_TYPES.GROUP_PHOTO_POST
-      postShareData = { ...postData?.groupPostPhotoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
+      postShareData = { ...postData?.groupPostPhotoShare, userName: postData?.userNameShare, avatar: postData?.userAvatarShare, groupName: postData?.groupShareName, groupCorverImage: postData?.groupShareCorverImage }
     } else {
       postShareType = POST_TYPES.GROUP_VIDEO_POST
-      postShareData = { ...postData?.groupPostVideoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare }
+      postShareData = { ...postData?.groupPostVideoShare, userNameShare: postData?.userNameShare, avatar: postData?.userAvatarShare, groupName: postData?.groupShareName, groupCorverImage: postData?.groupShareCorverImage }
     }
   }
   const isProfile = postType == POST_TYPES.PROFILE_POST
@@ -60,6 +61,7 @@ function Post({ postData }) {
   const isGroupPhoto = postType == POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType == POST_TYPES.GROUP_VIDEO_POST
   const dispatch = useDispatch()
+  const isCanShare = postData?.groupStatus ? postData?.groupStatus?.groupStatusName == 'Public' : true
 
   // const [reactStatus, setReactStatus] = useState({})
   // const handleGetReact = async () => {
@@ -88,7 +90,7 @@ function Post({ postData }) {
 
   return (
     <div id="post"
-      className="w-full lg:w-[700px] flex flex-col items-center bg-white shadow-md rounded-md">
+      className="w-full lg:w-[600px] flex flex-col items-center bg-white shadow-lg rounded-lg">
       <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} />
       <PostContents postData={postData} postType={postType} />
       {
@@ -101,7 +103,7 @@ function Post({ postData }) {
         </div>
       }
       {!postData?.isShare && <PostMedia postData={postData} postType={postType} />}
-      <PostReactStatus postData={postData} postType={postType} />
+      <PostReactStatus postData={postData} postType={postType} postShareData={postShareData} postShareType={postShareType} isCanShare={isCanShare} />
       {/* <PostComment postData={postData} /> */}
     </div>
   )

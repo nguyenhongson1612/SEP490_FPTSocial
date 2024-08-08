@@ -13,11 +13,12 @@ import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
 import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactStatus'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
+import SharePost from '~/components/Modal/ActivePost/SharePost'
 import Report from '~/components/Modal/Report/Report'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import Tiptap from '~/components/TitTap/TitTap'
 import CurrentUserAvatar from '~/components/UI/UserAvatar'
-import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, selectIsShowModalSharePost, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -30,6 +31,7 @@ function Post() {
   const [content, setContent] = useState('')
   const currentUser = useSelector(selectCurrentUser)
   const isShowModalReport = useSelector(selectIsOpenReport)
+  const isShowModalShare = useSelector(selectIsShowModalSharePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
   const [listPhotos, setListPhotos] = useState([])
   const [listVideos, setListVideos] = useState([])
@@ -44,13 +46,12 @@ function Post() {
       const postReact = await getAllReactByPostId(postId)
       dispatch(updateCurrentActivePost({ ...postData, postReactStatus: postReact }))
     })()
-  }, [])
+  }, [isShowModalShare])
 
   useEffect(() => {
     getComment(postId).then(data => setListComment(data?.posts))
   }, [reloadComment])
 
-  console.log(currentActivePost)
   const handleCommentPost = () => {
     const submitData = {
       'userPostId': postId,
@@ -62,6 +63,7 @@ function Post() {
       commentPost(submitData),
       { pending: 'Updating is in progress...' }
     ).then(() => {
+      dispatch(triggerReloadComment())
       toast.success('Commented')
     })
 
@@ -70,6 +72,7 @@ function Post() {
   return (
     <>
       <NavTopBar />
+      {isShowModalShare && <SharePost />}
       {isShowModalReport && <Report />}
       <div className="flex justify-center bg-fbWhite">
         <div className='flex flex-col items-center gap-3 w-[95%] sm:w-[500px] bg-white shadow-md rounded-lg mt-4'>
@@ -82,7 +85,7 @@ function Post() {
             <PostComment comment={listComment} postType={postType} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='mb-4 w-full flex gap-2 px-4'>
-            <CurrentUserAvatar />
+            <CurrentUserAvatar isOther={false} />
             <div className='rounded-lg pt-2 w-full'>
               <Tiptap
                 setContent={setContent}

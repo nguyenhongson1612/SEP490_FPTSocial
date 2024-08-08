@@ -60,6 +60,7 @@ export const SEARCH_TYPE = {
   GROUP: "Group",
   USER: "User",
   POST: "Post",
+  AVATAR: "Avata",
 };
 
 export const ADMIN = "admin";

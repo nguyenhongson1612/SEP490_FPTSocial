@@ -134,6 +134,27 @@ export const getAllFriendRequest = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriendrequest`)
   return response.data?.data
 }
+export const blockUser = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/blockuser`, data)
+  return response.data?.data
+}
+export const cancelBlockUser = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/cancelblockuser`, data)
+  return response.data?.data
+}
+export const getBlockedUserList = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getlistuserisblocked`)
+  return response.data?.data
+}
+
+export const getImageByUserId = async ({ userId, type = SEARCH_TYPE.ALL }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getImageByUserId?UserId=${userId}&Type=${type}`)
+  return response.data?.data
+}
+export const getVideoByUserId = async ({ userId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getVideoByUserId?UserId=${userId}`)
+  return response.data?.data
+}
 
 // file upload
 export const uploadImage = async ({ userId, data }) => {

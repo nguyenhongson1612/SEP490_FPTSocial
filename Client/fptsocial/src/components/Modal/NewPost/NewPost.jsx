@@ -79,8 +79,8 @@ function NewPost({ postType, groupId }) {
     const postFunction = isProfile ? createPost : createGroupPost
 
     postFunction(submitData).then(() => {
-      dispatch(triggerReload())
       dispatch(clearAndHireCurrentActivePost())
+      dispatch(triggerReload())
       toast.success('Posted!')
     })
   }
@@ -94,7 +94,7 @@ function NewPost({ postType, groupId }) {
   }
 
   return (
-    <div id="new-post" className="w-full mt-8 lg:w-[700px] flex flex-col gap-2 p-4 rounded-lg shadow-lg bg-white">
+    <div id="new-post" className="w-full mt-8 lg:w-[600px] flex flex-col gap-2 p-4 rounded-lg shadow-lg bg-white">
       <div className="flex gap-4 items-center w-full">
         <Link to={`/profile?id=${currentUser?.userId}`} className="hover:text-gray-950 flex items-center justify-center gap-3">
           <UserAvatar isOther={false} />

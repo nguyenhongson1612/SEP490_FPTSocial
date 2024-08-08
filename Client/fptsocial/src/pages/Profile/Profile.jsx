@@ -3,21 +3,23 @@ import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import TopProfile from './TopProfile/TopProfile'
 import ContentProfile from './ContentProfile/ContentProfile'
 import UpdateProfile from './UpdateProfile/UpdateProfile'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Modal } from '@mui/material'
-import { getAllFriend, getAllFriendOtherProfile, getButtonFriend, getOtherUserByUserId } from '~/apis'
+import { getAllFriend, getAllFriendOtherProfile, getBlockedUserList, getButtonFriend, getOtherUserByUserId } from '~/apis'
 import { getOtherUserPost, getUserPostByUserId } from '~/apis/postApis'
 import { selectIsReload } from '~/redux/ui/uiSlice'
+import { clearCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 
 function Profile() {
   const [update, setUpdate] = useState(false)
-  const [listPost, setListPost] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [buttonProfile, setButtonProfile] = useState({})
   const [isOpenModalUpdateProfile, setIsOpenModalUpdateProfile] = useState(false)
   const [listFriend, setListFriend] = useState([])
+  const [blockedUserList, setBlockedUserList] = useState([])
+  const dispatch = useDispatch()
 
   const currentUser = useSelector(selectCurrentUser)
   const isReload = useSelector(selectIsReload)
@@ -25,21 +27,26 @@ function Profile() {
   const navigate = useNavigate()
   const currentUserId = currentUser?.userId
   const paramUserId = searchParams.get('id')
+  const isYourProfile = currentUserId == paramUserId
 
   const forceUpdate = () => setUpdate(!update)
+
   useEffect(() => {
-    if (currentUserId === paramUserId) {
+    dispatch(clearCurrentActiveListPost())
+
+  }, [paramUserId])
+  useEffect(() => {
+    if (isYourProfile) {
       setUserProfile(currentUser)
       getAllFriend().then(data => setListFriend(data))
-      getUserPostByUserId().then((data) => setListPost(data?.result))
     }
     else {
       getOtherUserByUserId({ userId: currentUserId, viewUserId: paramUserId })
         .then(res => setUserProfile(res))
         .catch(() => navigate('/notavailable'))
-      getOtherUserPost(paramUserId).then((data) => setListPost(data?.result))
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
+    getBlockedUserList().then(data => setBlockedUserList(data))
   }, [paramUserId, isReload, currentUser])
 
   useEffect(() => {
@@ -53,7 +60,7 @@ function Profile() {
         <NavTopBar />
         <div className="">
           <TopProfile listFriend={listFriend} setIsOpenModalUpdateProfile={setIsOpenModalUpdateProfile} user={userProfile} currentUser={currentUser} buttonProfile={buttonProfile} forceUpdate={forceUpdate} />
-          <ContentProfile listPost={listPost} user={userProfile} />
+          <ContentProfile user={userProfile} blockedUserList={blockedUserList} />
         </div>
         <Modal
           open={isOpenModalUpdateProfile}

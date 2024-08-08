@@ -11,6 +11,7 @@ import GroupHome from './GroupHome/GroupHome.jsx'
 import GroupSetting from './GroupManage/GroupSettings.jsx'
 import GroupManageMember from './GroupManage/GroupManageMember/GroupManageMember.jsx'
 import GroupPostApproval from './GroupManage/GroupPostApproval.jsx'
+import { clearCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice.js'
 
 
 function Group() {
@@ -27,8 +28,11 @@ function Group() {
   const isReload = useSelector(selectIsReload)
   const dispatch = useDispatch()
   const { groupId } = useParams()
+  console.log('🚀 ~ Group ~ groupId:', groupId)
   const group = useSelector(selectCurrentActiveGroup)
-
+  useEffect(() => {
+    dispatch(clearCurrentActiveListPost())
+  }, [groupId])
   useEffect(() => {
     dispatch(getGroupByGroupId(groupId))
   }, [groupId, isReload])

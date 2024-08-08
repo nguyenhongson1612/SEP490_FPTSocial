@@ -27,6 +27,7 @@ import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup
 function SharePost() {
   const isShowModalSharePost = useSelector(selectIsShowModalSharePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
+  console.log('🚀 ~ SharePost ~ currentActivePost:', currentActivePost)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const postType = currentActivePost?.postType
   const currentUser = useSelector(selectCurrentUser)
@@ -34,15 +35,24 @@ function SharePost() {
   const [isChooseGroup, setIsChooseGroup] = useState(false)
   const [shareType, setShareType] = useState(EDITOR_TYPE.STORY)
   const [listGroup, setListGroup] = useState(null)
-  // const [locationForSharePost, setLocationForSharePost] = useState(SHARE_LOCATION.STORY)
 
   const { handleSubmit } = useForm()
-  const [content, setContent] = useState()
+  const [content, setContent] = useState(null)
   const user = useSelector(selectCurrentUser)
 
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState({})
   const [chooseGroup, setChooseGroup] = useState(null)
+
+  const isProfile = postType == POST_TYPES.PROFILE_POST
+  const isShare = postType == POST_TYPES.SHARE_POST
+  const isPhoto = postType == POST_TYPES.PHOTO_POST
+  const isVideo = postType == POST_TYPES.VIDEO_POST
+  const isGroup = postType == POST_TYPES.GROUP_POST
+  const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
+  const isGroupPhoto = postType == POST_TYPES.GROUP_PHOTO_POST
+  const isGroupVideo = postType == POST_TYPES.GROUP_VIDEO_POST
+
   useEffect(() => {
     getGroupByUserId().then(data => setListGroup([...data?.listGroupAdmin || [], ...data?.listGroupMember || []]))
   }, [])
@@ -69,17 +79,15 @@ function SharePost() {
   const submitPost = () => {
     const submitData = {
       'userId': currentUser?.userId,
-      'content': content,
-      'userPostId': (currentActivePost?.userPostId || currentActivePost?.postId) ?? null,
-      'userPostVideoId': currentActivePost?.userPostVideoId ?? null ?? null,
+      'content': content || '',
+      'userPostId': isProfile ? (currentActivePost?.userPostId || currentActivePost?.postId) : null,
+      'userPostVideoId': currentActivePost?.userPostVideoId ?? null,
       'userPostPhotoId': currentActivePost?.userPostPhotoId ?? null,
-      'groupPostId': currentActivePost?.isGroupPost ? (currentActivePost?.groupPostId || currentActivePost?.postId) ?? null : null,
+      'groupPostId': isGroup ? (currentActivePost?.groupPostId || currentActivePost?.postId) ?? null : null,
       'groupPostPhotoId': currentActivePost?.groupPostPhotoId ?? null,
       'groupPostVideoId': currentActivePost?.groupPostVideoId ?? null,
       'sharedToUserId': null,
-      ...(shareType == EDITOR_TYPE.STORY
-        ? { userStatusId: choseStatus?.userStatusId ?? null }
-        : { groupStatusId: choseStatus?.groupStatusId ?? null }),
+      ...(shareType == EDITOR_TYPE.STORY && { userStatusId: choseStatus?.userStatusId ?? null }),
       // 'userStatusId': choseStatus?.userStatusId || choseStatus?.groupStatusId,
       'userSharedId': currentActivePost?.userId,
       ...(shareType == EDITOR_TYPE.GROUP && { groupId: chooseGroup?.groupId }),
@@ -200,7 +208,7 @@ function SharePost() {
                 </div> */}
                 <div className='h-[150px] overflow-y-auto no-scrollbar pb-2 flex justify-center w-full'>
                   <div className='pointer-events-none border-2 rounded-lg w-[95%]'>
-                    <PostMedia postData={currentActivePost} postType={POST_TYPES.PROFILE_POST} />
+                    <PostMedia postData={currentActivePost} postType={postType} />
                     <PostTitle postData={currentActivePost} />
                     <PostContents postData={currentActivePost} />
                   </div>
