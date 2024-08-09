@@ -36,7 +36,7 @@ namespace Application.Queries.GetGroupByGroupId
                                                 .Include(x => x.GroupTagUseds)
                                                 .Include(x => x.GroupMembers)
                                                 .Include(x=>x.CreatedBy)
-                                                .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.IsDelete == false);
+                                                .FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.IsDelete != true);
             var groupsetting = await _context.GroupSettingUses.Include(x => x.GroupSetting)
                                                                 .Include(x => x.GroupStatus)
                                                                .Where(x => x.GroupId == request.GroupId).ToListAsync();
@@ -56,10 +56,6 @@ namespace Application.Queries.GetGroupByGroupId
                 throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
             }
 
-            if (group.IsDelete == true)
-            {
-                throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
-            }
             var getgroup = new GetGroupByGroupIdQueryResult
             {
                 GroupId = (Guid)request.GroupId,

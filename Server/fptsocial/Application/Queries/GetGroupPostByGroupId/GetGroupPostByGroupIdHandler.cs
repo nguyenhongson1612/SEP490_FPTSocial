@@ -81,6 +81,15 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .Select(x => x.UserId == request.UserId ? x.UserIsBlockedId : x.UserId)
                 .ToListAsync(cancellationToken);
 
+            var isGroupAdmin = await _context.GroupMembers
+                .AsNoTracking()
+                .Include(x => x.GroupRole)
+                .AnyAsync(x => x.GroupRole.GroupRoleName == "Admin" || x.GroupRole.GroupRoleName == "Censor");
+
+            if (isGroupAdmin)
+            {
+                blockUserList = null;
+            }
 
             // Truy vấn các bài đăng nhóm với các thông tin liên quan
             var groupPosts = await _context.GroupPosts

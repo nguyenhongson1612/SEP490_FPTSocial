@@ -215,6 +215,14 @@ namespace Application.Queries.GetUserPost
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.UserId == item.UserSharedId && x.IsUsed == true);
 
+                var groupId = _context.GroupPosts.Where(x => x.GroupPostId == item.GroupPostId).Select(x => x.GroupId).FirstOrDefault();
+                var group = _context.GroupFpts.Select(x => new {
+                    x.GroupId,
+                    x.GroupName,
+                    x.CoverImage,
+                })
+                .FirstOrDefault(x => x.GroupId == groupId);
+
                 var isReact = await _context.ReactSharePosts
                     .AsNoTracking()
                     .Include(x => x.ReactType)
@@ -259,6 +267,9 @@ namespace Application.Queries.GetUserPost
                     UserPostVideoShare = _mapper.Map<UserPostVideoDTO>(item.UserPostVideo),
                     UserNameShare = userShare,
                     UserAvatarShare = _mapper.Map<GetUserAvatar>(avtShare),
+                    GroupShareId = group?.GroupId ?? null,
+                    GroupShareName = group?.GroupName ?? null,
+                    GroupShareCorverImage = group?.CoverImage ?? null,
                     UserName = user,
                     UserAvatar = _mapper.Map<GetUserAvatar>(avt),
                     UserStatus = new GetUserStatusDTO
