@@ -31,11 +31,11 @@ namespace Application.Services
 
             var chat = new
             {
-                ClientId = "identity-service",
-                ClientSecret = "Yr3&Og9&Dl6&Ie1#Rw2!Oj5!Yy1*Og3!",
-                Scope = "identity-service",
-                UserName = "societe@gmail.com",
-                Password = "Fe3@Ep0&"
+                ClientId = _configuration["FptAccount:ClientId"],
+                ClientSecret = _configuration["FptAccount:ClientSecret"],
+                Scope = _configuration["FptAccount:Scope"],
+                UserName = _configuration["FptAccount:Username"],
+                Password = _configuration["FptAccount:Password"],
             };
 
             request.Content = new StringContent(JsonConvert.SerializeObject(chat), Encoding.UTF8, "application/json");
@@ -104,11 +104,11 @@ namespace Application.Services
 
             var chat = new
             {
-                ClientId = "identity-service",
-                ClientSecret = "Yr3&Og9&Dl6&Ie1#Rw2!Oj5!Yy1*Og3!",
-                Scope = "identity-service",
-                UserName = "societe@gmail.com",
-                Password = "Fe3@Ep0&"
+                ClientId = _configuration["FptAccount:ClientId"],
+                ClientSecret = _configuration["FptAccount:ClientSecret"],
+                Scope = _configuration["FptAccount:Scope"],
+                UserName = _configuration["FptAccount:Username"],
+                Password = _configuration["FptAccount:Password"],
             };
 
             request.Content = new StringContent(JsonConvert.SerializeObject(chat), Encoding.UTF8, "application/json");
