@@ -44,7 +44,7 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
 
         // Lấy danh sách nhóm mà người dùng đã tham gia
         var userJoinedGroupIds = await _queryContext.GroupMembers
-            .Where(gm => gm.UserId == request.UserId && gm.IsJoined)
+            .Where(gm => gm.UserId == request.UserId)
             .Select(gm => gm.GroupId)
             .ToListAsync(cancellationToken);
 
@@ -74,11 +74,13 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
 
         // Sắp xếp các nhóm theo thứ tự ưu tiên
         var prioritizedGroups = friendsInGroups
-        .OrderByDescending(g => groupTypeGroupCount.FindIndex(gt => gt.GroupType == g.Group.GroupTypeId))
-        .ThenByDescending(g => g.FriendCount)
-        .Where(g => !userJoinedGroupIds.Contains(g.Group.GroupId))
-        .Select(g => g.Group)
-        .ToList();
+                                .OrderByDescending(g => groupTypeGroupCount.FindIndex(gt => gt.GroupType == g.Group.GroupTypeId))
+                                .ThenByDescending(g => g.FriendCount)
+                                .Where(g => !userJoinedGroupIds.Contains(g.Group.GroupId) || _queryContext.GroupMembers
+                                       .Where(gm => gm.UserId == request.UserId && gm.GroupId == g.Group.GroupId)
+                                       .All(gm => gm.IsJoined == false))
+                                .Select(g => g.Group)
+                                .ToList();
 
         // Nếu không có nhóm nào mà người dùng tham gia hoặc không có bạn bè nào tham gia trong các nhóm đó, tìm các nhóm có trạng thái công khai
         if (!prioritizedGroups.Any())
