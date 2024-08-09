@@ -211,7 +211,7 @@ namespace Application.Queries.GetPost
                     .ThenInclude(upp => upp.Photo)
                 .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
                     .ThenInclude(upv => upv.Video)
-                .Where(p => outStanding.Contains(p.UserPostId) && !blockUserList.Contains(p.UserId) && p.UserStatusId == statusPublic.UserStatusId && p.IsHide != true && p.IsBanned != true)
+                .Where(p => outStanding.Contains(p.UserPostId) && p.UserId != request.UserId && !blockUserList.Contains(p.UserId) && p.UserStatusId == statusPublic.UserStatusId && p.IsHide != true && p.IsBanned != true)
                 .ToListAsync(cancellationToken);
 
             foreach (var item in outStandingPosts)
