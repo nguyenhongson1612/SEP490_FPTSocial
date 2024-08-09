@@ -35,9 +35,16 @@ namespace Application.Commands.JoinGroupCommand
             }
             var joined = await _querycontext.GroupMembers.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.GroupId == request.GroupId);
             var grouprole = await _querycontext.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Member"));
-            var groupstatus = await _querycontext.GroupStatuses.FirstOrDefaultAsync(x=>x.GroupStatusName.Equals("Public"));
+            /*var groupstatus = await _querycontext.GroupStatuses.FirstOrDefaultAsync(x=>x.GroupStatusName.Equals("Public"));
             var groupsetting = await _querycontext.GroupSettingUses.Include(x=>x.GroupSetting).ToListAsync();
-            var checkjoin = groupsetting.FirstOrDefault(x => x.GroupSetting.GroupSettingName.Equals("Join Automatically"));
+            var checkjoin = groupsetting.FirstOrDefault(x => x.GroupSetting.GroupSettingName.Equals("Join Automatically"));*/
+
+            var isAutoJoin = await _querycontext.GroupSettingUses
+                .AsNoTracking()
+                .Include(x => x.GroupSetting)
+                .Include(x => x.GroupStatus)
+                .AnyAsync(x => x.GroupId == request.GroupId && x.GroupSetting.GroupSettingName == "Join Automatically" && x.GroupStatus.GroupStatusName == "Public");
+
             if (joined != null)
             {
                 throw new ErrorException(StatusCodeEnum.GR10_Group_Joined);
@@ -54,7 +61,7 @@ namespace Application.Commands.JoinGroupCommand
                 JoinedDate = DateTime.Now,
                 
             };
-            if(checkjoin.GroupStatusId == groupstatus.GroupStatusId)
+            if(isAutoJoin)
             {
                 requestJoin.IsJoined = true;
                 result.IsJoin = true;
