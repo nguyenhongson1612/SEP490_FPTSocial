@@ -35,7 +35,7 @@ namespace Application.Queries.GetListRequestjoinGroup
             var admin = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Admin"));
             var censor = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Censor"));
             var getrole = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId);
-            var groupmember = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos).Where(x => x.GroupId == request.GroupId && x.IsJoined == false).ToListAsync();
+            var groupmember = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos).Where(x => x.GroupId == request.GroupId && x.IsJoined == false && x.IsInvated == true).ToListAsync();
             var isjoin = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleId == getrole.GroupRoleId);
             if (isjoin == null)
             {
