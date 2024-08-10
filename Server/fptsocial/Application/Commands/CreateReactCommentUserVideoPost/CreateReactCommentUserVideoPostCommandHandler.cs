@@ -38,8 +38,7 @@ namespace Application.Commands.CreateReactCommentUserPostVideo
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            await _querycontext.ReactVideoPostComments.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
-            var comment = await _querycontext.ReactVideoPostComments.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
+            var comment = await _querycontext.CommentVideoPosts.FirstOrDefaultAsync(c => c.CommentVideoPostId == request.CommentVideoPostId, cancellationToken);
             if (comment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
