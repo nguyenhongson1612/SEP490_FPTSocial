@@ -43,7 +43,7 @@ namespace Application.Commands.CreateReactForCommentSharePost
             }
 
             // 4. Lấy thông tin comment
-            var comment = await _querycontext.ReactSharePostComments.FirstOrDefaultAsync(c => c.CommentSharePostId == request.CommentSharePostId, cancellationToken);
+            var comment = await _querycontext.CommentSharePosts.FirstOrDefaultAsync(c => c.CommentSharePostId == request.CommentSharePostId, cancellationToken);
             if (comment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);

@@ -39,6 +39,12 @@ namespace Application.Commands.CreateReactCommentUserPostPhoto
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
+            var comment = await _querycontext.CommentPhotoPosts.FirstOrDefaultAsync(c => c.CommentPhotoPostId == request.CommentPhotoPostId, cancellationToken);
+            if (comment == null)
+            {
+                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
+            }
+
             // 1. Kiểm tra phản ứng (reaction) hiện có cho comment
             var existingReact = await _querycontext.ReactPhotoPostComments
                 .FirstOrDefaultAsync(r =>
@@ -98,13 +104,6 @@ namespace Application.Commands.CreateReactCommentUserPostPhoto
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            // 4. Lấy thông tin comment
-            var comment = await _querycontext.CommentPhotoPosts.FirstOrDefaultAsync(c => c.CommentPhotoPostId == request.CommentPhotoPostId, cancellationToken);
-            if (comment == null)
-            {
-                throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
-            }
 
             // 5. Trả về kết quả
             var result = existingReact != null

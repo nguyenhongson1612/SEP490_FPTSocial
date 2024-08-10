@@ -42,7 +42,7 @@ namespace Application.Commands.CreateReactForCommentGroupSharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comment = await _querycontext.ReactGroupSharePostComments.FirstOrDefaultAsync(c => c.CommentGroupSharePostId == request.CommentGroupSharePostId, cancellationToken);
+            var comment = await _querycontext.CommentGroupSharePosts.FirstOrDefaultAsync(c => c.CommentGroupSharePostId == request.CommentGroupSharePostId, cancellationToken);
             if (comment == null)
             {
                 throw new ErrorException(StatusCodeEnum.CM01_Comment_Not_Null);
