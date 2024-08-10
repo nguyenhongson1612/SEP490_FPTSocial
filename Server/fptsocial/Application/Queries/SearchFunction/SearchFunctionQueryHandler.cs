@@ -86,9 +86,20 @@ namespace Application.Queries.SearchFunction
             switch (request.Type)
             {
                 case "All": // Search across all entities
-                    queryResult.groups = await searchGroup(request);
-                    queryResult.userProfiles = await searchUsers(request);
-                    queryResult.userPosts = await searchUserPosts(request);
+                    var groups = await searchGroup(request);
+                    var users = await searchUsers(request);
+
+                    queryResult.groups = groups.Take(3).ToList();
+                    queryResult.userProfiles = users.Take(3).ToList();
+
+                    var posts = await searchUserPosts(request);
+                    var total = (int)Math.Ceiling((double)posts.Count() / request.PageSize);
+                    queryResult.totalPage = total == 0 ? 1 : total;
+
+                    queryResult.userPosts = posts
+                                            .Skip((request.Page - 1) * request.PageSize)
+                                            .Take(request.PageSize)
+                                            .ToList();
 
                     break;
 
@@ -365,8 +376,7 @@ namespace Application.Queries.SearchFunction
 
             // Lấy ra id của những group mà user đã join hoặc là của những friend đã join nhưng ở chế độ public
             var groupMemberIds = await _context.GroupMembers
-                                    .AsNoTracking()
-                                    .Where(x => x.UserId == request.UserId)
+                                    .Where(x => (x.UserId == request.UserId && x.IsJoined == true) || (/*friendUserIds.Contains(x.UserId) && */groupStatusPublic.Contains(x.GroupId)))
                                     .Select(x => x.GroupId)
                                     .ToListAsync();
 
@@ -617,6 +627,132 @@ namespace Application.Queries.SearchFunction
                 }
             }
 
+            // Lấy ra các userpostId có lượng tương tác nổi bật (force : 10)
+            var outStanding = await _context.PostReactCounts
+                .AsNoTracking()
+                .Where(x => (x.ReactCount + x.CommentCount + x.ShareCount) > 10)
+                .Select(x => x.UserPostId)
+                .ToListAsync();
+
+            // Lấy ra các UserPost có lượng tương tác nổi bật
+            var outStandingPosts = await _context.UserPosts
+                .AsNoTracking()
+                .Include(p => p.UserStatus)
+                .Include(p => p.Photo)
+                .Include(p => p.Video)
+                .Include(p => p.UserPostPhotos.Where(x => x.IsHide != true && x.IsBanned != true))
+                    .ThenInclude(upp => upp.Photo)
+                .Include(p => p.UserPostVideos.Where(x => x.IsHide != true && x.IsBanned != true))
+                    .ThenInclude(upv => upv.Video)
+                .Where(p => outStanding.Contains(p.UserPostId) && p.UserId != request.UserId && !blockUserList.Contains(p.UserId) && p.UserStatusId == statusPublic.UserStatusId && p.IsHide != true && p.IsBanned != true)
+                .ToListAsync();
+
+            foreach (var item in outStandingPosts)
+            {
+                var user = _context.UserProfiles.Where(x => x.UserId == item.UserId)
+                                                .Select(x => x.FirstName + " " + x.LastName)
+                                                .FirstOrDefault();
+                var avatar = _context.AvataPhotos.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
+
+                var reactCounts = _context.PostReactCounts
+                                        .FirstOrDefault(x => x.UserPostId == item.UserPostId);
+                var isReact = await _context.ReactPosts
+                    .Include(x => x.ReactType)
+                    .FirstOrDefaultAsync(x => x.UserPostId == item.UserPostId && x.UserId == request.UserId);
+
+                var topReact = await _context.ReactPosts
+                .Include(x => x.ReactType)
+                .Where(x => x.UserPostId == item.UserPostId)
+                .GroupBy(x => x.ReactTypeId)
+                .Select(g => new {
+                    ReactTypeId = g.Key,
+                    ReactTypeName = g.First().ReactType.ReactTypeName, // Assuming ReactType has a Name property
+                    Count = g.Count()
+                })
+                .OrderByDescending(r => r.Count)
+                .Take(2)
+                .ToListAsync();
+
+                var post = new GetPostDTO
+                {
+                    PostId = item.UserPostId,
+                    UserId = item.UserId,
+                    Content = item.Content,
+                    CreatedAt = item.CreatedAt,
+                    UpdateAt = item.UpdatedAt,
+                    IsHide = item.IsHide,
+                    IsBanned = item.IsBanned,
+                    IsShare = false,
+                    IsGroupPost = false,
+                    UserPostNumber = item.UserPostNumber,
+                    UserStatusId = item.UserStatusId,
+                    IsAvataPost = item.IsAvataPost,
+                    IsCoverPhotoPost = item.IsCoverPhotoPost,
+                    PhotoId = item.PhotoId,
+                    VideoId = item.VideoId,
+                    NumberPost = item.NumberPost,
+                    Photo = _mapper.Map<PhotoDTO>(item.Photo),
+                    Video = _mapper.Map<VideoDTO>(item.Video),
+                    UserPostPhoto = item.UserPostPhotos?.Select(upp => new UserPostPhotoDTO
+                    {
+                        UserPostPhotoId = upp.UserPostPhotoId,
+                        UserPostId = upp.UserPostId,
+                        PhotoId = upp.PhotoId,
+                        Content = upp.Content,
+                        UserPostPhotoNumber = upp.UserPostPhotoNumber,
+                        UserStatusId = upp.UserStatusId,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        Photo = _mapper.Map<PhotoDTO>(upp.Photo),
+                    }).ToList(),
+                    UserPostVideo = item.UserPostVideos?.Select(upp => new UserPostVideoDTO
+                    {
+                        UserPostVideoId = upp.UserPostVideoId,
+                        UserPostId = upp.UserPostId,
+                        VideoId = upp.VideoId,
+                        Content = upp.Content,
+                        UserPostVideoNumber = upp.UserPostVideoNumber,
+                        UserStatusId = upp.UserStatusId,
+                        IsHide = upp.IsHide,
+                        CreatedAt = upp.CreatedAt,
+                        UpdatedAt = upp.UpdatedAt,
+                        PostPosition = upp.PostPosition,
+                        Video = _mapper.Map<VideoDTO>(upp.Video),
+                    }).ToList(),
+                    UserName = user,
+                    UserAvatar = _mapper.Map<GetUserAvatar>(avatar),
+                    UserStatus = new GetUserStatusDTO
+                    {
+                        UserStatusId = item.UserStatusId,
+                        UserStatusName = item.UserStatus.StatusName,
+                    },
+                    ReactCount = new DTO.ReactDTO.ReactCount
+                    {
+                        ReactNumber = reactCounts?.ReactCount ?? 0,
+                        CommentNumber = reactCounts?.CommentCount ?? 0,
+                        ShareNumber = reactCounts?.ShareCount ?? 0,
+                        IsReact = isReact != null ? true : false,
+                        UserReactType = isReact == null ? null : new ReactTypeCountDTO
+                        {
+                            ReactTypeId = isReact.ReactTypeId,
+                            ReactTypeName = isReact.ReactType.ReactTypeName,
+                            NumberReact = 1
+                        },
+                        Top2React = topReact.Select(x => new ReactTypeCountDTO
+                        {
+                            ReactTypeId = x.ReactTypeId,
+                            ReactTypeName = x.ReactTypeName,
+                            NumberReact = x.Count
+                        }).ToList()
+                    },
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCounts?.ReactCount ?? 0, reactCounts?.CommentCount ?? 0, reactCounts?.ShareCount ?? 0, item?.CreatedAt ?? DateTime.Now)
+                };
+
+                combinePost.Add(post);
+
+            }
             return combinePost;
         }
 
