@@ -88,7 +88,7 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             if (isGroupAdmin)
             {
-                blockUserList = null;
+                blockUserList = new List<Guid>();
             }
 
             // Truy vấn các bài đăng nhóm với các thông tin liên quan

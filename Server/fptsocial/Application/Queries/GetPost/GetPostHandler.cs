@@ -341,7 +341,7 @@ namespace Application.Queries.GetPost
 
             // Lấy ra id của những group mà user đã join hoặc là của những friend đã join nhưng ở chế độ public
             var groupMemberIds = await _context.GroupMembers
-                                    .Where(x => x.UserId == request.UserId || (/*friendUserIds.Contains(x.UserId) && */groupStatusPublic.Contains(x.GroupId)) )
+                                    .Where(x => (x.UserId == request.UserId && x.IsJoined == true) || (/*friendUserIds.Contains(x.UserId) && */groupStatusPublic.Contains(x.GroupId)) )
                                     .Select(x => x.GroupId)
                                     .ToListAsync(cancellationToken);
 
