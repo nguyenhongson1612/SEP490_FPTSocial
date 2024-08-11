@@ -35,7 +35,7 @@ namespace Application.Queries.GetListRequestjoinGroup
             var admin = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Admin"));
             var censor = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleName.Equals("Censor"));
             var getrole = await _context.GroupMembers.FirstOrDefaultAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId);
-            var groupmember = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos).Where(x => x.GroupId == request.GroupId && x.IsJoined == false /*&& x.IsInvated == true*/).ToListAsync();
+            var groupmember = await _context.GroupMembers.Include(x=>x.User).ThenInclude(x=>x.AvataPhotos).Where(x => x.GroupId == request.GroupId && x.IsJoined == false).ToListAsync();
             var isjoin = await _context.GroupRoles.FirstOrDefaultAsync(x => x.GroupRoleId == getrole.GroupRoleId);
             if (isjoin == null)
             {
@@ -51,21 +51,24 @@ namespace Application.Queries.GetListRequestjoinGroup
             {
                 foreach (var mem in groupmember)
                 {
-                    var memdto = new RequestJoinGroupDTO
+                    if(mem.InvatedBy == null || mem.IsInvated == true)
                     {
-                        UserId = mem.UserId,
-                        UserName = mem.User.FirstName + " " + mem.User.LastName,
-                       
-                    };
-                    if(mem.User.AvataPhotos.Count > 0)
-                    {
-                        memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
+                        var memdto = new RequestJoinGroupDTO
+                        {
+                            UserId = mem.UserId,
+                            UserName = mem.User.FirstName + " " + mem.User.LastName,
+
+                        };
+                        if (mem.User.AvataPhotos.Count > 0)
+                        {
+                            memdto.UserAvata = mem.User.AvataPhotos.FirstOrDefault(x => x.IsUsed == true)?.AvataPhotosUrl;
+                        }
+                        else
+                        {
+                            memdto.UserAvata = null;
+                        }
+                        result.requestJoinGroups.Add(memdto);
                     }
-                    else
-                    {
-                        memdto.UserAvata = null;
-                    }
-                    result.requestJoinGroups.Add(memdto);
                 }
             }  
             return Result<GetListRequestJoinGroupQueryResult>.Success(result);
