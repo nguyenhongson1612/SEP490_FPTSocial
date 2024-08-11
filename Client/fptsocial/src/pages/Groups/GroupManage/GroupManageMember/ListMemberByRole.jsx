@@ -1,6 +1,6 @@
 import { Button, Modal, Popover } from '@mui/material'
 import { IconChartArrowsVertical, IconDotsVertical, IconKarate, IconX } from '@tabler/icons-react'
-import { useState } from 'react';
+import { useState } from 'react'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { ADMIN, CENSOR } from '~/utils/constants'
 
@@ -8,12 +8,12 @@ function ListMemberByRole({ listMember, roleType, currentUserType, handleUpdateM
   const [anchorEl, setAnchorEl] = useState(null)
   const [isOpenModal, setIsOpenModal] = useState(false)
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const open = Boolean(anchorEl)
   const id = open ? 'simple-popover' : undefined

@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
 function SidebarLinkGroup({
   children,
-  activecondition,
+  activeCondition,
 }) {
 
-  const [open, setOpen] = useState(activecondition);
+  const [open, setOpen] = useState(activeCondition)
 
   const handleClick = () => {
-    setOpen(!open);
+    setOpen(!open)
   }
 
   return (
-    <li className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] ${activecondition && 'from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]'}`}>
+    <li className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] ${activeCondition && 'bg-gray-100'}`}>
       {children(handleClick, open)}
     </li>
-  );
+  )
 }
 
-export default SidebarLinkGroup;
+export default SidebarLinkGroup

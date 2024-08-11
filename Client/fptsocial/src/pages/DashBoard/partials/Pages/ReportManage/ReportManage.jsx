@@ -1,7 +1,9 @@
-import React from "react";
-import { useLocation } from 'react-router-dom';
-import UserReports from './UserReports';
-import PostReports from './PostReports';
+import React from "react"
+import { useLocation } from 'react-router-dom'
+import PostReports from './PostReports/PostReports'
+import UserReports from './UserReports/UserReports'
+import GroupReports from './GroupReports/GroupReports'
+import CommentReports from './CommentReports'
 
 function ReportManage() {
 
@@ -17,10 +19,16 @@ function ReportManage() {
       {
         pathname.includes('/reports/posts') && <PostReports />
       }
+      {
+        pathname.includes('/reports/groups') && <GroupReports />
+      }
+      {
+        pathname.includes('/reports/comments') && <CommentReports />
+      }
 
     </div>
 
   )
 }
 
-export default ReportManage;
+export default ReportManage

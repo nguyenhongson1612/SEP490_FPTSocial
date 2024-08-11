@@ -26,6 +26,7 @@ i18n
                 feeds: 'Feeds',
                 friends: 'Friends',
                 groups: 'Groups',
+                chatbot: 'Advise',
                 your_shortcut: 'Your shortcuts',
               },
               rightSidebar: {
@@ -94,6 +95,7 @@ i18n
                 feeds: 'Bảng feeds',
                 friends: 'Bạn bè',
                 groups: 'Nhóm',
+                chatbot: 'Cóc tư vấn',
                 your_shortcut: 'Lối tắt của bạn',
               },
               rightSidebar: {

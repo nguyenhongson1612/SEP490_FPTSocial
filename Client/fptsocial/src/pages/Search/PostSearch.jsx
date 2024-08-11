@@ -34,7 +34,7 @@ function PostSearch() {
   return (
     <div className='bg-fbWhite h-full overflow-y-auto scrollbar-none-track flex justify-center'>
       <div className='flex flex-col gap-4 w-[80%] lg:w-[600px] p-8'>
-        <ListPost getListPostFn={() => searchAll({ search: query, type: SEARCH_TYPE.POST })} />
+        <ListPost getListPostFn={({ page }) => searchAll({ search: query, type: SEARCH_TYPE.POST, page })} />
       </div>
     </div>
   )

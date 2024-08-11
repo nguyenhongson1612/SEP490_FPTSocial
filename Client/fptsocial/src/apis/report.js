@@ -20,3 +20,10 @@ export const createReportProfile = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Report/createReportProfile`, data)
   return response.data?.data
 }
+
+export const handleReport = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/Report/processReport`, data)
+  return response.data?.data
+}
+
+

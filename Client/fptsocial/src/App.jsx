@@ -24,6 +24,7 @@ import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import Unauthorization from './pages/404/Unauthorization'
 import Search from './pages/Search'
+import ChatBot from './pages/ChatBot/ChatBot'
 
 const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
 
@@ -92,6 +93,7 @@ function App() {
             <Route path='/' element={<Navigate to='/homepage' />} />
 
             <Route path='/settings' element={<Setting />} />
+            <Route path='/chatbot' element={<ChatBot />} />
 
             {/* Home page */}
             <Route path='/homepage' element={<HomePage />} />

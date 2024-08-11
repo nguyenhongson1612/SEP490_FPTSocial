@@ -170,6 +170,8 @@ function UpdatePost() {
       { pending: 'Updating...' }
     ).then(() => {
       dispatch(clearAndHireCurrentActivePost())
+      setContent(null)
+      setListMedia([])
       dispatch(triggerReload())
       toast.success('Update post successfully!')
     })

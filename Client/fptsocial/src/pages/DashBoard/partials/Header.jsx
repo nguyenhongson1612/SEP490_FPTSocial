@@ -42,7 +42,6 @@ function Header({
           <div className="flex">
 
           </div>
-          <span className="">{t("title")}</span>
           {/* Header: Right side */}
           <div className="flex items-center space-x-3">
             <div>
@@ -51,8 +50,6 @@ function Header({
                 onClick={(e) => { e.stopPropagation(); setSearchModalOpen(true); }}
                 aria-controls="search-modal"
               >
-                <span className="sr-only">Search</span>
-
                 <IconSearch />
               </button>
               <SearchModal id="search-modal" searchId="search" modalOpen={searchModalOpen} setModalOpen={setSearchModalOpen} />

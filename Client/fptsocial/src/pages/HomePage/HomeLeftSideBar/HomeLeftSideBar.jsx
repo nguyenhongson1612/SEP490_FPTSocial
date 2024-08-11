@@ -9,6 +9,7 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import friendIcon from '~/assets/img/friend.png'
 // import groupIcon from '~/assets/img/groups.png'
 import groupIcon from '~/assets/img/group.png'
+import frogIcon from '~/assets/img/frog.png'
 import feedIcon from '~/assets/img/activity-feed.png'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { useTranslation } from 'react-i18next'
@@ -47,6 +48,11 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
             className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img src={groupIcon} className='size-7' />
             <span className="">{t('standard.home.sidebar.groups')}</span>
+          </Link>
+          <Link to={'/chatbot'}
+            className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
+            <img src={frogIcon} className='size-7' />
+            <span className="">{t('standard.home.sidebar.chatbot')}</span>
           </Link>
         </div>
 

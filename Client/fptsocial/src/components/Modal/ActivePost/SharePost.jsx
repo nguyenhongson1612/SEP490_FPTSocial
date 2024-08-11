@@ -27,7 +27,6 @@ import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup
 function SharePost() {
   const isShowModalSharePost = useSelector(selectIsShowModalSharePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
-  console.log('🚀 ~ SharePost ~ currentActivePost:', currentActivePost)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const postType = currentActivePost?.postType
   const currentUser = useSelector(selectCurrentUser)
@@ -102,6 +101,7 @@ function SharePost() {
     ).then(() => {
       dispatch(triggerReload())
       dispatch(clearAndHireCurrentActivePost())
+      setContent(null)
       toast.success('Posted!')
     })
   }

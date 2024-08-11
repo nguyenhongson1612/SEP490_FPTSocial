@@ -187,7 +187,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
           {
             postReact?.top2React?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
               if (react?.numberReact > 0) {
-                if (react?.reactTypeName == 'like')
+                if (react?.reactTypeName.toLowerCase() == 'like')
                   return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
                 else return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
               }
@@ -214,14 +214,14 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
           <div className="flex items-center gap-1">
             {
               postReact?.isReact
-                ? postReact?.userReactType?.reactTypeName == 'like'
+                ? postReact?.userReactType?.reactTypeName.toLowerCase() == 'like'
                   ? <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
                   : <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
                 : <IconThumbUp stroke={1} />
             }
             <span className={`text-sm font-semibold capitalize 
-              ${postReact?.userReactType?.reactTypeName == 'like' ? 'text-blue-500' : postReact?.userReactType?.reactTypeName == 'dislike' ? 'text-orange-500' : 'text-gray-500'}`}>
-              {postReact?.userReactType?.reactTypeName || 'like'}
+              ${postReact?.userReactType?.reactTypeName.toLowerCase() == 'like' ? 'text-blue-500' : postReact?.userReactType?.reactTypeName?.toLowerCase() == 'dislike' ? 'text-orange-500' : 'text-gray-500'}`}>
+              {postReact?.userReactType?.reactTypeName.toLowerCase() || 'like'}
             </span>
           </div>
           <div id='react-action' className='absolute flex gap-1 opacity-0 transition-opacity duration-300 delay-500 top-0 -translate-y-10

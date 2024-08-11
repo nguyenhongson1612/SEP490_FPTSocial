@@ -21,7 +21,7 @@ import EditMedia from '../EditMedia'
 function NewPost({ postType, groupId }) {
   const { handleSubmit } = useForm()
   const [isEdit, setIsEdit] = useState(false)
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState(null)
   const [listMedia, setListMedia] = useState([])
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState()
@@ -77,9 +77,10 @@ function NewPost({ postType, groupId }) {
     }
 
     const postFunction = isProfile ? createPost : createGroupPost
-
     postFunction(submitData).then(() => {
       dispatch(clearAndHireCurrentActivePost())
+      setListMedia([])
+      setContent(null)
       dispatch(triggerReload())
       toast.success('Posted!')
     })
@@ -163,8 +164,8 @@ function NewPost({ postType, groupId }) {
                   <div className='interceptor-loading py-4 flex justify-center items-center'>
                     <button className='h-9 w-full mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
                       style={{
-                        opacity: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
-                        pointerEvents: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
+                        opacity: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
+                        pointerEvents: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
                       }}
                     >
                       {t('standard.newPost.post')}
