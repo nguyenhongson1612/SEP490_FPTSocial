@@ -106,6 +106,11 @@ namespace Application.Queries.GetGroupByGroupId
                     }
 
                 }
+
+                if(memjoin.InvatedBy != null && memjoin.IsInvated == false)
+                {
+                    getgroup.isRequest = false;
+                }
             }
             else
             {
