@@ -22,8 +22,12 @@ using Application.Commands.DeleteCommentGroupPost;
 using Application.Commands.DeleteCommentGroupSharePost;
 using Application.Commands.DeleteCommentGroupVideoPost;
 using Application.Commands.DeleteCommentUserPost;
+using Application.Commands.DeleteGroupPhotoPost;
 using Application.Commands.DeleteGroupPost;
 using Application.Commands.DeleteGroupSharePost;
+using Application.Commands.DeleteGroupVideoPost;
+using Application.Commands.DeleteUserPhotoPost;
+using Application.Commands.DeleteUserVideoPost;
 using Application.Commands.Post;
 using Application.Commands.ShareGroupPostCommand;
 using Application.Commands.ShareUserPostCommand;
@@ -557,6 +561,46 @@ namespace API.Controllers
         [HttpGet]
         [Route("getGroupSharePostByGroupPostId")]
         public async Task<IActionResult> GetGroupSharePostByGroupPostId([FromQuery] GetShareGroupPostByIdQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpDelete]
+        [Route("deleteGroupVideoPost")]
+        public async Task<IActionResult> DeleteGroupVideoPost([FromQuery] DeleteGroupVideoPostCommand input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpDelete]
+        [Route("deleteGroupPhotoPost")]
+        public async Task<IActionResult> DeleteGroupPhotoPost([FromQuery] DeleteGroupPhotoPostCommand input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))

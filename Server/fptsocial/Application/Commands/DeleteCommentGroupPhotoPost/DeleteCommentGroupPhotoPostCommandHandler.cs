@@ -6,6 +6,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,6 +35,12 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
 
             var GroupPhotoComment = _querycontext.CommentPhotoGroupPosts.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId).FirstOrDefault();
             var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostPhotoId == GroupPhotoComment.GroupPostPhotoId).FirstOrDefault();
+            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            bool isAdmin = false;
+            if (checkAdmin == "Societe-admin")
+            {
+                isAdmin = true;
+            }
             var result = new DeleteCommentGroupPhotoPostCommandResult();
 
             if (GroupPhotoComment == null)
@@ -42,7 +49,7 @@ namespace Application.Commands.DeleteCommentGroupPhotoPost
             }
             else
             {
-                if (request.UserId != GroupPhotoComment.UserId)
+                if (request.UserId != GroupPhotoComment.UserId && isAdmin != true)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }

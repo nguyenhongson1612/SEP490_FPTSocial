@@ -6,6 +6,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,12 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
             }
 
             var groupVideoComment = _querycontext.CommentGroupVideoPosts.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId).FirstOrDefault();
-            var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostVideoId == groupVideoComment.GroupPostVideoId).FirstOrDefault();
-
+            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            bool isAdmin = false;
+            if (checkAdmin == "Societe-admin")
+            {
+                isAdmin = true;
+            }
             var result = new DeleteCommentGroupVideoPostCommandResult();
             if (groupVideoComment == null)
             {
@@ -42,12 +47,13 @@ namespace Application.Commands.DeleteCommentGroupVideoPost
             }
             else
             {
-                if (request.UserId != groupVideoComment.UserId)
+                if (request.UserId != groupVideoComment.UserId && isAdmin != true)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
                 else
                 {
+                    var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostVideoId == groupVideoComment.GroupPostVideoId).FirstOrDefault();
                     int totalCommentsDeleted = DeleteCommentAndChildren(groupVideoComment.CommentGroupVideoPostId);
 
                     var cgvs = new Domain.CommandModels.CommentGroupVideoPost
