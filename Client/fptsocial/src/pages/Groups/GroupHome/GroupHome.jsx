@@ -139,7 +139,7 @@ function GroupHome({ group }) {
               <div id='name-friend'
                 className='w-full flex flex-col items-center lg:items-start justify-end mb-4 gap-1 px-4'
               >
-                <span className='text-gray-900 font-bold text-3xl'>{group?.groupName}</span>
+                <span className='text-gray-900 font-bold text-3xl capitalize'>{group?.groupName}</span>
                 <div className='flex gap-3'>
                   <span className='text-gray-500 font-bold'>{group?.groupSettings?.find(e => e?.groupSettingName?.toLowerCase() == 'group status')?.groupStatusName}.</span>
                   <span className='text-gray-500 font-bold'>{group?.memberCount} member</span>

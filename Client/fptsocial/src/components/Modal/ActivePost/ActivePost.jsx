@@ -22,11 +22,11 @@ import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 function ActivePost({ isReportPost = false }) {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
-  console.log('🚀 ~ ActivePost ~ currentActivePost:', currentActivePost)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const postReactStatus = useSelector(selectPostReactStatus)
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
+
   const postType = currentActivePost?.postType
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isShare = postType == POST_TYPES.SHARE_POST
@@ -47,22 +47,23 @@ function ActivePost({ isReportPost = false }) {
   if (currentActivePost?.isShare) {
     if (currentActivePost?.userPostShareId) {
       postShareType = POST_TYPES.PROFILE_POST
-      postShareData = { ...currentActivePost?.userPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostVideoShareId) {
       postShareType = POST_TYPES.VIDEO_POST
-      postShareData = { ...currentActivePost?.userPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostVideoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostPhotoShareId) {
       postShareType = POST_TYPES.PHOTO_POST
-      postShareData = { ...currentActivePost?.userPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostPhotoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.groupPostShareId) {
-      postShareType = POST_TYPES.GROUP_SHARE_POST
-      postShareData = { ...currentActivePost?.groupPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
-    } else if (currentActivePost?.groupPostPhotoShareId) {
+      postShareType = POST_TYPES.GROUP_POST
+      postShareData = { ...currentActivePost?.groupPostShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
+    }
+    else if (currentActivePost?.groupPostPhotoShareId) {
       postShareType = POST_TYPES.GROUP_PHOTO_POST
-      postShareData = { ...currentActivePost?.groupPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostPhotoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
     } else {
       postShareType = POST_TYPES.GROUP_VIDEO_POST
-      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
     }
   }
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Tooltip from '~/components/Tooltip';
 import { chartAreaGradient } from '~/charts/ChartjsConfig';
 import RealtimeChart from '~/charts/RealtimeChart';
 
@@ -97,14 +96,12 @@ function DashboardCard05() {
     <div className="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
       <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex items-center">
         <h2 className="font-semibold text-gray-800 dark:text-gray-100">Real Time Value</h2>
-        <Tooltip className="ml-2">
-          <div className="text-xs text-center whitespace-nowrap">Built with <a className="underline" href="https://www.chartjs.org/" target="_blank" rel="noreferrer">Chart.js</a></div>
-        </Tooltip>
+        <div className="text-xs text-center whitespace-nowrap">Built with <a className="underline" href="https://www.chartjs.org/" target="_blank" rel="noreferrer">Chart.js</a></div>
       </header>
       {/* Chart built with Chart.js 3 */}
       {/* Change the height attribute to adjust the chart height */}
       <RealtimeChart data={chartData} width={595} height={248} />
-    </div>
+    </div >
   );
 }
 

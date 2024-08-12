@@ -71,7 +71,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
     extensions: [
       StarterKit,
       Underline,
-      Placeholder.configure({ placeholder: t('standard.newPost.writeSt') }),
+      Placeholder.configure({ emptyEditorClass: 'is-editor-empty', placeholder: t('standard.newPost.writeSt') }),
     ],
     editorProps: { attributes: { class: 'mb-2 text-base rounded-md outline-none', spellcheck: 'false', } },
     onUpdate: ({ editor }) => setContent(editor.getHTML())

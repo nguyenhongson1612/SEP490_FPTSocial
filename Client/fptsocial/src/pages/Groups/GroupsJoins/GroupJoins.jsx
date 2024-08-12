@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getGroupByUserId } from '~/apis/groupApis';
+import SearchNotFound from '~/components/UI/SearchNotFound';
 
 function GroupJoins() {
   const [listGroupJoins, setListGroupJoins] = useState([])
@@ -44,6 +45,9 @@ function GroupJoins() {
             ))
           }
         </div>
+        {
+          listGroupJoins?.length == 0 && <SearchNotFound isNoneData={true} />
+        }
       </div>
 
     </div>

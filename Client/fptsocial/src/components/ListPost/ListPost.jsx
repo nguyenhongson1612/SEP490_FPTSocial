@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux'
 import ActivePost from '../Modal/ActivePost/ActivePost'
 import Post from './Post/Post'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import UpdatePost from '../Modal/ActivePost/UpdatePost'
 import { selectIsShowModalActivePost, selectIsShowModalSharePost, selectIsShowModalUpdatePost } from '~/redux/activePost/activePostSlice'
 import SharePost from '../Modal/ActivePost/SharePost'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
 import InfiniteScroll from '../IntersectionObserver/InfiniteScroll'
-import { addCurrentActiveListPost, clearCurrentActiveListPost, selectCurrentActiveListPost, selectTotalPage } from '~/redux/activeListPost/activeListPostSlice'
+import { addCurrentActiveListPost, clearCurrentActiveListPost, selectCurrentActiveListPost, selectTotalPage, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 import Report from '../Modal/Report/Report'
 import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { selectIsReload } from '~/redux/ui/uiSlice'
@@ -22,6 +22,7 @@ function ListPost({ getListPostFn }) {
   const totalPage = useSelector(selectTotalPage)
   const dispatch = useDispatch()
   const isReload = useSelector(selectIsReload)
+  const isFirstRender = useRef(true)
   // const [isLoading, setIsLoading] = useSelector(true)
 
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
@@ -29,15 +30,35 @@ function ListPost({ getListPostFn }) {
   const isShowSharePost = useSelector(selectIsShowModalSharePost)
   const isShowModalReport = useSelector(selectIsOpenReport)
 
+
   useEffect(() => {
     getStatus().then(data => dispatch(addListUserStatus(data)))
     getAllReactType().then(data => dispatch(addListReactType(data)))
   }, [])
 
   useEffect(() => {
+    dispatch(clearCurrentActiveListPost())
+  }, [getListPostFn])
+
+  useEffect(() => {
     getListPostFn &&
       getListPostFn({ page: page }).then((res) => dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage })))
-  }, [isReload, getListPostFn, page,])
+  }, [getListPostFn, page,])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (isReload !== 0) {
+      dispatch(clearCurrentActiveListPost())
+      if (getListPostFn) {
+        getListPostFn({ page: 1 }).then((res) =>
+          dispatch(updateCurrentActiveListPost(res?.result || res.userPosts))
+        )
+      }
+    }
+  }, [isReload])
 
   return (
     <div id="post-list"

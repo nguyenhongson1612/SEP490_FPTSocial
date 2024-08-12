@@ -1,4 +1,5 @@
 import { IconCake, IconHeartFilled, IconHomeFilled, IconManFilled, IconUser } from '@tabler/icons-react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getOtherUserPost, getUserPostByUserId } from '~/apis/postApis'

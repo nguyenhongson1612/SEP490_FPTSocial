@@ -168,8 +168,8 @@ export const uploadVideo = async ({ userId, data }) => {
 
 
 //search api
-export const searchAll = async ({ search, type = SEARCH_TYPE.ALL }) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchAll?SearchContent=${search}&Type=${type}`)
+export const searchAll = async ({ search, type = SEARCH_TYPE.ALL, page = 1, pageSize = 10 }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Search/searchAll?SearchContent=${search}&Type=${type}&Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }
 export const updateReadNotification = async (id) => {
