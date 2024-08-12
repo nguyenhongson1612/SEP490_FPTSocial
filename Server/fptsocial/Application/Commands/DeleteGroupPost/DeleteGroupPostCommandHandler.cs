@@ -7,6 +7,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,12 @@ namespace Application.Commands.DeleteGroupPost
             }
 
             var groupPost = _querycontext.GroupPosts.Where(x => x.GroupPostId == request.GroupPostId).FirstOrDefault();
+            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            bool isAdmin = false;
+            if (checkAdmin == "Societe-admin")
+            {
+                isAdmin = true;
+            }
             var result = new DeleteGroupPostCommandResult();
             if (groupPost == null)
             {
@@ -41,7 +48,7 @@ namespace Application.Commands.DeleteGroupPost
             }
             else
             {
-                if (request.UserId != groupPost.UserId)
+                if (request.UserId != groupPost.UserId && isAdmin != true)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
