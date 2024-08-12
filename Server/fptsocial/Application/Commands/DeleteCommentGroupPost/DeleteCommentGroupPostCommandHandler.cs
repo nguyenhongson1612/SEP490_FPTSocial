@@ -8,6 +8,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,12 @@ namespace Application.Commands.DeleteCommentGroupPost
 
             var GroupComment = _querycontext.CommentGroupPosts.Where(x => x.CommentGroupPostId == request.CommentGroupPostId).FirstOrDefault();
             var groupPostReactCount = _querycontext.GroupPostReactCounts.Where(x => x.GroupPostId == GroupComment.GroupPostId).FirstOrDefault();
+            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            bool isAdmin = false;
+            if (checkAdmin == "Societe-admin")
+            {
+                isAdmin = true;
+            }
             var result = new DeleteCommentGroupPostCommandResult();
 
             if (GroupComment == null)
@@ -43,7 +50,7 @@ namespace Application.Commands.DeleteCommentGroupPost
             }
             else
             {
-                if (request.UserId != GroupComment.UserId)
+                if (request.UserId != GroupComment.UserId && isAdmin != true)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }

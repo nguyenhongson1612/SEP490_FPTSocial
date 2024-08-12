@@ -6,6 +6,7 @@ using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,12 @@ namespace Application.Commands.DeleteCommentSharePost
             }
 
             var userComment = _querycontext.CommentSharePosts.Where(x => x.CommentSharePostId == request.CommentSharePostId).FirstOrDefault();
-
+            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            bool isAdmin = false;
+            if (checkAdmin == "Societe-admin")
+            {
+                isAdmin = true;
+            }
             var result = new DeleteCommentSharePostCommandResult();
             if (userComment == null)
             {
@@ -41,7 +47,7 @@ namespace Application.Commands.DeleteCommentSharePost
             }
             else
             {
-                if (request.UserId != userComment.UserId)
+                if (request.UserId != userComment.UserId && isAdmin != true)
                 {
                     throw new ErrorException(StatusCodeEnum.UP03_Not_Authorized);
                 }
