@@ -39,6 +39,7 @@ namespace Application.Queries.GetUserOnChat
             foreach (var item in users)
             {
                 var userId = Guid.Parse(item.Username);
+                var user = await _context.UserProfiles.Include(x => x.AvataPhotos).FirstOrDefaultAsync(x => x.UserId == userId);
                 var blockuser = await _context.BlockUsers
                     .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.UserIsBlockedId == userId
                                         || x.UserIsBlockedId == request.UserId && x.UserId == userId);
@@ -47,7 +48,14 @@ namespace Application.Queries.GetUserOnChat
                 var getusersetting = await _context.UserSettings.Include(x => x.Setting)
                     .Where(x => x.UserId == userId).ToListAsync();
                 var getpublicsetting = await _context.UserStatuses.FirstOrDefaultAsync(x => x.StatusName == "Public");
-
+                if(user != null)
+                {
+                    if (user?.AvataPhotos?.Count > 0)
+                    {
+                        item.Avata = user.AvataPhotos.FirstOrDefault(x => x.IsUsed).AvataPhotosUrl;
+                    }
+                    item.FullName = user.FirstName + " " + user.LastName;
+                }
                 if (blockuser == null)
                 {
                     if (friend != null)

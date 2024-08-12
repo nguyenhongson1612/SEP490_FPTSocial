@@ -225,7 +225,7 @@ namespace Application.Services
 
         public async Task<string> SearchUserByName()
         {
-            var request = new HttpRequestMessage(HttpMethod.Patch, "https://api.chatengine.io/users/");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.chatengine.io/users/");
             request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
