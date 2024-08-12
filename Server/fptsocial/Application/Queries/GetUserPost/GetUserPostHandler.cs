@@ -226,12 +226,12 @@ namespace Application.Queries.GetUserPost
                 var isReact = await _context.ReactSharePosts
                     .AsNoTracking()
                     .Include(x => x.ReactType)
-                    .FirstOrDefaultAsync(x => x.SharePostId == item.UserPostId && x.UserId == request.UserId);
+                    .FirstOrDefaultAsync(x => x.SharePostId == item.SharePostId && x.UserId == request.UserId);
 
                 var topReact = await _context.ReactSharePosts
                 .AsNoTracking()
                 .Include(x => x.ReactType)
-                .Where(x => x.SharePostId == item.UserPostId)
+                .Where(x => x.SharePostId == item.SharePostId)
                 .GroupBy(x => x.ReactTypeId)
                 .Select(g => new {
                     ReactTypeId = g.Key,

@@ -318,7 +318,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                 var topReact = await _context.ReactGroupSharePosts
                 .AsNoTracking()
                 .Include(x => x.ReactType)
-                .Where(x => x.GroupSharePostId == item.GroupPostId)
+                .Where(x => x.GroupSharePostId == item.GroupSharePostId)
                 .GroupBy(x => x.ReactTypeId)
                 .Select(g => new {
                     ReactTypeId = g.Key,

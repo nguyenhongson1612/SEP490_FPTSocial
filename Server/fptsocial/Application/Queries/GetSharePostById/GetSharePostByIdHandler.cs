@@ -143,13 +143,13 @@ namespace Application.Queries.GetSharePostById
             var commentNumber = _context.CommentSharePosts
                 .Count(x => x.SharePostId == sharePosts.SharePostId && x.IsHide != true && x.IsBanned != true);
 
-            var isReact = await _context.ReactGroupPosts
+            var isReact = await _context.ReactSharePosts
                 .Include(x => x.ReactType)
-                .FirstOrDefaultAsync(x => x.GroupPostId == sharePosts.GroupPostId && x.UserId == request.UserId);
+                .FirstOrDefaultAsync(x => x.SharePostId == sharePosts.SharePostId && x.UserId == request.UserId);
 
-            var topReact = await _context.ReactGroupPosts
+            var topReact = await _context.ReactSharePosts
             .Include(x => x.ReactType)
-            .Where(x => x.GroupPostId == sharePosts.GroupPostId)
+            .Where(x => x.SharePostId == sharePosts.SharePostId)
             .GroupBy(x => x.ReactTypeId)
             .Select(g => new {
                 ReactTypeId = g.Key,
