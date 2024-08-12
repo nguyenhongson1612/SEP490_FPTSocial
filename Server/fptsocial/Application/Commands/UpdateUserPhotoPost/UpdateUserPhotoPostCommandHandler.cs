@@ -80,7 +80,7 @@ namespace Application.Commands.UpdateUserPhotoPost
                 Content = photoPost.Content,
                 UserPostPhotoNumber = photoPost.UserPostPhotoNumber,
                 UserStatusId = photoPost.UserStatusId,
-                IsHide = true,
+                IsHide = photoPost.IsHide,
                 CreatedAt = photoPost.CreatedAt,
                 UpdatedAt = photoPost.UpdatedAt,
                 PostPosition = photoPost.PostPosition,
