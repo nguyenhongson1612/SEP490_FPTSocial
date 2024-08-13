@@ -32,7 +32,7 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await (from c in _context.CommentPhotoGroupPosts // Thay đổi bảng truy vấn
+            var commentsQuery = from c in _context.CommentPhotoGroupPosts // Thay đổi bảng truy vấn
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.GroupPostPhotoId == request.GroupPostPhotoId && c.IsHide == false && c.IsBanned != true
@@ -49,9 +49,24 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<GroupPhotoCommentDto>() // Sử dụng DTO tương ứng cho photo comment
-                                  })
-                                .ToListAsync(cancellationToken);
+                                      Replies = new List<GroupPhotoCommentDto>(), // Sử dụng DTO tương ứng cho photo comment
+                                      TotalReactCount = _context.ReactGroupPhotoPostComments.Count(rc => rc.CommentPhotoGroupPostId == c.CommentPhotoGroupPostId)
+                                  };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             var result = new GetCommentByGroupPhotoPostIdQueryResult
             {
@@ -85,7 +100,7 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
     }
 

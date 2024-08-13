@@ -33,7 +33,7 @@ namespace Application.Queries.GetCommentByPhotoPostId
             }
 
             // Lấy danh sách bình luận, kèm theo thông tin người dùng và ảnh đại diện (nếu có)
-            var comments = await (from c in _context.CommentPhotoPosts
+            var commentsQuery = from c in _context.CommentPhotoPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.UserPostPhotoId == request.UserPostPhotoId
@@ -52,10 +52,24 @@ namespace Application.Queries.GetCommentByPhotoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<CommentPhotoDto>() // Khởi tạo danh sách phản hồi
-                                  })
-                     .ToListAsync(cancellationToken);
+                                      Replies = new List<CommentPhotoDto>(), // Khởi tạo danh sách phản hồi
+                                      TotalReactCount = _context.ReactPhotoPostComments.Count(rc => rc.CommentPhotoPostId == c.CommentPhotoPostId)
+                                  };
 
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             // Xây dựng cấu trúc phân cấp bình luận
             var result = new GetCommentByPhotoPostIdQueryResult
@@ -88,7 +102,7 @@ namespace Application.Queries.GetCommentByPhotoPostId
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
     }
 

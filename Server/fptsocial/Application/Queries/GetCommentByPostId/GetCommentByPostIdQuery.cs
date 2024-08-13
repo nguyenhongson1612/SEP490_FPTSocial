@@ -10,5 +10,6 @@ namespace Application.Queries.GetCommentByPostId
     public class GetCommentByPostIdQuery : IQuery<GetCommentByPostIdQueryResult>
     {
         public Guid UserPostId { get; set; }
+        public string? Type { get; set; }
     }
 }

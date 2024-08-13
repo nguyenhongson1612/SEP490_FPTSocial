@@ -11,5 +11,6 @@ namespace Application.Queries.GetCommentByVideoPostId
     public class GetCommentByVideoPostIdQuery : IQuery<GetCommentByVideoPostIdQueryResult>
     {
         public Guid UserPostVideoId { get; set; }
+        public string? Type { get; set; }
     }
 }
