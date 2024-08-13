@@ -212,4 +212,14 @@ namespace Application.DTO.ReactDTO
         public string ReactTypeName { get; set; }
         public int NumberReact { get; set; }
     }
+
+    public class ReactDetailDTO
+    {
+        public Guid ReactTypeId { get; set; }
+        public string ReactName { get; set; }
+        public Guid UserId { get; set; }
+        public string? UserName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? AvataUrl { get; set; }
+    }
 }
