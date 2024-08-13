@@ -40,7 +40,7 @@ namespace Application.Commands.CreateChatBox
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var otherChat = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var otherChat = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.OtherId);
             var block = await _context.BlockUsers.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.UserIsBlockedId == request.OtherId)
                                                   || (x.UserId == request.OtherId && x.UserIsBlockedId == request.UserId));
             request.Title = otherChat.FirstName + " " + otherChat.LastName;
@@ -63,7 +63,8 @@ namespace Application.Commands.CreateChatBox
             var result = new CreateChatBoxCommandResult
             {
                 Title = request.Title,
-                Message = "Create Chat Box Success!"
+                Message = "Create Chat Box Success!",
+                ChatId = id
             };
 
             return Result<CreateChatBoxCommandResult>.Success(result);
