@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { COMMENT_FILTER_TYPE } from '~/utils/constants'
 
 const initialState = {
   currentActivePost: null,
@@ -8,7 +9,8 @@ const initialState = {
   isShowModalCreatePost: false,
   postReactStatus: null,
   handleUpdatePostReactStatus: null,
-  reloadComment: false
+  reloadComment: false,
+  commentFilterType: COMMENT_FILTER_TYPE.NEW
 }
 
 //initial slice in store
@@ -27,6 +29,9 @@ export const activePostSlice = createSlice({
     },
     showModalCreatePost: (state) => {
       state.isShowModalCreatePost = true
+    },
+    setCommentFilterType: (state, action) => {
+      state.commentFilterType = action.payload
     },
     triggerReloadComment: (state) => {
       state.reloadComment = !state.reloadComment
@@ -54,6 +59,7 @@ export const {
   showModalUpdatePost,
   showModalSharePost,
   showModalCreatePost,
+  setCommentFilterType,
   triggerReloadComment,
   clearAndHireCurrentActivePost,
   updatePostReactStatus,
@@ -77,6 +83,9 @@ export const selectIsShowModalCreatePost = (state) => {
 }
 export const selectPostReactStatus = (state) => {
   return state.activePost.postReactStatus
+}
+export const selectCommentFilterType = (state) => {
+  return state.activePost.commentFilterType
 }
 
 export const reLoadComment = (state) => {

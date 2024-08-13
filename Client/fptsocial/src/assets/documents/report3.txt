@@ -1,0 +1,445 @@
+﻿
+
+
+
+
+
+
+
+
+
+CAPSTONE PROJECT REPORT
+Report 3 - Software Requirement Specification
+
+
+
+
+
+
+
+
+
+- Hanoi, May 2024 -
+Table of Contents
+I. Project Report	3
+1. Status Report	3
+2. Team Involvements	3
+3. Issues/Suggestions	3
+II. Software Requirement Specification	4
+1. Overall Description	4
+1.1 Product Overview	4
+1.2 Business Rules	5
+2. User Requirements	6
+2.1 System Actors	6
+2.2 Use Cases	6
+3. Functional Requirements	8
+3.1 System Functional Overview	8
+3.2 <<Feature Name 1>>	10
+3.3 <<Feature Name 2>>	10
+4. Non-Functional Requirements	11
+4.1 External Interfaces	11
+4.2 Quality Attributes	12
+5. Other Requirements	14
+5.1 Appendix1 - Messages List	14
+5.2 Appendix2 - ...	14
+5.3 ...	14
+
+
+
+I. Record of Changes
+DateA*
+M, DIn chargeChange Description23/05/2024ABùi Quốc AnhII.1. Product Overview25/05/2024ABùi Quốc AnhII.2. User Requirements, II.3. Functional Requirements25/05/2024ANguyễn Khải Hoàn2.2.3 Use Case Specification26/05/2024MLê Hải Hoàn,  Nguyễn Hồng Sơn, 
+Nguyễn Anh Quân2.2.3 Use Case Specification*A - Added M - Modified D - Deleted
+
+
+II. Software Requirement Specification
+1. Product Overview
+1.1 Product Overview
+The FPT University Association addresses the growing communication needs of academic institutions. By providing a centralised platform for students and staff to connect, share articles and collaborate, the website can enhance a university's internal communications infrastructure, making it efficient and effective. more attractive. The platform can be expanded to include features such as virtual study groups, professional networking opportunities, and academic resource sharing, creating a comprehensive digital ecosystem. Additionally, the site can serve as a model for other educational institutions looking for similar solutions, opening up avenues for collaboration and licensing. With an increasing emphasis on digital transformation in education, this platform helps FPT University become a leader in innovative communication on campus, capable of attracting more students and staff. values a connected and supportive academic environment.
+       
+Figure 1. FPT University Société place context diagram
+
+
+
+2. User Requirements
+2.1 Actors
+
+#ActorDescription1UserAll person at  FPT universities who can login with SSO FPTU, SSO FEID2MemberStudent and lecture at  FPT universities who can login with SSO FPTU, SSO FEID3AdminPerson who has permission to view the system dashboard, manage user, manage all group4Group ManagerPerson who has permission to manage a group
+
+2.2 Use Cases
+2.2.1 Diagram(s)
+
+Figure 2. User use case diagram
+
+Figure 3. Member use case diagram
+
+
+
+
+Figure 4. Group Manager use case diagram
+
+
+Figure 5. Admin use case diagram
+
+2.2.2 Descriptions
+
+
+IDUse CaseActorsUse Case DescriptionUC1   	 LoginUserLogin into the FUSP system with an SSO FPT accountUC2   	 LogoutUserLogout from the FUSP systemUC3   	 View Personal ProfileMemberThe actor views their personal profile details in the FUSP systemUC4   	 Add Personal ProfileMember,
+Group ManagerThe actor adds information profile into the FUSP systemUC5   	 Update Personal ProfileMember,
+Group ManagerThe actor updates their personal information in the profileUC6   	 Delete Personal ProfileMember,
+Group ManagerThe actor delete  their personal information in the profileUC7   	 Active Personal ProfileMember,
+Group ManagerThe actor activates their personal profile to make it accessibleUC8   	 Inactive Personal ProfileMember,
+Group ManagerThe actor marks a personal profile as inactiveUC9   	 View List FriendMember,
+Group Manager
+The actor views a list of friends they have connected with on the platformUC10	 View List FollowerMember,
+Group ManagerThe actor views a list of followers who are connected to their account on the platformUC11	 View List of  AlbumsMember,
+Group ManagerThe actor views a list of albums they have created or organized on the platformUC12	 View Posted ContentMember,
+Group ManagerThe actor views a list of their own posts, such as articles, photos, or status updatesUC13	 View posts on wallMember,
+Group ManagerThe agent views a dynamic feed of posts, such as text, image, or video updates, sorted by a recommendation algorithm. (prioritises posts marked as important by the FPTU)UC14	 Create post Member,
+ Group ManagerThe actor creates a post containing text, images, or other media to share with others
+2.2.3 Business Rules
+
+IDRule DefinitionBR-01Only people with FPT university accounts can login (Email, FEID)BR-02The image file upload must be less than 5 MBBR-03The video file upload must be less than 15 MBBR-04If user have the first time login to FUSP, user must update all required information before access to systemBR-05When users update all required information and not upload avatar/cover image, default avatar/cover image will show in systemBR-06The post must have content (must have at least 1 character other than a space or at least 1 image)BR-07If users has made their profile private, you can only view their profile after adding them as friendsBR-08Users cannot share their own postsBR-09 The content of post must not have sensitive/profanity wordBR-10 The content of comment/reply must not have sensitive/profanity wordBR-11If FUSP system detects sensitive/profanity word, the post will hide and mark yellowBR-12If FUSP system detects sensitive/profanity word, the comment will hide and mark yellowBR-13 Users will receive notification when they post/comment with sensitive/profanity wordBR-14Users can change the content of comment which is warned by detection system BR-15Users can change the content of post which is warned by detection system BR-16If users want to a new friend, user must send request by clicking "Add Friend" button and wait them acceptBR-17Users who receive the friend request, have to receive the notification alsoBR-18Users who receive the friend request can click into notification to redirect to profile page of request user or see them in friend request listBR-19Users who receive the friend request can accept or reject request by click "Accept"/"Delete" buttonBR-20Users who send the friend request can revoke the request by pressing the "Cancel Request" buttonBR-21Users can set their profile are public or privateBR-22If users set their profile is public, anyone who access to your profile can see all informationBR-23If users set their profile is private, only user an their friend can see information except public postsBR-24Users can create a post with one or more photosBR-25If users upload multi photos, the order of the uploaded photos will be the order when you select the uploaded photos in the file explorerBR-26Users can create a post with one or more videosBR-27If users upload multi videos, the order of the uploaded videos will be the order when you select the uploaded videos in the file explorerBR-28Users can create a post with only text, only photos/videos or combine themBR-29When users create a post with only text, only one video, only one photo, text with a photo or text with a video system create a single postBR-30When users create a post with 2 or more media file, system will create a parent post combine all of them and child post for each media fileBR-31Users can visit child post by clicking into media file of parent postBR-32Users can change the image  position of post when image loaded successBR-33Users can choose other reaction by hold "Like" buttonBR-34Users can do all action of child post is same parent postBR-35Users can see newest notifications when click "Bell" iconBR-36Users can not spam notifications by spam some action such as reaction buttonBR-37Users can get new notification about this spam action by click to notification to mark readedBR-38 The search results must include user, group, postBR-39In the search page, we can filter by user, group, post, all, timeBR-40 The share feature have 2 option: profile wall, groupBR-41User can create group profileBR-42Group admin can assign role, kick user out groupBR-43When group have status is private, only group member can see group postBR-44When group have status is private, the post can not be shareBR-45When group have status is private, user want to join must be wait for moderator, admin acceptBR-46When group posting have status is censor, user want to post must be wait for moderatorBR-47Group admin/moderator can reject postBR-48Group admin/moderator can accept postBR-49Group admin/moderator can reject joint requestBR-50Group admin/moderator can accept joint requestBR-51Members can invite their friend to groupBR-52Users who receive the group invite can accept inviteBR-53Users who receive the group invite can reject inviteBR-54Users can view all invite in group invite listBR-55Users can search member in groupBR-56Users can friend suggestion in friend suggest listBR-57Users can block other userBR-58Users who blocked can not see blocker (post, profile)BR-59Users can see all account blocked in block listBR-60Users can unblock users in block listBR-61Group admin can update group settingBR-62Group admin can update group informationBR-63Group admin can delete groupBR-64Member can quit out groupBR-65User can view all videos which they uploaded in video section of user profileBR-66User can view all  photos which they uploaded in photo section of user profileBR-67User can view all videos in group they joined in video section of user profileBR-68User can view all photos in group they joined in photo section of user profileBR-69User can view their list friendBR-70User can view list friend of other userBR-71User can update post which they createBR-72User can update comment which they createBR-73User can delete post which they createBR-74User can delete comment which they createBR-75User can un-react postBR-76User can un-react commentBR-77User can report postBR-78User can report commentBR-79User can share group post to profile wall if group have status is publicBR-80Users can switch between child posts by clicking on the arrows on both sidesBR-81Users can comment and reply comment with 3 levelBR-82Users can mark notification is readed by click to this notifyBR-83 Users can see number of react of each postBR-84 Users can see number of comment of each postBR-85 Users can see number of share of each postBR-86 Users can chatting with other users by click "Chatting" on their profile or click to chatting  bubbleBR-87 Users can search user to chattingBR-88 Users can create a group chatBR-89 Users can add users to group chatBR-90 User who is blocked can not make a chatBR-91 If users try to access to the resource which they have not permission, they will redirect to error page
+2.2.4 Use Case Specification
+2.2.4.1 Common Feature
+Login
+
+UC ID and NameUC1 - LoginCreated bySonNHDate Created25/05/2024Primary ActorUserSecondary ActorsMember, Admin, Group ManagerTriggerActors click on the login button.DescriptionLogin into the FUSP system with an SSO FPT account.Preconditions1. The actor is not logged in or has logged out from the FUSP system.
+2. The actor must be on the welcome page.
+3. The actor must have a valid SSO: FEID account.Postconditions1. The actor is logged in successfully
+2. The actor is redirected to the homepageNormal FlowStepActors ActionsSystem Responses1Clicks on "Login" button on the navigation bar 2 Displays login screen3Inputs email and password 4Passes 2FA with Google Authenticator or Authy4 Redirects to homepageAlternative FlowsN/AExceptionsEC1If user input wrong email or password
+1. The system displays "Wrong email or password"PriorityHighFrequency of UseHighBusiness RulesOther InformationN/AAssumptionsN/A
+
+
+Logout
+UC ID and NameUC2 - LogoutCreated bySonNHDate Created25/05/2024Primary ActorUserSecondary ActorsMember, Admin, Group ManagerTriggerActors click on the logout button.DescriptionLog out from the FUSP system.PreconditionsThe actor must be logged in to the FUSPPostconditions1. The actor is logged out successfully.
+2. The actor is redirected to the welcome page.Normal FlowStepActors ActionsSystem Responses1Click on the "Logout" button on the navigation bar. 2 Displays logout alert.3Confirms the logout action. 4The system logs the actor out and redirects to the welcome page.Alternative FlowsN/AExceptionsEC1If there is a system error during the logout process
+1. The system displays an error message and remains on the current page.PriorityHighFrequency of UseHighBusiness RulesOther InformationN/AAssumptionsN/A
+
+View Personal Profile
+
+UC ID and NameUC3 - View Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor clicks on their nickname/avatar.DescriptionThe actor views their personal profile details in the FUSP system.PreconditionsThe actor must be logged in to the FUSP.PostconditionsThe actor's personal profile information is displayed.Normal FlowStepActors ActionsSystem Responses1Clicks on the "Profile" button or link on the navigation bar. 2 Displays the personal profile page with the actor's details.Alternative FlowsN/AExceptionsEC1If there is a system error while retrieving profile information
+1. The system displays an error message and suggests retrying later.PriorityMediumFrequency of UseMediumBusiness Rules Other InformationN/AAssumptionsN/A
+Add Personal Profile
+
+UC ID and NameUC4 - Add Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor clicks the "Edit Details" button.DescriptionThe actor adds information profile into the FUSP system.Preconditions1. The actor must be logged in to the FUSP.
+2. The actor hasn't filled out a form profile.PostconditionsThe profile is added into the system.Normal FlowStepActors ActionsSystem Responses1Click on the "Edit Details" button on the navigation bar. 2 Displays form manage profile.3Fill information into form and click the "Save" button. 4Validates the input and saves the profile.5Redirected to their newly created profile page.Alternative FlowsAF1If the actor provides invalid or incomplete information, the system displays an error message.
+1. The actor corrects the input and resubmits the form.AF2If the actor decides not to create a profile, they can cancel the process.
+1. The system returns the actor to the previous page.ExceptionsEC1If there is a system error during profile creation, the system displays an error message.
+1. The actor can retry or contact support.PriorityHighFrequency of UseModerateBusiness Rules Other InformationN/AAssumptionsN/A
+Update Personal Profile
+
+UC ID and NameUC5 - Update Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor clicks the "Edit Details" button.DescriptionThe actor updates their personal information in the profile.Preconditions1. The actor is logged in to the system.
+2. The actor has navigated to their profile page.Postconditions1. The actor's personal profile is successfully updated.
+2. The modified details are saved in the system.Normal FlowStepActors ActionsSystem Responses1Selects the "Edit Details" option from their profile page. 2 Displays a form with the existing profile information.3Modifies the relevant fields. 4Submits the updated form.5Validates the input and saves the changes.6Redirected back to their updated profile page.Alternative FlowsAF1If the actor decides not to update their profile, they can cancel the process.
+1. The system returns the actor to their profile page without saving any changes.AF2If the actor provides invalid or incomplete information, the system displays an error message.
+1. The actor corrects the input and resubmits the form.ExceptionsEC1If there is a system error during profile update, the system displays an error message.
+1. The actor can retry or contact support.PriorityHighFrequency of UseModerateBusiness Rules Other InformationN/AAssumptionsN/A
+Delete Personal Profile
+
+UC ID and NameUC6 - Delete Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor clicks the "Edit Details" button.DescriptionThe actor deletes their personal information and profile.Preconditions1. The actor is logged in to the system.
+2. The actor has navigated to their profile page.Postconditions1. The actor's personal profile is successfully deleted.
+2. The actor is logged out of the system.Normal FlowStepActors ActionsSystem Responses1Selects the "Edit  Details" option from their profile page. 2 Displays a form with the existing profile information.3Deletions the relevant fields. 4Submits the updated form with the "Save" button.5Validates the input and saves the changes.6Redirected back to their updated profile page.Alternative FlowsAF1If the actor decides not to delete their profile, they can cancel the process.
+1. The system returns the actor to their profile page.AF2If the actor provides an invalid confirmation (e.g., mistypes), the system displays an error message.
+1. The actor corrects the input and resubmits.ExceptionsEC1If there is a system error during profile deletion, the system displays an error message.
+1. The actor can retry or contact support.PriorityHighFrequency of UseLowBusiness Rules Other InformationN/AAssumptionsN/A
+Active Personal Profile
+
+UC ID and NameUC7 - Active Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor clicks the "Activate Profile" button.DescriptionThe actor activates their personal profile to make it accessible.Preconditions1. The actor has created a personal profile.
+2. The profile is currently inactive or pending activation.Postconditions1. The actor's personal profile is successfully activated.
+2. The actor can now use the profile features.Normal FlowStepActors ActionsSystem Responses1Logs into the system. 2 Displays a notification indicating that the profile is inactive.3Selects the "Activate Profile" option. 4Verifies the actor's credentials and activates the profile5 Receives a confirmation message.Alternative FlowsAF1If the actor provides incorrect login credentials, the system displays an error message.
+1. The actor corrects the input and retries.ExceptionsEC1If there is a system error during profile activation, the system displays an error message.
+1. The actor can retry or contact support.PriorityMediumFrequency of UseLowBusiness Rules Other InformationN/AAssumptionsN/AInactive Personal Profile
+UC ID and NameUC8 - Inactive Personal ProfileCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor clicks the "Inactive  Profile" button.DescriptionThe actor marks a personal profile as inactive.Preconditions1. The actor is logged in to the system.
+2. The actor has appropriate permissions.Postconditions1. The personal profile is flagged as inactive.
+2. The system notifies the actor of the profile status change.Normal FlowStepActors ActionsSystem Responses1Navigates to the actor profile management section. 2 Displays a list of profiles.3Selects the profile to mark as inactive. 4Click the "Inactive Profile" button.5Updates the profile status.Alternative FlowsAF1If the actor attempts to mark an already inactive profile, the system informs them.AF2If the actor changes their mind, they can undo the action within a specified time frame.ExceptionsEC1If there is a system error during the process, the manager is notified.
+1. The actor can retry or contact support.PriorityMediumFrequency of UseLowBusiness RulesOther InformationN/AAssumptionsN/AView List Friend
+UC ID and NameUC9 - View List FriendCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor clicks the "See all friends" button.DescriptionThe actor views a list of friends they have connected with on the platform.Preconditions1. The actor is logged into the system.
+2. The actor has added friends to their network.PostconditionsThe actor can see a list of their friends.Normal FlowStepActors ActionsSystem Responses1Navigates to the "Friends" section. 2 Retrieves the actor's friend list.3Displays the list of friends, including their names or profile pictures.4Scroll through the list and view details of each friend.Alternative FlowsAF1If the actor has not added any friends yet, the system displays a message indicating that the friend list is empty.AF2The actor can search for specific friends within the list using a search bar.ExceptionsEC1If there is a system error while retrieving the friend list, the system displays an error message.
+1. The actor can retry or contact support.PriorityMediumFrequency of UseHighBusiness RulesOther InformationN/AAssumptionsN/A
+View List Videos
+
+UC ID and NameUC11 - View List of  VideosCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor clicks the "See allVideos" button.DescriptionThe actor views a list of albums they have created or organized on the platform.Preconditions1. The actor is logged in to the system.
+2. The actor has created one or more albums.PostconditionsThe actor sees a list of their albums.Normal FlowStepActors ActionsSystem Responses1Navigates to the "Videos" section. 2 Retrieves the actor's videos list.Displays the list of videos4Scroll through the list and view details of each album.Alternative FlowsAF1If the actor has not created any albums yet, the system displays a message indicating that the album list is empty.AF2The actor can search for specific albums within the list using a search bar.ExceptionsEC1If there is a system error while retrieving the album list, the system displays an error message.
+1. The actor can retry or contact support.PriorityMediumFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+View List of  Photos
+UC ID and NameUC11 - View List of  AlbumsCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor clicks the "See all Photos" button.DescriptionThe actor views a list of albums they have created or organized on the platform.Preconditions3. The actor is logged in to the system.
+4. The actor has created one or more albums.PostconditionsThe actor sees a list of their albums.Normal FlowStepActors ActionsSystem Responses1Navigates to the "Photos" section. 2 Retrieves the actor's album list.Displays the list of albums, including their names and cover photos.4Scroll through the list and view details of each album.Alternative FlowsAF1If the actor has not created any albums yet, the system displays a message indicating that the album list is empty.AF2The actor can search for specific albums within the list using a search bar.ExceptionsEC1If there is a system error while retrieving the album list, the system displays an error message.
+2. The actor can retry or contact support.PriorityMediumFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+View Personal  Post
+UC ID and NameUC12 - View Personal PostCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actors click to their nickname to see content they have posted on the platform.DescriptionThe actor views a list of their own posts, such as articles, photos, or status updates.Preconditions1. The actor is logged in to the system.
+2. The actor has previously posted content.PostconditionsThe actor sees list of their own posts.Normal FlowStepActors ActionsSystem Responses1Navigates to their profile or content management section. 2 Retrieves the actor's posted content.3Displays the list of posts, including titles, thumbnails, or excerpts.4Scroll through the list and view details of each post.Alternative FlowsAF1If the actor has not posted any content yet, the system displays a message indicating that the post list is empty.AF2The actor can filter the list to view specific types of content (e.g., articles, photos, videos).ExceptionsEC1If there is a system error while retrieving the post list, the system displays an error message.
+1. The actor can retry or contact support.PriorityMediumFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+View posts on wall
+UC ID and NameUC13 - View posts on wallCreated bySonNHDate Created27/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe actor scroll and see a collection of posts displayed on a virtual wall (Home page).DescriptionThe agent views a dynamic feed of posts, such as text, image, or video updates, sorted by a recommendation algorithm. (prioritises posts marked as important by the FPTU)Preconditions1. The actor is logged in to the system.
+2. The system aggregates posts from various sources.PostconditionsThe actor sees the wall with the latest posts.Normal FlowStepActors ActionsSystem Responses1Navigates to the "Wall" section. 2 Retrieves recent posts based on predefined criteria.3Displays the posts in a visually appealing layout4Scroll through the wall to view content.5Click on a post opens a detailed viewAlternative FlowsAF1The actor can filter the wall to view specific types of contentAF2The actor can search for specific keywords within the wall.ExceptionsEC1If there is a system error while retrieving or displaying posts, the system shows an error message.
+1. The actor can retry or contact support.PriorityHighFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+Search on list friend (Hoàn)
+UC ID and NameUC14 - Search on list friendCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerActor click "Search" button or press "Enter" key of keyboardDescriptionSearch on list friend and show list friend with keywordPreconditions1. Login into system
+2. Have friendsPostconditions1. Show list friendsNormal FlowStepActors ActionsSystem Responses1Enter the keyword in the search friends box 2 Click Search button3Displays a list of friends from the keyword you just searched forAlternative FlowsAF1If you don't have friend match with keyword searching will appear nothingExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Filter on list friend (Hoàn)
+UC ID and NameUC15 - Filter on list friendCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerActor selected option of dropdown to filter on list friendDescriptionFilter your friends list with the available optionsPreconditions1. Login into system
+2. Have friendsPostconditions1. Displays a list of friends matching the selected optionNormal FlowStepActors ActionsSystem Responses1Selected option2Displays a list of friends matching the selected optionAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View list notifications 
+UC ID and NameUC16  - View list notificationsCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsTriggerActor clicks the "notification" button on the navigation barDescriptionList all notifications of actorPreconditions1. Login into system
+2. Have notificationsPostconditions1. Display all notificationsNormal FlowStepActors ActionsSystem Responses1Click icon notification on header2Show pop-up notifications3Click show all4Redirect page notifications to show all notificationsAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Accept friend request 
+UC ID and NameUC17  - Accept friend requestCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsTriggerActor clicks to "Accept" button to accept  friend requestDescriptionActors agree to become friends with friend requestsPreconditions1. Login into system
+2. Have friend requestPostconditions1. Accept or decline requestNormal FlowStepActors ActionsSystem Responses1Click accept 2Show success Alternative FlowsAF11. Actor click decline
+2. Show reject to make friendExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/AManage Post
+UC ID and NameUC18 - Manage PostCreated byAnhBQDate Created26/05/2024Primary ActorMemberSecondary ActorsNoneTriggerTG1The actor clicks to the text-box of the create section on the home page or profile page.TG2The actor clicks to "update" a post they have created.TG3The actor clicks  "delete"  a post they have created.TG4The actor clicks  "enable" a post they have created.TG5The actor clicks  "disable" a post they have created.DescriptionActors can create, update, delete, enable, or disable their posts by selecting the appropriate option from a menu.PreconditionsPRE1,PRE2:
+1. Actor is logged into the system.
+PRE3,PRE4,PRE5:
+1. Actor is logged into the system.
+2. Actor has created a post.PostconditionsPOS1: The post is added.
+POS2: The post is updated.
+POS3: The post is deleted.
+POS4: The post is enabled.
+POS5: The post is disabled.Normal Flow1.Create Post:
+1. Clicks to text-box of the create section.
+2. Displays a post creation form.
+3. Enters the post content.
+4. Clicks the "Post" button.
+5. Validates the input and publishes the post.
+2.Update Post:
+1. Actor click on the "Update post" button for the post they want to update.
+2. The system displays a form with the current content of the post.
+3. Actor edits the content, tags, or privacy settings of the post.
+4. The system validates the new information.
+5. User clicks on the "Save" button.
+6. The system updates the post with the new information and displays a confirmation message.
+3.Delete Post:
+1. Actor clicks on the "More" button for the post they want to delete.
+2. The system displays a menu with the options "Delete".
+3. Actor selects the desired option.
+4. The system performs the selected action and displays a confirmation message.
+4.Enable Post:
+1. Actor clicks on the "More" button for the post they want to enable.
+2. The system displays a menu with the options "Enable".
+3. Actor selects the desired option.
+4. The system performs the selected action and displays a confirmation message.
+5.Disable Post
+1. Actor clicks on the "More" button for the post they want to disable.
+2. The system displays a menu with the options "Disable".
+3. Actor selects the desired option.
+4. The system performs the selected action and displays a confirmation message.Alternative FlowsStepActors ActionsSystem Responses1Actor clicks on the "Cancel" button2The system does not perform any action and returns the actor to the previous page.ExceptionsEX1,EX2:
+1. The new information is invalid.
+2. The actor is not logged in. (System timeout)
+EX2:
+1. The actor does not have permission to edit the post.
+EX3,EX4,EX5:
+1. The actor is not logged in. (System timeout)PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+React Post
+UC ID and NameUC19 - React PostCreated byHoanLHDate Created26/05/2024Primary ActorMemberSecondary ActorsNoneTriggerThe actor holds and clicks " React" icon to react to a post they have seen.DescriptionActors can like to posts by selecting a reaction from a set of available reactions.Preconditions1. Actor is logged into the system.
+2. Actor has seen a post.
+Postconditions1. The actor's like is added to the post.Normal FlowStepActors ActionsSystem Responses1Actor holds and clicks "React" icon for the post they want to react to.2The system displays a menu with a set of available reactions.3Actor selects the desired reaction4The system adds the actor's reaction to the post and displays the updated reaction count.Alternative FlowsStepActors ActionsSystem Responses1Actor don't click the "React" icon or reclick the "Like" icon after like post2The system does not add the actor's reaction to the post.ExceptionsEC1The actor is not logged in. (System timeout)PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View List Comment Post
+UC ID and NameUC20 - View List Comment PostCreated byHoanLHDate Created26/05/2024Primary ActorMember, Group ManagerSecondary ActorsNoneTriggerThe actor clicks the "Comment" button to view the comments on a post.DescriptionActors can view the comments on a post by clicking on the "Comments" button.Preconditions1. Actor is logged into the system.
+2. Actor has seen a post.
+Postconditions1. The list of comments for the post is displayed.Normal FlowStepActors ActionsSystem Responses1Actor clicks on the "Comments" icon for the post they want to view the comments for.2The system displays the list of comments for the post.3Actor can scroll through the list of comments and read them.4The system displays the comments in chronological order, with the most recent comment at the top.Alternative FlowsStepActors ActionsSystem Responses1Actor click outside the post2The system does not display the list of comments and returns the actor to the previous page.ExceptionsEC1The actor is not logged in. (System timeout)
+PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+
+Manage Comment Post
+UC ID and NameUC21 - Manage Comment PostCreated byHoanLHDate Created26/05/2024Primary ActorMemberSecondary ActorsNoneTriggerTG1The actor clicks to "add" a comment on a post.TG2The actor clicks to "update" a comment on a post.TG3The actor clicks to "delete" a comment on a post.DescriptionActor can add, update, or delete comments on posts by clicking on the appropriate buttonPreconditions1. Actor is logged into the system.
+2. Actor has seen a post.
+Postconditions1. The comment is added, updated, or deleted.Normal FlowStepActors ActionsSystem Responses1Actor clicks on the "Add Comment" button for the post they want to add a comment to.2The system displays a text area where the actor can enter their comment.3Actor enters their comment and clicks on the "Post" button.4The system adds the comment to the post and displays it in the list of comments.5Actor clicks on the "Edit" button for the comment they want to update.6The system displays a text area where the actor can edit their comment.7Actor edits their comment and clicks on the "Save" button8The system updates the comment and displays it in the list of comments.9Actor clicks on the "Delete" button for the comment they want to delete.10The system displays a confirmation message.11Actor clicks on the "Yes" button.12The system deletes the comment and removes it from the list of comments.Alternative FlowsStepActors ActionsSystem Responses1Actor clicks on the "Cancel" button or actor click outside the post2The system does not add, update, or delete the comment and returns the actor to the previous page.Exceptions1. The actor is not logged in.
+2. The actor does not have permission to add, update, or delete comments on the post.
+3. The comment is empty.
+
+PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+React/Un-React Comment Post
+UC ID and NameUC22 - React/Un-React-Comment-PostCreated byHoanLHDate Created26/05/2024Primary ActorMemberSecondary ActorsNoneTrigger Actor wants to react to a comment on a post.DescriptionActor can react to comments on posts by selecting a reaction from a set of available reactions.Preconditions1. Actor is logged into the system.
+2. Actor has seen a post.
+3. Actor has seen a comment on the post.
+Postconditions1. The actor's reaction is added to the comment.Normal FlowStepActors ActionsSystem Responses1Actor clicks on the "React" icon for the comment they want to react to.2The system displays a menu with a set of available reactions.3Actor selects the desired reaction.4The system adds the actor's reaction to the comment and displays the updated reaction count.Alternative FlowsStepActors ActionsSystem Responses1Actor click outside the comment or relick reaction iconThe system does not add the actor's reaction to the comment and returns the actor to the previous page.ExceptionsThe actor is not logged in.
+PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Reply Comment Post
+UC ID and NameUC23 - Reply-Comment-PostCreated byHoanLHDate Created26/05/2024Primary ActorMemberSecondary ActorsNoneTriggerActor wants to reply to a comment on a post.DescriptionActor can reply to comments on posts by clicking on the "Reply" button.Preconditions1. Actor is logged into the system.
+2. Actor has seen a post.
+3. Actor has seen a comment on the post.
+Postconditions1. The actor's reply is added to the commentNormal FlowStepActors ActionsSystem Responses1Actor clicks on the "Reply" button for the comment they want to reply to.2The system displays a text area where the actor can enter their reply.3Actor enters their reply and clicks on the "Post" button.4The system adds the actor's reply to the comment and displays it in the list of replies.Alternative FlowsStepActors ActionsSystem Responses1Actor clicks on the "Cancel" button or delete all text 2The system does not add the actor's reply to the comment and returns the actor to the previous page.ExceptionsThe actor is not logged in.
+The actor does not have permission to reply to comments on the post.
+The reply is empty.
+PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+
+Create group
+UC ID and NameUC28 - Create groupCreated byHoanNKDate Created25/05/2024Primary ActorGroup ManagerSecondary ActorsTriggerActor wants to create groupDescriptionActor create a group of people with something in commonPreconditions1. Login into system
+2. Have permission to create group
+3. The actor is on "Group" screenPostconditions1. Manager create group successfully Normal FlowStepActors ActionsSystem Responses1Click "Create new group" button2Redirect "Create group" page3Input group name4Choose privacy5Invite people to group6Click "Create" button7Redirect "Manage group" pageAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Add member to group
+UC ID and NameUC29- Add member to groupCreated byHoanNKDate Created25/05/2024Primary ActorGroup ManagerSecondary ActorsMemberTriggerActor wants to invite member to groupDescriptionManager invite member to groupPreconditions1. Login into system
+2. The actor is on "Manage group" page
+Postconditions1. Add member into group successfully Normal FlowStepActors ActionsSystem Responses1Click "Invite member" button2Show pop-up list actor 3Select the actor the manager wants to add4Click "Add" to add member to group5Show successfullyAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Pin post for wide-system
+UC ID and NameUC30- Pin post for wide-systemCreated byHoanNKDate Created25/05/2024Primary ActorGroup ManagerSecondary ActorsTriggerActor wants to pin post for wide-systemDescriptionManager pin post for wide-systemPreconditions1. Login into system
+2. The actor is on "Manage post" page
+Postconditions1. Pin post on the head of home page Normal FlowStepActors ActionsSystem Responses1Click on the more icon to the right of the post2Show pop-up post manage3Click option "Pin post"4Pin post on the headAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Unpin post for wide-system
+UC ID and NameUC31 - Unpin post for wide-systemCreated byHoanNKDate Created25/05/2024Primary ActorGroup ManagerSecondary ActorsTriggerActor wants to un-pin post for wide-systemDescriptionManager pin post for wide-systemPreconditions1. Login into system
+2. The actor is on "Manage post" page
+3. This post is being pinned
+Postconditions1. Unpin post on the head of home page Normal FlowStepActors ActionsSystem Responses1Click on the more icon to the right of the post2Show pop-up post manage3Click option "Unpin post"4Unpin post on the headAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+
+View system's dashboard
+UC ID and NameUC32 - View system's dashboardCreated byHoanNKDate Created25/05/2024Primary ActorGroup ManagerSecondary ActorsTriggerActor wants to view system's dashboardDescriptionManager view systeam's dashboardPreconditions1. Login into system
+2. The actor is on "Manage system" page
+Postconditions1. Manager view system's dashboardNormal FlowStepActors ActionsSystem Responses1Click on the "System dashboard" option2Show System dashboardAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Share Post
+UC ID and NameUC33-Share postCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to share a post on FUSP.DescriptionShare a post on FUSPPreconditions1. The actor must be logged in to the FUSP.
+2. The actor must have a post to share.
+3. The post is in public or friends modePostconditions1. The post is successfully shared on FUSP.Normal FlowStepActors ActionsSystem Responses1Select the post to share. 2 Displays options to interact with the post, including sharing.3Click on the "Share" button. 4Prompts the actor to choose where to share the post.5Select the sharing options.6Enter any additional text or comments, if desired.7Displays the shared post preview.8Click on the "Share" button9The system shares articles and displays notificationsAlternative FlowsN/AExceptions1. There is a system error during the sharing process.
+2. The post was deleted before being sharedPriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View message list
+UC ID and NameUC34 - View message listCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to view the message list on FUSP.DescriptionView the list of messages on FUSP.PreconditionsThe actor must be logged in to the FUSP.PostconditionsThe actor successfully views the message list on FUSP.Normal FlowStepActors ActionsSystem Responses1Click on the "Message" button on the navigation bar. 2 Loads the message list interface.3Scroll through the list of conversations.4Displays the list of conversations, including participants and recent messagesAlternative FlowsN/AExceptionsThere is a system error loading the message list.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View a chat conversation
+UC ID and NameUC35 - View a chat conversationCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to view a chat conversation on FUSP.DescriptionView a specific chat conversation on FUSP.Preconditions1. The actor must be logged in to the FUSP.
+2. The actor must have an active internet connection.
+3. The actor must have an existing chat conversation.Postconditions1. The actor successfully views the chat conversation on FUSP.Normal FlowStepActors ActionsSystem Responses1Click on the "Message" button on the navigation bar. 2 Loads the message list interface..3Scroll through the list of conversations or search for a specific conversation. 4Displays the list of conversations, including participants and recent messages.5Click on the desired conversation to view.6Opens the selected conversation and displays the message history.Alternative FlowsN/AExceptions1. There is a system error loading the chat conversation.
+2. The chat was previously deletedPriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View other people 's profile
+UC ID and NameUC36 - View other people 's profileCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to view another person's profile on FUSP.DescriptionView the profile page of another actor on FUSP.PreconditionsThe actor must know the name or username of the person whose profile they want to view.
+Actor profile is not bannedPostconditionsThe actor successfully views the profile of the other person on FUSPNormal FlowStepActors ActionsSystem Responses1Click on "Name" or "Picture" of actor 2 Displays the profile information, including posts, photos, and basic information.Alternative FlowsN/AExceptions1. There is a system error during the logout process
+2. The person's profile is not found or inaccessiblePriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+
+
+Unfriend
+UC ID and NameUC39 - UnfriendCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to unfriend another person on FUSP.DescriptionUnfriend another actor's profile on FUSP to remove them from the friend list.Preconditions1. The actor must be logged in to the FUSP.
+2. The actor must be friends with the person they want to unfriend.
+Postconditions1. The actor successfully unfriends the other person on FUSP.Normal FlowStepActors ActionsSystem Responses1Click on the "Name" or "Picture" of your friend 2 Displays your friend profile3Click on the "Friends" button on their profile. 4Select the "Unfriend" option5Confirms the unfriend action.6The system removes the person from the actor's friend list.Alternative FlowsN/AExceptions1. The person's profile is not found or inaccessible.
+2. The unfriend action fails due to a technical issue.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+View a group
+UC ID and NameUC40 - View a groupCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to view a group on the FUSP system.DescriptionView a specific group on FUSP to see its content and interact with members.PreconditionsThe actor must know the name of group on FUSPPostconditionsThe actor successfully views the group created by other people.Normal FlowStepActors ActionsSystem Responses1Click on the "Name" or "Picture" of group 2 Navigates to the selected group page3 Displays the group's content, including posts, discussions, and member information.Alternative FlowsN/AExceptions1. The group is not found or inaccessible.
+2. There is a system error loading the group content.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Join a group
+UC ID and NameUC41 - Join a groupCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to join a group on the FUSP system.DescriptionJoin a specific group on FUSP to participate in discussions, view content, and interact with other members.Preconditions1. The actor must be logged in to the FUSP
+2. The actor must know the name of group on FUSPPostconditionsThe actor successfully joins the group.Normal FlowStepActors ActionsSystem Responses1Click on the "Name" or "Picture" of the group. 2 Navigates to the selected group page.3Click on the "Join" button. 4The system sends requests  to join the group.5The system changes the button "Join" to "Cancel"Alternative FlowsN/AExceptions1. The group is not found or inaccessible.
+2. The joint group action fails due to a technical issue.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Out a group
+UC ID and NameUC42 - Out a groupCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to leave a group on the FUSP system.DescriptionLeave a specific group on FUSP to stop receiving notifications, access to content, and participation in discussions.Preconditions1. The actor must be logged in to the FUSP
+2. The actor must be a member of the group they want to leave.PostconditionsThe actor successfully leaves the group on FUSPNormal FlowStepActors ActionsSystem Responses1Click on the "Name" or "Picture" of the group. 2 Navigates to the selected group page.3Click on the "Joined" button. 4Confirms the leave group action5The system removes the actor from the group's member list.6The system changes the button "Joined" to "Join"Alternative FlowsN/AExceptions1. The group is not found or inaccessible.
+2. The leave group action fails due to a technical issue.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Search user
+UC ID and NameUC43 - Search userCreated bySonNHDate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to search for a specific user on the FUSP system.DescriptionSearch for a user on FUSP by their name or username to view their profile or send a friend request.Preconditions1. The actor must be logged in to the FUSP.
+2. The actor must know the name or username of the person they want to find.
+PostconditionsThe actor successfully finds the user on Facebook.Normal FlowStepActors ActionsSystem Responses1Click on the search bar at the top of the screen. 2 Activates the search function.3Select the desired filter criteria such as location, interests, or mutual friends.4Displays search results related to the entered name or username.Alternative FlowsN/AExceptions1. There is a system error during the filtering process.
+2. The filter criteria do not yield any results.PriorityHighFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Filter users
+UC ID and NameUC44 - Filter usersCreated byQuanNADate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to filter users on FUSP based on specific criteria.DescriptionFilter users on FUSP to narrow down search results or group members based on certain criteria such as location, interests, or mutual friends.PreconditionsThe actor must be logged in to the FUSPPostconditionsThe actor successfully applies filters to the user search or group members list on FUSP.Normal FlowStepActors ActionsSystem Responses1Click on the "Logout" button on the navigation bar. 2 Activates the filter function.3Select the desired filter criteria such as location, interests, or mutual friends. 4Applies the selected filters to the search results or group members list..Alternative FlowsN/AExceptionsEC1If there is a system error during the logout process
+2. The system displays an error message and remains on the current page.PriorityHighFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+Search all on homepage
+UC ID and NameUC45 - Search all on homepageCreated byHoanNKDate Created25/05/2024Primary ActorMember, Group ManagerSecondary ActorsN/ATriggerThe actor wants to search post, friend or group nameDescriptionSearch post, friend or group name on FUSP to find information necessary PreconditionsThe actor must be logged in to the FUSPPostconditionsThe actor successfully search information necessaryNormal FlowStepActors ActionsSystem Responses1Type data on search text box and press enter 2 List all matching search results by categoryAlternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness Rules Other InformationN/AAssumptionsN/A
+Create Post Report
+UC ID and NameUC46 - Create Post ReportCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerUser wants to report a post that violates the Definition or is inappropriate.DescriptionUser creates a report about a specific post.PreconditionsUser must be logged in to the system and viewing the post they want to report.PostconditionsReport on the post is successfully created.Normal FlowStepActors ActionsSystem Responses1You click on the "Report" option on the post. 2 The system displays a sample report.3The user selects a report from the list provided.4The user can provide additional details about the report (optional).5The user clicks on the "Submit Report" button.6The system creates the report and sends it to the administrator for review.7The system displays a confirmation message.Alternative FlowsN/AExceptionsN/APriorityHighFrequency of UseHighBusiness Rules BR-77Other InformationN/AAssumptionsN/A
+Create Comment Report
+UC ID and NameUC47 - Create Post ReportCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to report a comment that violates the rules or is inappropriate.DescriptionThe user creates a report about a specific comment.PreconditionsThe user must be logged in to the system and viewing the comment to be reported.PostconditionsThe report about the comment is successfully created.Normal FlowStepActors ActionsSystem Responses1The user clicks the "Report" option on the comment. 2 The system displays the report form.3The user selects the reason for the report from the provided list.4The user can provide additional details about the report (optional).5The user clicks on the "Submit Report" button.6The system creates the report and sends it to the administrator for review.7The system displays a confirmation message.Alternative FlowsN/AExceptionsN/APriorityMediumFrequency of UseLowBusiness Rules BR-78Other InformationN/AAssumptionsN/ACreate User Report
+UC ID and NameUC48 - Create Post ReportCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to report another user for inappropriate behavior or a policy violation.DescriptionThe user is creating a report about a specific user.PreconditionsThe user must be logged in to the system and viewing the profile of the user they want to report.PostconditionsThe user report was successfully created.Normal FlowStepActors ActionsSystem Responses1The user clicks on the "Report" option on the user profile. 2 The system displays the report form.3The user selects the reason for the report from the provided list.4The user can provide additional details about the report (optional).5The user clicks on the "Submit Report" button.6The system creates the report and sends it to the administrator for review.7The system displays a confirmation message.Alternative FlowsN/AExceptionsN/APriorityMediumFrequency of UseLowBusiness RulesN/AOther InformationN/AAssumptionsN/A
+
+Block User
+UC ID and NameUC49 - Block UserCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerUser wants to block another user.DescriptionUser blocks another user to prevent them from interacting with him/her.PreconditionsUser must be logged in to the system.PostconditionsBlocked users will not be able to view the profile, posts, or contact the blocked user.Normal FlowStepActors ActionsSystem Responses1User navigates to the profile of the user they want to block. 2 User clicks the "Block" option.3System displays a confirmation message.4User confirms the blocking action.5System blocks the selected user.Alternative FlowsAF01If the user has previously blocked this user, the system will notify the user.ExceptionsEC01If there is a system error, the system displays an error message.PriorityMediumFrequency of UseLowBusiness Rules BR-57, BR-58, BR-90Other InformationN/AAssumptionsN/A
+Q&A with AI
+UC ID and NameUC50 - Q&A with AICreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to get help or information from the AI ​​chatbot.DescriptionThe user interacts with the AI ​​chatbot to ask a question and get an answer.PreconditionsThe user must be logged in to the system.PostconditionsThe user receives an answer from the AI ​​chatbot or is redirected to a relevant information source.Normal FlowStepActors ActionsSystem Responses1The user accesses the AI ​​chatbot interface (which can be a chat window or a chatbot icon). 2 The user enters a question or request.3The AI ​​chatbot processes the user's input and generates an answer.4The AI ​​chatbot displays the answer to the user.Alternative FlowsAF01If the user enters invalid or unclear input, the AI ​​chatbot requests clarification or additional information.ExceptionsEC01If there is a system error while processing the request, the AI ​​chatbot displays an error message and suggests trying again later.PriorityMediumFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+Suggest friend
+UC ID and NameUC51 - View Friend SuggestionsCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to view the suggested friend list.DescriptionThe system displays a list of other users that the current user may want to be friends with, based on various criteria such as mutual friends, common interests, etc.PreconditionsThe user must be logged in to the system.PostconditionsThe suggested friend list is displayed to the user.Normal FlowStepActors ActionsSystem Responses1The user navigates to the friends section or another area where friend suggestions are displayed. 2The system retrieves the suggested friend list based on the suggestion algorithm.3The system displays a list, including the name or avatar of each suggested user.4The user can scroll through the list and view the profile details of each suggested user.Alternative FlowsN/AExceptionsN/APriorityMediumFrequency of UseMediumBusiness RulesBR-56Other InformationN/AAssumptionsN/A
+Suggest group
+UC ID and NameUC52 - View Group SuggestionsCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to view the list of suggested groups.DescriptionThe system displays a list of groups that the current user may want to join, based on various criteria such as the user's interests, groups of friends who have joined, etc.PreconditionsThe user must be logged in to the system.PostconditionsThe list of suggested groups is displayed to the user.Normal FlowStepActors ActionsSystem Responses1The user navigates to the friends section or another area where friend suggestions are displayed. 2The system retrieves the list of suggested groups based on the suggestion algorithm.3The system displays the list, including the name and profile picture of each suggested group.4The user can scroll through the list and view details of each suggested group.Alternative FlowsN/AExceptionsN/APriorityMediumFrequency of UseMediumBusiness RulesBR-57Other InformationN/AAssumptionsN/A
+3. Functional Requirements
+3.1 System Functional Overview
+3.1.1 Screens Flow
+● Screen Flow Overview:
+
+Figure 6.  Overview Screens Flow diagram
+
+● Screen Flow Of Member
+
+● Screen Flow Of Group Manager:
+
+● Screen Flow Of Admin:
+
+● Screen Flow Of Staff:
+
+3.1.2 Screen Descriptions
+
+#FeatureScreenDescription1CommonLanding PageFirst page appears when opening the application2CommonLoginPage for login system3CommonHomepageShow posts, notifications and messages4ProfilePersonal ProfileShow all information about personal profile: Nickname, Image, Bio,Profile Detail, Friends, Post,...5ProfileOther Account ProfileShow all information about other user  profiles if they have been public: Nickname, Image, Bio, Friends, Post,...6ProfileAlbumShow list images which are posted7ProfileFriend ListList all friends of this account8ProfileProfile DetailList all public information about: hometown, place of living, place of work, educational level, organizations, ..etc.9ProfileFollower ListList all follower of this account10ProfileProfile ManagementList all profile of  actors and action of it11PostPost ViewShow all posts of the group which the user joined or account which user follow: status, images, videos, shared post,... And post actions12PostPost SettingList all properties of post (add, edit, delete, pin, save, audience) and action of it13PostCreate PostThe act of creating and posting articles on personal pages, other people's pages or groups14PostSaved Post ListList all posts which user saved15Request Friend Request ListList all accounts which send "Add Friend Request"  to current accounts16NotificationRecent Notifications ListPopup to list some recent notifications17NotificationAll Notification ListList all notification with filter read/unread18Message Message BoxLists all messages you receive19Message Conversation BoxDisplays the most recent messages of a conversation20Search Search BoxA text-box that displays recent search history with search suggestions21Search Search resultShow all results(account, post, group, ...)  matches the keyword22GroupGroup ListList all groups which user joined23GroupGroup Post ListList all posts of all groups which user joined24GroupGroup Post List all posts of group which user is accessing25GroupGroup ManagementList all activities to manage group and action of it26GroupPost ModerationList all posts that are waiting for moderation to be published27AdminUser ManagementList all activities to manage user and action of it28AdminDashboard ViewList all necessary parameters, statistics, and system analysis29AdminList Group ManagementList all group to manage group: create group, add member, assign role,..
+3.1.3 Screen Authorization
+
+ScreenMemberGroup Manager
+AdminLanding PageXXXLoginXXXHomepageXXXPersonal ProfileXXXOther Account ProfileXXXAlbumXXXFriend ListXXXProfile ManagementXXXPost ViewXXXPost SettingXXXCreate PostXXXSaved Post ListXXXFriend Request ListXXXRecent Notifications ListXXXAll Notification ListXXXMessage BoxXXXConversation BoxXXXSearch BoxXXXSearch resultXXXGroup ListXXXGroup Post ListXXXGroup PostXXXGroup ManagementXPost ModerationXGroup User ManagementXUser ManagementXDashboard ViewXList Group ManagementX
+3.1.4 Non-Screen Functions
+
+#FeatureSystem FunctionDescription1GroupAuto create groupAt the beginning of each semester, automatically create groups and add students and instructors of that class and lesson to a group2
+3.1.5 Entity Relationship Diagram
+
+Figure 7. Entity Relationship Diagram
+
+Figure 8.  Profile Entity Relationship Diagram
+
+Figure 9.  Group Entity Relationship Diagram
+
+Figure 10.  Personal Post Relationship Diagram
+
+Figure 11.  Group Post Relationship Diagram
+
+Link ERD: EDR Draw.io
+
+Entities Description
+#EntityDescription1234
+
+
+
+4. Non-Functional Requirements
+4.1 Usability
+- The interface should be easy to understand and friendly.
+- The system has an instruction manual that makes it easy for users to use after a few hours.
+
+4.2 Security
+-  Using JWT token-based authentication and authorization to access protected resources.
+- Must have SSO with service Google OpenAuth 2.0  
+       
+4.2 Performance
+- Use signalR to improve and increase response speed and user experience when interacting with the system
+4.3 Maintaining & Scalability
+- Using Google and Sonarlint for consistent coding conventions.
+4.4 Mockup
+	4.4.1 Home Page
+		
+	4.4.2 Personal Profile
+
+	4.4.3 List Image -  Personal Profile
+
+	4.4.4 Add Image - Personal Profile
+
+
+       4.4.5  Add Video - Personal Profile
+
+       4.4.6  Pop-up Notification
+
+
+       4.4.7  List All Notification 
+
+       4.4.8 List friend request
+       
+       
+5. Requirement Appendix
+5.1 Application Messages List
+#Message codeMessage TypeContextContent1MSG012MSG023MSG034MSG045MSG056MSG067MSG078MSG089MSG09
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ | Page
+
+

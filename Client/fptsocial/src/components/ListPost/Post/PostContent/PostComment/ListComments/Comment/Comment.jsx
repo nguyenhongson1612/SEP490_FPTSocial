@@ -19,16 +19,18 @@ import { IconDotsVertical } from '@tabler/icons-react'
 import { useConfirm } from 'material-ui-confirm'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
+import { useTranslation } from 'react-i18next'
 
 function Comment({ comment, postType }) {
-  // console.log('🚀 ~ Comment ~ comment:', comment)
   const currentActivePost = useSelector(selectCurrentActivePost)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
+  const [currentReact, setCurrentReact] = useState({})
   const { handleSubmit } = useForm()
   const listReact = useSelector(selectListReactType)
-  const [content, setContent] = useState('')
-  const [listPhotos, setListPhotos] = useState([])
-  const [listVideos, setListVideos] = useState([])
+  const reactLike = listReact?.find(e => e?.reactTypeName?.toLowerCase() == 'like')
+  const [content, setContent] = useState(comment?.content)
+  const [listMedia, setListMedia] = useState(cleanAndParseHTML(comment?.content, true) || [])
+  console.log('🚀 ~ Comment ~ listMedia:', listMedia)
   const [listCommentReact, setListCommentReact] = useState()
   const [reload, setReload] = useState(false)
   const dispatch = useDispatch()
@@ -44,6 +46,8 @@ function Comment({ comment, postType }) {
   const isGroupShare = postType === POST_TYPES.GROUP_SHARE_POST
   const isGroupPhoto = postType === POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType === POST_TYPES.GROUP_VIDEO_POST
+  const { t } = useTranslation()
+  // const commentMediaData = cleanAndParseHTML(comment?.content, true)
 
   const [anchorEl, setAnchorEl] = useState(null)
   const handleClick = (event) => {
@@ -76,6 +80,7 @@ function Comment({ comment, postType }) {
                     : isGroupVideo && getAllReactByGroupCommentVideoId(comment?.commentGroupVideoPostId)
     )
     setListCommentReact(response)
+    setCurrentReact(response?.listCommentReact?.find(e => e?.userId == currentUser?.userId))
   }
 
   useEffect(() => {
@@ -257,7 +262,7 @@ function Comment({ comment, postType }) {
     (async () => {
       const submitData = {
         'userId': currentUser?.userId,
-        'content': content,
+        'content': listMedia?.length > 0 ? `${content.replace(/<!--MEDIA:(video|image):(.+?)-->/g, '')}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : content.replace(/<!--MEDIA:(video|image):(.+?)-->/g, ''),
         ...(isProfile ? { 'commentId': comment?.commentId }
           : isShare ? { 'commentSharePostId': comment?.commentSharePostId }
             : isPhotoPost ? { 'commentPhotoPostId': comment?.commentPhotoPostId }
@@ -268,6 +273,7 @@ function Comment({ comment, postType }) {
                       : isGroupVideo && { 'commentGroupVideoPostId': comment?.commentGroupVideoPostId }
         )
       }
+      // console.log('🚀 ~ submitData:', submitData)
       await (isProfile ? updateUserCommentPost(submitData)
         : isShare ? updateCommentSharePost(submitData)
           : isPhotoPost ? updateUserCommentPhotoPost(submitData)
@@ -278,6 +284,7 @@ function Comment({ comment, postType }) {
                     : isGroupVideo && updateGroupCommentVideoPost(submitData)
       )
       dispatch(triggerReloadComment())
+      toast.success('Updated')
       setIsEditContent(false)
       setContent('')
     })()
@@ -285,23 +292,49 @@ function Comment({ comment, postType }) {
   return (
     <div className={`${comment?.level !== 1 && 'pl-[15%] mt-3'} `}>
       <div className='flex gap-1'>
-        <UserAvatar avatarSrc={comment?.url} />
-        <div className='flex flex-col gap-1'>
+        <UserAvatar avatarSrc={comment?.url} size={2} />
+        <div className='flex flex-col gap-[2px] '>
           {
             !isEditContent &&
             <>
-              <div className='bg-gray-100 flex flex-col py-2 px-3 rounded-2xl w-full'>
-                <span className='font-bold'>{comment?.userName}</span>
-                <div>{cleanAndParseHTML(comment?.content)}</div>
+              <div className='bg-gray-100 flex flex-col py-1 px-2 rounded-lg w-full text-sm'>
+                <div>
+                  <span className='font-bold capitalize'>{comment?.userName}</span>
+                  {
+                    currentActivePost?.userId == comment?.userId &&
+                    <span className='font-medium text-xs text-white bg-orangeFpt ml-1 px-1 py-[2px] rounded-md'>{t('standard.comment.author')}</span>
+                  }
+                </div>
+                <div className='font-normal flex-col'>
+                  {cleanAndParseHTML(comment?.content)}
+                  <div className='max-w-[300px]'>
+                    {listMedia?.length > 0 && (
+                      listMedia[0]?.type == 'image'
+                        ? <img src={cleanAndParseHTML(comment?.content, true)[0]?.url} />
+                        : <video src={cleanAndParseHTML(comment?.content, true)[0]?.url} controls />
+                    )}
+                  </div>
+                </div>
               </div>
               <div className='flex gap-2 items-center text-xs'>
                 <span className='font-thin cursor-pointer'>{compareDateTime(comment?.createdDate)}</span>
-                <div className={`relative ${listCommentReact?.isReact && 'text-blue-500'} font-semibold cursor-pointer [&>#react-comment]:hover:!opacity-100`}>
-                  Like
+                <div className={`relative ${listCommentReact?.isReact && (currentReact?.reactTypeName?.toLowerCase() == 'dislike' ? 'text-orange-500' : 'text-blue-500')} font-semibold cursor-pointer [&>#react-comment]:hover:!opacity-100`}
+                  onClick={() => handleReactPost(currentReact?.reactTypeId || reactLike?.reactTypeId)}
+                >
+                  {
+                    !listCommentReact?.isReact
+                      ? t('standard.react.like')
+                      : currentReact?.reactTypeName?.toLowerCase() == 'dislike'
+                        ? t('standard.react.disLike')
+                        : t('standard.react.like')
+                  }
                   <div id='react-comment' className='min-w-20 absolute flex gap-1 opacity-0 transition-opacity duration-300 delay-500 top-0 -translate-y-10
                   bg-white shadow-4edges rounded-3xl px-2 py-1'>
                     {listReact?.map(reaction => (
-                      <div key={reaction?.reactTypeId} className="text-4xl" onClick={() => handleReactPost(reaction?.reactTypeId)}>
+                      <div key={reaction?.reactTypeId} className="text-4xl" onClick={(e) => {
+                        e.stopPropagation()
+                        handleReactPost(reaction?.reactTypeId)
+                      }}>
                         {reaction?.reactTypeName?.toLowerCase() == 'like' ?
                           <img className='size-8 hover:scale-[1.2] cursor-pointer' src={likeEmoji} />
                           : reaction?.reactTypeName?.toLowerCase() == 'dislike'
@@ -310,9 +343,9 @@ function Comment({ comment, postType }) {
                     ))}
                   </div>
                 </div>
-                <span id='comment-filter' className='font-semibold cursor-pointer' onClick={handleClick}>Rely</span>
+                <span id='comment-filter' className='font-semibold cursor-pointer' onClick={handleClick}>{t('standard.comment.reply')}</span>
                 <span className={`font-semibold cursor-pointer flex items-center gap-[1px] ${(listCommentReact?.sumOfReact ?? 0) == 0 && 'invisible'}`}>
-                  <img className='size-4 cursor-pointer' src={likeEmoji} />
+                  <img className='size-4 cursor-pointer' src={currentReact?.reactTypeName?.toLowerCase() == 'like' ? likeEmoji : angryEmoji} />
                   {listCommentReact?.sumOfReact}
                 </span>
                 <Popover
@@ -321,21 +354,23 @@ function Comment({ comment, postType }) {
                   anchorEl={anchorEl}
                   onClose={handleClose}
                   anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',
                   }}
                 >
-                  <form onSubmit={handleSubmit(handleRelyComment)} className='my-4 w-full flex gap-2 px-4'>
+                  <form onSubmit={handleSubmit(handleRelyComment)} className='px-2 w-full flex gap-1 py-1 min-w-[400px]'>
                     <UserAvatar isOther={false} />
-                    <div className='rounded-lg pt-2'>
+                    <div className='rounded-2xl pt-2'>
                       <Tiptap
                         setContent={setContent}
                         content={content}
-                        listPhotos={listPhotos}
-                        setListPhotos={setListPhotos}
-                        listVideos={listVideos}
-                        setListVideos={setListVideos}
                         editorType={EDITOR_TYPE.COMMENT}
+                        listMedia={setListMedia}
+                        setListMedia={setListMedia}
                       />
                     </div>
                   </form>
@@ -345,29 +380,30 @@ function Comment({ comment, postType }) {
           }
           {
             isEditContent && <div className='mb-3'>
-              <form onSubmit={handleSubmit(handleUpdateComment)} className='my-4 w-full flex gap-2 px-4'>
+              <form onSubmit={handleSubmit(handleUpdateComment)} className='my-4 w-full flex gap-2 px-4 bg-fbWhite rounded-md'>
                 <div className='rounded-lg pt-2'>
                   <Tiptap
                     setContent={setContent}
-                    content={comment?.content}
-                    listPhotos={listPhotos}
-                    setListPhotos={setListPhotos}
-                    listVideos={listVideos}
-                    setListVideos={setListVideos}
+                    content={content}
+                    listMedia={listMedia}
+                    setListMedia={setListMedia}
                     editorType={EDITOR_TYPE.COMMENT}
                   />
                 </div>
               </form>
-              <span className='cursor-pointer text-xs px-3 font-semibold text-blue-500' onClick={() => setIsEditContent(!isEditContent)}>Cancel</span>
+              <span className='cursor-pointer text-xs px-3 font-semibold text-blue-500' onClick={() => {
+                setListMedia(cleanAndParseHTML(comment?.content, true))
+                setIsEditContent(!isEditContent)
+              }}>Cancel</span>
             </div>
 
           }
         </div>
 
         <div
-          className="rounded-full flex justify-center items-center hover:bg-fbWhite cursor-pointer size-10"
+          className="flex justify-center items-center hover:text-orangeFpt cursor-pointer size-5"
           onClick={handleClick2}
-        ><IconDotsVertical /></div>
+        ><IconDotsVertical stroke={1} /></div>
         <Menu
           anchorEl={anchorEl2}
           id={id2}
@@ -382,15 +418,18 @@ function Comment({ comment, postType }) {
           {isYourComment && <MenuItem onClick={() => { handleRemoveComment(); handleClose2() }} sx={{ gap: '5px' }}>
             Delete
           </MenuItem>}
-          <MenuItem
-            onClick={() => {
-              dispatch(addReport({ reportData: { ...comment, type: postType }, reportType: REPORT_TYPES.COMMENT }))
-              dispatch(openModalReport())
-              handleClose()
-            }}
-            sx={{ gap: '5px' }}>
-            Report
-          </MenuItem>
+          {
+            currentUser?.userId != comment?.userId &&
+            <MenuItem
+              onClick={() => {
+                dispatch(addReport({ reportData: { ...comment, type: postType }, reportType: REPORT_TYPES.COMMENT }))
+                dispatch(openModalReport())
+                handleClose()
+              }}
+              sx={{ gap: '5px' }}>
+              Report
+            </MenuItem>
+          }
         </Menu>
 
       </div>

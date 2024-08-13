@@ -64,12 +64,17 @@ function NewPost({ postType, groupId }) {
   }, [listStatus])
 
   const submitPost = () => {
-    const listPhoto = listMedia.filter(media => media.type === 'image').map((media, index) => ({ photoUrl: media.url, position: index }))
-    const listVideo = listMedia.filter(media => media.type === 'video').map((media, index) => ({ videoUrl: media.url, position: index }))
+    const listPhoto = listMedia.map((media, index) =>
+      media.type === 'image' ? { photoUrl: media.url, position: index } : undefined
+    ).filter(Boolean)
+
+    const listVideo = listMedia.map((media, index) =>
+      media.type === 'video' ? { videoUrl: media.url, position: index } : undefined
+    ).filter(Boolean)
 
     const submitData = {
       userId: currentUser?.userId,
-      content,
+      content: content ?? '',
       photos: listPhoto,
       videos: listVideo,
       ...(isProfile && { userStatusId: choseStatus?.userStatusId }),

@@ -1,5 +1,5 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
-import { API_ROOT } from '~/utils/constants'
+import { API_ROOT, COMMENT_FILTER_TYPE } from '~/utils/constants'
 
 export const getGroupPostByGroupId = async ({ groupId, page, pageSize = 10, type = 'New' }) => {
   const response = await authorizedAxiosInstance
@@ -15,53 +15,53 @@ export const getChildGroupPost = async (id) => {
   return response.data?.data
 }
 
-export const getGroupPostComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPostComment?GroupPostId=${id}`)
+export const getGroupPostComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPostComment?GroupPostId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getGroupSharePostComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupSharePostComment?GroupSharePostId=${id}`)
+export const getGroupSharePostComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupSharePostComment?GroupSharePostId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getGroupVideoPostComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupVideoPostComment?GroupPostVideoId=${id}`)
+export const getGroupVideoPostComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupVideoPostComment?GroupPostVideoId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getGroupPhotoPostComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPhotoPostComment?GroupPostPhotoId=${id}`)
-  return response.data?.data
-}
-
-export const getAllReactByGroupPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupPostId?GroupPostId=${id}`)
-  return response.data?.data
-}
-export const getAllReactByGroupSharePostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupSharePostId?GroupSharePostId=${id}`)
-  return response.data?.data
-}
-export const getAllReactByGroupPhotoPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupPhotoPostId?GroupPostPhotoId=${id}`)
-  return response.data?.data
-}
-export const getAllReactByGroupVideoPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupVideoPostId?GroupPostVideoId=${id}`)
+export const getGroupPhotoPostComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPhotoPostComment?GroupPostPhotoId=${id}&Type=${type}`)
   return response.data?.data
 }
 
-export const getAllReactByGroupCommentId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupCommentId?CommentGroupPostId=${id}`)
+export const getAllReactByGroupPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupPostId?GroupPostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByCommentGroupSharePostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentGroupSharePostId?CommentGroupSharePostId=${id}`)
+export const getAllReactByGroupSharePostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupSharePostId?GroupSharePostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByGroupCommentVideoId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupCommentVideoId?CommentGroupVideoPostId=${id}`)
+export const getAllReactByGroupPhotoPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupPhotoPostId?GroupPostPhotoId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByGroupCommentPhotoId = async (id) => {
+export const getAllReactByGroupVideoPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupVideoPostId?GroupPostVideoId=${id}&PageNumber=${page}`)
+  return response.data?.data
+}
+
+export const getAllReactByGroupCommentId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupCommentId?CommentGroupPostId=${id}&PageNumber=${page}`)
+  return response.data?.data
+}
+export const getAllReactByCommentGroupSharePostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentGroupSharePostId?CommentGroupSharePostId=${id}&PageNumber=${page}`)
+  return response.data?.data
+}
+export const getAllReactByGroupCommentVideoId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupCommentVideoId?CommentGroupVideoPostId=${id}&PageNumber=${page}`)
+  return response.data?.data
+}
+export const getAllReactByGroupCommentPhotoId = async (id, page = 1) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByGroupCommentPhotoId?CommentPhotoGroupPostId=${id}`)
   return response.data?.data
 }

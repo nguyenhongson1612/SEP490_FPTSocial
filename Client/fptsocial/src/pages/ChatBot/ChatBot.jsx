@@ -1,144 +1,191 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai"
-import parts from '~/utils/gemini'
-import { cloneDeep } from 'lodash'
-import { cleanAndParseHTML } from '~/utils/formatters'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
+import { cleanAndParseHTML } from '~/utils/formatters'
 
-const apiKey = 'AIzaSyBbSebF0FCA4m_FobxREmtTx0br6meP4lI'
-const genAI = new GoogleGenerativeAI(apiKey)
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-})
-
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 64,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
-}
-
-
-const ChatBox = () => {
-  const [messages, setMessages] = useState([])
+const Chatbot = () => {
+  const [messages, setMessages] = useState([
+    { role: 'model', parts: [{ text: 'Xin chào! Hãy hỏi tôi bất cứ điều gì bạn muốn :D' }] }
+  ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef(null)
+  const chatRef = useRef(null)
+  const chatInstanceRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  const API_KEY = 'AIzaSyBgoM0OOYUQ_i8oXpKWhdgsjz3TdQ0W6rA'
+  const genAI = new GoogleGenerativeAI(API_KEY)
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+  const generationConfig = {
+    temperature: 0.7,
+    topK: 40,
+    topP: 0.95,
+    maxOutputTokens: 8192,
   }
 
-  useEffect(scrollToBottom, [messages])
-  function convertToHtml(text) {
-    // Thay thế các ký tự xuống dòng bằng thẻ <br>
-    let html = text.replace(/\n/g, '<br>');
-
-    // Chuyển đổi tiêu đề
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-
-    // Chuyển đổi in đậm
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Chuyển đổi danh sách không có thứ tự
-    html = html.replace(/^\* (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/<li>(.|\n)*?(<h|$)/g, '<ul>$&</ul>$2');
-
-    // Loại bỏ các thẻ <ul> rỗng
-    html = html.replace(/<ul><\/ul>/g, '');
-
-    // Bọc các đoạn văn còn lại trong thẻ <p>
-    html = html.replace(/>([^<]+)(?=<(?!\/li|\/ul|\/h))/g, '><p>$1</p>');
-
-    return html;
+  const ulStyle = {
+    listStyleType: 'disc',
+    listStylePosition: 'inside',
+    marginLeft: '1em',
+    marginBottom: '1em'
   }
+
+  const liStyle = {
+    marginBottom: '0.5em'
+  }
+
+  const convertToHtml = (text) => {
+    const lines = text.split('\n')
+    const result = []
+    let listItems = []
+    let inList = false
+
+    const processInlineStyles = (line) => {
+      return line.split(/(\*\*.*?\*\*)/).map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={index}>{part.slice(2, -2)}</strong>
+        }
+        return part
+      })
+    }
+
+    lines.forEach((line, index) => {
+      if (line.trim() === '') {
+        if (inList) {
+          result.push(<ul key={`ul-${index}`} style={ulStyle}>{listItems}</ul>)
+          listItems = []
+          inList = false
+        }
+        return
+      }
+
+      if (line.startsWith('* ')) {
+        inList = true
+        listItems.push(<li key={`li-${index}`} style={liStyle}>{processInlineStyles(line.slice(2))}</li>)
+      } else {
+        if (inList) {
+          result.push(<ul key={`ul-${index}`} style={ulStyle}>{listItems}</ul>)
+          listItems = []
+          inList = false
+        }
+
+        if (line.endsWith(':')) {
+          result.push(<h2 key={`h2-${index}`} className="text-xl font-bold mb-2">{processInlineStyles(line.slice(0, -1))}</h2>)
+        } else {
+          result.push(<p key={`p-${index}`} className="mb-2">{processInlineStyles(line)}</p>)
+        }
+      }
+    })
+
+    if (inList) {
+      result.push(<ul key={`ul-last`} style={ulStyle}>{listItems}</ul>)
+    }
+
+    return result
+  }
+  useEffect(() => {
+    const initChat = async () => {
+      try {
+        const file1 = await fetch('/src/assets/documents/report1.txt').then(res => res.text())
+        const file2 = await fetch('/src/assets/documents/report2.txt').then(res => res.text())
+        const file3 = await fetch('/src/assets/documents/report3.txt').then(res => res.text())
+        const initialHistory = [
+          {
+            role: "user",
+            parts: [
+              { text: file1 },
+              { text: file2 },
+              { text: file3 },
+            ],
+          },
+        ]
+
+        chatInstanceRef.current = model.startChat({
+          history: initialHistory,
+          generationConfig
+        })
+      } catch (error) {
+        console.error('Error initializing chat:', error)
+      }
+    }
+
+    initChat()
+  }, [])
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight
+    }
+  }, [messages])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!input.trim()) return
-
-    setIsLoading(true)
-    setMessages(prev => [...prev, { role: 'user', content: input }])
+    const newUserMessage = { role: 'user', parts: [{ text: input }] }
+    setMessages(prev => [...prev, newUserMessage])
     setInput('')
-    console.log('🚀 ~ handleSubmit ~ input:', input)
+    setIsLoading(true)
 
-    parts.push({ text: `input: ${input}` })
     try {
-      const result = await model.generateContent({
-        contents: [{ role: "user", parts: parts }],
-        generationConfig,
-      })
-
-      const botResponse = convertToHtml(result.response.text());
-      parts.push({ text: `output: ${botResponse}` });
-      setMessages(prev => [...prev, { role: 'bot', content: botResponse }]);
+      const result = await chatInstanceRef.current.sendMessage(input)
+      const response = result.response
+      const newModelMessage = { role: 'model', parts: [{ text: response.text() }] }
+      setMessages(prev => [...prev, newModelMessage])
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', content: 'Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại.' }])
-    } finally {
-      setIsLoading(false)
+      // console.error('Error sending message:', error)
+      setMessages(prev => [...prev, { role: 'error', parts: [{ text: 'Đã xảy ra lỗi. Vui lòng thử lại.' }] }])
     }
+
+    setIsLoading(false)
   }
 
-  return (
-    <>
-      <NavTopBar />
-      <div className="h-[calc(100vh_-_55px)] flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
-        <div className=" flex-1 overflow-y-auto scrollbar-none-track p-4 space-y-4">
-          {messages.map((message, index) => (
-            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs lg:max-w-md p-4 rounded-2xl shadow-md ${message.role === 'user'
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                : 'bg-white text-gray-800'
-                }`}>
-                <p className="text-sm md:text-base">{cleanAndParseHTML(message.content)}</p>
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="max-w-xs lg:max-w-md p-4 rounded-2xl bg-gray-200 shadow-md animate-pulse">
-                <p className="text-sm md:text-base text-gray-600">Đang nhập...</p>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-        <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-gray-200 shadow-md">
-          <div className="flex space-x-3">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Nhập tin nhắn của bạn..."
-              className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
-              disabled={isLoading}
+  return (<>
+    <NavTopBar />
+    <div className="h-[calc(100vh_-_55px)] flex flex-col bg-gradient-to-b from-blue-100 to-purple-100">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-none-track" ref={chatRef}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] p-4 rounded-2xl shadow-md ${message.role === 'user'
+                ? 'bg-blue-500 text-white'
+                : message.role === 'error'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-white text-gray-800'}`}
             >
-              {isLoading ? (
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                'Gửi'
-              )}
-            </button>
+              <div className="text-sm md:text-base">{(convertToHtml(message.parts[0].text))}</div>
+            </div>
           </div>
-        </form>
+        ))}
+        {isLoading && (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        )}
       </div>
-    </>
+      <form onSubmit={handleSubmit} className="p-4 bg-white shadow-lg">
+        <div className="flex rounded-full overflow-hidden border-2 border-blue-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition duration-300">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 px-6 py-3 focus:outline-none text-gray-700"
+            placeholder="Nhập tin nhắn của bạn..."
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-3 hover:bg-blue-600 transition-colors duration-300 focus:outline-none disabled:opacity-50"
+            disabled={isLoading}
+          >
+            Gửi
+          </button>
+        </div>
+      </form>
+    </div>
+  </>
+
   )
 }
 
-export default ChatBox
+export default Chatbot

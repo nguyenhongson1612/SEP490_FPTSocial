@@ -2,6 +2,7 @@ import { Button, Modal } from '@mui/material'
 import { IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { commentGroupPost, commentGroupSharePost, getGroupPostComment, getGroupSharePostComment } from '~/apis/groupPostApis'
@@ -15,7 +16,7 @@ import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
-import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { clearAndHireCurrentActivePost, reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
@@ -26,7 +27,8 @@ function ActivePost({ isReportPost = false }) {
   const postReactStatus = useSelector(selectPostReactStatus)
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
-
+  const commentFilterType = useSelector(selectCommentFilterType)
+  const { t } = useTranslation()
   const postType = currentActivePost?.postType
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isShare = postType == POST_TYPES.SHARE_POST
@@ -69,13 +71,13 @@ function ActivePost({ isReportPost = false }) {
 
   useEffect(() => {
     if (!isReportPost) {
-      isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId).then(data => setListComment(data?.posts))
-        : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId).then(data => setListComment(data?.posts))
-          : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId).then(data => setListComment(data?.posts))
-            : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId).then(data => setListComment(data?.posts))
+      isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId, commentFilterType).then(data => setListComment(data?.posts))
+        : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId, commentFilterType).then(data => setListComment(data?.posts))
+          : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId, commentFilterType).then(data => setListComment(data?.posts))
+            : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId, commentFilterType).then(data => setListComment(data?.posts))
     }
 
-  }, [reloadComment])
+  }, [reloadComment, commentFilterType])
   // console.log(currentActivePost)
   const handleCommentPost = () => {
     const submitData = isProfile ? {
@@ -140,7 +142,8 @@ function ActivePost({ isReportPost = false }) {
             className='h-[60px] w-full flex justify-between items-center px-4'>
             <div></div>
             <span className='font-bold font-sans text-xl capitalize'>
-              {(currentActivePost?.userName || currentActivePost?.fullName)}&apos; Post
+              {t('standard.newPost.userPost', { name: currentActivePost?.userName || currentActivePost?.fullName })}
+              {/* {(currentActivePost?.userName || currentActivePost?.fullName)}&apos; Post */}
             </span>
             <div className='cursor-pointer' onClick={() => dispatch(clearAndHireCurrentActivePost())}>
               <IconX className='text-white bg-orangeFpt rounded-full' />

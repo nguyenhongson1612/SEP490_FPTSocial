@@ -1,0 +1,148 @@
+﻿
+
+
+
+
+
+
+
+
+CAPSTONE PROJECT REPORT
+Report 1 - Project Introduction
+
+
+
+
+
+
+
+
+
+- Hanoi, May 2024 -
+Table of Contents
+I. Record of Changes	3
+II. Project Introduction	4
+1. Overview	4
+1.1 Project Information	4
+1.2 Project Team	4
+2. Product Background	4
+3. Existing Systems	4
+3.1 Workplace(Meta)	4
+3.2 FE forum (FPTU's forum)	4
+4. Business Opportunity	4
+5. Software Product Vision	5
+6. Project Scope & Limitations	5
+6.1 Major Features	5
+6.2 Limitations & Exclusions	6
+
+
+
+I. Record of Changes
+DateA*
+M, DIn chargeChange Description18/05/2024ABùi Quốc AnhCreate document, add: 1. Overview, 2. Product Background, 3. Existing System, 4. Business Opportunity, 5. Software Product Vision, 6. Project Scope & Limitations23/05/2024MBùi Quốc AnhUpdate  3. Existing System and 6.1 Major Features*A - Added M - Modified D - Deleted
+
+
+
+II. Project Introduction
+1. Overview
+1.1 Project Information
+• Project name: FPT University Société place
+• Project code: FPT USP
+• Group name: SEP490_G3
+• Software type: Web Application
+1.2 Project Team
+Supervisor
+Full NameRoleEmail  Mobile Nguyễn Cường MạnhSupervisor ManhNC5@fe.edu.vn 
+Project team
+Full NameRoleEmail  MobileNguyễn Khải HoànLeaderhoannkhe161601@fpt.edu.vn0967861413Bùi Quốc AnhMemberanhbqhe163864@fpt.edu.vn0582270720 Nguyễn Anh Quân Memberquannahe164025@fpt.edu.vn0584133134 Nguyễn Hồng Sơn Membersonnhhe164042@fpt.edu.vn0367447542 Lê Hải Hoàn Memberhoanlhhe161140@fpt.edu.vn0379357029
+Stakeholders
+Full NameDepartmentEmail  MobilePhan Bảo Châu FPT Brandchaupb2@fe.edu.vn 
+2. Product Background
+Currently, digital platforms like X, Facebook, Instagram, Threads,... exploit user information without permission for advertising and illegally trade personal user data. These actions violate Decree 13/2023/NĐ-CP on Personal Data Protection in Vietnam, as well as the General Data Protection Regulation (GDPR) in Europe regarding cross-border data transfer.
+Therefore, we aim to build an internal platform to connect current students, alumni, faculty, and staff through FPTU's internal application systems. This platform will facilitate the connection of students from different campuses, enhancing the sharing of knowledge across FPTU campuses.
+FPT University Société place is a dynamic platform designed to foster a connected and collaborative community among its staff and students. This innovative website allows users to create profiles, connect with peers, and share a wide range of content, from personal updates to academic articles and professional insights. By facilitating the exchange of ideas and information, the platform aims to enhance communication, support academic and professional development, and build a vibrant, engaged university community. Whether it's faculty sharing research findings, students discussing projects, or staff announcing events, the site serves as a central hub for the diverse voices of FPT University, promoting a culture of learning, innovation, and mutual support.
+
+To encourage and increase interaction on this platform, we hope that FPTU will implement a process or organize events that incentivize students to write articles with monetary rewards (approved by FPTU PR internal). This will enhance the quality and expertise of the content, including articles on professional topics, technical skills, communication, and creative start-up ideas.
+
+
+
+
+3. Existing Systems
+
+3.1 Workplace(Meta)
+
+
+
+
+The all-in-one business communication platform from Meta that securely combines chat, video, groups and your intranet with the work tools you already use. Think Facebook, but for company.
+Link:Workplace
+Main Feature: 
+● Communication Tools
+● Integration and Compatibility
+● Collaboration Features
+
+AdvantagesDisadvantages● It's familiar
+
+● It's mobile
+
+● It's integrated
+
+● It's safe● High price (From $4 to $8 per person/month)
+
+3.2 FE forum (FPTU's forum)
+
+
+
+FE forum is an internal forum of FPT Education Group. Those who have @fpt.edu.vn, @fsb.edu.vn or @arena.edu.vn email accounts automatically become its members. Once the email account is removed, the forum membership will be dismissed. (Students cannot access this forum, despite having one of those email accounts.)
+Link:  FE forum
+Main Feature: 
+● Communication Tools
+● Announcement Tools
+
+AdvantagesDisadvantages● Easy to operate for users ●	UI,UX are not good for users.
+
+●	System performance is low.
+
+●	Features are not enough.
+
+        ●     All FPT educational institutions participate in the system.
+
+         ●     Only for staff, students do not have access rights
+
+
+3.3. NEU Alumni
+
+
+
+NEU Alumni is a forum network for NEU alumni to connect them with the school as well as a place for them to share knowledge and experiences with current generations of students.
+Link: NEU Alumni
+Main Feature: 
+● Communication Tools
+● Announcement Tools
+
+AdvantagesDisadvantages● Easy to operate for users ●	UI,UX are not good for users.
+
+●	Features are not enough.
+
+●	Last posting in forum was 5 years ago.
+
+4. Business Opportunity
+The FPT University Société presents a significant business opportunity by addressing the evolving communication needs of academic institutions. By offering a centralised platform for students and staff to connect, share articles, and collaborate, the website can enhance the university's internal communication infrastructure, making it more efficient and engaging. This platform can be expanded to include features like virtual study groups, professional networking opportunities, and academic resource sharing, creating a comprehensive digital ecosystem. Additionally, the website can serve as a model for other educational institutions seeking similar solutions, opening avenues for partnerships and licensing. With the increasing emphasis on digital transformation in education, this platform positions FPT University as a leader in innovative campus communication, potentially attracting more students and staff who value a connected and supportive academic environment.
+5. Software Product Vision
+Our vision for The FPT University Société website is to create a vibrant, interactive, and secure digital community that revolutionises the way students and staff connect, communicate, and collaborate. We aim to build a platform that not only enhances academic and professional interactions but also fosters a sense of belonging and engagement within the university. By integrating advanced features such as real-time messaging, personalised content feeds, and collaborative tools, we aspire to support a dynamic exchange of knowledge and ideas. Our ultimate goal is to empower every member of the FPT University community with seamless access to information, resources, and networking opportunities, driving innovation and excellence in education.
+With this system, we propose incorporating the following features:
+● Near/Real-Time Messaging and Notifications.
+● Event Management.
+● Enables open integration via API.
+● Academic Resource Sharing.
+● Discuss groups of majors, classes and fields.
+● User-Friendly Operations.
+● Workflow review, approval reports (post)
+● Security and Privacy Controls.
+
+6. Project Scope & Limitations
+6.1 Major Features
+IDFeatures & DescriptionFE-01AuthenticationFE-02Roles and grant permission managementFE-03Real-time message/notificationFE-04Real-time react/comment postFE-05Create member groupFE-06Manage member/post/contentFE-07Smart suggestion/search/hashtagFE-08Suggested posts with related information such as: campus, major, semester, subjects, classes, topics,...FE-09Suggest making friends and groups with related information such as majors, classes, common friends, topics of common interest,...
+
+6.2 Limitations & Exclusions
+IDDescriptionLI-01Difficulty in connecting and communicating with stakeholdersLI-02Short time to complete projectLI-03Apply new tech/tool for proceeding project LI-04Lack of experience in implementing requirements/functionality analysis and retrieval

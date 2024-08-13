@@ -1,7 +1,7 @@
 import { IconMessageCircle, IconShare3, IconThumbUp, IconThumbUpFilled } from '@tabler/icons-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import { createReactPhotoPost, createReactPost, createReactSharePost, createReactVideoPost } from '~/apis/reactApis'
+import { createReactPhotoPost, createReactPost, createReactSharePost, createReactVideoPost, getAllReactByPostId } from '~/apis/reactApis'
 import { selectCurrentActivePost, showModalActivePost, showModalSharePost, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -12,12 +12,19 @@ import { POST_TYPES } from '~/utils/constants'
 import { createReactGroupPhotoPost, createReactGroupPost, createReactGroupSharePost, createReactGroupVideoPost } from '~/apis/groupPostApis'
 import { cloneDeep } from 'lodash'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
-import { useCallback } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Popover } from '@mui/material'
+import PostReactStatusDetail from './PostReactStatusDetail'
+// import { motion } from 'framer-motion'
 
 function PostReactStatus({ postData, postType, postShareData, postShareType, isCanShare = true }) {
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const currentActivePost = useSelector(selectCurrentActivePost)
   const listReact = useSelector(selectListReactType)
+  const reactLike = listReact?.find(e => e?.reactTypeName?.toLowerCase() == 'like')
+  // const [isHovered, setIsHovered] = useState(false)
+  const { t } = useTranslation()
   const updateTopReact = useCallback(() => {
     let top2React = cloneDeep(postData?.reactCount?.top2React) || []
     listReact?.forEach(item => {
@@ -123,7 +130,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
         if (newPostReact?.isReact) {
           currentReact = newPostReact?.userReactType
           if (currentReact?.reactTypeId == reaction?.reactTypeId) {
-            console.log(currentReact?.reactTypeId == reaction?.reactTypeId);
+            // console.log(currentReact?.reactTypeId == reaction?.reactTypeId)
             newPostReact = {
               ...newPostReact,
               reactNumber: newPostReact.reactNumber - 1,
@@ -136,8 +143,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
             }
           }
           else {
-            console.log(currentReact?.reactTypeId == reaction?.reactTypeId);
-
+            // console.log(currentReact?.reactTypeId == reaction?.reactTypeId)
             newPostReact = {
               ...newPostReact,
               isReact: true,
@@ -165,7 +171,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
             })
           }
         }
-        console.log(newPostReact);
+        // console.log(newPostReact)
 
         let newPostData = cloneDeep(postData)
         newPostData = { ...newPostData, reactCount: newPostReact }
@@ -177,24 +183,49 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
     )
   }
 
+  const [open, setOpen] = useState(false)
+  const anchorRef = useRef(null)
+
+  const handleClick = () => {
+    setOpen(true)
+  }
+  const handleClose = () => {
+    setOpen(false)
+  }
+
   return (
     <div id="post-react"
       className="w-full flex flex-col items-start border-t-2 px-4">
       <div id="post-react-status"
         className="w-full flex items-center justify-between py-1">
-        <div className="flex items-center gap-1"
+        <div className="flex items-center gap-1 hover:underline cursor-pointer" ref={anchorRef} onClick={handleClick}
         >
           {
             postReact?.top2React?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
               if (react?.numberReact > 0) {
                 if (react?.reactTypeName.toLowerCase() == 'like')
-                  return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
-                else return <img key={i} className={`size-6 ${i != 0 ? '-ml-2' : 'z-10'} interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
+                  return <img key={i} className={`size-5 ${i != 0 ? '-ml-2' : 'z-10'} rounded-full outline outline-2 outline-white`} src={likeEmoji} />
+                else return <img key={i} className={`size-5 ${i != 0 ? '-ml-2' : 'z-10'} rounded-full outline outline-2 outline-white`} src={angryEmoji} />
               }
             })
           }
           <span className="text-sm text-gray-500">{postReact?.reactNumber !== 0 && postReact?.reactNumber}</span>
         </div >
+        <Popover
+          open={open}
+          anchorEl={anchorRef.current}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+        >
+          <PostReactStatusDetail postData={postData} postType={postType} />
+        </Popover>
         <div className='flex items-center gap-4'>
           <div className="flex items-center" onClick={handleOpenCurrenPostModal}>
             <IconMessageCircle stroke={1} />
@@ -209,40 +240,53 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
 
       <div id="post-react-action"
         className="w-full flex items-center justify-between border-t">
-        <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md relative  [&>#react-action]:hover:!opacity-100 basis-1/3"
+        <div
+          className="group flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md relative basis-1/3"
+          onClick={() => handleReactPost(postReact?.userReactType || reactLike)}
         >
           <div className="flex items-center gap-1">
             {
               postReact?.isReact
                 ? postReact?.userReactType?.reactTypeName.toLowerCase() == 'like'
-                  ? <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={likeEmoji} />
-                  : <img className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`} src={angryEmoji} />
+                  ? <img
+                    className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`}
+                    src={likeEmoji} />
+                  : <img
+                    className={`size-6 interceptor-loading rounded-full outline outline-2 outline-white`}
+                    src={angryEmoji}
+                  />
                 : <IconThumbUp stroke={1} />
             }
-            <span className={`text-sm font-semibold capitalize 
-              ${postReact?.userReactType?.reactTypeName.toLowerCase() == 'like' ? 'text-blue-500' : postReact?.userReactType?.reactTypeName?.toLowerCase() == 'dislike' ? 'text-orange-500' : 'text-gray-500'}`}>
-              {postReact?.userReactType?.reactTypeName.toLowerCase() || 'like'}
+            <span className={`text-sm font-bold capitalize 
+          ${postReact?.userReactType?.reactTypeName.toLowerCase() == 'like' ? 'text-blue-500' : postReact?.userReactType?.reactTypeName?.toLowerCase() == 'dislike' ? 'text-orange-500' : 'text-gray-500'}`}>
+              {postReact?.userReactType?.reactTypeName.toLowerCase() == 'like' ? t('standard.react.like') : postReact?.userReactType?.reactTypeName.toLowerCase() == 'dislike' ? t('standard.react.disLike') : t('standard.react.like')}
             </span>
           </div>
-          <div id='react-action' className='absolute flex gap-1 opacity-0 transition-opacity duration-300 delay-500 top-0 -translate-y-10
-           bg-white shadow-4edges rounded-3xl px-2 py-1'>
+          <div className="absolute z-50 flex gap-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 delay-500 top-0 -translate-y-10 bg-white shadow-4edges rounded-3xl px-2 py-1">
             {
               listReact?.map(reaction => (
-                <div key={reaction?.reactTypeId} className="text-4xl" onClick={() => handleReactPost(reaction)}>
+                <div
+                  key={reaction?.reactTypeId}
+                  className="text-4xl hover:scale-110 transition-transform duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleReactPost(reaction)
+                  }}
+                >
                   {reaction?.reactTypeName?.toLowerCase() == 'like' ?
-                    <img className='size-8 hover:scale-[1.2] cursor-pointer' src={likeEmoji} />
+                    <img className='size-8 cursor-pointer' src={likeEmoji} />
                     : reaction?.reactTypeName?.toLowerCase() == 'dislike'
-                    && <img className='size-8 hover:scale-[1.2] cursor-pointer' src={angryEmoji} />}
+                    && <img className='size-8 cursor-pointer' src={angryEmoji} />}
                 </div>
               ))
             }
           </div>
-        </div >
+        </div>
         <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md basis-1/3"
           onClick={handleOpenCurrenPostModal}
         >
           <IconMessageCircle stroke={1} />
-          <span className="text-sm text-gray-500">Comment</span>
+          <span className="text-sm text-gray-500">{t('standard.react.comment')}</span>
         </div>
         {
           (!isYourPost || isShare || isGroupShare) && isCanShare &&
@@ -256,7 +300,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
             }}
           >
             <IconShare3 stroke={1} />
-            <span className="text-sm text-gray-500">Share</span>
+            <span className="text-sm text-gray-500">{t('standard.react.share')}</span>
           </div>
         }
 

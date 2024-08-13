@@ -70,6 +70,11 @@ export const MEMBER = "member";
 export const APPROVE = "Approve";
 export const DECLINE = "Decline";
 
+export const COMMENT_FILTER_TYPE = {
+  NEW: 'New',
+  RELEVANT: 'Most relevant',
+}
+
 export const REPORT_TYPES = {
   POST: "post",
   COMMENT: "comment",

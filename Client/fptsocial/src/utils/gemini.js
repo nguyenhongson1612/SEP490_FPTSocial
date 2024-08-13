@@ -74,7 +74,7 @@ const parts = [
   { text: "input: What are the disadvantages of Workplace?" },
   { text: "output: High price (From $4 to $8 per person/month)" },
   { text: "input: What is FE forum?" },
-  { text: "output: An internal forum of FPT Education Group for users with specific email domains; it is not accessible to students." },
+  { text: "output: An internal forum of FPT Education Group for users with specific email domains it is not accessible to students." },
   { text: "input: What are the main features of FE forum?" },
   { text: "output: Communication Tools, Announcement Tools" },
   { text: "input: What are the disadvantages of FE forum?" },
@@ -176,5 +176,8 @@ const parts = [
   { text: "input: How does FPT University integrate technology into its curriculum?" },
   { text: "output: By incorporating modern technology in both teaching methods and course content, preparing students for the demands of the digital age." },
   { text: "input: nhóm làm đồ án FPT societe có mấy người, là những ai" },
-];
+]
 export default parts
+
+
+

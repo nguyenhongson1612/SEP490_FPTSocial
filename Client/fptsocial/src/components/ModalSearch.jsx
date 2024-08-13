@@ -48,7 +48,6 @@ function ModalSearch({
         leave="transition ease-out duration-100"
         leaveStart="opacity-100"
         leaveEnd="opacity-0"
-        aria-hidden="true"
       />
       {/* Modal dialog */}
       <Transition

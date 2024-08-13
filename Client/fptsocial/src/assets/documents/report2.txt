@@ -1,0 +1,114 @@
+﻿
+
+
+
+
+
+
+
+
+CAPSTONE PROJECT REPORT
+Report 2 - Project Management Plan
+
+
+
+
+
+
+
+
+
+- Hanoi, August 2024 -
+Table of Contents
+I. Record of Changes	3
+II. Project Management Plan	4
+1. Overview	4
+1.1 Scope & Estimation	4
+1.2 Project Objectives	4
+1.3 Project Risks	4
+2. Management Approach	5
+2.1 Project Process	5
+2.2 Quality Management	5
+2.3 Training Plan	5
+3. Project Deliverables	5
+4. Responsibility Assignments	5
+5. Project Communications	6
+6. Configuration Management	6
+6.1 Document Management	6
+6.2 Source Code Management	6
+6.3 Tools & Infrastructures	6
+
+
+
+I. Record of Changes
+DateA*
+M, DIn chargeChange Description16/05/2024AHoanNKCreate document25/05/2024MHoanNKModified WBS table, project deliverable*A - Added M - Modified D - Deleted
+
+
+
+II. Project Management Plan
+1. Overview
+1.1 Scope & Estimation
+Scope:
+● The project must be completed in August 2024.
+● Only used within FPT University.
+● Develop a comprehensive platform for student interaction including personalized profiles, study groups, messaging, and content management.
+● Enhance the quality of educational content and streamline communication among students and staff.
+Estimation:
+This section provides a structured view of a project's scope, breaking it down into manageable Work Breakdown Structure (WBS) items. Each WBS item represents a specific task or User Story within the project. Complexity levels (simple, medium, complex) and the estimated effort in man-days are assigned to these items.
+
+#WBS ItemHeadcountComplexityEst. Effort
+(man-days)1Project Initiation: 06/05/2024 - 08/05/20242.51.1Project Ideation1.1.1Kick-off meeting & state common goals5Simple0.51.1.2Meeting to define project scope5Complex22Project Planning: 09/05/2024 - 15/05/202452.1Prepare Project Management Plan	2Complex32.2Define function and non-functional requirements5Medium23Iteration 1: 16/05/2024 - 30/05/2024453.1Documents      173.1.1Report 2: Project Management Plan5Complex103.1.2Prepare Report 3: Software Requirement Specification2Medium73.2Design173.2.1Draw UCD3Medium43.2.2Draw context diagram1Simple13.2.3Draw ERD2Medium43.2.4Design Prototypes2Complex83.3Coding43.3.1Build base source code and code front-end2 Medium43.4Test63.4.1Design Test Plan2Medium63.5Iteration Retrospective14Iteration 2: 31/05/2024 - 14/06/2024444.1Documents174.1.1Update requirements for SRS Document5Simple54.1.2Implement overall system design3Medium64.1.3Prepare Unit Test Report1Simple44.1.4Prepare SDS Document5Simple24.2Design64.2.1Design Database2Medium64.3Coding124.3.1Build base source code for back-end3Complex 124.4Testing84.4.1Write UAT test cases5Simple84.5Iteration Review and Planning15Iteration 3: 15/06/2024 - 29/06/2024725.1Documents10-5.1.1Update requirements for SRS Documents5Simple55.1.2Update SDS Document5Simple55.2Design105.2.1Draw package diagrams2Simple65.2.2Define Screen flow2Simple25.2.3Update database design1Simple25.3Coding405.3.1Implement 11 use cases (function in Home Screen)5Medium405.4Testing115.4.1Write UT test cases1Simple25.4.2Write IT test cases1Simple25.4.3Execute UT5Simple55.4.4Execute IT1Medium25.5Iteration Review and Planning16Iteration 4: 30/06/2024 - 14/07/2024716.1Requirements & Design106.1.1Update requirements for SRS Documents5Simple56.1.2Update SDS Document5Simple56.2 Coding406.2.1Implement 13 use cases (function in Home Screen)5Medium306.3Testing206.3.1Implement Usability Testing2Simple36.3.2Update UT report2Simple36.3.3Write UT test cases2Simple36.3.4Write IT test cases2Simple36.3.5Execute UT5Simple56.3.6Execute IT2Medium36.4 Iteration Review & Planning17Iteration 5: 15/07/2024 - 29/07/2024717.1Requirements & Design107.1.1Update requirements for SRS Documents5Simple57.1.2Update SDS Document5Simple57.2 Coding457.2.1Implement Group screen5Medium457.3Testing157.3.1Implement Usability Testing2Simple27.3.2Update UT report2Simple27.3.3Write UT test cases1Simple27.3.4Write IT test cases1Simple27.3.5Execute UT5Simple57.3.6Execute IT1Medium27.4 Iteration Review & Planning18Iteration 6: 30/07/2024 - 13/08/2024618.1Requirements & Design208.1.1Finish requirements for SRS Documents5Simple58.1.2Finish SDS Document5Simple58.1.3Design Production Server2Complex108.2 Coding258.2.1Implement function Message and Share file5Medium158.2.2Setup Production Server2Complex88.2.3Deploy Code of Iter 5, Iter 6 to server1Medium28.3Testing158.3.1Complete UT report 2Simple28.3.2Complete IT report version 11Simple18.3.3Update ST test cases (web)2Simple48.3.4Execute UT5Simple28.3.5Execute IT1Simple28.3.6Execute ST2Simple48.4Iteration Retrospective19Iteration 7: 14/08/2024 - 20/08/2024299.1Requirements & Design109.1.1Prepare for final Presentation5Simple59.1.2Finish & review UT, IT, ST, UAT documents5Simple59.2 Coding109.2.1Deploy Code of Iter 7, Iter 8 to server1Medium59.2.2Fix web app bugs2Simple59.3Testing89.3.1Execute IT1Simple29.3.2Execute ST1Simple29.3.3Execute UAT1Simple49.4Iteration Retrospective110Project Closing1010.1Closing Stage1010.1.1Prepare and rehearse for capstone presentation5Medium10Total Estimated Effort (man-days)410,51.2 Project Objectives
+
+Objectives:
+● No critical issues impacting key functionalities.
+● Complete all project-related reports.
+● Ensure all deliverables are reviewed and approved by the committee
+#Testing StageTest CoverageNo. of Defects% of DefectNotes1Reviewing100%2010% 2Unit Test90%3015%3Integration Test95%2512%4System Test100%3515%5Acceptance Test100%105%
+1.3 Project Risks
+#Risk DescriptionImpactPossibility Response Plans1Alterations to Initial Project RequirementsHighHigh Reallocate resources to accommodate changes without compromising the timeline.2Delayed Response Times	HighHighEstablish structured communication protocols and regular check-ins.3Inadequate Risk Management	HighMediumProactively identify potential risks and develop mitigation strategies.4High requirements for information securityHighHighWork closely with security teams to address and mitigate security risks.5Constraints with External Tool AvailabilityHighMediumIntegrate alternative tools that are cost-effective and meet project needs.6Misunderstandings Among Team MembersMediumLowEnsure clear communication and detailed explanations.
+2. Management Approach
+2.1 Project Process
+
+Methodology: Iterative and Incremental Development
+Development is divided into multiple iterations, each delivering a functional product increment.
+Each iteration includes requirements gathering, design, development, testing, and deployment.
+
+2.2 Quality Management
+
+Approach NameDetailQuality ObjectivesUse case reviewDiscuss with members to identify inappropriate use cases	Ensure logical implementation without redundant use cases.UI reviewPrototype and review UI before client-side developmentEnsure UI is visually appealing, clean, and consistent.Unit testExecute test for all functionsHigh code coverage, catch errors early, provide documentation for the codebase.Integration testTest feature flows and interactions between components	Ensure correct data flow, manage dependencies, handle errors during integration.System testTest complete system across different environments and devicesEnsure system functionality, compatibility, and performance across various platforms.Acceptance TestFinal user tests before release	Verify functional and non-functional requirements, user interface, security, and interoperability.  
+2.3 Training Plan
+Training AreaParticipantsWhen, DurationWaiver CriteriaIterative and incremental methodologyAll membersStart: 20/05/2024Mandatory Technology Stack (Frontend & Backend)All membersStart: 01/06/2024MandatoryTestingAll membersStart: 12/06/2024Mandatory
+3. Project Deliverables
+#DeliverableDue DateNotes1Project Planning20/05/2024Project Management Plan Document2Database30/05/2024Database design2Iteration 1 31/05/2024Project Management Plant3Iteration 215/06/2024Software Requirements Specification Document4SRS + Design + Code Iteration 330/06/2024Software Requirements Specification Document, Architecture Design, Detailed Design5SRS + Design + Code Iteration 415/07/2024Software Requirements Specification Document, Architecture Design, Detailed Design, Code & Unit test, Integration test, System test cases6SRS + Design + Code Iteration 530/07/2024Software Requirements Specification Document, Architecture Design, Detailed Design, Code & Unit test, Integration test, System test cases7SRS + Design + Code Iteration 614/08/2024 Software Requirements Specification Document, Architecture Design, Detailed Design, Code & Unit test, Integration test, System test cases8SRS + Design + Code Iteration 721/08/2024Software Requirements Specification Document, Architecture Design, Detailed Design, Code & Unit test, Integration test, System test cases9Complete report23/08/2024Source codes, System test reports, Acceptant test reports
+4. Responsibility Assignments
+D~Do; R~Review; S~Support; I~Informed; <blank>- Omitted
+ResponsibilityHoanNKAnhBQHoanLHQuanNASonNHReport 1 - Project IntroductionR,SD,RSSSReport 2 - Project Management PlanD,RR,SSSSReport 3 - Software Requirement SpecificationR,SD,RSSSReport 3 - Project TrackingR,SD,RSR,SSDesign Mockup & PrototypeR,SSD,SSSReport 4 -  Software Design DocumentR,SD,RSSSDevelop Iteration 1R,SR,SSD,RSReport 5 - Software Test DocumentationR,SD,RSSSReport 5 - Test ReportR,SD,RSSSReport 5 - Unit TestR,SD,RSSSDevelop Iteration 2R,SR,SSD,RSDevelop Iteration 3R,SR,SSD,RSUpdate Report 1R,SD,RIIIUpdate Report 2R,SD,RIIIUpdate Report 3R,SD,RIIIUpdate Report 4R,SD,RIIIUpdate Report 5R,SD,RIIIReport 6 - User GuideR,SD,RSSSCreate UAT planD,SR,SR,SR,SR,SExecute UATD,SR,SSSSReport 7 - Final Project ReportR,SD,RR,SR,SR,S
+
+5. Project Communications
+
+Communication ItemWho/ TargetPurposeWhen, FrequencyType, Tool, Method(s)Weekly MeetingSupervisor & Capstone team  Report the project progress the past week
+Discuss all the problems and issues met Once per weekOnline via Google Meet, OfflineDaily MeetingAll membersAnnounce work to do
+Discuss about problems and tasks
+Distribute tasksEverydayOnline via Google MeetEmergency MeetingAll membersFind and brainstorm ideas to resolve urgent problems and issuesTo be AnnouncedOnline via Google Meet
+6. Configuration Management
+6.1 Tools & Infrastructures
+
+CategoryTools / InfrastructureTechnologyReactJS (FrontEnd), .NET (BackEnd)DatabaseSQL Server 2022IDEs/EditorsVisual Studio Code, Microsoft Visual Studio, SSMS 19APIPostman, SwaggerDiagrammingDraw.ioDocumentationMs Office, Google Docs/Sheets, Canva(Slides)CommunicationFacebook Messenger, Email, Google Meet, ZaloVersion ControlGitLab (Source Codes), Google Drive (Documents)Deployment serverDocker (Dev, Test server environment IT FE)Project managementJira, GitLab (Tasks, Defects)
+6.2 Document Management
+❖ Project documents are archived on Google Shared Drives with this structure:
+● Root
+○ SEP490_G3
+■ Report
+         Report_Test
+■ Biên bản họp
+■ Guilde làm việc
+■ Bug_Report
+■ Tài liệu sample
+6.3 Source Code Management
+❖ Source Code is managed with this structure:
+➢ Schedule will be updated instantly when changes are made.
+➢ Development team uses the Gitlab repository to archive source code and Git to control versions.
+➢ Using JIRA, Google Sheet to resolve bugs and issues throughout the entire software development process.
+➢ Developers have to run the unit test completely before push to remote repository and create merge requests.
+
