@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Queries.GetCommentByPostId
@@ -36,27 +37,37 @@ namespace Application.Queries.GetCommentByPostId
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await (from c in _context.CommentPosts
-                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
-                                  from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                  where c.UserPostId == request.UserPostId && c.IsHide == false && c.IsBanned != true
-                                  orderby c.CreatedDate ascending
-                                  select new CommentDto
-                                  {
-                                      UserId = c.UserId,
-                                      UserName = c.User.FirstName + " " + c.User.LastName,
-                                      Url = a.AvataPhotosUrl,
-                                      UserPostId = c.UserPostId,
-                                      CreatedDate = c.CreatedDate,
-                                      Content = c.Content,
-                                      IsHide = c.IsHide,
-                                      CommentId = c.CommentId,
-                                      ParentCommentId = c.ParentCommentId,
-                                      Level = c.LevelCmt,
-                                      ListNumber = c.ListNumber, 
-                                      Replies = new List<CommentDto>()
-                                  })
-                           .ToListAsync(cancellationToken);
+            var commentsQuery = from c in _context.CommentPosts
+                                join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
+                                from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
+                                where c.UserPostId == request.UserPostId && c.IsHide == false && c.IsBanned != true
+                                select new CommentDto
+                                {
+                                    UserId = c.UserId,
+                                    UserName = c.User.FirstName + " " + c.User.LastName,
+                                    Url = a.AvataPhotosUrl,
+                                    UserPostId = c.UserPostId,
+                                    CreatedDate = c.CreatedDate,
+                                    Content = c.Content,
+                                    IsHide = c.IsHide,
+                                    CommentId = c.CommentId,
+                                    ParentCommentId = c.ParentCommentId,
+                                    Level = c.LevelCmt,
+                                    ListNumber = c.ListNumber,
+                                    Replies = new List<CommentDto>()
+                                };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
+
 
             var result = new GetCommentByPostIdQueryResult
             {
@@ -89,7 +100,7 @@ namespace Application.Queries.GetCommentByPostId
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
 
     }

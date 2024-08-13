@@ -35,7 +35,7 @@ namespace Application.Queries.GetCommentBySharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await(from c in _context.CommentSharePosts
+            var commentsQuery = from c in _context.CommentSharePosts
                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                  from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                  where c.SharePostId == request.SharePostId && c.IsHide == false && c.IsBanned != true
@@ -54,8 +54,18 @@ namespace Application.Queries.GetCommentBySharePost
                                      Level = c.LevelCmt,
                                      ListNumber = c.ListNumber,
                                      Replies = new List<CommentSharePostDto>()
-                                 })
-                           .ToListAsync(cancellationToken);
+                                 };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             var result = new GetCommentBySharePostQueryResult
             {
@@ -88,7 +98,7 @@ namespace Application.Queries.GetCommentBySharePost
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
     }
 }

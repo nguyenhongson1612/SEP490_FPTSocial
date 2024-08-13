@@ -11,5 +11,6 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
     public class GetCommentByGroupPhotoPostIdQuery : IQuery<GetCommentByGroupPhotoPostIdQueryResult>
     {
         public Guid GroupPostPhotoId { get; set; }
+        public string? Type { get; set; }
     }
 }

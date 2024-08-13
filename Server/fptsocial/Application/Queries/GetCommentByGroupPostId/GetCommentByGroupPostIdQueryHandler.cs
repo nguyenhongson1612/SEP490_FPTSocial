@@ -32,7 +32,7 @@ namespace Application.Queries.GetCommentByGroupPostId
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await (from c in _context.CommentGroupPosts
+            var commentsQuery = from c in _context.CommentGroupPosts
                                     join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                     from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                     where c.GroupPostId == request.GroupPostId && c.IsHide == false && c.IsBanned != true
@@ -51,8 +51,18 @@ namespace Application.Queries.GetCommentByGroupPostId
                                         Level = c.LevelCmt,
                                         ListNumber = c.ListNumber,
                                         Replies = new List<GroupCommentDto>()
-                                    })
-                            .ToListAsync(cancellationToken);
+                                    };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             var result = new GetCommentByGroupPostIdQueryResult
             {
@@ -85,7 +95,7 @@ namespace Application.Queries.GetCommentByGroupPostId
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
 
     }

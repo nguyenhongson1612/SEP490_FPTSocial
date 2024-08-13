@@ -33,7 +33,7 @@ namespace Application.Queries.GetCommentByVideoPostId
             }
 
             // Lấy danh sách bình luận, kèm thông tin người dùng, ảnh đại diện (nếu có) và sắp xếp
-            var comments = await (from c in _context.CommentVideoPosts
+            var commentsQuery = from c in _context.CommentVideoPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && c.IsBanned != true
@@ -52,8 +52,18 @@ namespace Application.Queries.GetCommentByVideoPostId
                                     ListNumber = c.ListNumber, 
                                     Level = c.LevelCmt, 
                                     Replies = new List<CommentVideoDto>()
-                                  })
-                                  .ToListAsync(cancellationToken);
+                                  };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             // Xây dựng cấu trúc phân cấp bình luận
             var result = new GetCommentByVideoPostIdQueryResult
@@ -84,7 +94,7 @@ namespace Application.Queries.GetCommentByVideoPostId
                     commentDict[comment.ParentCommentId.Value].Replies.Add(comment);
                 }
             }
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
 
     }
