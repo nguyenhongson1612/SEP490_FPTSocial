@@ -53,12 +53,17 @@ namespace Application.Queries.GetCommentByGroupSharePost
                                      ParentCommentId = c.ParentCommentId,
                                      Level = c.LevelCmt,
                                      ListNumber = c.ListNumber,
-                                     Replies = new List<CommentGroupSharePostDto>()
+                                     Replies = new List<CommentGroupSharePostDto>(),
+                                     TotalReactCount = _context.CommentGroupSharePosts.Count(rc => rc.CommentGroupSharePostId == c.CommentGroupSharePostId)
                                  };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

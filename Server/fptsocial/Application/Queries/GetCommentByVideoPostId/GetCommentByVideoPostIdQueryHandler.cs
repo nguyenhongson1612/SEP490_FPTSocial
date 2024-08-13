@@ -51,12 +51,17 @@ namespace Application.Queries.GetCommentByVideoPostId
                                     ParentCommentId = c.ParentCommentId,
                                     ListNumber = c.ListNumber, 
                                     Level = c.LevelCmt, 
-                                    Replies = new List<CommentVideoDto>()
+                                    Replies = new List<CommentVideoDto>(),
+                                    TotalReactCount = _context.ReactVideoPostComments.Count(rc => rc.CommentVideoPostId == c.CommentVideoPostId)
                                   };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

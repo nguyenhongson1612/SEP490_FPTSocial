@@ -52,12 +52,17 @@ namespace Application.Queries.GetCommentByPhotoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<CommentPhotoDto>() // Khởi tạo danh sách phản hồi
+                                      Replies = new List<CommentPhotoDto>(), // Khởi tạo danh sách phản hồi
+                                      TotalReactCount = _context.ReactPhotoPostComments.Count(rc => rc.CommentPhotoPostId == c.CommentPhotoPostId)
                                   };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

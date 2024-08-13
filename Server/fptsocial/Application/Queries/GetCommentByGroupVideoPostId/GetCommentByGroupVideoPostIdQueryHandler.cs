@@ -50,12 +50,17 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<GroupVideoCommentDto>() // Sử dụng DTO tương ứng cho video comment
+                                      Replies = new List<GroupVideoCommentDto>(), // Sử dụng DTO tương ứng cho video comment
+                                      TotalReactCount = _context.ReactGroupVideoPostComments.Count(rc => rc.CommentGroupVideoPostId == c.CommentGroupVideoPostId)
                                   };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

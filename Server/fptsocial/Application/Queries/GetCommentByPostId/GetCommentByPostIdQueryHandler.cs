@@ -54,12 +54,17 @@ namespace Application.Queries.GetCommentByPostId
                                     ParentCommentId = c.ParentCommentId,
                                     Level = c.LevelCmt,
                                     ListNumber = c.ListNumber,
-                                    Replies = new List<CommentDto>()
+                                    Replies = new List<CommentDto>(),
+                                    TotalReactCount = _context.ReactComments.Count(rc => rc.CommentId == c.CommentId)
                                 };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

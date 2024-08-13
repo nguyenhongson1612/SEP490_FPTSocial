@@ -50,12 +50,17 @@ namespace Application.Queries.GetCommentByGroupPostId
                                         ParentCommentId = c.ParentCommentId,
                                         Level = c.LevelCmt,
                                         ListNumber = c.ListNumber,
-                                        Replies = new List<GroupCommentDto>()
+                                        Replies = new List<GroupCommentDto>(),
+                                        TotalReactCount = _context.ReactGroupCommentPosts.Count(rc => rc.CommentGroupPostId == c.CommentGroupPostId)
                                     };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {

@@ -49,12 +49,17 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<GroupPhotoCommentDto>() // Sử dụng DTO tương ứng cho photo comment
+                                      Replies = new List<GroupPhotoCommentDto>(), // Sử dụng DTO tương ứng cho photo comment
+                                      TotalReactCount = _context.ReactGroupPhotoPostComments.Count(rc => rc.CommentPhotoGroupPostId == c.CommentPhotoGroupPostId)
                                   };
 
             if (request.Type == "New")
             {
                 commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
             }
             else
             {
