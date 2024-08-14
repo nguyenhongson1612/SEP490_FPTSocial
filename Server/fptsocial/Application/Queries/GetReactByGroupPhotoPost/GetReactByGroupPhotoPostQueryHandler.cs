@@ -48,7 +48,18 @@ namespace Application.Queries.GetReactByGroupPhotoPost
                                             UserId = react.UserId,
                                             UserName = react.User.FirstName + react.User.LastName,
                                             CreatedDate = react.CreatedDate,
-                                            AvataUrl = avata != null ? avata.AvataPhotosUrl : null
+                                            AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                            Status = _context.Friends.Where(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                            .Select(y => y.Confirm)
+                                                                            .FirstOrDefault() != null
+                                                                            ? (_context.Friends.Any(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                            (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                ? (_context.Friends.FirstOrDefault(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                    .Confirm ? "Friend" : "Pending")
+                                                                                : "NotFriend")
+                                                                            : "NotFriend"
                                         }
                                     ).ToListAsync(cancellationToken);
 

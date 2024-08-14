@@ -51,7 +51,18 @@ namespace Application.Queries.GetReactByCommentGroupVideoId
                                            ReactTypeName = g.First().reactComment.ReactType.ReactTypeName,
                                            CommentGroupVideoPostId = g.First().reactComment.CommentGroupVideoPostId,
                                            CreatedDate = g.First().reactComment.CreatedDate,
-                                           AvataUrl = g.First().avata != null ? g.First().avata.AvataPhotosUrl : null
+                                           AvataUrl = g.First().avata != null ? g.First().avata.AvataPhotosUrl : null,
+                                           Status = _context.Friends.Where(x => (x.UserId == g.First().reactComment.UserId && x.FriendId == request.UserId) ||
+                                                                                       (x.UserId == request.UserId && x.FriendId == g.First().reactComment.UserId))
+                                                                            .Select(y => y.Confirm)
+                                                                            .FirstOrDefault() != null
+                                                                            ? (_context.Friends.Any(x => (x.UserId == g.First().reactComment.UserId && x.FriendId == request.UserId) ||
+                                                                                                            (x.UserId == request.UserId && x.FriendId == g.First().reactComment.UserId))
+                                                                                ? (_context.Friends.FirstOrDefault(x => (x.UserId == g.First().reactComment.UserId && x.FriendId == request.UserId) ||
+                                                                                                                        (x.UserId == request.UserId && x.FriendId == g.First().reactComment.UserId))
+                                                                                    .Confirm ? "Friend" : "Pending")
+                                                                                : "NotFriend")
+                                                                            : "NotFriend"
                                        }).ToListAsync(cancellationToken);
 
             var listReact = await (from reactType in _context.ReactTypes // Start from ReactTypes

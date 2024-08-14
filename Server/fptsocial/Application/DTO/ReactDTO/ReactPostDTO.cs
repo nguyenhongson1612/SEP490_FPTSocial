@@ -11,11 +11,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactPostId { get; set; }
         public Guid UserPostId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName {  get; set; }
         public DateTime? CreatedDate {  get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactPhotoPostDTO
@@ -23,11 +24,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactPhotoPostId { get; set; }
         public Guid UserPostPhotoId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactVideoPostDTO
@@ -35,11 +37,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactVideoPostId { get; set; }
         public Guid UserPostVideoId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactSharePostDTO
@@ -47,11 +50,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactSharePostId { get; set; }
         public Guid SharePostId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactCommentDTO
@@ -59,12 +63,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactCommentId { get; set; }
         public Guid UserPostId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactCommentPhotoDTO
@@ -72,12 +77,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactPhotoPostCommentId { get; set; }
         public Guid UserPostPhotoId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentPhotoPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactCommentVideoDTO
@@ -85,12 +91,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactVideoPostCommentId { get; set; }
         public Guid UserPostVideoId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentVideoPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactSharePostCommentDTO
@@ -98,12 +105,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactSharePostCommentId { get; set; }
         public Guid SharePostId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid? CommentSharePostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupPostDTO
@@ -111,11 +119,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupPostId { get; set; }
         public Guid GroupPostId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupPhotoPostDTO
@@ -123,11 +132,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupPhotoPostId { get; set; }
         public Guid GroupPostPhotoId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupVideoPostDTO
@@ -135,11 +145,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupVideoPostId { get; set; }
         public Guid GroupPostVideoId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupSharePostDTO
@@ -147,11 +158,12 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupSharePostId { get; set; }
         public Guid GroupSharePostId { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactName { get; set; }
+        public string? ReactName { get; set; }
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupCommentDTO
@@ -159,12 +171,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupCommentPostId { get; set; }
         public Guid GroupPostId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentGroupPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupCommentPhotoDTO
@@ -172,12 +185,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactPhotoPostCommentId { get; set; }
         public Guid GroupPostPhotoId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentPhotoGroupPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupCommentVideoDTO
@@ -185,12 +199,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupVideoCommentId { get; set; }
         public Guid GroupPostVideoId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid CommentGroupVideoPostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactGroupSharePostCommentDTO
@@ -198,12 +213,13 @@ namespace Application.DTO.ReactDTO
         public Guid ReactGroupSharePostCommentId { get; set; }
         public Guid GroupSharePostId { get; set; }
         public Guid UserId { get; set; }
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public Guid ReactTypeId { get; set; }
-        public string ReactTypeName { get; set; }
+        public string? ReactTypeName { get; set; }
         public Guid? CommentGroupSharePostId { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public string AvataUrl { get; set; }
+        public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 
     public class ReactTypeCountDTO
