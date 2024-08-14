@@ -52,17 +52,19 @@ namespace Application.Queries.GetReactByGroupPhotoPost
                                         }
                                     ).ToListAsync(cancellationToken);
 
-            var listReact = await (from reactComment in _context.ReactGroupPhotoPosts
-                                   where reactComment.GroupPostPhotoId == request.GroupPostPhotoId
-                                   group reactComment by new { reactComment.ReactTypeId, reactComment.ReactType.ReactTypeName } into g // Group by ID and Name
-                                   select new ReactTypeCountDTO // Use your existing DTO
+            var listReact = await (from reactType in _context.ReactTypes // Start from ReactTypes
+                                   join react in _context.ReactGroupPhotoPosts.Where(r => r.GroupPostPhotoId == request.GroupPostPhotoId)
+                                       on reactType.ReactTypeId equals react.ReactTypeId into reactGroup
+                                   from react in reactGroup.DefaultIfEmpty() // Handle the case where there are no matches
+                                   group react by new { reactType.ReactTypeId, reactType.ReactTypeName } into g
+                                   select new ReactTypeCountDTO
                                    {
-                                       ReactTypeId = g.Key.ReactTypeId,    // Access the grouped keys
+                                       ReactTypeId = g.Key.ReactTypeId,
                                        ReactTypeName = g.Key.ReactTypeName,
-                                       NumberReact = g.Count()                   // Maintain consistent naming
+                                       NumberReact = g.Count(r => r != null) // Count only non-null reacts
                                    })
-                                    .OrderByDescending(dto => dto.NumberReact)   // Sort by Count (not NumberReact)
-                                    .ToListAsync(cancellationToken);
+                                  .OrderByDescending(dto => dto.NumberReact) // Sort by NumberReact
+                                  .ToListAsync(cancellationToken);
 
             var checkReact = await (_context.ReactGroupPhotoPosts.Where(x => x.UserId == request.UserId && x.GroupPostPhotoId == request.GroupPostPhotoId)).ToListAsync(cancellationToken);
             if (checkReact.Count() != 0)
