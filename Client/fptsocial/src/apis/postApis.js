@@ -1,5 +1,5 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
-import { API_ROOT } from '~/utils/constants'
+import { API_ROOT, COMMENT_FILTER_TYPE } from '~/utils/constants'
 
 export const getChildPostById = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getChildPostById?UserPostMediaId=${id}`)
@@ -21,20 +21,20 @@ export const getAllPost = async ({ page, pageSize = 10 }) => {
   return response.data?.data
 }
 
-export const getComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getComment?UserPostId=${id}`)
+export const getComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getComment?UserPostId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getSharePostComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getCommentBySharePostId?SharePostId=${id}`)
+export const getSharePostComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getCommentBySharePostId?SharePostId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getPhotoComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getPhotoComment?UserPostPhotoId=${id}`)
+export const getPhotoComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getPhotoComment?UserPostPhotoId=${id}&Type=${type}`)
   return response.data?.data
 }
-export const getVideoComment = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getVideoComment?UserPostVideoId=${id}`)
+export const getVideoComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getVideoComment?UserPostVideoId=${id}&Type=${type}`)
   return response.data?.data
 }
 

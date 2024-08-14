@@ -15,7 +15,6 @@ import Toolbar from './ToolBar'
 import { useTranslation } from 'react-i18next'
 
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
-  console.log('🚀 ~ Tiptap ~ content:', content)
   const [isChoseFile, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -105,23 +104,25 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
               <div className={`absolute inset-0 ${isHoverMedia && 'bg-[rgba(0,0,0,0.2)]'} rounded-md`}>
                 {(listMedia.length !== 0) && isHoverMedia && (
                   <div className='absolute right-0 flex gap-4 h-fit text-sm font-semibold top-1 z-10'>
-                    <div
-                      className='bg-white px-3 py-1 rounded-md flex gap-1 items-center cursor-pointer hover:bg-orangeFpt hover:text-white'
-                      onClick={e => { e.stopPropagation(); handleEdit() }}
-                    >
-                      <IconEdit />{t('standard.newPost.editAll')}
-                    </div>
-                    <div
-                      className='bg-white px-3 py-1 rounded-md flex gap-1 items-center cursor-pointer hover:bg-orangeFpt hover:text-white'
-                      onClick={e => { e.stopPropagation(); document.getElementById('fileInput').click() }}
-                    >
-                      <IconFilePlus />{t('standard.newPost.addPhoto')}
-                    </div>
+                    {editorType != EDITOR_TYPE.COMMENT && <>
+                      <div
+                        className='bg-white px-3 py-1 rounded-md flex gap-1 items-center cursor-pointer hover:bg-orangeFpt hover:text-white'
+                        onClick={e => { e.stopPropagation(); handleEdit() }}
+                      >
+                        <IconEdit />{t('standard.newPost.editAll')}
+                      </div>
+                      <div
+                        className='bg-white px-3 py-1 rounded-md flex gap-1 items-center cursor-pointer hover:bg-orangeFpt hover:text-white'
+                        onClick={e => { e.stopPropagation(); document.getElementById('fileInput').click() }}
+                      >
+                        <IconFilePlus />{t('standard.newPost.addPhoto')}
+                      </div>
+                    </>}
                     <div
                       className='bg-white p-2 rounded-full flex gap-1 cursor-pointer hover:bg-orangeFpt hover:text-white'
-                      onClick={e => { e.stopPropagation(); setListMedia([]) }}
+                      onClick={e => { e.stopPropagation(); e.preventDefault(); setListMedia([]) }}
                     >
-                      <IconX />
+                      <IconX className={editorType = EDITOR_TYPE.COMMENT && 'size-4'} />
                     </div>
                   </div>
                 )}
@@ -142,7 +143,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
       <input
         type="file"
         id="fileInput"
-        multiple
+        multiple={editorType != EDITOR_TYPE.COMMENT}
         className='hidden'
         accept="image/*,video/*"
         onChange={handleImageUpload}
@@ -153,7 +154,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
           !(postType === POST_TYPES.SHARE_POST || postType === POST_TYPES.GROUP_SHARE_POST) && <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} isChooseFile={isChoseFile} postType={postType} />
         }
         {editorType === EDITOR_TYPE.COMMENT && (
-          <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2'
+          <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2 interceptor-loading'
             style={{
               opacity: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? '0.5' : 'initial',
               pointerEvents: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? 'none' : 'initial'
