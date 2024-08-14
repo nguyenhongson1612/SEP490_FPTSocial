@@ -112,9 +112,9 @@ namespace Application.Commands.CreateReactGroupVideoPost
                     CommentCount = postReactCount.CommentCount,
                     ShareCount = postReactCount.ShareCount,
                 };
+                _context.GroupPostReactCounts.Update(prc);
             }
-            
-            _context.GroupPostReactCounts.Update(prc);
+
             await _context.SaveChangesAsync();
 
             // 4. Trả về kết quả
