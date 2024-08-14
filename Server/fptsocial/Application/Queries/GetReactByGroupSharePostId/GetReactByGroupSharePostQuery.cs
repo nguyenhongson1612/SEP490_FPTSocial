@@ -9,6 +9,7 @@ namespace Application.Queries.GetReactByGroupSharePostId
 {
     public class GetReactByGroupSharePostQuery : IQuery<GetReactByGroupSharePostQueryResult>
     {
+        public int PageNumber { get; set; }
         public Guid GroupSharePostId { get; set; }
         public Guid UserId { get; set; }
     }

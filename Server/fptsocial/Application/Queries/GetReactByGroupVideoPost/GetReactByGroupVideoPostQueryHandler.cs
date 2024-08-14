@@ -48,9 +48,23 @@ namespace Application.Queries.GetReactByGroupVideoPost
                                             UserId = react.UserId,
                                             UserName = react.User.FirstName + react.User.LastName,
                                             CreatedDate = react.CreatedDate,
-                                            AvataUrl = avata != null ? avata.AvataPhotosUrl : null
+                                            AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                            Status = _context.Friends.Where(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                            .Select(y => y.Confirm)
+                                                                            .FirstOrDefault() != null
+                                                                            ? (_context.Friends.Any(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                            (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                ? (_context.Friends.FirstOrDefault(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                    .Confirm ? "Friend" : "Pending")
+                                                                                : "NotFriend")
+                                                                            : "NotFriend"
                                         }
-                                    ).ToListAsync(cancellationToken);
+                                        )
+                                        .Skip((request.PageNumber - 1) * 10) // Bỏ qua các mục trước trang hiện tại
+                                        .Take(10) // Lấy số mục cho trang hiện tại
+                                        .ToListAsync(cancellationToken);
 
             var listReact = await (from reactType in _context.ReactTypes // Start from ReactTypes
                                    join react in _context.ReactGroupVideoPosts.Where(r => r.GroupPostVideoId == request.GroupPostVideoId)

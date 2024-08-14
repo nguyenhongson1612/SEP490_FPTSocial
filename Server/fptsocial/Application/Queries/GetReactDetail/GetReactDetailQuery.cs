@@ -9,6 +9,7 @@ namespace Application.Queries.GetReactDetail
 {
     public class GetReactDetailQuery : IQuery<GetReactDetailQueryResult>
     {
+        public int PageNumber { get; set; }
         public Guid UserId { get; set; }
         public string? PostType { get; set; }
         public Guid? PostId { get; set; }
