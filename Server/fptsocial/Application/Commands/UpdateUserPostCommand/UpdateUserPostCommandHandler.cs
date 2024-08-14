@@ -228,6 +228,17 @@ namespace Application.Commands.UpdateUserPostCommand
                         PostPosition = photo.Position,
                     };
                     await _context.UserPostPhotos.AddAsync(newUserPostPhoto);
+
+                    Domain.CommandModels.PostReactCount photoPostReactCount = new Domain.CommandModels.PostReactCount
+                    {
+                        PostReactCountId = _helper.GenerateNewGuid(),
+                        UserPostPhotoId = newUserPostPhoto.UserPostPhotoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                        CreateAt = DateTime.Now
+                    };
+                    await _context.PostReactCounts.AddAsync(photoPostReactCount);
                 }
             }
 
@@ -271,6 +282,17 @@ namespace Application.Commands.UpdateUserPostCommand
                         PostPosition = video.Position
                     };
                     await _context.UserPostVideos.AddAsync(newUserPostVideo);
+
+                    Domain.CommandModels.PostReactCount videoPostReactCount = new Domain.CommandModels.PostReactCount
+                    {
+                        PostReactCountId = _helper.GenerateNewGuid(),
+                        UserPostVideoId = newUserPostVideo.UserPostVideoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                        CreateAt = DateTime.Now
+                    };
+                    await _context.PostReactCounts.AddAsync(videoPostReactCount);
                 }
             }
 

@@ -5,14 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Queries.GetReactDetail
+namespace Application.Queries.GetReactCommentDetail
 {
-    public class GetReactDetailQuery : IQuery<GetReactDetailQueryResult>
+    public class GetReactCommentDetailQuery : IQuery<GetReactCommentDetailQueryResult>
     {
         public Guid UserId { get; set; }
-        public string? PostType { get; set; }
-        public Guid? PostId { get; set; }
+        public string? CommentType { get; set; }
+        public Guid? CommentId { get; set; }
         public string? ReactName { get; set; }
-
     }
 }

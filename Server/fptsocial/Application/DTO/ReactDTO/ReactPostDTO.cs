@@ -221,5 +221,6 @@ namespace Application.DTO.ReactDTO
         public string? UserName { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? AvataUrl { get; set; }
+        public string? Status { get; set; }
     }
 }

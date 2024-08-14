@@ -235,6 +235,16 @@ namespace Application.Commands.UpdateGroupPostCommand
                         PostPosition = photo.Position
                     };
                     await _context.GroupPostPhotos.AddAsync(newGroupPostPhoto);
+
+                    Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
+                    {
+                        GroupPostReactCountId = _helper.GenerateNewGuid(),
+                        GroupPostPhotoId = newGroupPostPhoto.GroupPostPhotoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                    };
+                    await _context.GroupPostReactCounts.AddAsync(groupPostPhotoReactCount);
                 }
             }
 
@@ -281,6 +291,16 @@ namespace Application.Commands.UpdateGroupPostCommand
                         PostPosition = video.Position
                     };
                     await _context.GroupPostVideos.AddAsync(newGroupPostVideo);
+
+                    Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
+                    {
+                        GroupPostReactCountId = _helper.GenerateNewGuid(),
+                        GroupPostVideoId = newGroupPostVideo.GroupPostVideoId,
+                        ReactCount = 0,
+                        CommentCount = 0,
+                        ShareCount = 0,
+                    };
+                    await _context.GroupPostReactCounts.AddAsync(groupPostVideoReactCount);
                 }
             }
 

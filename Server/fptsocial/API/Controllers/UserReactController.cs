@@ -33,6 +33,7 @@ using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
 using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByVideoPost;
+using Application.Queries.GetReactCommentDetail;
 using Application.Queries.GetReactDetail;
 using Application.Queries.GetUserStatus;
 using MediatR;
@@ -533,6 +534,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getReactPostDetail")]
         public async Task<IActionResult> GetReactPostDetail([FromQuery] GetReactDetailQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getReactCommentPostDetail")]
+        public async Task<IActionResult> GetReactCommentPostDetail([FromQuery] GetReactCommentDetailQuery query)
         {
             var res = await _sender.Send(query);
             return Success(res.Value);

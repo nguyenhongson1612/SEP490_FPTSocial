@@ -54,15 +54,21 @@ namespace Application.Queries.GetReactByCommentPhotoId
                                            AvataUrl = g.First().avata != null ? g.First().avata.AvataPhotosUrl : null
                                        }).ToListAsync(cancellationToken);
 
-            var listReact = await (from reactComment in _querycontext.ReactPhotoPostComments
-                                   where reactComment.CommentPhotoPostId == request.CommentPhotoPostId
-                                   group reactComment by reactComment.ReactTypeId into g
+            var listReact = await (from reactType in _querycontext.ReactTypes // Start from ReactTypes
+                                   join reactComment in _querycontext.ReactPhotoPostComments
+                                       on reactType.ReactTypeId equals reactComment.ReactTypeId into reactGroup
+                                   from reactComment in reactGroup.DefaultIfEmpty() // Handle the case where there are no matches
+                                   where reactComment == null || reactComment.CommentPhotoPostId == request.CommentPhotoPostId // Filter by CommentPhotoPostId
+                                   group reactComment by new { reactType.ReactTypeId, reactType.ReactTypeName } into g // Group by ID and Name
                                    select new ReactTypeCountDTO
                                    {
-                                       ReactTypeId = g.Key,
-                                       ReactTypeName = g.FirstOrDefault().ReactType.ReactTypeName,
-                                       NumberReact = g.Count()
-                                   }).ToListAsync(cancellationToken);
+                                       ReactTypeId = g.Key.ReactTypeId,
+                                       ReactTypeName = g.Key.ReactTypeName,
+                                       NumberReact = g.Count(r => r != null) // Count only non-null reacts
+                                   })
+                                   .OrderByDescending(dto => dto.NumberReact) // Sort by NumberReact
+                                   .ToListAsync(cancellationToken);
+
 
             var checkReact = await (_querycontext.ReactPhotoPostComments.Where(x => x.UserId == request.UserId && x.CommentPhotoPostId == request.CommentPhotoPostId)).ToListAsync(cancellationToken);
             if (checkReact.Count() != 0)

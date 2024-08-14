@@ -1,0 +1,275 @@
+﻿using Application.DTO.ReactDTO;
+using Application.Queries.GetReactDetail;
+using AutoMapper;
+using Core.CQRS;
+using Core.CQRS.Query;
+using Domain.Enums;
+using Domain.Exceptions;
+using Domain.QueryModels;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Queries.GetReactCommentDetail
+{
+    public class GetReactCommentDetailQueryHandler : IQueryHandler<GetReactCommentDetailQuery, GetReactCommentDetailQueryResult>
+    {
+        private readonly fptforumQueryContext _context;
+        private readonly IMapper _mapper;
+
+        public GetReactCommentDetailQueryHandler(fptforumQueryContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<Result<GetReactCommentDetailQueryResult>> Handle(GetReactCommentDetailQuery request, CancellationToken cancellationToken)
+        {
+            if (_context == null)
+            {
+                throw new ErrorException(StatusCodeEnum.Context_Not_Found);
+            }
+            var result = new GetReactCommentDetailQueryResult();
+            switch (request.CommentType)
+            {
+                case "CommentUserPost":
+                    var listUserReact = await (from react in _context.ReactComments
+                                               join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                               from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                               from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                               where
+                                                   (react.CommentId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                   (
+                                                       // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                       (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                       || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                   )
+                                               where react.CommentId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName
+                                               orderby react.CreatedDate descending
+                                               select new ReactDetailDTO
+                                               {
+                                                   ReactTypeId = react.ReactTypeId,
+                                                   ReactName = react.ReactType.ReactTypeName,
+                                                   UserId = react.UserId,
+                                                   UserName = react.User.FirstName + " " + react.User.LastName,
+                                                   CreatedDate = react.CreatedDate,
+                                                   AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                   Status = friend != null
+                                                       ? (friend.Confirm ? "Friend" : "Pending")
+                                                       : "NotFriend"
+                                               }
+                                                ).ToListAsync(cancellationToken);
+
+
+                    result.ListUserReact = listUserReact;
+                    break;
+                case "CommentUserPhotoPost":
+                    var listUserPhotoReact = await (from react in _context.ReactPhotoPostComments
+                                                    join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                    from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                    from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                    where
+                                                        (react.CommentPhotoPostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                        (
+                                                            // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                            (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                            || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                        )
+                                                    orderby react.CreatedDate descending
+                                                    select new ReactDetailDTO
+                                                    {
+                                                        ReactTypeId = react.ReactTypeId,
+                                                        ReactName = react.ReactType.ReactTypeName,
+                                                        UserId = react.UserId,
+                                                        UserName = react.User.FirstName + react.User.LastName,
+                                                        CreatedDate = react.CreatedDate,
+                                                        AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                        Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                    }
+                                   ).ToListAsync(cancellationToken);
+
+                    result.ListUserReact = listUserPhotoReact;
+                    break;
+                case "CommentUserVideoPost":
+                    var listUserVideoReact = await (from react in _context.ReactVideoPostComments
+                                                    join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                    from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                    from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                    where
+                                                        (react.CommentVideoPostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                        (
+                                                            // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                            (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                            || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                        )
+                                                    orderby react.CreatedDate descending
+                                                    select new ReactDetailDTO
+                                                    {
+                                                        ReactTypeId = react.ReactTypeId,
+                                                        ReactName = react.ReactType.ReactTypeName,
+                                                        UserId = react.UserId,
+                                                        UserName = react.User.FirstName + react.User.LastName,
+                                                        CreatedDate = react.CreatedDate,
+                                                        AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                        Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                    }
+                                    ).ToListAsync(cancellationToken);
+
+                    result.ListUserReact = listUserVideoReact;
+                    break;
+                case "CommentGroupPost":
+                    var listGroupReact = await (from react in _context.ReactGroupCommentPosts
+                                                join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                where
+                                                    (react.CommentGroupPostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                    (
+                                                        // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                        (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                        || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                    )
+                                                orderby react.CreatedDate descending
+                                                select new ReactDetailDTO
+                                                {
+                                                    ReactTypeId = react.ReactTypeId,
+                                                    ReactName = react.ReactType.ReactTypeName,
+                                                    UserId = react.UserId,
+                                                    UserName = react.User.FirstName + react.User.LastName,
+                                                    CreatedDate = react.CreatedDate,
+                                                    AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                    Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                }
+                                    ).ToListAsync(cancellationToken);
+                    result.ListUserReact = listGroupReact;
+                    break;
+                case "CommentGroupPhotoPost":
+                    var listGroupPhotoReact = await (from react in _context.ReactGroupPhotoPostComments
+                                                     join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                     from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                     from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                     where
+                                                         (react.CommentPhotoGroupPostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                         (
+                                                             // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                             (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                             || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                         )
+                                                     orderby react.CreatedDate descending
+                                                     select new ReactDetailDTO
+                                                     {
+                                                         ReactTypeId = react.ReactTypeId,
+                                                         ReactName = react.ReactType.ReactTypeName,
+                                                         UserId = react.UserId,
+                                                         UserName = react.User.FirstName + react.User.LastName,
+                                                         CreatedDate = react.CreatedDate,
+                                                         AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                         Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                     }
+                                    ).ToListAsync(cancellationToken);
+                    result.ListUserReact = listGroupPhotoReact;
+                    break;
+                case "CommentGroupVideoPost":
+                    var listGroupVideoReact = await (from react in _context.ReactGroupVideoPostComments
+                                                     join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                     from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                     from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                     where
+                                                         (react.CommentGroupVideoPostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                         (
+                                                             // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                             (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                             || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                         )
+                                                     orderby react.CreatedDate descending
+                                                     select new ReactDetailDTO
+                                                     {
+                                                         ReactTypeId = react.ReactTypeId,
+                                                         ReactName = react.ReactType.ReactTypeName,
+                                                         UserId = react.UserId,
+                                                         UserName = react.User.FirstName + react.User.LastName,
+                                                         CreatedDate = react.CreatedDate,
+                                                         AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                         Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                     }
+                                    ).ToListAsync(cancellationToken);
+                    result.ListUserReact = listGroupVideoReact;
+                    break;
+                case "UserSharePost":
+                    var listUserShareReact = await (from react in _context.ReactSharePostComments
+                                                    join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                    from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                    from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                    where
+                                                        (react.CommentSharePostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                        (
+                                                            // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                            (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                            || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                        )
+                                                    orderby react.CreateDate descending
+                                                    select new ReactDetailDTO
+                                                    {
+                                                        ReactTypeId = react.ReactTypeId,
+                                                        ReactName = react.ReactType.ReactTypeName,
+                                                        UserId = react.UserId,
+                                                        UserName = react.User.FirstName + react.User.LastName,
+                                                        CreatedDate = react.CreateDate,
+                                                        AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                        Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                    }
+                                    ).ToListAsync(cancellationToken);
+                    result.ListUserReact = listUserShareReact;
+                    break;
+                case "CommentGroupSharePost":
+                    var listGroupShareReact = await (from react in _context.ReactGroupSharePostComments
+                                                     join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
+                                                     from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join
+                                                     from friend in _context.Friends.DefaultIfEmpty() // Left join to get friendship status
+                                                     where
+                                                         (react.CommentGroupSharePostId == request.CommentId && react.ReactType.ReactTypeName == request.ReactName) &&
+                                                         (
+                                                             // Điều kiện mới, kiểm tra cả hai trường hợp
+                                                             (react.UserId == friend.UserId && request.UserId == friend.FriendId)
+                                                             || (react.UserId == friend.FriendId && request.UserId == friend.UserId)
+                                                         )
+                                                     orderby react.CreateDate descending
+                                                     select new ReactDetailDTO
+                                                     {
+                                                         ReactTypeId = react.ReactTypeId,
+                                                         ReactName = react.ReactType.ReactTypeName,
+                                                         UserId = react.UserId,
+                                                         UserName = react.User.FirstName + react.User.LastName,
+                                                         CreatedDate = react.CreateDate,
+                                                         AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                                         Status = friend != null
+                                                               ? (friend.Confirm ? "Friend" : "Pending")
+                                                               : "NotFriend"
+                                                     }
+                                    ).ToListAsync(cancellationToken);
+                    result.ListUserReact = listGroupShareReact;
+                    break;
+                case null:
+                    break;
+
+            }
+            return Result<GetReactCommentDetailQueryResult>.Success(result);
+
+        }
+    }
+}
