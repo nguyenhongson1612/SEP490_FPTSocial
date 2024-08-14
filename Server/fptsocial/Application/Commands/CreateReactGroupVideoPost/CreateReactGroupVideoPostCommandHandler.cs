@@ -101,15 +101,19 @@ namespace Application.Commands.CreateReactGroupVideoPost
                 }
             }
 
-            var prc = new Domain.CommandModels.GroupPostReactCount
+            if (postReactCount != null)
             {
-                GroupPostReactCountId = postReactCount.GroupPostReactCountId,
-                GroupPostId = postReactCount.GroupPostId,
-                GroupPostPhotoId = postReactCount.GroupPostPhotoId,
-                ReactCount = postReactCount.ReactCount,
-                CommentCount = postReactCount.CommentCount,
-                ShareCount = postReactCount.ShareCount,
-            };
+                var prc = new Domain.CommandModels.GroupPostReactCount
+                {
+                    GroupPostReactCountId = postReactCount.GroupPostReactCountId,
+                    GroupPostId = postReactCount.GroupPostId,
+                    GroupPostPhotoId = postReactCount.GroupPostPhotoId,
+                    ReactCount = postReactCount.ReactCount,
+                    CommentCount = postReactCount.CommentCount,
+                    ShareCount = postReactCount.ShareCount,
+                };
+            }
+            
             _context.GroupPostReactCounts.Update(prc);
             await _context.SaveChangesAsync();
 
