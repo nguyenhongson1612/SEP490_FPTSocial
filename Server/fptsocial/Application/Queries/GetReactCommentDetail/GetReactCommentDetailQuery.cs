@@ -9,6 +9,7 @@ namespace Application.Queries.GetReactCommentDetail
 {
     public class GetReactCommentDetailQuery : IQuery<GetReactCommentDetailQueryResult>
     {
+        public Guid UserId { get; set; }
         public string? CommentType { get; set; }
         public Guid? CommentId { get; set; }
         public string? ReactName { get; set; }
