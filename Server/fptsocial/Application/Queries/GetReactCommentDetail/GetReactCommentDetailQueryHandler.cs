@@ -33,6 +33,7 @@ namespace Application.Queries.GetReactCommentDetail
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
             var result = new GetReactCommentDetailQueryResult();
+            int pageSize = 10;
             switch (request.CommentType)
             {
                 case "CommentUserPost":
@@ -62,7 +63,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                }
-                                                ).ToListAsync(cancellationToken);
+                                                )
+                                                .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserReact;
                     break;
@@ -93,7 +97,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                   ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserPhotoReact;
                     break;
@@ -124,7 +131,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserVideoReact;
                     break;
@@ -156,7 +166,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                 }
-                                    ).ToListAsync(cancellationToken);
+                                                )
+                                                .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupReact;
                     break;
 
@@ -186,7 +199,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                     )
+                                                     .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                     .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupPhotoReact;
                     break;
 
@@ -216,7 +232,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupVideoReact;
                     break;
 
@@ -246,7 +265,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listUserShareReact;
                     break;
 
@@ -276,7 +298,10 @@ namespace Application.Queries.GetReactCommentDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupShareReact;
                     break;
 

@@ -9,6 +9,7 @@ namespace Application.Queries.GetReactByCommentGroupPostId
 {
     public class GetReactByCommentGroupPostIdQuery : IQuery<GetReactByCommentGroupPostIdQueryResult>
     {
+        public int PageNumber { get; set; }
         public Guid CommentGroupPostId { get; set; }
         public Guid UserId { get; set; }
     }

@@ -9,6 +9,7 @@ namespace Application.Queries.GetReactByVideoPost
 {
     public class GetReactByVideoPostQuery : IQuery<GetReactByVideoPostQueryResult>
     {
+        public int PageNumber { get; set; }
         public Guid UserPostVideoId { get; set; }
         public Guid UserId { get; set; }
     }

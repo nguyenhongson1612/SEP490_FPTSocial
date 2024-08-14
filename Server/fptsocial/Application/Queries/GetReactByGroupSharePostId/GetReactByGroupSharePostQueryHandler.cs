@@ -62,8 +62,11 @@ namespace Application.Queries.GetReactByGroupSharePostId
                                                                                     .Confirm ? "Friend" : "Pending")
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
-                                       }
-                                    ).ToListAsync(cancellationToken);
+                                        }
+                                        )
+                                        .Skip((request.PageNumber - 1) * 10) // Bỏ qua các mục trước trang hiện tại
+                                        .Take(10) // Lấy số mục cho trang hiện tại
+                                        .ToListAsync(cancellationToken);
 
             var listReact = await (from reactType in _context.ReactTypes // Start from ReactTypes
                                    join react in _context.ReactGroupSharePosts.Where(r => r.GroupSharePostId == request.GroupSharePostId)
@@ -100,6 +103,5 @@ namespace Application.Queries.GetReactByGroupSharePostId
 
             return Result<GetReactByGroupSharePostQueryResult>.Success(result);
         }
-        
     }
 }

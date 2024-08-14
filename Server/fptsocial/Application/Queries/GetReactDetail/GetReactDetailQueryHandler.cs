@@ -34,6 +34,7 @@ namespace Application.Queries.GetReactDetail
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
             var result = new GetReactDetailQueryResult();
+            int pageSize = 10;
             switch (request.PostType)
             {
                 case "UserPost":
@@ -62,7 +63,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                }
-                                    ).ToListAsync(cancellationToken);
+                                                )
+                                                .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserReact;
 
@@ -94,7 +98,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                   ).ToListAsync(cancellationToken);
+                                                     )
+                                                     .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                     .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserPhotoReact;
                     break;
@@ -125,7 +132,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
 
                     result.ListUserReact = listUserVideoReact;
                     break;
@@ -156,7 +166,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                 }
-                                    ).ToListAsync(cancellationToken);
+                                                )
+                                                .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupReact;
                     break;
 
@@ -187,7 +200,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupPhotoReact;
                     break;
 
@@ -217,7 +233,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupVideoReact;
                     break;
 
@@ -247,7 +266,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                     }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listUserShareReact;
                     break;
 
@@ -277,7 +299,10 @@ namespace Application.Queries.GetReactDetail
                                                                                 : "NotFriend")
                                                                             : "NotFriend"
                                                      }
-                                    ).ToListAsync(cancellationToken);
+                                                    )
+                                                    .Skip((request.PageNumber - 1) * pageSize) // Bỏ qua các mục trước trang hiện tại
+                                                    .Take(pageSize) // Lấy số mục cho trang hiện tại
+                                                    .ToListAsync(cancellationToken);
                     result.ListUserReact = listGroupShareReact;
                     break;
 
