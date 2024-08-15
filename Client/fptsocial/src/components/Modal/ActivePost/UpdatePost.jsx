@@ -21,13 +21,13 @@ import EditMedia from '../EditMedia'
 import { useTranslation } from 'react-i18next'
 import Tiptap from '~/components/TitTap/TitTap'
 
-
 function UpdatePost() {
   const isShowUpdatePost = useSelector(selectIsShowModalUpdatePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
 
   const postType = currentActivePost?.postType
+  // console.log('🚀 ~ UpdatePost ~ postType:', postType)
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isShare = postType == POST_TYPES.SHARE_POST
   const isGroup = postType == POST_TYPES.GROUP_POST
@@ -35,7 +35,6 @@ function UpdatePost() {
 
   const { t } = useTranslation()
 
-  // console.log('🚀 ~ UpdatePost ~ currentActivePost:', currentActivePost)
   const dispatch = useDispatch()
   const [isEdit, setIsEdit] = useState(false)
 
@@ -71,18 +70,18 @@ function UpdatePost() {
     let photos = []
     let videos = []
     if (isProfile) {
-      photos = (currentActivePost?.userPostPhotos || currentActivePost?.userPostPhoto)?.map(e => ({ type: 'image', owner: 'subPost', url: e?.photo?.photoUrl }))
-      videos = (currentActivePost?.userPostVideos || currentActivePost?.userPostVideo)?.map(e => ({ type: 'video', owner: 'subPost', url: e?.video?.videoUrl }))
-      if (currentActivePost?.photo) photos.unshift({ type: 'image', owner: 'mainPost', url: currentActivePost?.photo?.photoUrl })
-      if (currentActivePost?.video) videos.push({ type: 'video', owner: 'mainPost', url: currentActivePost?.video?.videoUrl })
+      photos = (currentActivePost?.userPostPhotos || currentActivePost?.userPostPhoto)?.map(e => ({ type: 'image', position: e?.postPosition, owner: 'subPost', url: e?.photo?.photoUrl }))
+      videos = (currentActivePost?.userPostVideos || currentActivePost?.userPostVideo)?.map(e => ({ type: 'video', position: e?.postPosition, owner: 'subPost', url: e?.video?.videoUrl }))
+      if (currentActivePost?.photo) photos.push({ type: 'image', position: 0, owner: 'mainPost', url: currentActivePost?.photo?.photoUrl })
+      if (currentActivePost?.video) videos.push({ type: 'video', position: 0, owner: 'mainPost', url: currentActivePost?.video?.videoUrl })
     }
     else if (isGroup) {
-      photos = currentActivePost?.groupPostPhoto?.map(e => ({ type: 'image', owner: 'subPost', url: e?.groupPhoto?.photoUrl }))
-      videos = currentActivePost?.groupPostVideo?.map(e => ({ type: 'video', owner: 'subPost', url: e?.groupVideo?.videoUrl }))
-      if (currentActivePost?.groupPhoto) photos.unshift({ type: 'image', owner: 'mainPost', url: currentActivePost?.groupPhoto?.photoUrl })
-      if (currentActivePost?.groupVideo) videos.push({ type: 'video', owner: 'mainPost', url: currentActivePost?.groupVideo?.videoUrl })
+      photos = currentActivePost?.groupPostPhoto?.map(e => ({ type: 'image', position: e?.postPosition, owner: 'subPost', url: e?.groupPhoto?.photoUrl }))
+      videos = currentActivePost?.groupPostVideo?.map(e => ({ type: 'video', position: e?.postPosition, owner: 'subPost', url: e?.groupVideo?.videoUrl }))
+      if (currentActivePost?.groupPhoto) photos.push({ type: 'image', position: 0, owner: 'mainPost', url: currentActivePost?.groupPhoto?.photoUrl })
+      if (currentActivePost?.groupVideo) videos.push({ type: 'video', position: 0, owner: 'mainPost', url: currentActivePost?.groupVideo?.videoUrl })
     }
-    return [...photos, ...videos]
+    return [...photos, ...videos].sort((a, b) => a.position - b.position)
   })
   // console.log('🚀 ~ const[listMedia,setListMedia]=useState ~ listMedia:', listMedia)
 
@@ -131,19 +130,24 @@ function UpdatePost() {
       setIsEdit(false)
   }, [listMedia])
   const submitPost = () => {
-    const listPhoto = listMedia.filter(media => media.type === 'image').map((media, index) => ({ photoUrl: media.url, position: index }))
-    const listVideo = listMedia.filter(media => media.type === 'video').map((media, index) => ({ videoUrl: media.url, position: index }))
+    const listPhoto = listMedia.map((media, index) =>
+      media.type === 'image' ? { photoUrl: media.url, position: index } : undefined
+    ).filter(Boolean)
+
+    const listVideo = listMedia.map((media, index) =>
+      media.type === 'video' ? { videoUrl: media.url, position: index } : undefined
+    ).filter(Boolean)
     // console.log(listMedia)
     const submitData = isProfile ? {
       'userId': currentUser?.userId,
       'userPostId': currentActivePost?.postId || currentActivePost?.userPostId,
-      'content': content,
+      'content': content ?? '',
       'userStatusId': choseStatus?.userStatusId,
       'photos': listPhoto,
       'videos': listVideo
     } : isGroup ? {
       'userId': currentUser?.userId,
-      'groupPostId': currentActivePost?.postId,
+      'groupPostId': currentActivePost?.postId || currentActivePost?.groupPostId,
       'groupId': currentActivePost?.groupId,
       'content': content,
       'groupStatusId': choseStatus?.groupStatusId,
@@ -169,18 +173,23 @@ function UpdatePost() {
             : isGroupShare && updateGroupSharePost(submitData),
       { pending: 'Updating...' }
     ).then(() => {
-      dispatch(clearAndHireCurrentActivePost())
+      handleCloseModal()
+      setContent(null)
+      setListMedia([])
       dispatch(triggerReload())
       toast.success('Update post successfully!')
     })
   }
 
-  // const currentUser = useSelector(selectCurrentUser)
+  const handleCloseModal = () => {
+    dispatch(clearAndHireCurrentActivePost())
+    dispatch(triggerReload())
+  }
 
   return (
     <Modal
       open={isShowUpdatePost}
-      onClose={() => dispatch(clearAndHireCurrentActivePost())}
+      onClose={handleCloseModal}
     >
       <div className='flex flex-col items-center gap-3 w-[95%] lg:w-[900px] max-h-[90%] h-fit absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2
          bg-white border-gray-300 shadow-md rounded-md'>
@@ -192,7 +201,7 @@ function UpdatePost() {
                   <span></span>
                   <span className='text-xl font-bold'>{t('standard.newPost.editPost')}</span>
                   <IconX
-                    onClick={() => dispatch(clearAndHireCurrentActivePost())}
+                    onClick={handleCloseModal}
                     className='bg-orangeFpt text-white rounded-full  cursor-pointer hover:bg-orange-700' />
                 </div>
                 <div className='mx-4'>
@@ -258,8 +267,8 @@ function UpdatePost() {
                 <div className='interceptor-loading py-4 flex justify-center items-center'>
                   <button className='h-9 w-full  mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
                     style={{
-                      opacity: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
-                      pointerEvents: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
+                      opacity: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
+                      pointerEvents: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
                     }}
                   >{t('standard.newPost.savePost')}
                   </button>

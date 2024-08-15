@@ -35,37 +35,48 @@ function GroupSideBar({ listPersonalGroup }) {
         <div id="group-owner"
           className="flex flex-col items-start mb-5"
         >
-          <span className="text-gray-500 mb-1">Groups you manage</span>
           {
-            listPersonalGroup?.listGroupAdmin?.map(e => (
-              <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className=" flex items-center gap-3 capitalize cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt">
-                <img
-                  src={e?.coverImage}
-                  alt="group-img"
-                  className="rounded-md aspect-square object-cover w-10"
-                />
-                <span className="font-semibold">{e?.groupName}</span>
-              </Link>
-            ))
+            listPersonalGroup?.listGroupAdmin?.length !== 0 &&
+            <>
+              <span className="text-gray-500 mb-1">Groups you manage</span>
+              {
+                listPersonalGroup?.listGroupAdmin?.map(e => (
+                  <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className=" flex items-center gap-3 capitalize cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt">
+                    <img
+                      src={e?.coverImage}
+                      alt="group-img"
+                      className="rounded-md aspect-square object-cover w-10"
+                    />
+                    <span className="font-semibold">{e?.groupName}</span>
+                  </Link>
+                ))
+              }
+            </>
           }
-
         </div>
+
         <div id="group-joins"
           className="flex flex-col items-start mb-5"
         >
-          <span className="text-gray-500 mb-1">Groups you join</span>
           {
-            listPersonalGroup?.listGroupMember?.map(e => (
-              <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className=" flex items-center gap-3 capitalize cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt">
-                <img
-                  src={e?.coverImage}
-                  alt="group-img"
-                  className="rounded-md aspect-square object-cover w-10"
-                />
-                <span className="font-semibold">{e?.groupName}</span>
-              </Link>
-            ))
+            listPersonalGroup?.listGroupMember?.length !== 0 &&
+            <>
+              <span className="text-gray-500 mb-1">Groups you join</span>
+              {
+                listPersonalGroup?.listGroupMember?.map(e => (
+                  <Link key={e?.groupId} to={`/groups/${e?.groupId}`} className=" flex items-center gap-3 capitalize cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt">
+                    <img
+                      src={e?.coverImage}
+                      alt="group-img"
+                      className="rounded-md aspect-square object-cover w-10"
+                    />
+                    <span className="font-semibold">{e?.groupName}</span>
+                  </Link>
+                ))
+              }
+            </>
           }
+
         </div>
       </div>
 

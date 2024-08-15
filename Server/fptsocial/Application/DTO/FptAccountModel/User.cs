@@ -27,6 +27,8 @@ public class User
     
     [JsonProperty("userType")]
     public string UserType { get; set; }
+    public string Avata { get; set; }
+    public string FullName { get; set; }
 }
 
 public class UserInfoInCampus

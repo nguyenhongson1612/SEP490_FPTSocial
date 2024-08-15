@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
-import { Box, Button, FormControl, FormControlLabel, IconButton, Modal, Radio, RadioGroup, TextField } from '@mui/material'
+import { Box, Button, TextField } from '@mui/material'
 import { IconArticle, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { getStatus } from '~/apis'
@@ -13,16 +13,18 @@ import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactSta
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
-import { reLoadComment, selectCurrentActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalUpdatePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import { getAllReactByPhotoPostId, getAllReactByPostId, getAllReactBySharePostId, getAllReactByVideoPostId, getAllReactType } from '~/apis/reactApis'
 import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
-import { commentGroupPhotoPost, commentGroupPost, commentGroupVideoPost, getAllReactByGroupPhotoPostId, getAllReactByGroupPostId, getAllReactByGroupSharePostId, getAllReactByGroupVideoPostId, getChildGroupPost, getGroupPhotoPostComment, getGroupPostByGroupPostId, getGroupPostComment, getGroupVideoPostComment, updateGroupPhotoPost, updateGroupVideoPost } from '~/apis/groupPostApis'
-import { selectCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
+import { commentGroupPhotoPost, commentGroupPost, commentGroupVideoPost, getAllReactByGroupPhotoPostId, getAllReactByGroupPostId, getAllReactByGroupVideoPostId, getChildGroupPost, getGroupPhotoPostComment, getGroupPostByGroupPostId, getGroupPostComment, getGroupVideoPostComment, updateGroupPhotoPost, updateGroupVideoPost } from '~/apis/groupPostApis'
 import Report from '~/components/Modal/Report/Report'
 import { selectIsOpenReport } from '~/redux/report/reportSlice'
+import { useTranslation } from 'react-i18next'
+import UpdatePost from '~/components/Modal/ActivePost/UpdatePost'
+import { selectIsReload } from '~/redux/ui/uiSlice'
 
 function Media() {
   const [searchParams] = useSearchParams()
@@ -43,14 +45,20 @@ function Media() {
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const [listStatus, setListStatus] = useState([])
-  const [listPhotos, setListPhotos] = useState([])
-  const [listVideos, setListVideos] = useState([])
+  const [listMedia, setListMedia] = useState([])
   const [listComment, setListComment] = useState([])
+  const commentFilterType = useSelector(selectCommentFilterType)
   const reloadComment = useSelector(reLoadComment)
   const [isYourPost, setIsYourPost] = useState(false)
+  const isShowModalUpdate = useSelector(selectIsShowModalUpdatePost)
+  const { t } = useTranslation()
+  const isReload = useSelector(selectIsReload)
+
   const { register, getValues, handleSubmit, setValue } = useForm()
+
   const navigate = useNavigate()
   const isShowModalReport = useSelector(selectIsOpenReport)
+
   const handleGetReact = async (postData) => {
     const response = await (
       isPhoto ? getAllReactByPhotoPostId(postData?.userPostMediaId)
@@ -64,6 +72,11 @@ function Media() {
   }
 
   useEffect(() => {
+    getStatus().then(data => setListStatus(data))
+    getAllReactType().then(data => dispatch(addListReactType(data)))
+  }, [])
+
+  useEffect(() => {
     if (postType) {
       (async () => {
         try {
@@ -72,19 +85,19 @@ function Media() {
           let postReactStatus
           if (isProfile) {
             responsePostData = await getUserPostById(postId)
-            responseCommentData = await getComment(postId)
+            responseCommentData = await getComment(postId, commentFilterType)
 
           } else if (isPhoto || isVideo) {
             responsePostData = await getChildPostById(videoId || photoId)
-            responseCommentData = await (isPhoto ? getPhotoComment(photoId)
-              : isVideo && getVideoComment(videoId))
+            responseCommentData = await (isPhoto ? getPhotoComment(photoId, commentFilterType)
+              : isVideo && getVideoComment(videoId, commentFilterType))
           } else if (isGroup) {
             responsePostData = await getGroupPostByGroupPostId(postId)
-            responseCommentData = await getGroupPostComment(postId)
+            responseCommentData = await getGroupPostComment(postId, commentFilterType)
           } else if (isGroupPhoto || isGroupVideo) {
             responsePostData = await getChildGroupPost(videoId || photoId)
-            responseCommentData = await (isGroupPhoto ? getGroupPhotoPostComment(photoId)
-              : isGroupVideo && getGroupVideoPostComment(videoId))
+            responseCommentData = await (isGroupPhoto ? getGroupPhotoPostComment(photoId, commentFilterType)
+              : isGroupVideo && getGroupVideoPostComment(videoId, commentFilterType))
           }
           if (responsePostData) {
             postReactStatus = await handleGetReact(responsePostData)
@@ -99,10 +112,8 @@ function Media() {
         }
       })()
     } else navigate('/notavailable')
-    getStatus().then(data => setListStatus(data))
-    getAllReactType().then(data => dispatch(addListReactType(data)))
     setIsEditContent(false)
-  }, [reloadComment, postType, photoId, videoId, postId])
+  }, [reloadComment, postType, photoId, videoId, postId, isReload, commentFilterType])
 
   useEffect(() => {
     setIsYourPost(currentUser?.userId == currentActivePost?.userId)
@@ -196,6 +207,7 @@ function Media() {
     <>
       <NavTopBar />
       {isShowModalReport && <Report />}
+      {isShowModalUpdate && <UpdatePost />}
       <div className='flex flex-col lg:flex-row h-[calc(100vh_-_55px)]'>
         <div className='max-lg:h-1/2 lg:basis-8/12 bg-black flex justify-center relative'>
           {(isProfile || isGroup)
@@ -249,29 +261,28 @@ function Media() {
             {
               !postId &&
               <div className="flex flex-wrap items-center justify-between border-b px-4 pt-4 pb-3">
-                <span className="text-sm text-gray-500 flex items-center gap-1"><IconArticle />This photo is from a post</span>
-                <Link to={currentActivePost?.groupPostId ? `/groups/${currentActivePost?.groupId}/post/${currentActivePost?.groupPostId}` : `/post/${currentActivePost?.userPostId}`} className="font-semibold text-sm">View post</Link>
+                <span className="text-sm text-gray-500 flex items-center gap-1"><IconArticle />{t('standard.media.from')}</span>
+                <Link to={currentActivePost?.groupPostId ? `/groups/${currentActivePost?.groupId}/post/${currentActivePost?.groupPostId}` : `/post/${currentActivePost?.userPostId}`} className="font-semibold text-sm hover:bg-fbWhite p-1 rounded-md">{t('standard.media.view')}</Link>
               </div>
             }
             <PostTitle postData={currentActivePost} isYourPost={isYourPost} postType={postType} />
             {
-              isProfile
-                ? <PostContents postData={currentActivePost} />
+              (isProfile || isGroup) ? <PostContents postData={currentActivePost} />
                 : <div className="px-4 pb-3">
                   {!isEditContent && <div className='mb-3'>{currentActivePost?.content}</div>}
                   {isEditContent && <Box >
                     <TextField
                       defaultValue={currentActivePost?.content}
                       multiline variant="standard" sx={{ width: '100%', marginBottom: '12px' }}
-                      placeholder='Type something...'
+                      placeholder={t('standard.media.placeHolder')}
                       {...register('content')}
                     />
                     <div className='flex gap-2'>
-                      <Button variant="contained" color='warning' onClick={handleUpdateChildPostContent}>Save</Button>
-                      <Button variant="contained" color='inherit' onClick={() => setIsEditContent(!isEditContent)}>Cancel</Button>
+                      <Button variant="contained" color='warning' onClick={handleUpdateChildPostContent}>{t('standard.media.save')}</Button>
+                      <Button variant="contained" color='inherit' onClick={() => setIsEditContent(!isEditContent)}>{t('standard.media.cancel')}</Button>
                     </div>
                   </Box>}
-                  {isYourPost && !isEditContent && <Button variant="contained" color='warning' onClick={() => setIsEditContent(!isEditContent)}>Edit</Button>}
+                  {isYourPost && !isEditContent && (!isProfile || !isGroup) && <Button variant="contained" color='warning' onClick={() => setIsEditContent(!isEditContent)}>{t('standard.media.edit')}</Button>}
                 </div>
             }
             <PostReactStatus postData={currentActivePost} postType={postType} />
@@ -284,10 +295,8 @@ function Media() {
               <Tiptap
                 setContent={setContent}
                 content={content}
-                listPhotos={listPhotos}
-                setListPhotos={setListPhotos}
-                listVideos={listVideos}
-                setListVideos={setListVideos}
+                listMedia={listMedia}
+                setListMedia={setListMedia}
                 editorType={EDITOR_TYPE.COMMENT}
               />
             </div>

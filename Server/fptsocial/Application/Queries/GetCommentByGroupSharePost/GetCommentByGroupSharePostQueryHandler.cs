@@ -35,7 +35,7 @@ namespace Application.Queries.GetCommentByGroupSharePost
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await(from c in _context.CommentGroupSharePosts
+            var commentsQuery = from c in _context.CommentGroupSharePosts
                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                  from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                  where c.GroupSharePostId == request.GroupSharePostId && c.IsHide == false && c.IsBanned != true
@@ -53,9 +53,24 @@ namespace Application.Queries.GetCommentByGroupSharePost
                                      ParentCommentId = c.ParentCommentId,
                                      Level = c.LevelCmt,
                                      ListNumber = c.ListNumber,
-                                     Replies = new List<CommentGroupSharePostDto>()
-                                 })
-                           .ToListAsync(cancellationToken);
+                                     Replies = new List<CommentGroupSharePostDto>(),
+                                     TotalReactCount = _context.CommentGroupSharePosts.Count(rc => rc.CommentGroupSharePostId == c.CommentGroupSharePostId)
+                                 };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             var result = new GetCommentByGroupSharePostQueryResult
             {
@@ -88,7 +103,7 @@ namespace Application.Queries.GetCommentByGroupSharePost
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
     }
 }

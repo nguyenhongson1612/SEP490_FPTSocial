@@ -12,5 +12,6 @@ namespace Application.Queries.GetCommentByGroupSharePost
     public class GetCommentByGroupSharePostQuery : IQuery<GetCommentByGroupSharePostQueryResult>
     {
         public Guid? GroupSharePostId { get; set; }
+        public string? Type { get; set; }
     }
 }

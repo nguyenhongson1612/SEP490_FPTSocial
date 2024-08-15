@@ -26,10 +26,9 @@ import { addReport, openModalReport } from '~/redux/report/reportSlice'
 
 
 function PostTitle({ postData, isYourPost, postType }) {
-  // console.log('🚀 ~ PostTitle ~ postType:', postData)
-  // console.log('🚀 ~ PostTitle ~ postData:', postData)
   const [isOpenModal, setIsOpenModal] = useState(false)
   const listStatus = useSelector(selectListUserStatus)
+
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const { register, setValue, control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -99,7 +98,7 @@ function PostTitle({ postData, isYourPost, postType }) {
               </Link>
               <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`}
                 className="absolute text-gray-500 hover:text-gray-950 -bottom-[2px] -right-2">
-                <UserAvatar avatarSrc={postData?.userAvatar?.avataPhotosUrl || postData?.avatar?.avataPhotosUrl} size={1.8} />
+                <UserAvatar avatarSrc={postData?.userAvata?.avataPhotosUrl || postData?.avatar?.avataPhotosUrl} size={1.8} />
               </Link>
             </>
             : <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className="text-gray-500 hover:text-gray-950 ">
@@ -199,11 +198,11 @@ function PostTitle({ postData, isYourPost, postType }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose} sx={{ gap: '5px' }}>
+        {/* <MenuItem onClick={handleClose} sx={{ gap: '5px' }}>
           <IconBookmark /> Save post
-        </MenuItem>
+        </MenuItem> */}
         {
-          isYourPost && (
+          isYourPost && (postType == POST_TYPES.PROFILE_POST || postType == POST_TYPES.GROUP_POST) && (
             <MenuItem onClick={() => { handleClose(); handleEdit() }} sx={{ gap: '5px' }} >
               <IconPencil /> Edit post
             </MenuItem>

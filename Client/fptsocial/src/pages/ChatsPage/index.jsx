@@ -14,10 +14,6 @@ import ChatWindow from "~/components/ChatPagesComponents/ChatWindow";
 import { API_ROOT } from "~/utils/constants";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
 
-const USER_NAME = "cf918cb4-db6b-4282-9c4e-fbb0cc28276d";
-const USER_SECRET = "cf918cb4-db6b-4282-9c4e-fbb0cc28276d";
-const PROJECT_ID = "d7c4f700-4fc1-4f96-822d-8ffd0920b438";
-
 function ChatPages() {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [message, setMessage] = useState('');

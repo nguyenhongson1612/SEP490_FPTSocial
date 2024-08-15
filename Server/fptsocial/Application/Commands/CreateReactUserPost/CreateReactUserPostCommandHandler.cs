@@ -103,18 +103,22 @@ namespace Application.Commands.CreateReactUserPost
                 }
             }
 
-            var prc = new Domain.CommandModels.PostReactCount
+            if (postReactCount != null) 
             {
-                PostReactCountId = postReactCount.PostReactCountId,
-                UserPostId = postReactCount.UserPostId,
-                UserPostPhotoId = postReactCount.UserPostPhotoId,
-                ReactCount = postReactCount.ReactCount,
-                CommentCount = postReactCount.CommentCount,
-                ShareCount = postReactCount.ShareCount,
-                CreateAt = postReactCount.CreateAt,
-                UpdateAt = postReactCount.UpdateAt,
-            };
-            _context.PostReactCounts.Update(prc);
+                var prc = new Domain.CommandModels.PostReactCount
+                {
+                    PostReactCountId = postReactCount.PostReactCountId,
+                    UserPostId = postReactCount.UserPostId,
+                    UserPostPhotoId = postReactCount.UserPostPhotoId,
+                    ReactCount = postReactCount.ReactCount,
+                    CommentCount = postReactCount.CommentCount,
+                    ShareCount = postReactCount.ShareCount,
+                    CreateAt = postReactCount.CreateAt,
+                    UpdateAt = postReactCount.UpdateAt,
+                };
+                _context.PostReactCounts.Update(prc);
+            }
+            
             await _context.SaveChangesAsync();
 
             // 4. Return Result (Consider Adjustments)

@@ -16,10 +16,24 @@ export const interceptorLoadingElements = (calling) => {
   }
 }
 
-export const cleanAndParseHTML = (html) => {
+export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
+  if (isIncludeMedia) {
+    const mediaRegex = /<!--MEDIA:(video|image):(.+?)-->/g
+    const mediaMatches = [...html.matchAll(mediaRegex)]
+
+    if (mediaMatches.length > 0) {
+      const mediaInfo = mediaMatches.map(match => ({
+        type: match[1],
+        url: match[2]
+      }))
+      return mediaInfo
+    }
+    else return []
+  }
+
   const cleanHtml = parse(DOMPurify.sanitize(html))
   return cleanHtml
-}
+};
 
 export const compareDateTime = (date) => {
   const serverDate = moment(date)

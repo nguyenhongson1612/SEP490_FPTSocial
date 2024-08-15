@@ -7,37 +7,41 @@ export const getAllReactType = async () => {
   return response.data?.data
 }
 
-export const getAllReactByPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByPostId?UserPostId=${id}`)
+export const getReactPostDetail = async ({ postType, postId, reactName, page = 1, userId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getReactPostDetail?PostType=${postType}&PostId=${postId}&ReactName=${reactName}&PageNumber=${page}&UserId=${userId}`)
   return response.data?.data
 }
-export const getAllReactBySharePostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactBySharePostId?SharePostId=${id}`)
+export const getAllReactByPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByPostId?UserPostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByPhotoPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByPhotoPostId?UserPostPhotoId=${id}`)
+export const getAllReactBySharePostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactBySharePostId?SharePostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByVideoPostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByVideoPostId?UserPostVideoId=${id}`)
+export const getAllReactByPhotoPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByPhotoPostId?UserPostPhotoId=${id}&PageNumber=${page}`)
+  return response.data?.data
+}
+export const getAllReactByVideoPostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByVideoPostId?UserPostVideoId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
 
-export const getAllReactByCommentId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentId?CommentId=${id}`)
+export const getAllReactByCommentId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentId?CommentId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByCommentSharePostId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentSharePostId?CommentSharePostId=${id}`)
+export const getAllReactByCommentSharePostId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentSharePostId?CommentSharePostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByCommentVideoId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentVideoId?CommentVideoPostId=${id}`)
+export const getAllReactByCommentVideoId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentVideoId?CommentVideoPostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
-export const getAllReactByCommentPhotoId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentPhotoId?CommentPhotoPostId=${id}`)
+export const getAllReactByCommentPhotoId = async (id, page = 1) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByCommentPhotoId?CommentPhotoPostId=${id}&PageNumber=${page}`)
   return response.data?.data
 }
 

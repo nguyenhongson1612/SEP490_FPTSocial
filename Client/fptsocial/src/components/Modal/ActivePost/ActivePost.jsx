@@ -2,6 +2,7 @@ import { Button, Modal } from '@mui/material'
 import { IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { commentGroupPost, commentGroupSharePost, getGroupPostComment, getGroupSharePostComment } from '~/apis/groupPostApis'
@@ -15,18 +16,19 @@ import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
-import { clearAndHireCurrentActivePost, reLoadComment, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { clearAndHireCurrentActivePost, reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
 function ActivePost({ isReportPost = false }) {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
-  console.log('🚀 ~ ActivePost ~ currentActivePost:', currentActivePost)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const postReactStatus = useSelector(selectPostReactStatus)
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
+  const commentFilterType = useSelector(selectCommentFilterType)
+  const { t } = useTranslation()
   const postType = currentActivePost?.postType
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isShare = postType == POST_TYPES.SHARE_POST
@@ -37,8 +39,7 @@ function ActivePost({ isReportPost = false }) {
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
   const user = useSelector(selectCurrentUser)
-  const [listPhotos, setListPhotos] = useState([])
-  const [listVideos, setListVideos] = useState([])
+  const [listMedia, setListMedia] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
 
@@ -47,34 +48,35 @@ function ActivePost({ isReportPost = false }) {
   if (currentActivePost?.isShare) {
     if (currentActivePost?.userPostShareId) {
       postShareType = POST_TYPES.PROFILE_POST
-      postShareData = { ...currentActivePost?.userPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostVideoShareId) {
       postShareType = POST_TYPES.VIDEO_POST
-      postShareData = { ...currentActivePost?.userPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostVideoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.userPostPhotoShareId) {
       postShareType = POST_TYPES.PHOTO_POST
-      postShareData = { ...currentActivePost?.userPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.userPostPhotoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
     } else if (currentActivePost?.groupPostShareId) {
-      postShareType = POST_TYPES.GROUP_SHARE_POST
-      postShareData = { ...currentActivePost?.groupPostShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
-    } else if (currentActivePost?.groupPostPhotoShareId) {
+      postShareType = POST_TYPES.GROUP_POST
+      postShareData = { ...currentActivePost?.groupPostShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
+    }
+    else if (currentActivePost?.groupPostPhotoShareId) {
       postShareType = POST_TYPES.GROUP_PHOTO_POST
-      postShareData = { ...currentActivePost?.groupPostPhotoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostPhotoShare, userName: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
     } else {
       postShareType = POST_TYPES.GROUP_VIDEO_POST
-      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare }
+      postShareData = { ...currentActivePost?.groupPostVideoShare, userNameShare: currentActivePost?.userNameShare, avatar: currentActivePost?.userAvatarShare, groupName: currentActivePost?.groupShareName, groupCorverImage: currentActivePost?.groupShareCorverImage }
     }
   }
 
   useEffect(() => {
     if (!isReportPost) {
-      isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId).then(data => setListComment(data?.posts))
-        : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId).then(data => setListComment(data?.posts))
-          : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId).then(data => setListComment(data?.posts))
-            : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId).then(data => setListComment(data?.posts))
+      isProfile ? getComment(currentActivePost?.postId || currentActivePost?.userPostId, commentFilterType).then(data => setListComment(data?.posts))
+        : isShare ? getSharePostComment(currentActivePost?.postId || currentActivePost?.sharePostId, commentFilterType).then(data => setListComment(data?.posts))
+          : isGroup ? getGroupPostComment(currentActivePost?.groupPostId || currentActivePost?.postId, commentFilterType).then(data => setListComment(data?.posts))
+            : isGroupShare && getGroupSharePostComment(currentActivePost?.postId || currentActivePost?.groupSharePostId, commentFilterType).then(data => setListComment(data?.posts))
     }
 
-  }, [reloadComment])
+  }, [reloadComment, commentFilterType])
   // console.log(currentActivePost)
   const handleCommentPost = () => {
     const submitData = isProfile ? {
@@ -139,7 +141,8 @@ function ActivePost({ isReportPost = false }) {
             className='h-[60px] w-full flex justify-between items-center px-4'>
             <div></div>
             <span className='font-bold font-sans text-xl capitalize'>
-              {(currentActivePost?.userName || currentActivePost?.fullName)}&apos; Post
+              {t('standard.newPost.userPost', { name: currentActivePost?.userName || currentActivePost?.fullName })}
+              {/* {(currentActivePost?.userName || currentActivePost?.fullName)}&apos; Post */}
             </span>
             <div className='cursor-pointer' onClick={() => dispatch(clearAndHireCurrentActivePost())}>
               <IconX className='text-white bg-orangeFpt rounded-full' />
@@ -175,10 +178,8 @@ function ActivePost({ isReportPost = false }) {
                 <Tiptap
                   setContent={setContent}
                   content={content}
-                  listPhotos={listPhotos}
-                  setListPhotos={setListPhotos}
-                  listVideos={listVideos}
-                  setListVideos={setListVideos}
+                  listMedia={listMedia}
+                  setListMedia={setListMedia}
                   editorType={EDITOR_TYPE.COMMENT}
                 />
               </div>

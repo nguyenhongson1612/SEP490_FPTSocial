@@ -33,6 +33,8 @@ using Application.Queries.GetReactByPhotoPost;
 using Application.Queries.GetReactByPost;
 using Application.Queries.GetReactBySharePostId;
 using Application.Queries.GetReactByVideoPost;
+using Application.Queries.GetReactCommentDetail;
+using Application.Queries.GetReactDetail;
 using Application.Queries.GetUserStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -525,6 +527,22 @@ namespace API.Controllers
                 return BadRequest();
             }
             query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getReactPostDetail")]
+        public async Task<IActionResult> GetReactPostDetail([FromQuery] GetReactDetailQuery query)
+        {
+            var res = await _sender.Send(query);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getReactCommentPostDetail")]
+        public async Task<IActionResult> GetReactCommentPostDetail([FromQuery] GetReactCommentDetailQuery query)
+        {
             var res = await _sender.Send(query);
             return Success(res.Value);
         }

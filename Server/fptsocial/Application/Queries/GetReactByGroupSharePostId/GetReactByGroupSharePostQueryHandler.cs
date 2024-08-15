@@ -50,21 +50,37 @@ namespace Application.Queries.GetReactByGroupSharePostId
                                            UserId = react.UserId,
                                            UserName = react.User.FirstName + react.User.LastName,
                                            CreatedDate = react.CreateDate,
-                                           AvataUrl = avata != null ? avata.AvataPhotosUrl : null
-                                       }
-                                    ).ToListAsync(cancellationToken);
+                                           AvataUrl = avata != null ? avata.AvataPhotosUrl : null,
+                                           Status = _context.Friends.Where(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                            .Select(y => y.Confirm)
+                                                                            .FirstOrDefault() != null
+                                                                            ? (_context.Friends.Any(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                            (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                ? (_context.Friends.FirstOrDefault(x => (x.UserId == react.UserId && x.FriendId == request.UserId) ||
+                                                                                                                        (x.UserId == request.UserId && x.FriendId == react.UserId))
+                                                                                    .Confirm ? "Friend" : "Pending")
+                                                                                : "NotFriend")
+                                                                            : "NotFriend"
+                                        }
+                                        )
+                                        .Skip((request.PageNumber - 1) * 10) // Bỏ qua các mục trước trang hiện tại
+                                        .Take(10) // Lấy số mục cho trang hiện tại
+                                        .ToListAsync(cancellationToken);
 
-            var listReact = await (from reactComment in _context.ReactGroupSharePosts
-                                   where reactComment.GroupSharePostId == request.GroupSharePostId
-                                   group reactComment by new { reactComment.ReactTypeId, reactComment.ReactType.ReactTypeName } into g // Group by ID and Name
-                                   select new ReactTypeCountDTO // Use your existing DTO
+            var listReact = await (from reactType in _context.ReactTypes // Start from ReactTypes
+                                   join react in _context.ReactGroupSharePosts.Where(r => r.GroupSharePostId == request.GroupSharePostId)
+                                       on reactType.ReactTypeId equals react.ReactTypeId into reactGroup
+                                   from react in reactGroup.DefaultIfEmpty() // Handle the case where there are no matches
+                                   group react by new { reactType.ReactTypeId, reactType.ReactTypeName } into g
+                                   select new ReactTypeCountDTO
                                    {
-                                       ReactTypeId = g.Key.ReactTypeId,    // Access the grouped keys
+                                       ReactTypeId = g.Key.ReactTypeId,
                                        ReactTypeName = g.Key.ReactTypeName,
-                                       NumberReact = g.Count()                   // Maintain consistent naming
+                                       NumberReact = g.Count(r => r != null) // Count only non-null reacts
                                    })
-                                    .OrderByDescending(dto => dto.NumberReact)   // Sort by Count (not NumberReact)
-                                    .ToListAsync(cancellationToken);
+                                  .OrderByDescending(dto => dto.NumberReact) // Sort by NumberReact
+                                  .ToListAsync(cancellationToken);
 
             var checkReact = await (_context.ReactGroupSharePosts.Where(x => x.UserId == request.UserId && x.GroupSharePostId == request.GroupSharePostId)).ToListAsync(cancellationToken);
 
@@ -87,6 +103,5 @@ namespace Application.Queries.GetReactByGroupSharePostId
 
             return Result<GetReactByGroupSharePostQueryResult>.Success(result);
         }
-        
     }
 }

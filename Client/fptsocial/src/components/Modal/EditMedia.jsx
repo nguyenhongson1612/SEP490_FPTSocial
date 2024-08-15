@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { IconChevronLeft, IconX } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
@@ -7,7 +8,7 @@ import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
 // SortableItem component
-function SortableItem({ id, index, handleRemove, media }) {
+function SortableItem({ id, media }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
   const style = {
@@ -23,22 +24,20 @@ function SortableItem({ id, index, handleRemove, media }) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`col-span-12 md:col-span-6 lg:col-span-4 !h-[300px] ${media.length <= 2 && '!col-span-12'} relative bg-white rounded-md`}
+      className={`flex flex-col justify-center ${media.length <= 2 && '!col-span-12'} 
+      relative bg-white rounded-md `}
     >
-      <IconX
-        onClick={() => handleRemove(index)}
-        className='absolute p-1 z-20 right-1 top-1 bg-orangeFpt text-white rounded-full cursor-pointer hover:bg-orange-700'
-      />
       {media?.type === 'image' ? (
-        <img src={media?.url} className='h-full w-full object-cover' />
+        <img src={media?.url} className='h-[80%] w-full object-cover' />
       ) : (
-        <video src={media?.url} className='h-full w-full object-contain' controls />
+        <video src={media?.url} className='h-[80%] w-full object-contain' controls />
       )}
     </div>
   )
 }
 
 function EditMedia({ handleRemove, handleEdit, listMedia, setListMedia }) {
+  const [isDragging, setIsDragging] = useState(false);
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor)
@@ -55,7 +54,9 @@ function EditMedia({ handleRemove, handleEdit, listMedia, setListMedia }) {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
+        onDragStart={() => setIsDragging(true)}
         onDragEnd={({ active, over }) => {
+          setIsDragging(false)
           if (active.id !== over.id) {
             setListMedia(arrayMove(listMedia, active.id - 1, over.id - 1))
           }
@@ -64,7 +65,15 @@ function EditMedia({ handleRemove, handleEdit, listMedia, setListMedia }) {
         <SortableContext items={listMedia.map((_, i) => ({ id: i + 1 }))} strategy={rectSortingStrategy}>
           <div className='h-[90%] overflow-y-auto no-scrollbar px-4 pb-10 grid grid-cols-12 bg-fbWhite gap-1 py-1'>
             {listMedia.map((media, i) => (
-              <SortableItem key={i} id={i + 1} index={i} handleRemove={handleRemove} media={media} />
+              <div key={i} className='col-span-12 md:col-span-6 lg:col-span-4 relative !h-[300px]'>
+                {!isDragging && (
+                  <IconX
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleRemove(i) }}
+                    className='absolute p-1 z-20 right-1 top-1 bg-orangeFpt text-white rounded-full cursor-pointer hover:bg-orange-700'
+                  />
+                )}
+                <SortableItem id={i + 1} index={i} handleRemove={handleRemove} media={media} />
+              </div>
             ))}
           </div>
         </SortableContext>

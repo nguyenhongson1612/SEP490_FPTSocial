@@ -10,5 +10,6 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
     public class GetCommentByGroupVideoPostIdQuery : IQuery<GetCommentByGroupVideoPostIdQueryResult>    
     {
         public Guid GroupPostVideoId { get; set; }
+        public string? Type { get; set; }
     }
 }

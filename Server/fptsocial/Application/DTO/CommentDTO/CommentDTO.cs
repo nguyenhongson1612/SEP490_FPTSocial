@@ -20,6 +20,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<CommentDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class CommentVideoDto
@@ -36,6 +37,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<CommentVideoDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class CommentPhotoDto
@@ -52,6 +54,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<CommentPhotoDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class CommentSharePostDto
@@ -68,6 +71,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<CommentSharePostDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class GroupCommentDto
@@ -84,6 +88,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<GroupCommentDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class GroupPhotoCommentDto
@@ -100,6 +105,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<GroupPhotoCommentDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class GroupVideoCommentDto
@@ -116,6 +122,7 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<GroupVideoCommentDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 
     public class CommentGroupSharePostDto
@@ -132,5 +139,6 @@ namespace Application.DTO.CommentDTO
         public int? Level { get; set; }
         public List<CommentGroupSharePostDto>? Replies { get; set; }
         public string? ListNumber { get; set; }
+        public int? TotalReactCount { get; set; }
     }
 }

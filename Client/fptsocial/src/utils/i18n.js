@@ -26,6 +26,7 @@ i18n
                 feeds: 'Feeds',
                 friends: 'Friends',
                 groups: 'Groups',
+                chatbot: 'Advise',
                 your_shortcut: 'Your shortcuts',
               },
               rightSidebar: {
@@ -57,7 +58,8 @@ i18n
               addPhoto: 'Add photos/videos',
               writeSt: 'Write something',
               editPost: 'Edit post',
-              savePost: 'Save'
+              savePost: 'Save',
+              userPost: "{{name}} ' Post"
             },
             search: {
               searchResult: 'Search results',
@@ -65,6 +67,32 @@ i18n
               user: 'User',
               group: 'Group',
               all: 'All'
+            },
+            media: {
+              save: 'Save',
+              edit: 'Edit',
+              cancel: 'Cancel',
+              placeHolder: 'Type something...',
+              view: 'View post',
+              from: 'This file is from a post',
+            },
+            comment: {
+              new: 'Latest',
+              relevant: 'Most relevant',
+              edit: 'Edit',
+              delete: 'Delete',
+              report: 'Report',
+              reply: 'Reply',
+              author: 'Author',
+              noComment: 'This post has no comments yet! Be the first to comment :D'
+            },
+            react: {
+              all: 'All',
+              like: 'Like',
+              disLike: 'Dislike',
+              comment: 'Comment',
+              share: 'Share',
+              noReact: 'There have been no reactions yet!',
             }
           },
           sideText: {
@@ -94,6 +122,7 @@ i18n
                 feeds: 'Bảng feeds',
                 friends: 'Bạn bè',
                 groups: 'Nhóm',
+                chatbot: 'Cóc tư vấn',
                 your_shortcut: 'Lối tắt của bạn',
               },
               rightSidebar: {
@@ -125,7 +154,8 @@ i18n
               addPhoto: 'Thêm ảnh/video',
               writeSt: 'Bạn đang nghĩ gì',
               editPost: 'Chỉnh sửa bài viết',
-              savePost: 'Lưu'
+              savePost: 'Lưu',
+              userPost: "Bài viết của {{name}}"
             },
             search: {
               searchResult: 'Kết quả tìm kiếm',
@@ -133,6 +163,32 @@ i18n
               user: 'Mọi người',
               group: 'Hội nhóm',
               all: 'Tất cả'
+            },
+            media: {
+              save: 'Lưu',
+              edit: 'Chỉnh sửa',
+              cancel: 'Hủy',
+              placeHolder: 'Hãy viết gì đó...',
+              view: 'Xem bài viết',
+              from: 'File này nằm trong một bài viết.'
+            },
+            comment: {
+              new: 'Mới nhất',
+              relevant: 'Liên quan nhất',
+              edit: 'Chỉnh sửa',
+              delete: 'Xóa',
+              report: 'Báo cáo',
+              reply: 'Phản hồi',
+              author: 'Tác giả',
+              noComment: 'Bài viết chưa có bình luận nào! Hãy là người bình luận đầu tiên:D'
+            },
+            react: {
+              all: 'Tất cả',
+              like: 'Thích',
+              disLike: 'Ghét',
+              comment: 'Bình luận',
+              share: 'Chia sẻ',
+              noReact: 'Chưa có lượt tương tác nào!'
             }
           },
           sideText: {

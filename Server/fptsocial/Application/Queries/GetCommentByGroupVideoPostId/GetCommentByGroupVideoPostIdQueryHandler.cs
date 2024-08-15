@@ -32,7 +32,7 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
 
-            var comments = await (from c in _context.CommentGroupVideoPosts // Thay đổi bảng truy vấn
+            var commentsQuery = from c in _context.CommentGroupVideoPosts // Thay đổi bảng truy vấn
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
                                   where c.GroupPostVideoId == request.GroupPostVideoId && c.IsHide == false && c.IsBanned != true// Thay đổi điều kiện lọc
@@ -50,9 +50,24 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
                                       ParentCommentId = c.ParentCommentId,
                                       Level = c.LevelCmt,
                                       ListNumber = c.ListNumber,
-                                      Replies = new List<GroupVideoCommentDto>() // Sử dụng DTO tương ứng cho video comment
-                                  })
-                            .ToListAsync(cancellationToken);
+                                      Replies = new List<GroupVideoCommentDto>(), // Sử dụng DTO tương ứng cho video comment
+                                      TotalReactCount = _context.ReactGroupVideoPostComments.Count(rc => rc.CommentGroupVideoPostId == c.CommentGroupVideoPostId)
+                                  };
+
+            if (request.Type == "New")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.CreatedDate);
+            }
+            else if (request.Type == "Most relevant")
+            {
+                commentsQuery = commentsQuery.OrderByDescending(c => c.TotalReactCount).ThenByDescending(c => c.CreatedDate);
+            }
+            else
+            {
+                commentsQuery = commentsQuery.OrderBy(c => c.CreatedDate);
+            }
+
+            var comments = await commentsQuery.ToListAsync(cancellationToken);
 
             var result = new GetCommentByGroupVideoPostIdQueryResult
             {
@@ -87,7 +102,7 @@ namespace Application.Queries.GetCommentByGroupVideoPostId
                 }
             }
 
-            return comments.Where(c => !c.ParentCommentId.HasValue).OrderBy(c => c.CreatedDate).ToList();
+            return comments.Where(c => !c.ParentCommentId.HasValue).ToList();
         }
     }
 

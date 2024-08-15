@@ -40,7 +40,7 @@ function Group() {
   return (
     <>
       <NavTopBar />
-      <div className='flex h-[calc(100vh_-_55px)] overflow-clip'>
+      <div className='flex h-[calc(100vh_-_55px)] overflow-clip relative'>
         {
           (group?.isAdmin || group?.isCensor) && (
             <>
