@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from "react";
 import {
-  Drawer,
-  Toolbar,
+  Avatar,
   Box,
+  Drawer,
   List,
   ListItem,
   ListItemText,
-  Avatar,
-  useMediaQuery,
   MenuItem,
   Select,
-  InputLabel,
+  Toolbar,
+  useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
 import { API_ROOT } from "~/utils/constants";
-import { set } from "lodash";
+import ChatModal from "./ChatModal";
 
 function Sidebar({ onSelectChat }) {
   const [search, setSearch] = useState("");
@@ -28,27 +27,41 @@ function Sidebar({ onSelectChat }) {
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [currentSelectedUserId, setCurrentSelectedUserId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessages, setModalMessages] = useState([]);
+  const [selectedUsername, setSelectedUsername] = useState("");
+  const [selectedUserFullName, setSelectedUserFullName] = useState("");
 
   const sidebarWidth = isSmallScreen ? 200 : isMediumScreen ? 240 : 300;
 
-  //   useEffect(() => {
-  //     const fetchChats = async () => {
-  //       try {
-  //         const response = await axios.get('https://api.chatengine.io/chats/', {
-  //           headers: {
-  //             'Project-ID': 'd7c4f700-4fc1-4f96-822d-8ffd0920b438',
-  //             'User-Name': 'cf918cb4-db6b-4282-9c4e-fbb0cc28276d',
-  //             'User-Secret': 'cf918cb4-db6b-4282-9c4e-fbb0cc28276d'
-  //           }
-  //         });
-  //         setChats(response.data);
-  //       } catch (error) {
-  //         console.error('Error fetching chat list:', error);
-  //       }
-  //     };
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const sessionKey =
+          "oidc.user:https://feid.ptudev.net:societe-front-end";
+        const sessionValue = sessionStorage.getItem(sessionKey);
+        const profile = JSON.parse(sessionValue).profile;
 
-  //     fetchChats();
-  //   }, []);
+        const config = {
+          headers: {
+            "Project-ID": "d7c4f700-4fc1-4f96-822d-8ffd0920b438",
+            "User-Name": profile.userId,
+            "User-Secret": profile.userId,
+          },
+        };
+
+        const response = await authorizedAxiosInstance.get(
+          "https://api.chatengine.io/chats/",
+          config
+        );
+        setChats(response.data);
+      } catch (error) {
+        console.error("Error fetching chat list:", error);
+      }
+    };
+
+    fetchChats();
+  }, []);
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -78,12 +91,15 @@ function Sidebar({ onSelectChat }) {
   const handleUserSelect = (event) => {
     const userId = event.target.value;
     const user = allUsers.find((user) => user.id === userId);
-    setSelectedUsers((prevSelectedUsers) => [
-      ...prevSelectedUsers.filter((u) => u.id !== userId),
-      user,
-    ]);
+    setSelectedUsername(user.username);
+    setSelectedUserFullName(user.fullName);
     setCurrentSelectedUserId(userId);
-    onSelectChat(user.username);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalMessages([]);
   };
 
   console.log("chats", chats);
@@ -135,7 +151,7 @@ function Sidebar({ onSelectChat }) {
             "No chats to display"
           ) : (
             <>
-              {selectedUsers.map((user) => (
+              {/* {selectedUsers.map((user) => (
                 <ListItem
                   button
                   selected={user.id === currentSelectedUserId}
@@ -152,7 +168,7 @@ function Sidebar({ onSelectChat }) {
                   />
                   <ListItemText primary={user.fullName} />
                 </ListItem>
-              ))}
+              ))} */}
               {chats &&
                 chats.map((chat) => (
                   <ListItem
@@ -161,6 +177,11 @@ function Sidebar({ onSelectChat }) {
                     onClick={() => handleSelectChat(chat.id)}
                     selected={chat.id === selectedChatId}
                   >
+                    <Avatar
+                      src={chat.avatar}
+                      alt={chat.fullName}
+                      sx={{ marginRight: 1 }}
+                    />
                     <ListItemText primary={chat.title} />
                   </ListItem>
                 ))}
@@ -168,6 +189,15 @@ function Sidebar({ onSelectChat }) {
           )}
         </List>
       </Box>
+      <ChatModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        username={selectedUsername}
+        fullName={selectedUserFullName}
+        messages={modalMessages}
+        setMessages={setModalMessages}
+        selectedChatId={currentSelectedUserId}
+      />
     </Drawer>
   );
 }

@@ -23,24 +23,6 @@ function ChatPages() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
-  // const fetchMessages = async (chatId) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://api.chatengine.io/chats/${chatId}/messages/`,
-  //       {
-  //         headers: {
-  //           'Project-ID': PROJECT_ID,
-  //           'User-Name': USER_NAME,
-  //           'User-Secret': USER_SECRET,
-  //         },
-  //       }
-  //     );
-  //     setMessages(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching messages:", error);
-  //   }
-  // };
-
   const fetchMessages = async (chatId) => {
     try {
       const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Chat/getchatdetailbyid?ChatId=${chatId}`);
@@ -53,27 +35,13 @@ function ChatPages() {
   const sendMessage = async () => {
     if (selectedChatId && message.trim()) {
       try {
-        // Check if messages array is empty
         if (messages.length === 0) {
-          // Send request to create chatbox
           await authorizedAxiosInstance.post(`${API_ROOT}/api/Chat/createchatbox`, {
             otherId: selectedChatId,
             title: ""
           });
         }
 
-        // Send the message
-        // await axios.post(
-        //   `https://api.chatengine.io/chats/${selectedChatId}/messages/`,
-        //   { text: message },
-        //   {
-        //     headers: {
-        //       'Project-ID': PROJECT_ID,
-        //       'User-Name': USER_NAME,
-        //       'User-Secret': USER_SECRET,
-        //     },
-        //   }
-        // );
         setMessage("");
         fetchMessages(selectedChatId);
       } catch (error) {
@@ -87,9 +55,6 @@ function ChatPages() {
       fetchMessages(selectedChatId);
     }
   }, [selectedChatId]);
-
-  console.log('selectedChatId', selectedChatId)
-  console.log('messages', messages)
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
