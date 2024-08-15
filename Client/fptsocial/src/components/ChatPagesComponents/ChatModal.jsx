@@ -16,31 +16,25 @@ const ChatModal = ({
   const [message, setMessage] = useState("");
   const [chatId, setChatId] = useState(null);
 
-  console.log('selectedChatId', selectedChatId)
-
   const handleSendMessage = async () => {
     try {
       let currentChatId = chatId;
-  
-        console.log("Creating new chat...");
-        const createChatResponse = await authorizedAxiosInstance.post(
-          `${API_ROOT}/api/Chat/createchatbox`,
-          {
-            otherId: username, // Use the selected username here
-            title: "",
-          }
-        );
-        console.log("Chat created:", createChatResponse.data.data);
-        currentChatId = createChatResponse.data.data.chatId;
-        setChatId(currentChatId);
-      
-  
-      console.log("Current chatId:", currentChatId);
-  
+
+      const createChatResponse = await authorizedAxiosInstance.post(
+        `${API_ROOT}/api/Chat/createchatbox`,
+        {
+          otherId: username, // Use the selected username here
+          title: "",
+        }
+      );
+      console.log("Chat created:", createChatResponse.data.data);
+      currentChatId = createChatResponse.data.data.chatId;
+      setChatId(currentChatId);
+
       const sessionKey = "oidc.user:https://feid.ptudev.net:societe-front-end";
       const sessionValue = sessionStorage.getItem(sessionKey);
       const profile = JSON.parse(sessionValue).profile;
-  
+
       const config = {
         headers: {
           "Project-ID": "d7c4f700-4fc1-4f96-822d-8ffd0920b438",
@@ -48,7 +42,7 @@ const ChatModal = ({
           "User-Secret": profile.userId,
         },
       };
-  
+
       await authorizedAxiosInstance.post(
         `https://api.chatengine.io/chats/${currentChatId}/messages/`,
         {
@@ -56,7 +50,7 @@ const ChatModal = ({
         },
         config
       );
-  
+
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);

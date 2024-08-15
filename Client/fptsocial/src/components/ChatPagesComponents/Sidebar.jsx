@@ -8,12 +8,12 @@ import {
   MenuItem,
   Select,
   Toolbar,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
-import { API_ROOT } from "~/utils/constants";
+import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER } from "~/utils/constants";
 import ChatModal from "./ChatModal";
 
 function Sidebar({ onSelectChat }) {
@@ -37,22 +37,9 @@ function Sidebar({ onSelectChat }) {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const sessionKey =
-          "oidc.user:https://feid.ptudev.net:societe-front-end";
-        const sessionValue = sessionStorage.getItem(sessionKey);
-        const profile = JSON.parse(sessionValue).profile;
-
-        const config = {
-          headers: {
-            "Project-ID": "d7c4f700-4fc1-4f96-822d-8ffd0920b438",
-            "User-Name": profile.userId,
-            "User-Secret": profile.userId,
-          },
-        };
-
         const response = await authorizedAxiosInstance.get(
           "https://api.chatengine.io/chats/",
-          config
+          CHAT_ENGINE_CONFIG_HEADER
         );
         setChats(response.data);
       } catch (error) {
@@ -102,8 +89,6 @@ function Sidebar({ onSelectChat }) {
     setModalMessages([]);
   };
 
-  console.log("chats", chats);
-
   return (
     <Drawer
       variant="permanent"
@@ -151,24 +136,6 @@ function Sidebar({ onSelectChat }) {
             "No chats to display"
           ) : (
             <>
-              {/* {selectedUsers.map((user) => (
-                <ListItem
-                  button
-                  selected={user.id === currentSelectedUserId}
-                  key={user.id}
-                  onClick={() => {
-                    setCurrentSelectedUserId(user.id);
-                    onSelectChat(user.username);
-                  }}
-                >
-                  <Avatar
-                    src={user.avatar}
-                    alt={user.fullName}
-                    sx={{ marginRight: 1 }}
-                  />
-                  <ListItemText primary={user.fullName} />
-                </ListItem>
-              ))} */}
               {chats &&
                 chats.map((chat) => (
                   <ListItem
