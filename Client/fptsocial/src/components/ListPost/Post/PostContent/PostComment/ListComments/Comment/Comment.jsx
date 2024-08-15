@@ -29,8 +29,8 @@ function Comment({ comment, postType }) {
   const listReact = useSelector(selectListReactType)
   const reactLike = listReact?.find(e => e?.reactTypeName?.toLowerCase() == 'like')
   const [content, setContent] = useState(comment?.content)
-  const [listMedia, setListMedia] = useState(cleanAndParseHTML(comment?.content, true) || [])
-  console.log('🚀 ~ Comment ~ listMedia:', listMedia)
+  const [contentReply, setContentReply] = useState()
+  const [listMedia, setListMedia] = useState([])
   const [listCommentReact, setListCommentReact] = useState()
   const [reload, setReload] = useState(false)
   const dispatch = useDispatch()
@@ -38,6 +38,7 @@ function Comment({ comment, postType }) {
 
   const currentUser = useSelector(selectCurrentUser)
   const isYourComment = currentUser?.userId == comment?.userId
+
   const isProfile = postType === POST_TYPES.PROFILE_POST
   const isShare = postType === POST_TYPES.SHARE_POST
   const isVideoPost = postType === POST_TYPES.VIDEO_POST
@@ -46,9 +47,80 @@ function Comment({ comment, postType }) {
   const isGroupShare = postType === POST_TYPES.GROUP_SHARE_POST
   const isGroupPhoto = postType === POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType === POST_TYPES.GROUP_VIDEO_POST
-  const { t } = useTranslation()
-  // const commentMediaData = cleanAndParseHTML(comment?.content, true)
 
+  const [commentMedia, setCommentMedia] = useState([])
+  useEffect(() => {
+    comment &&
+      setCommentMedia(cleanAndParseHTML(comment?.content, true))
+  }, [comment])
+
+  let postIdParam = {}
+  let commentIdParam = {}
+  let getCommentReactFn
+  let replyCommentFn
+  let reactCommentFn
+  let deleteCommentFn
+
+
+  if (isProfile) {
+    commentIdParam['commentId'] = comment?.commentId
+    postIdParam['userPostId'] = comment?.userPostId
+    getCommentReactFn = getAllReactByCommentId
+    replyCommentFn = commentPost
+    reactCommentFn = createReactCommentUserPost
+    deleteCommentFn = deleteCommentUserPost
+  } else if (isShare) {
+    commentIdParam['commentSharePostId'] = comment?.commentSharePostId
+    postIdParam['sharePostId'] = comment?.sharePostId
+    getCommentReactFn = getAllReactByCommentSharePostId
+    replyCommentFn = commentSharePost
+    reactCommentFn = createReactCommentSharePost
+    deleteCommentFn = deleteCommentSharePost
+  } else if (isVideoPost) {
+    commentIdParam['commentVideoPostId'] = comment?.commentVideoPostId
+    postIdParam['userPostVideoId'] = comment?.userPostVideoId
+    getCommentReactFn = getAllReactByCommentVideoId
+    replyCommentFn = commentVideoPost
+    reactCommentFn = createReactCommentUserVideoPost
+    deleteCommentFn = deleteCommentUserPhotoPost
+  } else if (isPhotoPost) {
+    commentIdParam['commentPhotoPostId'] = comment?.commentPhotoPostId
+    postIdParam['userPostPhotoId'] = comment?.userPostPhotoId
+    getCommentReactFn = getAllReactByCommentPhotoId
+    replyCommentFn = commentPhotoPost
+    reactCommentFn = createReactCommentUserPhotoPost
+    deleteCommentFn = deleteCommentUserVideoPost
+  } else if (isGroup) {
+    commentIdParam['commentGroupPostId'] = comment?.commentGroupPostId
+    postIdParam['groupPostId'] = comment?.groupPostId
+    getCommentReactFn = getAllReactByGroupCommentId
+    replyCommentFn = commentGroupPost
+    reactCommentFn = createReactCommentGroupPost
+    deleteCommentFn = deleteCommentGroupPost
+  } else if (isGroupShare) {
+    commentIdParam['commentGroupSharePostId'] = comment?.commentGroupSharePostId
+    postIdParam['groupSharePostId'] = comment?.groupSharePostId
+    getCommentReactFn = getAllReactByCommentGroupSharePostId
+    replyCommentFn = commentGroupSharePost
+    reactCommentFn = createReactCommentGroupSharePost
+    deleteCommentFn = deleteCommentGroupSharePost
+  } else if (isGroupPhoto) {
+    commentIdParam['commentPhotoGroupPostId'] = comment?.commentPhotoGroupPostId
+    postIdParam['groupPostPhotoId'] = comment?.groupPostPhotoId
+    getCommentReactFn = getAllReactByGroupCommentPhotoId
+    replyCommentFn = commentGroupPhotoPost
+    reactCommentFn = createReactCommentGroupPhotoPost
+    deleteCommentFn = deleteCommentGroupPhotoPost
+  } else if (isGroupVideo) {
+    commentIdParam['commentGroupVideoPostId'] = comment?.commentGroupVideoPostId
+    postIdParam['groupPostVideoId'] = comment?.groupPostVideoId
+    getCommentReactFn = getAllReactByGroupCommentVideoId
+    replyCommentFn = commentGroupVideoPost
+    reactCommentFn = createReactCommentGroupVideoPost
+    deleteCommentFn = deleteCommentGroupVideoPost
+  }
+
+  const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState(null)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -68,59 +140,26 @@ function Comment({ comment, postType }) {
   const open2 = Boolean(anchorEl2)
   const id2 = open ? 'simple-popover2' : undefined
 
-  const getReactOfComment = async () => {
-    const response = await (
-      isProfile ? getAllReactByCommentId(comment?.commentId)
-        : isShare ? getAllReactByCommentSharePostId(comment?.commentSharePostId)
-          : isVideoPost ? getAllReactByCommentVideoId(comment?.commentVideoPostId)
-            : isPhotoPost ? getAllReactByCommentPhotoId(comment?.commentPhotoPostId)
-              : isGroup ? getAllReactByGroupCommentId(comment?.commentGroupPostId)
-                : isGroupShare ? getAllReactByCommentGroupSharePostId(comment?.commentGroupSharePostId)
-                  : isGroupPhoto ? getAllReactByGroupCommentPhotoId(comment?.commentPhotoGroupPostId)
-                    : isGroupVideo && getAllReactByGroupCommentVideoId(comment?.commentGroupVideoPostId)
-    )
-    setListCommentReact(response)
-    setCurrentReact(response?.listCommentReact?.find(e => e?.userId == currentUser?.userId))
-  }
-
   useEffect(() => {
+    const getReactOfComment = async () => {
+      const response = await (
+        getCommentReactFn(Object.values(commentIdParam)[0])
+      )
+      setListCommentReact(response)
+      setCurrentReact(response?.listCommentReact?.find(e => e?.userId == currentUser?.userId))
+    }
     getReactOfComment()
   }, [reload])
 
   const handleRelyComment = () => {
-    const submitData =
-    {
-      ...(isProfile ? { 'userPostId': comment?.userPostId }
-        : isShare ? { 'sharePostId': comment?.sharePostId }
-          : isVideoPost ? { 'userPostVideoId': comment?.userPostVideoId }
-            : isPhotoPost ? { 'userPostPhotoId': comment?.userPostPhotoId }
-              : isGroup ? { 'groupPostId': comment?.groupPostId }
-                : isGroupShare ? { 'groupSharePostId': comment?.groupSharePostId }
-                  : isGroupPhoto ? { 'groupPostPhotoId': comment?.groupPostPhotoId }
-                    : isGroupVideo && { 'groupPostVideoId': comment?.groupPostVideoId }
-      ),
+    const submitData = {
+      ...postIdParam,
       'userId': currentUser?.userId,
-      'content': content,
-      'parentCommentId':
-        isProfile ? comment?.commentId
-          : isShare ? comment?.commentSharePostId
-            : isPhotoPost ? comment?.commentPhotoPostId
-              : isVideoPost ? comment?.commentVideoPostId
-                : isGroup ? comment?.commentGroupPostId
-                  : isGroupShare ? comment?.commentGroupSharePostId
-                    : isGroupPhoto ? comment?.commentPhotoGroupPostId
-                      : isGroupVideo && comment?.commentGroupVideoPostId
+      'content': listMedia?.length > 0 ? `${replaceRegex(content)}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : replaceRegex(content),
+      'parentCommentId': Object.values(commentIdParam)[0]
     }
     toast.promise(
-      isProfile ? commentPost(submitData)
-        : isShare ? commentSharePost(submitData)
-          : isVideoPost ? commentVideoPost(submitData)
-            : isPhotoPost ? commentPhotoPost(submitData)
-              : isGroup ? commentGroupPost(submitData)
-                : isGroupShare ? commentGroupSharePost(submitData)
-                  : isGroupPhoto ? commentGroupPhotoPost(submitData)
-                    : isGroupVideo && commentGroupVideoPost(submitData)
-      ,
+      replyCommentFn(submitData),
       { pending: 'Posting...' }
     ).then(() => {
       toast.success('Commented')
@@ -137,76 +176,26 @@ function Comment({ comment, postType }) {
               }
             }
             : post
-        );
+        )
         dispatch(updateCurrentActiveListPost(updatedPosts));
       })
   }
 
   const handleReactPost = (type) => {
-    const reactData = (isProfile ?
-      {
-        'userPostId': comment?.userPostId,
-        'userId': currentUser?.userId,
-        'reactTypeId': type,
-        'commentId': comment?.commentId,
-      }
-      : isShare ? {
-        'sharePostId': comment?.sharePostId,
-        'userId': currentUser?.userId,
-        'reactTypeId': type,
-        'commentSharePostId': comment?.commentSharePostId,
-      }
-        : isVideoPost ? {
-          'userPostVideoId': comment?.userPostVideoId,
-          'userId': currentUser?.userId,
-          'reactTypeId': type,
-          'commentVideoPostId': comment?.commentVideoPostId,
-        }
-          : isPhotoPost ? {
-            'userPostPhotoId': comment?.userPostPhotoId,
-            'userId': currentUser?.userId,
-            'reactTypeId': type,
-            'commentPhotoPostId': comment?.commentPhotoPostId,
-          }
-            : isGroup ? {
-              'groupPostId': comment?.groupPostId,
-              'userId': currentUser?.userId,
-              'reactTypeId': type,
-              'commentGroupPostId': comment?.commentGroupPostId,
-            }
-              : isGroupShare ? {
-                'groupSharePostId': comment?.groupSharePostId,
-                'userId': currentUser?.userId,
-                'reactTypeId': type,
-                'commentGroupSharePostId': comment?.commentGroupSharePostId,
-              }
-                : isGroupPhoto ? {
-                  'groupPostPhotoId': comment?.groupPostPhotoId,
-                  'userId': currentUser?.userId,
-                  'reactTypeId': type,
-                  'commentPhotoGroupPostId': comment?.commentPhotoGroupPostId,
-                }
-                  : isGroupVideo && {
-                    'groupPostVideoId': comment?.groupPostVideoId,
-                    'userId': currentUser?.userId,
-                    'reactTypeId': type,
-                    'commentGroupVideoPostId': comment?.commentGroupVideoPostId,
-                  })
-    toast.promise(
-      isProfile ? createReactCommentUserPost(reactData)
-        : isShare ? createReactCommentSharePost(reactData)
-          : isVideoPost ? createReactCommentUserVideoPost(reactData)
-            : isPhotoPost ? createReactCommentUserPhotoPost(reactData)
-              : isGroup ? createReactCommentGroupPost(reactData)
-                : isGroupShare ? createReactCommentGroupSharePost(reactData)
-                  : isGroupPhoto ? createReactCommentGroupPhotoPost(reactData)
-                    : isGroupVideo && createReactCommentGroupVideoPost(reactData)
+    const reactData = {
+      ...postIdParam,
+      'userId': currentUser?.userId,
+      'reactTypeId': type,
+      ...commentIdParam
+    }
+
+    toast.promise(reactCommentFn(reactData)
       //   .then((data) => {
       //     if (data) {
       //       const signalRData = {
       //         MsgCode: 'User-004',
       //         Receiver: `${postData?.userId}`,
-      //         Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+      //         Url: `/profile?id=${currentUser?.userId}`,
       //         AdditionsMsd: ''
       //       }
       //       connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
@@ -230,50 +219,39 @@ function Comment({ comment, postType }) {
       cancellationText: 'Cancel'
     }).then(() => {
       toast.promise(
-        (isProfile ? deleteCommentUserPost(comment?.commentId)
-          : isShare ? deleteCommentSharePost(comment?.commentSharePostId)
-            : isPhotoPost ? deleteCommentUserPhotoPost(comment?.commentPhotoPostId)
-              : isVideoPost ? deleteCommentUserVideoPost(comment?.commentVideoPostId)
-                : isGroup ? deleteCommentGroupPost(comment?.commentGroupPostId)
-                  : isGroupShare ? deleteCommentGroupSharePost(comment?.commentGroupSharePostId)
-                    : isGroupPhoto ? deleteCommentGroupPhotoPost(comment?.commentPhotoGroupPostId)
-                      : isGroupVideo && deleteCommentGroupVideoPost(comment?.commentGroupVideoPostId)),
+        deleteCommentFn(Object.values(commentIdParam)[0]),
         { pending: 'Processing...' }
       ).then(() => dispatch(triggerReloadComment()))
         .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber - 1 } })))
         .then(() => {
-          const updatedPosts = currentActiveListPost.map(post =>
-            post.postId === currentActivePost.postId
-              ? {
-                ...currentActivePost,
-                reactCount: {
-                  ...currentActivePost.reactCount,
-                  commentNumber: currentActivePost.reactCount.commentNumber - 1
+          if (currentActiveListPost) {
+            const updatedPosts = currentActiveListPost.map(post =>
+              post.postId === currentActivePost.postId
+                ? {
+                  ...currentActivePost,
+                  reactCount: {
+                    ...currentActivePost.reactCount,
+                    commentNumber: currentActivePost.reactCount.commentNumber - 1
+                  }
                 }
-              }
-              : post
-          );
-          dispatch(updateCurrentActiveListPost(updatedPosts));
+                : post
+            )
+            dispatch(updateCurrentActiveListPost(updatedPosts));
+          }
         })
     })
   }
 
+  const replaceRegex = (html) => {
+    return html.replace(/<!--MEDIA:(video|image):(.+?)-->/g, '')
+  }
   const handleUpdateComment = () => {
     (async () => {
       const submitData = {
         'userId': currentUser?.userId,
-        'content': listMedia?.length > 0 ? `${content.replace(/<!--MEDIA:(video|image):(.+?)-->/g, '')}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : content.replace(/<!--MEDIA:(video|image):(.+?)-->/g, ''),
-        ...(isProfile ? { 'commentId': comment?.commentId }
-          : isShare ? { 'commentSharePostId': comment?.commentSharePostId }
-            : isPhotoPost ? { 'commentPhotoPostId': comment?.commentPhotoPostId }
-              : isVideoPost ? { 'commentVideoPostId': comment?.commentVideoPostId }
-                : isGroup ? { 'commentGroupPostId': comment?.commentGroupPostId }
-                  : isGroupShare ? { 'commentGroupSharePostId': comment?.commentGroupSharePostId }
-                    : isGroupPhoto ? { 'commentPhotoGroupPostId': comment?.commentPhotoGroupPostId }
-                      : isGroupVideo && { 'commentGroupVideoPostId': comment?.commentGroupVideoPostId }
-        )
+        'content': commentMedia?.length > 0 ? `${replaceRegex(content)}<!--MEDIA:${commentMedia[0]?.type}:${commentMedia[0]?.url}-->` : replaceRegex(content),
+        ...commentIdParam
       }
-      // console.log('🚀 ~ submitData:', submitData)
       await (isProfile ? updateUserCommentPost(submitData)
         : isShare ? updateCommentSharePost(submitData)
           : isPhotoPost ? updateUserCommentPhotoPost(submitData)
@@ -308,8 +286,8 @@ function Comment({ comment, postType }) {
                 <div className='font-normal flex-col'>
                   {cleanAndParseHTML(comment?.content)}
                   <div className='max-w-[300px]'>
-                    {listMedia?.length > 0 && (
-                      listMedia[0]?.type == 'image'
+                    {commentMedia?.length > 0 && commentMedia && (
+                      commentMedia[0]?.type == 'image'
                         ? <img src={cleanAndParseHTML(comment?.content, true)[0]?.url} />
                         : <video src={cleanAndParseHTML(comment?.content, true)[0]?.url} controls />
                     )}
@@ -366,10 +344,10 @@ function Comment({ comment, postType }) {
                     <UserAvatar isOther={false} />
                     <div className='rounded-2xl pt-2'>
                       <Tiptap
-                        setContent={setContent}
-                        content={content}
+                        setContent={setContentReply}
+                        content={contentReply}
                         editorType={EDITOR_TYPE.COMMENT}
-                        listMedia={setListMedia}
+                        listMedia={listMedia}
                         setListMedia={setListMedia}
                       />
                     </div>
@@ -385,8 +363,8 @@ function Comment({ comment, postType }) {
                   <Tiptap
                     setContent={setContent}
                     content={content}
-                    listMedia={listMedia}
-                    setListMedia={setListMedia}
+                    listMedia={commentMedia}
+                    setListMedia={setCommentMedia}
                     editorType={EDITOR_TYPE.COMMENT}
                   />
                 </div>

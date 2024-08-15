@@ -9,7 +9,7 @@ import { sendFriend, updateFriendStatus } from '~/apis';
 import UserAvatar from '~/components/UI/UserAvatar'
 import { triggerReload } from '~/redux/ui/uiSlice';
 import { selectCurrentUser } from '~/redux/user/userSlice';
-import { ADMIN, CENSOR } from '~/utils/constants'
+import { ADMIN, CENSOR, FRONTEND_ROOT } from '~/utils/constants'
 import connectionSignalR from '~/utils/signalRConnection';
 
 function Member({ listMember, roleType }) {
@@ -32,7 +32,7 @@ function Member({ listMember, roleType }) {
         const signalRData = {
           MsgCode: 'User-001',
           Receiver: reviverId,
-          Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+          Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
           AdditionsMsd: '',
           ActionId: 'true'
         }
@@ -56,7 +56,7 @@ function Member({ listMember, roleType }) {
           const signalRData = {
             MsgCode: 'User-002',
             Receiver: `${data?.friendId}`,
-            Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+            Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
             AdditionsMsd: 'aa'
           }
           connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))

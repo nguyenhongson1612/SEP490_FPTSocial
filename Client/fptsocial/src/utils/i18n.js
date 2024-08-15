@@ -87,10 +87,12 @@ i18n
               noComment: 'This post has no comments yet! Be the first to comment :D'
             },
             react: {
+              all: 'All',
               like: 'Like',
               disLike: 'Dislike',
               comment: 'Comment',
               share: 'Share',
+              noReact: 'There have been no reactions yet!',
             }
           },
           sideText: {
@@ -181,10 +183,12 @@ i18n
               noComment: 'Bài viết chưa có bình luận nào! Hãy là người bình luận đầu tiên:D'
             },
             react: {
+              all: 'Tất cả',
               like: 'Thích',
               disLike: 'Ghét',
               comment: 'Bình luận',
               share: 'Chia sẻ',
+              noReact: 'Chưa có lượt tương tác nào!'
             }
           },
           sideText: {

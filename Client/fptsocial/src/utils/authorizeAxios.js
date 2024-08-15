@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatters'
+import { JWT_TOKEN } from './constants'
 
-const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
+const jwtToken = JWT_TOKEN
 let authorizedAxiosInstance = axios.create({
   // withCredentials: true
 })

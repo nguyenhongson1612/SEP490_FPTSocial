@@ -39,8 +39,7 @@ function ActivePost({ isReportPost = false }) {
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
   const user = useSelector(selectCurrentUser)
-  const [listPhotos, setListPhotos] = useState([])
-  const [listVideos, setListVideos] = useState([])
+  const [listMedia, setListMedia] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
 
@@ -179,10 +178,8 @@ function ActivePost({ isReportPost = false }) {
                 <Tiptap
                   setContent={setContent}
                   content={content}
-                  listPhotos={listPhotos}
-                  setListPhotos={setListPhotos}
-                  listVideos={listVideos}
-                  setListVideos={setListVideos}
+                  listMedia={listMedia}
+                  setListMedia={setListMedia}
                   editorType={EDITOR_TYPE.COMMENT}
                 />
               </div>

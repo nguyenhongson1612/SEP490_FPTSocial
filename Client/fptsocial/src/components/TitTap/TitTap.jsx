@@ -15,6 +15,7 @@ import Toolbar from './ToolBar'
 import { useTranslation } from 'react-i18next'
 
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
+  console.log('🚀 ~ Tiptap ~ listMedia:', listMedia)
   const [isChoseFile, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -128,7 +129,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
                 )}
               </div>
 
-              {listMedia.map((media, index) => (
+              {listMedia?.map((media, index) => (
                 media.type === 'image'
                   ? <img key={index} src={media.url} className={`w-full h-full object-cover ${listMedia.length % 2 !== 0 && index === 0 ? 'col-span-2' : 'col-span-1'}`} />
                   : <video key={index} src={media.url} className={`w-full h-full object-cover ${listMedia.length % 2 !== 0 && index === 0 ? 'col-span-2' : 'col-span-1'}`} controls disablePictureInPicture />

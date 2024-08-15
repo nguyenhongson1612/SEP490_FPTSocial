@@ -114,7 +114,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
         //   const signalRData = {
         //     MsgCode: 'User-004',
         //     Receiver: `${postData?.userId}`,
-        //     Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+        //     Url: `/profile?id=${currentUser?.userId}`,
         //     AdditionsMsd: ''
         //   }
         //   connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))

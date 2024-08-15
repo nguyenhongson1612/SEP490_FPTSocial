@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import { handleCoverImg } from '~/utils/formatters'
 import { useDispatch } from 'react-redux'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
-import { REPORT_TYPES } from '~/utils/constants'
+import { FRONTEND_ROOT, REPORT_TYPES } from '~/utils/constants'
 import { useTranslation } from 'react-i18next'
 import { addBlock, openModalBlock } from '~/redux/block/blockSlice'
 import Block from '~/components/Modal/Block/Block'
@@ -49,7 +49,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
         const signalRData = {
           MsgCode: 'User-001',
           Receiver: user?.userId,
-          Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+          Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
           AdditionsMsd: '',
           ActionId: 'true'
         }
@@ -73,7 +73,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           const signalRData = {
             MsgCode: 'User-002',
             Receiver: `${user?.userId}`,
-            Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+            Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
             AdditionsMsd: ''
           }
           connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))

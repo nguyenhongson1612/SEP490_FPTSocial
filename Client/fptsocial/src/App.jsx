@@ -25,8 +25,9 @@ import ForgotPassword from './pages/Auth/ForgotPassword'
 import Unauthorization from './pages/404/Unauthorization'
 import Search from './pages/Search'
 import ChatBot from './pages/ChatBot/ChatBot'
+import { JWT_TOKEN } from './utils/constants'
 
-const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
+const jwtToken = JWT_TOKEN
 
 const ProtectedRouteByJWT = ({ jwtToken }) => {
   if (!jwtToken) return window.location.assign('/login');

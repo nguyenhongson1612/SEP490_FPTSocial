@@ -7,8 +7,8 @@ export const getAllReactType = async () => {
   return response.data?.data
 }
 
-export const getReactPostDetail = async ({ postType, postId, reactName, page = 1 }) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getReactPostDetail?PostType=${postType}&PostId=${postId}&ReactName=${reactName}&PageNumber=${page}`)
+export const getReactPostDetail = async ({ postType, postId, reactName, page = 1, userId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getReactPostDetail?PostType=${postType}&PostId=${postId}&ReactName=${reactName}&PageNumber=${page}&UserId=${userId}`)
   return response.data?.data
 }
 export const getAllReactByPostId = async (id, page = 1) => {

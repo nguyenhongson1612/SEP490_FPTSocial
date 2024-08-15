@@ -27,9 +27,8 @@ export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
         url: match[2]
       }))
       return mediaInfo
-    } else {
-      return null
     }
+    else return []
   }
 
   const cleanHtml = parse(DOMPurify.sanitize(html))
