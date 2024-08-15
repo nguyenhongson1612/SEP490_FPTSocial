@@ -70,7 +70,7 @@ function GroupHome({ group }) {
     //       const signalRData = {
     //         MsgCode: 'User-001',
     //         Receiver: `${friend?.friendId}`,
-    //         Url: `http://localhost:3000/groups/${groupId}`,
+    //         Url: `/groups/${groupId}`,
     //         AdditionsMsd: ''
     //       }
     //       connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))

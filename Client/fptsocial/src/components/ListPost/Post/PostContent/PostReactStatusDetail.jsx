@@ -1,21 +1,32 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { Box, Tab } from '@mui/material'
+import { Box, Button, Tab } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllReactByGroupPhotoPostId, getAllReactByGroupPostId, getAllReactByGroupSharePostId, getAllReactByGroupVideoPostId } from '~/apis/groupPostApis'
 import { getAllReactByPhotoPostId, getAllReactByPostId, getAllReactBySharePostId, getAllReactByVideoPostId, getAllReactType, getReactPostDetail } from '~/apis/reactApis'
 import UserAvatar from '~/components/UI/UserAvatar'
-import { POST_TYPES } from '~/utils/constants'
+import { FRONTEND_ROOT, POST_TYPES } from '~/utils/constants'
 import likeEmoji from '~/assets/img/emojis/like.png'
 import angryEmoji from '~/assets/img/emojis/angry.png'
+import reactionImg from '~/assets/img/reaction.png'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { sendFriend, updateFriendStatus } from '~/apis'
+import connectionSignalR from '~/utils/signalRConnection'
+import InfiniteScroll from '~/components/IntersectionObserver/InfiniteScroll'
+import { selectListUserStatus } from '~/redux/sideData/sideDataSlice'
 
 function PostReactStatusDetail({ postType, postData }) {
-  const [listReact, setListReact] = useState([])
+  const currentUser = useSelector(selectCurrentUser)
+  const [isLoadMore, setIsLoadMore] = useState(true)
   const [listPostReact, setListPostReact] = useState([])
+  const [listUserReact, setListUserReact] = useState([])
   const [listUserReactByReactType, setListUserReactByReactType] = useState([])
   const [value, setValue] = useState(10)
   const { t } = useTranslation()
+  const [updatef, setUpdatef] = useState(false)
+  const [page, setPage] = useState(1)
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -67,19 +78,67 @@ function PostReactStatusDetail({ postType, postData }) {
     getAllPostReactFn = getAllReactByGroupVideoPostId
   }
 
+
   useEffect(() => {
-    getAllPostReactFn(postId).then(data => setListPostReact(data))
-    getAllReactType().then(data => setListReact(data))
+    getAllPostReactFn(postId, page).then(data => setListPostReact(data?.listReact))
   }, [])
 
   useEffect(() => {
-    listPostReact?.listReact?.length > 0 && value != 10 &&
-      getReactPostDetail({ postId: postId, postType: postTypeName, reactName: listPostReact?.listReact[value]?.reactTypeName })
+    isLoadMore && setIsLoadMore(true)
+    setPage(1)
+    setListUserReact([])
+    setListUserReactByReactType([])
+  }, [value])
+
+  useEffect(() => {
+    value == 10 &&
+      getAllPostReactFn(postId, page).then(data => {
+        if (data?.listUserReact?.length == 0) setIsLoadMore(false)
+        setListUserReact([...listUserReact, ...data?.listUserReact || []])
+      })
+  }, [updatef, page, value])
+
+
+  useEffect(() => {
+    listPostReact?.length > 0 && value != 10 &&
+      getReactPostDetail({ postId: postId, postType: postTypeName, reactName: listPostReact[value]?.reactTypeName, page, userId: currentUser?.userId })
         .then(data => setListUserReactByReactType(data?.listUserReact))
-  }, [listReact, value])
+  }, [value, updatef, page])
+
+
+  const handleAddFriend = async (data) => {
+    try {
+      const response = await sendFriend({ userId: currentUser?.userId, friendId: data?.userId })
+      if (response) {
+        const signalRData = {
+          MsgCode: 'User-001',
+          Receiver: data?.userId,
+          Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
+          AdditionsMsd: '',
+          ActionId: 'true'
+        }
+        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+      }
+      setUpdatef(!updatef)
+    } catch (err) {
+      console.error('Error while starting connection: ', err)
+    }
+  }
+
+  const handleCancelFriendRequest = (data) => {
+    if (data?.status == 'Friend') return
+    const submitData = {
+      userId: currentUser?.userId,
+      friendId: data?.userId,
+      confirm: false,
+      cancle: true,
+      reject: false
+    }
+    updateFriendStatus(submitData).then(() => setUpdatef(!updatef))
+  }
 
   return (
-    <div className='p-1 w-[90%] md:w-[300px] min-h-[200px]'>
+    <div className='p-1 w-[90%] xs:w-[400px] '>
       <TabContext value={value}>
         <Box sx={{
           borderBottom: 1,
@@ -102,9 +161,9 @@ function PostReactStatusDetail({ postType, postData }) {
           <TabList onChange={handleChange} aria-label="lab API tabs example">
             <Tab
               value={10}
-              label={'All'}
+              label={t('standard.react.all')}
             />
-            {listPostReact?.listReact?.map((e, index) => (
+            {listPostReact?.map((e, index) => (
               <Tab
                 key={e?.reactTypeId}
                 value={index}
@@ -120,43 +179,61 @@ function PostReactStatusDetail({ postType, postData }) {
             ))}
           </TabList>
         </Box>
-        <div className='p-2'>
+        <div className='p-1 min-h-[200px] max-h-[200px] overflow-y-auto scrollbar-none-track'>
           <div className='flex flex-col gap-1'>
+            <InfiniteScroll
+              fetchMore={() => setPage((prev) => prev + 1)}
+              hasMore={isLoadMore}
+            >
+              {
+                (value == 10 ? listUserReact : listUserReactByReactType)?.map(e => (
+                  <Link to={`/profile?id=${e?.userId}`} key={e?.userId} className='flex items-center justify-between hover:bg-gray-100 p-2 rounded-md'>
+                    <div className='flex gap-2 items-center'>
+                      <div className='relative'>
+                        <UserAvatar avatarSrc={e?.avataUrl} />
+                        <img
+                          className='size-5 absolute right-0 bottom-0 border border-white rounded-full'
+                          src={(e?.reactTypeName || e?.reactName)?.toLowerCase() == 'like' ? likeEmoji : angryEmoji}
+                        />
+                      </div>
+                      <div className=''>
+                        <p className='capitalize'>{e?.userName}</p>
+                      </div>
+                    </div>
+                    <div>
+                      {currentUser?.userId !== e?.userId &&
+                        (e?.status == 'NotFriend' ?
+                          <Button size='small' onClick={(event) => {
+                            event.stopPropagation()
+                            event.preventDefault()
+                            handleAddFriend(e)
+                          }}>
+                            {t('standard.profile.addFriend')}
+                          </Button>
+                          : <Button variant={e?.status == 'Friend' ? 'contained' : 'outlined'} size='small' onClick={(event) => {
+                            event.stopPropagation()
+                            event.preventDefault()
+                            handleCancelFriendRequest(e)
+                          }}>
+                            {
+                              e?.status == 'Friend'
+                                ? t('standard.profile.friend')
+                                : t('standard.profile.cancelRequest')
+                            }
+                          </Button>)}
+                    </div>
+                  </Link>
+                ))
+              }
+            </InfiniteScroll>
             {
-              value == 10 &&
-              listPostReact?.listUserReact?.map(e => (
-                <Link to={`/profile?id=${e?.userId}`} key={e?.userId} className='flex gap-2 items-center hover:bg-fbWhite p-2 rounded-md'>
-                  <div className='relative'>
-                    <UserAvatar avatarSrc={e?.avataUrl} />
-                    <img
-                      className='size-5 absolute right-0 bottom-0 border border-white rounded-full'
-                      src={(e?.reactTypeName || e?.reactName)?.toLowerCase() == 'like' ? likeEmoji : angryEmoji}
-                    />
-                  </div>
-                  <div className=''>
-                    <p className='capitalize'>{e?.userName}</p>
-                  </div>
-                </Link>
-              ))
-            }
-            {value != 10 &&
-              listUserReactByReactType?.map(e => (
-                <Link to={`/profile?id=${e?.userId}`} key={e?.userId} className='flex gap-2 items-center hover:bg-fbWhite p-2 rounded-md'>
-                  <div className='relative'>
-                    <UserAvatar avatarSrc={e?.avataUrl} />
-                    <img
-                      className='size-5 absolute right-0 bottom-0 border border-white rounded-full'
-                      src={(e?.reactTypeName || e?.reactName)?.toLowerCase() == 'like' ? likeEmoji : angryEmoji}
-                    />
-                  </div>
-                  <div className=''>
-                    <p className='capitalize'>{e?.userName}</p>
-                  </div>
-                </Link>
-              ))
+              listUserReactByReactType?.length == 0 && value !== 10 &&
+              <div className='flex flex-col items-center text-gray-500/90'>
+                <img src={reactionImg} className='size-12' />
+                <p>{t('standard.react.noReact')}</p>
+              </div>
             }
           </div>
-
         </div>
       </TabContext>
     </div>)

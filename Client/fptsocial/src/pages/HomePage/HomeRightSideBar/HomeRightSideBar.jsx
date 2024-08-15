@@ -12,6 +12,7 @@ import connectionSignalR from '~/utils/signalRConnection'
 import bellImg from '~/assets/img/bell2.png'
 import noIdeaImg from '~/assets/img/no-idea.png'
 import { useTranslation } from 'react-i18next'
+import { FRONTEND_ROOT } from '~/utils/constants'
 
 function HomeRightSideBar() {
   const currentUser = useSelector(selectCurrentUser)
@@ -35,7 +36,7 @@ function HomeRightSideBar() {
         const signalRData = {
           MsgCode: 'User-001',
           Receiver: userId,
-          Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+          Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
           AdditionsMsd: ''
         };
         // console.log(signalRData);
@@ -57,7 +58,7 @@ function HomeRightSideBar() {
   //         const signalRData = {
   //           MsgCode: 'User-002',
   //           Receiver: `${user?.userId}`,
-  //           Url: `http://localhost:3000/profile?id=${currentUser?.userId}`,
+  //           Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
   //           AdditionsMsd: ''
   //         };
   //         connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));

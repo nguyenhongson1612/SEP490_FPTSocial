@@ -1,7 +1,7 @@
 
 import * as signalR from '@microsoft/signalr'
-import { API_ROOT } from './constants'
-const jwtToken = JSON.parse(window.sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.access_token
+import { API_ROOT, JWT_TOKEN } from './constants'
+const jwtToken = JWT_TOKEN
 
 const connectionSignalR = new signalR.HubConnectionBuilder()
   .withUrl(`${API_ROOT}/notificationsHub`, {
