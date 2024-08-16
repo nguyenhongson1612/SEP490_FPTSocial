@@ -44,7 +44,23 @@ function ChatWindow({ selectedChatId }) {
     }
   };
 
-  const sendMessage = async () => {};
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+    
+    try {
+      await authorizedAxiosInstance.post(
+        `https://api.chatengine.io/chats/${selectedChatId}/messages/`,
+        {
+          text: message,
+        },
+        CHAT_ENGINE_CONFIG_HEADER
+      );
+      setMessage("");
+      fetchChatMessages(selectedChatId);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
 
   return (
     <ChatEngineWrapper>

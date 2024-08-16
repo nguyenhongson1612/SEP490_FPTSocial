@@ -35,18 +35,6 @@ function Sidebar({ onSelectChat }) {
   const sidebarWidth = isSmallScreen ? 200 : isMediumScreen ? 240 : 300;
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const response = await authorizedAxiosInstance.get(
-          "https://api.chatengine.io/chats/",
-          CHAT_ENGINE_CONFIG_HEADER
-        );
-        setChats(response.data);
-      } catch (error) {
-        console.error("Error fetching chat list:", error);
-      }
-    };
-
     fetchChats();
   }, []);
 
@@ -66,9 +54,21 @@ function Sidebar({ onSelectChat }) {
         setAllUsers([]);
       }
     };
-
+    
     fetchAllUsers();
   }, []);
+
+  const fetchChats = async () => {
+    try {
+      const response = await authorizedAxiosInstance.get(
+        "https://api.chatengine.io/chats/",
+        CHAT_ENGINE_CONFIG_HEADER
+      );
+      setChats(response.data);
+    } catch (error) {
+      console.error("Error fetching chat list:", error);
+    }
+  };
 
   const handleSelectChat = (chatId) => {
     setSelectedChatId(chatId);
@@ -145,7 +145,7 @@ function Sidebar({ onSelectChat }) {
                     selected={chat.id === selectedChatId}
                   >
                     <Avatar
-                      src={chat.avatar}
+                      
                       alt={chat.fullName}
                       sx={{ marginRight: 1 }}
                     />
@@ -158,12 +158,13 @@ function Sidebar({ onSelectChat }) {
       </Box>
       <ChatModal
         open={modalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setModalOpen(false)}
         username={selectedUsername}
         fullName={selectedUserFullName}
         messages={modalMessages}
         setMessages={setModalMessages}
         selectedChatId={currentSelectedUserId}
+        fetchChats={fetchChats}
       />
     </Drawer>
   );
