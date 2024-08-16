@@ -121,10 +121,10 @@ function PostTitle({ postData, isYourPost, postType }) {
             )}
             {
               (isGroup || isGroupShare) ? <a href={`/groups/${postData?.groupId}/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
-                {compareDateTime(postData?.createdAt)}
+                {compareDateTime(postData?.createdAt || postData?.createdDate)}
               </a>
-                : <Link to={`/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
-                  {compareDateTime(postData?.createdAt)}
+                : <Link to={`/post/${postData?.userPostId || postData?.postId}?share=${isShare ? 1 : 0}`} className='font-thin'>
+                  {compareDateTime(postData?.createdAt || postData?.createdDate)}
                 </Link>
             }
             {/* <Link to={`/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>

@@ -8,7 +8,7 @@ import Progress from './Progress'
 import { createAdminProfile, createByLogin, createUserChat } from '~/apis'
 import { toast } from 'react-toastify'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { DEFAULT_AVATAR } from '~/utils/constants'
+import { DEFAULT_AVATAR, JWT_PROFILE } from '~/utils/constants'
 import AdminUpdate from './AdminUpdate'
 
 function FirstTimeLogin() {
@@ -18,8 +18,7 @@ function FirstTimeLogin() {
   const isOther = location.pathname === '/firstlogin'
   const formRef = useRef(null)
   const navigate = useNavigate()
-
-  const profileFeId = JSON.parse(sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.profile
+  const profileFeId = JWT_PROFILE
   const initialGeneralForm = {
     'email': profileFeId?.email,
   }

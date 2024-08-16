@@ -17,7 +17,7 @@ if (process.env.BUILD_MODE === "production") {
 const jwtToken = JSON.parse(window.sessionStorage.getItem(`oidc.user:https://feid.ptudev.net:${clientId}`))?.access_token
 
 const userId = JSON.parse(window.sessionStorage.getItem(`oidc.user:https://feid.ptudev.net:${clientId}`))?.profile.userId
-
+export const JWT_PROFILE = JSON.parse(window.sessionStorage.getItem(`oidc.user:https://feid.ptudev.net:${clientId}`))?.profile
 export const API_ROOT = apiRoot
 export const FRONTEND_ROOT = frontendRoot
 export const CLIENT_ID = clientId
@@ -65,7 +65,7 @@ export const COMMENT_TYPES = {
 // }
 
 export const EDITOR_TYPE = {
-  STORY: "story",
+  STORY: "feed",
   GROUP: "group",
   SHARE: "share",
   COMMENT: "comment",

@@ -13,7 +13,7 @@ import PostReactStatus from '~/components/ListPost/Post/PostContent/PostReactSta
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
-import { reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalUpdatePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalSharePost, selectIsShowModalUpdatePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import { getAllReactByPhotoPostId, getAllReactByPostId, getAllReactBySharePostId, getAllReactByVideoPostId, getAllReactType } from '~/apis/reactApis'
@@ -25,6 +25,7 @@ import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { useTranslation } from 'react-i18next'
 import UpdatePost from '~/components/Modal/ActivePost/UpdatePost'
 import { selectIsReload } from '~/redux/ui/uiSlice'
+import SharePost from '~/components/Modal/ActivePost/SharePost'
 
 function Media() {
   const [searchParams] = useSearchParams()
@@ -36,12 +37,13 @@ function Media() {
   const isGroup = postType === POST_TYPES.GROUP_POST
   const isGroupPhoto = postType === POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType === POST_TYPES.GROUP_VIDEO_POST
+
   const isInStory = [POST_TYPES.PHOTO_POST, POST_TYPES.VIDEO_POST].includes(postType)
   // const isInGroup = [POST_TYPES.GROUP_PHOTO_POST, POST_TYPES.GROUP_VIDEO_POST].includes(postType)
   const currentActivePost = useSelector(selectCurrentActivePost)
   // const [currentActivePost, setPostData] = useState({})
   const [isEditContent, setIsEditContent] = useState(false)
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState()
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const [listStatus, setListStatus] = useState([])
@@ -51,6 +53,7 @@ function Media() {
   const reloadComment = useSelector(reLoadComment)
   const [isYourPost, setIsYourPost] = useState(false)
   const isShowModalUpdate = useSelector(selectIsShowModalUpdatePost)
+  const isShowModalShare = useSelector(selectIsShowModalSharePost)
   const { t } = useTranslation()
   const isReload = useSelector(selectIsReload)
 
@@ -119,41 +122,24 @@ function Media() {
     setIsYourPost(currentUser?.userId == currentActivePost?.userId)
   }, [currentActivePost, postType])
 
+
+  const replaceRegex = (html) => {
+    return html?.replace(/<!--MEDIA:(video|image):(.+?)-->/g, '')
+  }
   const handleCommentPost = () => {
-    const submitData = isPhoto ?
-      {
-        'userPostPhotoId': currentActivePost?.userPostMediaId,
-        'userId': currentUser?.userId,
-        'content': content,
-        'parentCommentId': null
-      }
-      : isProfile ? {
-        'userPostId': currentActivePost?.userPostId,
-        'userId': currentUser?.userId,
-        'content': content,
-        'parentCommentId': null
-      }
-        : isVideo ? {
-          'userPostVideoId': currentActivePost?.userPostMediaId,
-          'userId': currentUser?.userId,
-          'content': content,
-          'parentCommentId': null
-        } : isGroup ? {
-          'groupPostId': currentActivePost?.groupPostId,
-          'userId': currentUser?.userId,
-          'content': content,
-          'parentCommentId': null
-        } : isGroupPhoto ? {
-          'groupPostPhotoId': currentActivePost?.groupPostMediaId,
-          'userId': currentUser?.userId,
-          'content': content,
-          'parentCommentId': null
-        } : isGroupVideo && {
-          'groupPostVideoId': currentActivePost?.groupPostMediaId,
-          'userId': currentUser?.userId,
-          'content': content,
-          'parentCommentId': null
-        }
+    const submitData = {
+      'userId': currentUser?.userId,
+      'content': listMedia?.length > 0 ? `${replaceRegex(content || '')}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : replaceRegex(content),
+      'parentCommentId': null,
+      ...(
+        isPhoto ? { 'userPostPhotoId': currentActivePost?.userPostMediaId }
+          : isProfile ? { 'userPostId': currentActivePost?.userPostId }
+            : isVideo ? { 'userPostVideoId': currentActivePost?.userPostMediaId }
+              : isGroup ? { 'groupPostId': currentActivePost?.groupPostId }
+                : isGroupPhoto ? { 'groupPostPhotoId': currentActivePost?.groupPostMediaId }
+                  : isGroupVideo && { 'groupPostVideoId': currentActivePost?.groupPostMediaId }
+      )
+    }
     toast.promise(isProfile ? commentPost(submitData)
       : isPhoto ? commentPhotoPost(submitData)
         : isVideo ? commentVideoPost(submitData)
@@ -163,7 +149,7 @@ function Media() {
       { pending: 'Updating is in progress...' })
       .then(() => toast.success('Commented'))
       .finally(() => {
-        dispatch(triggerReloadComment()), setContent('')
+        dispatch(triggerReloadComment()), setContent(null), setListMedia([])
       })
 
   }
@@ -208,6 +194,7 @@ function Media() {
       <NavTopBar />
       {isShowModalReport && <Report />}
       {isShowModalUpdate && <UpdatePost />}
+      {isShowModalShare && <SharePost />}
       <div className='flex flex-col lg:flex-row h-[calc(100vh_-_55px)]'>
         <div className='max-lg:h-1/2 lg:basis-8/12 bg-black flex justify-center relative'>
           {(isProfile || isGroup)
@@ -289,7 +276,6 @@ function Media() {
             <PostComment comment={listComment} postType={postType} />
           </div>
           <form onSubmit={handleSubmit(handleCommentPost)} className='pb-4 pt-2 border-t w-full flex gap-2 px-4'>
-            {/* <form className='mb-4 w-full flex gap-2 px-4'> */}
             <UserAvatar isOther={false} />
             <div className='rounded-lg pt-2 w-full bg-fbWhite'>
               <Tiptap

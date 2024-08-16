@@ -15,7 +15,9 @@ import Toolbar from './ToolBar'
 import { useTranslation } from 'react-i18next'
 
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
-  console.log('🚀 ~ Tiptap ~ listMedia:', listMedia)
+  const isEmptyComment = ((content?.replace(/<\/?[^>]+(>|$)/g, "")?.length == 0 || !content) && listMedia?.length == 0)
+
+  // console.log('🚀 ~ Tiptap ~ listMedia:', listMedia)
   const [isChoseFile, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -83,7 +85,6 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
     <div className="w-full px-3">
       <div className='max-h-72 overflow-y-auto scrollbar-none-track mb-2'>
         <EditorContent editor={editor} />
-
         {(isChoseFile || listMedia?.length > 0) && (
           <div className={`relative border border-gray-300 rounded-md`}>
             {listMedia?.length === 0 && !isLoading && (
@@ -131,10 +132,10 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
 
               {listMedia?.map((media, index) => (
                 media.type === 'image'
-                  ? <img key={index} src={media.url} className={`w-full h-full object-cover ${listMedia.length % 2 !== 0 && index === 0 ? 'col-span-2' : 'col-span-1'}`} />
+                  ? <img key={index} src={media.url} className={` w-full h-full object-cover ${listMedia.length % 2 !== 0 && index === 0 ? 'col-span-2' : 'col-span-1'}`} />
                   : <video key={index} src={media.url} className={`w-full h-full object-cover ${listMedia.length % 2 !== 0 && index === 0 ? 'col-span-2' : 'col-span-1'}`} controls disablePictureInPicture />
               ))}
-
+              {/* ${editorType == EDITOR_TYPE.COMMENT ? 'max-w-[200px]' : 'w-full h-full'} */}
               {isLoading && <div className='col-span-2 h-20'><PageLoadingSpinner /></div>}
             </div>
           </div>
@@ -155,13 +156,16 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
           !(postType === POST_TYPES.SHARE_POST || postType === POST_TYPES.GROUP_SHARE_POST) && <Toolbar editor={editor} handleOpenChoseFile={handleOpenChoseFile} isChooseFile={isChoseFile} postType={postType} />
         }
         {editorType === EDITOR_TYPE.COMMENT && (
-          <button type='submit' onClick={handleRemoveCurrentContent} className='mr-2 interceptor-loading'
-            style={{
-              opacity: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? '0.5' : 'initial',
-              pointerEvents: (content.replace(/<\/?[^>]+(>|$)/g, "").length == 0) ? 'none' : 'initial'
+          <button type={isEmptyComment ? 'button' : 'submit'}
+            onClick={() => {
+              if (!isEmptyComment) {
+                handleRemoveCurrentContent()
+                setIsChoseFile(false)
+              }
             }}
+            className='mr-2 interceptor-loading'
           >
-            <IconSend2 className='text-blue-500 rounded-full size-8 hover:bg-blue-200 p-1' stroke={1} />
+            <IconSend2 className={`text-blue-500 rounded-full size-8  p-1 ${isEmptyComment ? 'opacity-50' : 'hover:bg-blue-200'}`} stroke={1} />
           </button>
         )}
 
@@ -172,7 +176,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
           </Button>
         )}
       </div>
-    </div>
+    </div >
   )
 }
 

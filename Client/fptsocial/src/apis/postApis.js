@@ -11,6 +11,7 @@ export const getUserPostByUserId = async ({ page, pageSize = 10 }) => {
   return response.data?.data
 }
 
+
 export const getOtherUserPost = async ({ userId, page, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getotheruserpostbyuserid?OtherUserId=${userId}&Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
@@ -40,6 +41,10 @@ export const getVideoComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
 
 export const getUserPostById = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getuserpostbyid?UserPostId=${id}`)
+  return response.data?.data
+}
+export const getSharePostById = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getSharePostById?&SharePostId=${id}`)
   return response.data?.data
 }
 

@@ -47,12 +47,7 @@ function Comment({ comment, postType }) {
   const isGroupShare = postType === POST_TYPES.GROUP_SHARE_POST
   const isGroupPhoto = postType === POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType === POST_TYPES.GROUP_VIDEO_POST
-
-  const [commentMedia, setCommentMedia] = useState([])
-  useEffect(() => {
-    comment &&
-      setCommentMedia(cleanAndParseHTML(comment?.content, true))
-  }, [comment])
+  const [commentMedia, setCommentMedia] = useState(cleanAndParseHTML(comment?.content, true))
 
   let postIdParam = {}
   let commentIdParam = {}
@@ -82,14 +77,14 @@ function Comment({ comment, postType }) {
     getCommentReactFn = getAllReactByCommentVideoId
     replyCommentFn = commentVideoPost
     reactCommentFn = createReactCommentUserVideoPost
-    deleteCommentFn = deleteCommentUserPhotoPost
+    deleteCommentFn = deleteCommentUserVideoPost
   } else if (isPhotoPost) {
     commentIdParam['commentPhotoPostId'] = comment?.commentPhotoPostId
     postIdParam['userPostPhotoId'] = comment?.userPostPhotoId
     getCommentReactFn = getAllReactByCommentPhotoId
     replyCommentFn = commentPhotoPost
     reactCommentFn = createReactCommentUserPhotoPost
-    deleteCommentFn = deleteCommentUserVideoPost
+    deleteCommentFn = deleteCommentUserPhotoPost
   } else if (isGroup) {
     commentIdParam['commentGroupPostId'] = comment?.commentGroupPostId
     postIdParam['groupPostId'] = comment?.groupPostId
@@ -155,7 +150,7 @@ function Comment({ comment, postType }) {
     const submitData = {
       ...postIdParam,
       'userId': currentUser?.userId,
-      'content': listMedia?.length > 0 ? `${replaceRegex(content)}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : replaceRegex(content),
+      'content': listMedia?.length > 0 ? `${replaceRegex(contentReply)}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : replaceRegex(contentReply),
       'parentCommentId': Object.values(commentIdParam)[0]
     }
     toast.promise(
@@ -163,21 +158,23 @@ function Comment({ comment, postType }) {
       { pending: 'Posting...' }
     ).then(() => {
       toast.success('Commented')
-    }).then(() => { dispatch(triggerReloadComment()); setAnchorEl(null) })
+    }).then(() => { dispatch(triggerReloadComment()); setAnchorEl(null); setContentReply(null) })
       .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber + 1 } })))
       .then(() => {
-        const updatedPosts = currentActiveListPost.map(post =>
-          post.postId === currentActivePost.postId
-            ? {
-              ...currentActivePost,
-              reactCount: {
-                ...currentActivePost.reactCount,
-                commentNumber: currentActivePost.reactCount.commentNumber + 1
+        if (currentActiveListPost) {
+          const updatedPosts = currentActiveListPost.map(post =>
+            post.postId === currentActivePost.postId
+              ? {
+                ...currentActivePost,
+                reactCount: {
+                  ...currentActivePost.reactCount,
+                  commentNumber: currentActivePost.reactCount.commentNumber + 1
+                }
               }
-            }
-            : post
-        )
-        dispatch(updateCurrentActiveListPost(updatedPosts));
+              : post
+          )
+          dispatch(updateCurrentActiveListPost(updatedPosts));
+        }
       })
   }
 
@@ -221,7 +218,7 @@ function Comment({ comment, postType }) {
       toast.promise(
         deleteCommentFn(Object.values(commentIdParam)[0]),
         { pending: 'Processing...' }
-      ).then(() => dispatch(triggerReloadComment()))
+      ).then(() => { dispatch(triggerReloadComment()); toast.success('Deleted') })
         .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber - 1 } })))
         .then(() => {
           if (currentActiveListPost) {
@@ -275,7 +272,7 @@ function Comment({ comment, postType }) {
           {
             !isEditContent &&
             <>
-              <div className='bg-gray-100 flex flex-col py-1 px-2 rounded-lg w-full text-sm'>
+              <div className='bg-gray-100 flex flex-col py-1 px-2 gap-[2px] rounded-lg w-full text-sm'>
                 <div>
                   <span className='font-bold capitalize'>{comment?.userName}</span>
                   {
@@ -339,8 +336,9 @@ function Comment({ comment, postType }) {
                     vertical: 'bottom',
                     horizontal: 'left',
                   }}
+                  disablePortal
                 >
-                  <form onSubmit={handleSubmit(handleRelyComment)} className='px-2 w-full flex gap-1 py-1 min-w-[400px]'>
+                  <form onSubmit={handleSubmit(handleRelyComment)} className='px-2 flex gap-1 py-1 w-[400px]'>
                     <UserAvatar isOther={false} />
                     <div className='rounded-2xl pt-2'>
                       <Tiptap

@@ -56,10 +56,12 @@ i18n
               editPhoto: 'Edit photo/video',
               editAll: 'Edit all',
               addPhoto: 'Add photos/videos',
-              writeSt: 'Write something',
+              writeSt: 'Write something...',
               editPost: 'Edit post',
               savePost: 'Save',
-              userPost: "{{name}} ' Post"
+              userPost: "{{name}} ' Post",
+              yourFeed: "Your feed",
+              group: "Your group"
             },
             search: {
               searchResult: 'Search results',
@@ -84,7 +86,8 @@ i18n
               report: 'Report',
               reply: 'Reply',
               author: 'Author',
-              noComment: 'This post has no comments yet! Be the first to comment :D'
+              noComment: 'This post has no comments yet! Be the first to comment :D',
+              noMoreComments: 'There are no more comments to display!'
             },
             react: {
               all: 'All',
@@ -152,7 +155,7 @@ i18n
               editPhoto: 'Chỉnh sửa ảnh/video',
               editAll: 'Chỉnh sửa',
               addPhoto: 'Thêm ảnh/video',
-              writeSt: 'Bạn đang nghĩ gì',
+              writeSt: 'Bạn đang nghĩ gì...',
               editPost: 'Chỉnh sửa bài viết',
               savePost: 'Lưu',
               userPost: "Bài viết của {{name}}"
@@ -180,7 +183,8 @@ i18n
               report: 'Báo cáo',
               reply: 'Phản hồi',
               author: 'Tác giả',
-              noComment: 'Bài viết chưa có bình luận nào! Hãy là người bình luận đầu tiên:D'
+              noComment: 'Bài viết chưa có bình luận nào! Hãy là người bình luận đầu tiên:D',
+              noMoreComments: 'Không còn comemnt để hiển thị!'
             },
             react: {
               all: 'Tất cả',
