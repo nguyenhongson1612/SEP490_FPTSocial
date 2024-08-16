@@ -27,6 +27,7 @@ import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup
 function SharePost() {
   const isShowModalSharePost = useSelector(selectIsShowModalSharePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
+  console.log('🚀 ~ SharePost ~ currentActivePost:', currentActivePost)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const postType = currentActivePost?.postType
   const currentUser = useSelector(selectCurrentUser)
@@ -44,11 +45,9 @@ function SharePost() {
   const [chooseGroup, setChooseGroup] = useState(null)
 
   const isProfile = postType == POST_TYPES.PROFILE_POST
-  const isShare = postType == POST_TYPES.SHARE_POST
   const isPhoto = postType == POST_TYPES.PHOTO_POST
   const isVideo = postType == POST_TYPES.VIDEO_POST
   const isGroup = postType == POST_TYPES.GROUP_POST
-  const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
   const isGroupPhoto = postType == POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType == POST_TYPES.GROUP_VIDEO_POST
 
@@ -64,13 +63,9 @@ function SharePost() {
     if (shareType == EDITOR_TYPE.STORY)
       setChoseStatus(listStatus?.find(e => (e?.statusName?.toLowerCase() || e?.groupStatusName?.toLowerCase()) == PUBLIC))
     else if (shareType == EDITOR_TYPE.GROUP) {
-      console.log('🚀 ~ useEffect ~ currentActiveGroup:', currentActiveGroup)
-      console.log('🚀 ~ useEffect ~ currentActiveGroup:', chooseGroup?.groupId)
-
       if (!currentActiveGroup) {
         dispatch(getGroupByGroupId(chooseGroup?.groupId))
       }
-      console.log('group', currentActiveGroup?.groupSettings);
       setChoseStatus(currentActiveGroup?.groupSettings?.find(e => e?.groupSettingName == 'Group Status'))
     }
   }, [listStatus, chooseGroup, currentActiveGroup])
@@ -79,12 +74,12 @@ function SharePost() {
     const submitData = {
       'userId': currentUser?.userId,
       'content': content || '',
-      'userPostId': isProfile ? (currentActivePost?.userPostId || currentActivePost?.postId) : null,
-      'userPostVideoId': currentActivePost?.userPostVideoId ?? null,
-      'userPostPhotoId': currentActivePost?.userPostPhotoId ?? null,
-      'groupPostId': isGroup ? (currentActivePost?.groupPostId || currentActivePost?.postId) ?? null : null,
-      'groupPostPhotoId': currentActivePost?.groupPostPhotoId ?? null,
-      'groupPostVideoId': currentActivePost?.groupPostVideoId ?? null,
+      'userPostId': (isProfile || (isPhoto || isVideo)) && (currentActivePost?.userPostId || currentActivePost?.postId) || null,
+      'userPostVideoId': isVideo && (currentActivePost?.userPostMediaId || currentActivePost?.userPostVideoId) || null,
+      'userPostPhotoId': isPhoto && (currentActivePost?.userPostMediaId || currentActivePost?.userPostPhotoId) || null,
+      'groupPostId': (isGroup || (isGroupPhoto || isGroupVideo)) && (currentActivePost?.groupPostId || currentActivePost?.postId) || null,
+      'groupPostPhotoId': isGroupPhoto && (currentActivePost?.groupPostMediaId || currentActivePost?.groupPostPhotoId) || null,
+      'groupPostVideoId': isGroupVideo && (currentActivePost?.groupPostMediaId || currentActivePost?.groupPostVideoId) || null,
       'sharedToUserId': null,
       ...(shareType == EDITOR_TYPE.STORY && { userStatusId: choseStatus?.userStatusId ?? null }),
       // 'userStatusId': choseStatus?.userStatusId || choseStatus?.groupStatusId,
@@ -206,11 +201,33 @@ function SharePost() {
                     Save
                   </button>
                 </div> */}
-                <div className='h-[150px] overflow-y-auto no-scrollbar pb-2 flex justify-center w-full'>
-                  <div className='pointer-events-none border-2 rounded-lg w-[95%]'>
-                    <PostMedia postData={currentActivePost} postType={postType} />
-                    <PostTitle postData={currentActivePost} />
-                    <PostContents postData={currentActivePost} />
+                <div className=' pb-2 flex justify-center w-full'>
+                  <div className='rounded-lg w-[95%] h-[200px] overflow-y-auto no-scrollbar border-2'>
+                    <div className='pointer-events-none'>
+                      {(isProfile || isGroup) ?
+                        <PostMedia postData={currentActivePost} postType={postType} />
+                        : (
+                          <div className='w-full'>
+                            {(isPhoto || isGroupPhoto)
+                              ? <img
+                                src={currentActivePost?.photo?.photoUrl || currentActivePost?.groupPhoto?.photoUrl}
+                                className='object-contain w-full'
+                              />
+                              : (isVideo || isGroupVideo)
+                              && <video
+                                src={isVideo ? currentActivePost?.video?.videoUrl : currentActivePost?.groupVideo?.videoUrl}
+                                className='object-contain w-full'
+                                controls
+                                disablePictureInPicture
+                              />
+                            }
+                          </div>
+                        )
+                      }
+                      <PostTitle postData={currentActivePost} />
+                      <PostContents postData={currentActivePost} />
+                    </div>
+
                   </div>
                 </div>
                 <div className='border-t-2 mb-2'>
@@ -229,7 +246,7 @@ function SharePost() {
                       ${shareType == EDITOR_TYPE.STORY && 'bg-orange-100'}`}>
                       <IconBook className={`size-[60px] rounded-full p-4 text-orangeFpt bg-orange-100 
                         ${shareType == EDITOR_TYPE.STORY && '!bg-orangeFpt text-white'}`} />
-                      <span className={`text-sm ${shareType == EDITOR_TYPE.STORY && 'text-orangeFpt'}`}>Your story</span>
+                      <span className={`text-sm ${shareType == EDITOR_TYPE.STORY && 'text-orangeFpt'}`}></span>
                     </div>
                     <div
                       onClick={() => { setShareType(EDITOR_TYPE.GROUP, setIsChooseGroup(!isChooseGroup)) }}

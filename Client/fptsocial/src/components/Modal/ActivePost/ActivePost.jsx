@@ -35,7 +35,6 @@ function ActivePost({ isReportPost = false }) {
   const isGroup = postType == POST_TYPES.GROUP_POST
   const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
   const isYourPost = currentActivePost?.userId == currentUser?.userId
-
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
   const user = useSelector(selectCurrentUser)
@@ -78,31 +77,21 @@ function ActivePost({ isReportPost = false }) {
 
   }, [reloadComment, commentFilterType])
   // console.log(currentActivePost)
+  const replaceRegex = (html) => {
+    return html?.replace(/<!--MEDIA:(video|image):(.+?)-->/g, '')
+  }
   const handleCommentPost = () => {
-    const submitData = isProfile ? {
-      'userPostId': currentActivePost?.userPostId || currentActivePost?.postId,
-      'userId': user?.userId,
-      'content': content,
-      'parentCommentId': null
+    const submitData = {
+      'userId': currentUser?.userId,
+      'content': listMedia?.length > 0 ? `${replaceRegex(content)}<!--MEDIA:${listMedia[0]?.type}:${listMedia[0]?.url}-->` : replaceRegex(content),
+      'parentCommentId': null,
+      ...(
+        isProfile ? { 'userPostId': currentActivePost?.userPostId || currentActivePost?.postId }
+          : isShare ? { 'sharePostId': currentActivePost?.sharePostId || currentActivePost?.postId }
+            : isGroup ? { 'groupPostId': currentActivePost?.groupPostId || currentActivePost?.postId }
+              : isGroupShare && { 'groupSharePostId': currentActivePost?.groupSharePostId || currentActivePost?.postId }
+      )
     }
-      : isShare ? {
-        'sharePostId': currentActivePost?.sharePostId || currentActivePost?.postId,
-        'userId': user?.userId,
-        'content': content,
-        'parentCommentId': null
-      }
-        : isGroup ? {
-          'groupPostId': currentActivePost?.groupPostId || currentActivePost?.postId,
-          'userId': user?.userId,
-          'content': content,
-          'parentCommentId': null
-        }
-          : isGroupShare && {
-            'groupSharePostId': currentActivePost?.groupSharePostId || currentActivePost?.postId,
-            'userId': user?.userId,
-            'content': content,
-            'parentCommentId': null
-          }
     toast.promise(
       (isProfile ? commentPost(submitData)
         : isShare ? commentSharePost(submitData)
@@ -111,7 +100,7 @@ function ActivePost({ isReportPost = false }) {
       { pending: 'Posting...' }
     ).then(() => {
       toast.success('Commented')
-    }).then(() => { dispatch(triggerReloadComment()), setContent('') })
+    }).then(() => { dispatch(triggerReloadComment()), setContent(''), setListMedia([]) })
       .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber + 1 } })))
       .then(() => {
         const updatedPosts = currentActiveListPost.map(post =>
