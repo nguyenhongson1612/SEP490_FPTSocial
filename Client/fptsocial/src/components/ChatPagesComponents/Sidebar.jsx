@@ -144,12 +144,17 @@ function Sidebar({ onSelectChat }) {
                     onClick={() => handleSelectChat(chat.id)}
                     selected={chat.id === selectedChatId}
                   >
-                    <Avatar
-                      
-                      alt={chat.fullName}
-                      sx={{ marginRight: 1 }}
-                    />
-                    <ListItemText primary={chat.title} />
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar
+                        src={chat.avata}
+                        alt={chat.fullName}
+                        sx={{ marginRight: 1 }}
+                      />
+                      <ListItemText
+                        primary={chat?.title}
+                        secondary={chat?.last_message?.text}
+                      />
+                    </Box>
                   </ListItem>
                 ))}
             </>

@@ -46,7 +46,7 @@ function ChatWindow({ selectedChatId }) {
 
   const sendMessage = async () => {
     if (!message.trim()) return;
-    
+
     try {
       await authorizedAxiosInstance.post(
         `https://api.chatengine.io/chats/${selectedChatId}/messages/`,
@@ -62,12 +62,19 @@ function ChatWindow({ selectedChatId }) {
     }
   };
 
+  const handleNewMessage = (chatId, message) => {
+    if (chatId === selectedChatId) {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    }
+  };
+
   return (
     <ChatEngineWrapper>
       <Socket
         projectID={CHAT_KEY.ProjectID}
         userName={USER_ID}
         userSecret={USER_ID}
+        onNewMessage={handleNewMessage}
       />
       <Box sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>
         {messages.length > 0 ? (
