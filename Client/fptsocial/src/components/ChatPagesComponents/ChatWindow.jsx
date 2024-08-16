@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
-import { API_ROOT, USER_ID, CHAT_ENGINE_CONFIG_HEADER } from "~/utils/constants";
+import {
+  API_ROOT,
+  USER_ID,
+  CHAT_ENGINE_CONFIG_HEADER,
+  CHAT_KEY
+} from "~/utils/constants";
+import { ChatEngineWrapper, Socket } from "react-chat-engine";
 
 function ChatWindow({ selectedChatId }) {
   const [message, setMessage] = useState("");
@@ -12,7 +18,6 @@ function ChatWindow({ selectedChatId }) {
     if (selectedChatId) {
       fetchChatBoxDetail(selectedChatId);
       fetchChatMessages(selectedChatId);
-
     }
   }, [selectedChatId]);
 
@@ -30,7 +35,7 @@ function ChatWindow({ selectedChatId }) {
     try {
       const response = await authorizedAxiosInstance.get(
         `https://api.chatengine.io/chats/${chatId}/messages/`,
-         CHAT_ENGINE_CONFIG_HEADER
+        CHAT_ENGINE_CONFIG_HEADER
       );
       // Assuming the response contains the messages
       setMessages(response.data);
@@ -41,9 +46,13 @@ function ChatWindow({ selectedChatId }) {
 
   const sendMessage = async () => {};
 
-  console.log('CHAT_ENGINE_CONFIG_HEADER', CHAT_ENGINE_CONFIG_HEADER)
   return (
-    <>
+    <ChatEngineWrapper>
+      <Socket
+        projectID={CHAT_KEY.ProjectID}
+        userName={USER_ID}
+        userSecret={USER_ID}
+      />
       <Box sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>
         {messages.length > 0 ? (
           messages.map((message, index) => (
@@ -110,7 +119,7 @@ function ChatWindow({ selectedChatId }) {
           <SendIcon />
         </IconButton>
       </Box>
-    </>
+    </ChatEngineWrapper>
   );
 }
 

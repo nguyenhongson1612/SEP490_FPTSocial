@@ -53,6 +53,7 @@
     "npm": "^10.8.1",
     "oidc-react": "^3.2.2",
     "react": "^18.2.0",
+    "react-chat-engine": "^1.11.28",
     "react-chat-engine-pretty": "^0.1.8",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
