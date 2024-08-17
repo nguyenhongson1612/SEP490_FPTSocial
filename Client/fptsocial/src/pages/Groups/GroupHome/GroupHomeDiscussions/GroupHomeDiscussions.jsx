@@ -34,32 +34,38 @@ function GroupHomeDiscussions({ group, isPostDetail }) {
     <div id='list-group-post'
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div className='relative flex flex-col gap-3'>
-        {
-          !isPostDetail && <NewPost postType={POST_TYPES.GROUP_POST} groupId={group?.groupId} />
-        }
+        {/* {
+          isPostDetail && <NewPost postType={POST_TYPES.GROUP_POST} groupId={group?.groupId} />
+        } */}
         <div>
-          <div onClick={handleClick} className='font-semibold text-blue-500 text-sm flex cursor-pointer w-fit'>
-            {filterType == 'New' ? 'Newest post' : 'Relative post'}<IconCaretDownFilled />
-          </div>
-          <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-          >
-            <div className='p-1'>
-              <div className='py-2 px-1 cursor-pointer hover:bg-gray-100 rounded-md' onClick={() => handleChangeFilterType('New')}>Newest Post</div>
-              <div className='py-2 px-1 cursor-pointer hover:bg-gray-100 rounded-md' onClick={() => handleChangeFilterType('Valid ')}>Relative Post</div>
-            </div>
-          </Popover>
+          {
+            !isPostDetail &&
+            <>
+              <NewPost postType={POST_TYPES.GROUP_POST} groupId={group?.groupId} />
+              <div onClick={handleClick} className='font-semibold text-blue-500 text-sm flex cursor-pointer w-fit'>
+                {filterType == 'New' ? 'Newest post' : 'Relative post'}<IconCaretDownFilled />
+              </div>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+              >
+                <div className='p-1'>
+                  <div className='py-2 px-1 cursor-pointer hover:bg-gray-100 rounded-md' onClick={() => handleChangeFilterType('New')}>Newest Post</div>
+                  <div className='py-2 px-1 cursor-pointer hover:bg-gray-100 rounded-md' onClick={() => handleChangeFilterType('Valid ')}>Relative Post</div>
+                </div>
+              </Popover>
+              {
+                group && <ListPost getListPostFn={handleGetPost} />
+              }
+            </>
+          }
         </div>
-        {
-          group && <ListPost getListPostFn={handleGetPost} />
-        }
       </div>
     </div >
   )

@@ -106,16 +106,17 @@ function FirstTimeLogin() {
     }
     // console.log(initialSubmitData)
     toast.promise(
-      isAdmin ? (createAdminProfile(submitUpdateAdmin))
-        : (
-          createByLogin(submitData1),
-          createUserChat(submitData2)
-        )
-      ,
-      { pending: 'Creating...' }
+      (isAdmin
+        ? createAdminProfile(submitUpdateAdmin)
+        : createByLogin(submitData1)
+      ),
+      {
+        pending: 'Creating...',
+        success: 'Account created!'
+      }
     ).then(() => {
+      createUserChat(submitData2)
       navigate(isAdmin ? '/dashboard' : '/')
-      toast.success('Account created!')
     })
   }
 
