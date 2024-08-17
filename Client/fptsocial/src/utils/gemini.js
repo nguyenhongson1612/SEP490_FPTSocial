@@ -178,6 +178,3 @@ const parts = [
   { text: "input: nhóm làm đồ án FPT societe có mấy người, là những ai" },
 ]
 export default parts
-
-
-
