@@ -10,6 +10,8 @@ namespace Application.Queries.GetImageByUserId
     public class GetImageByUserIdQuery : IQuery<GetImageByUserIdQueryResult>
     {
         public Guid UserId { get; set; }
+        public Guid StrangerId { get; set; }
         public string? Type { get; set; }
+        public int Page {  get; set; }
     }
 }
