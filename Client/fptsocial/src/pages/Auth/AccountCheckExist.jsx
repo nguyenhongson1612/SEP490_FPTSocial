@@ -26,7 +26,10 @@ function AccountCheckExist() {
         else {
           toast.promise(
             dispatch(getUserByUserId()),
-            { pending: 'Checking...' }
+            {
+              pending: 'Checking...',
+              success: 'Success!',
+            },
           )
             .then(res => {
               if (!res.error) {
