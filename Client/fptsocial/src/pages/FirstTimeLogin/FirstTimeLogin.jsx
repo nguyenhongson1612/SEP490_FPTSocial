@@ -21,10 +21,11 @@ function FirstTimeLogin() {
   const profileFeId = JWT_PROFILE
   const initialGeneralForm = {
     'email': profileFeId?.email,
+    'coverImage': null,
+    'avataphoto': DEFAULT_AVATAR,
   }
 
   const { register, control, getValues, setValue, watch, handleSubmit, trigger, formState: { errors, isValid } } = useForm({ mode: 'all', defaultValues: initialGeneralForm })
-  const [avataphoto, coverImage] = watch(['avataphoto', 'coverImage'])
 
   const totalStep = 3
   const handlePrev = () => {
@@ -91,6 +92,7 @@ function FirstTimeLogin() {
       }]
     }
     const submitData2 = {
+      'userId': profileFeId?.userId,
       "firstName": data?.firstName,
       "lastName": data?.lastName,
       "email": data?.email,
@@ -108,7 +110,8 @@ function FirstTimeLogin() {
         : (
           createByLogin(submitData1),
           createUserChat(submitData2)
-        ),
+        )
+      ,
       { pending: 'Creating...' }
     ).then(() => {
       navigate(isAdmin ? '/dashboard' : '/')

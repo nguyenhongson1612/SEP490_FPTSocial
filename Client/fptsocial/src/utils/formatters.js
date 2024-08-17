@@ -43,7 +43,12 @@ export const compareDateTime = (date) => {
 
 export const handleCoverImg = (coverUrl) => {
   return coverUrl
-    ? { backgroundImage: `url(${coverUrl})` }
+    ? {
+      backgroundImage: `url(${coverUrl})`,
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover'
+    }
     : {
       background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
     }
