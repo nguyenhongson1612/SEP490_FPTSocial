@@ -169,7 +169,10 @@ namespace Application.Queries.GetGroupByGroupId
                     }
                 }
             }
-
+            if(getgroup.GroupMember?.Count > 0)
+            {
+                getgroup.GroupMember = getgroup.GroupMember.Distinct().ToList();
+            }
             getgroup.MemberCount = member.Where(x=>x.IsJoined == true).ToList().Count;
             var result = getgroup;
             return Result<GetGroupByGroupIdQueryResult>.Success(result);
