@@ -86,6 +86,12 @@ namespace Application.Queries.GetChildGroupPost
                 var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == photo.GroupPost.UserId);
                 var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == photo.GroupPost.UserId && x.IsUsed == true);
 
+                var reactNum = await _context.ReactGroupPhotoPosts.CountAsync(x => x.GroupPostPhotoId == photo.GroupPostPhotoId);
+                var commentNum = await _context.CommentPhotoGroupPosts
+                        .CountAsync(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true);
+                var shareNum = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true);
+
                 var isReact = await _context.ReactGroupPhotoPosts
                     .Include(x => x.ReactType)
                     .FirstOrDefaultAsync(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.UserId == request.UserId);
@@ -130,11 +136,9 @@ namespace Application.Queries.GetChildGroupPost
                     GroupCoverImge = photo.Group?.CoverImage,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = _context.ReactGroupPhotoPosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId),
-                        CommentNumber = _context.CommentPhotoGroupPosts
-                        .Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true) +
-                                        _context.SharePosts.Count(x => x.GroupPostPhotoId == photo.GroupPostPhotoId && x.IsHide != true && x.IsBanned != true),
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
+                        ShareNumber = shareNum,
                         IsReact = isReact != null ? true : false,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO
                         {
@@ -166,6 +170,12 @@ namespace Application.Queries.GetChildGroupPost
             {
                 var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == video.GroupPost.UserId);
                 var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == video.GroupPost.UserId && x.IsUsed == true);
+
+                var reactNum = await _context.ReactGroupVideoPosts.CountAsync(x => x.GroupPostVideoId == video.GroupPostVideoId);
+                var commentNum = await _context.CommentGroupVideoPosts
+                        .CountAsync(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true);
+                var shareNum = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true) +
+                                        _context.SharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true);
 
                 var isReact = await _context.ReactGroupVideoPosts
                     .Include(x => x.ReactType)
@@ -211,12 +221,9 @@ namespace Application.Queries.GetChildGroupPost
                     GroupCoverImge = video.Group?.CoverImage,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = _context.ReactGroupVideoPosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId),
-                        CommentNumber = _context.CommentGroupVideoPosts
-                        .Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true),
-                        ShareNumber = _context.GroupSharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true) +
-                                        _context.SharePosts.Count(x => x.GroupPostVideoId == video.GroupPostVideoId && x.IsHide != true && x.IsBanned != true),
-                        IsReact = isReact != null ? true : false,
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
+                        ShareNumber = shareNum,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO
                         {
                             ReactTypeId = isReact.ReactTypeId,
