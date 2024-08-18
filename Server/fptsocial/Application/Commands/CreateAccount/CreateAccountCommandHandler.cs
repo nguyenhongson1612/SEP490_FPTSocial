@@ -2,6 +2,7 @@
 using Core.CQRS;
 using Core.CQRS.Command;
 using Domain.CommandModels;
+using Domain.Exceptions;
 using Domain.QueryModels;
 using Newtonsoft.Json.Linq;
 using System;
@@ -31,6 +32,7 @@ namespace Application.Commands.CreateAccount
                     .CreateChatAsync(request.Username, request.Email, request.FullName, request.RollNumber, request.Campus);
                 var getuser = JObject.Parse(user);
                  pass = getuser["successUsers"]?[0]?["password"]?.ToString();
+               
                 
             }
             catch (Exception)
@@ -38,7 +40,10 @@ namespace Application.Commands.CreateAccount
 
                 throw new Exception("API Error!");
             }
-            
+            if (pass == "")
+            {
+                throw new ErrorException(Domain.Enums.StatusCodeEnum.RGT01_Existed);
+            }
             result.UserName = request.Username;
             result.Email = request.Email;
             result.Password = pass;
