@@ -178,6 +178,20 @@ function UpdatePost() {
       setListMedia([])
       dispatch(triggerReload())
       toast.success('Update post successfully!')
+    }).catch((error) => {
+      if (error?.response?.data?.statusCode == "UP01") {
+        toast.warn('Your post still contains sensitive words ! Please check again !', {
+          position: "top-right",
+          autoClose: false,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        })
+        dispatch(triggerReload())
+      }
     })
   }
 

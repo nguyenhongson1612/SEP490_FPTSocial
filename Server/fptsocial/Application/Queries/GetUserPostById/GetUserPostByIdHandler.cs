@@ -98,7 +98,11 @@ namespace Application.Queries.GetUserPostById
 
             var avt = await _context.AvataPhotos.FirstOrDefaultAsync(x => x.UserId == userPost.UserId && x.IsUsed == true);
             var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == userPost.UserId);
-            var react = await _context.PostReactCounts.FirstOrDefaultAsync(x => x.UserPostId == request.UserPostId);
+
+            var reactNum = await _context.ReactPosts.CountAsync(x => x.UserPostId == userPost.UserPostId);
+            var commentNum = await _context.CommentPosts.CountAsync(x => x.UserPostId == userPost.UserPostId && x.IsHide != true && x.IsBanned != true);
+            var shareNum = _context.SharePosts.Count(x => x.UserPostId == userPost.UserPostId) +
+                _context.GroupSharePosts.Count(x => x.UserPostId == userPost.UserPostId);
 
             var isReact = await _context.ReactPosts
                     .Include(x => x.ReactType)
@@ -170,9 +174,9 @@ namespace Application.Queries.GetUserPostById
                 FullName = user.FirstName + " " + user.LastName,
                 ReactCount = new DTO.ReactDTO.ReactCount
                 {
-                    ReactNumber = react?.ReactCount ?? 0,
-                    CommentNumber = react?.CommentCount ?? 0,
-                    ShareNumber = react?.ShareCount ?? 0,
+                    ReactNumber = reactNum,
+                    CommentNumber = commentNum,
+                    ShareNumber = shareNum,
                     IsReact = isReact != null ? true : false,
                     UserReactType = isReact == null ? null : new ReactTypeCountDTO
                     {

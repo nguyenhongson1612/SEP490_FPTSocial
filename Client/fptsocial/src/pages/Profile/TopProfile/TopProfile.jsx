@@ -121,11 +121,11 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           </div>
 
           <div id="name-friend" className="flex flex-col items-center lg:items-start justify-end mb-4 gap-1">
-            <span className="text-gray-900 font-bold text-3xl">
+            <span className="text-gray-900 font-bold text-3xl capitalize">
               {user?.firstName + ' ' + user?.lastName}
             </span>
             <span className="text-gray-500 font-bold">
-              {listFriend?.count} Friend{listFriend?.count > 1 && 's'}
+              {listFriend?.count} friend{listFriend?.count > 1 && 's'}
             </span>
 
             <div className="flex items-center [&>img:not(:first-child)]:-ml-4">

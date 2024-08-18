@@ -23,11 +23,13 @@ import { useConfirm } from 'material-ui-confirm'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 import { deleteGroupPost, deleteGroupSharePost } from '~/apis/groupPostApis'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
+import { useTranslation } from 'react-i18next'
 
 
-function PostTitle({ postData, isYourPost, postType }) {
+function PostTitle({ postData, isYourPost, postType, isBan }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const listStatus = useSelector(selectListUserStatus)
+  const { t } = useTranslation()
 
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const { register, setValue, control, handleSubmit, formState: { errors } } = useForm({
@@ -89,7 +91,7 @@ function PostTitle({ postData, isYourPost, postType }) {
   return (
     <div id="post-title"
       className="w-full flex justify-between items-center px-4 py-2">
-      <div className='w-full flex gap-4'>
+      <div className={`w-full flex gap-4 ${isBan && 'pointer-events-none'}`}>
         <div className='flex items-center relative'>
           {(isGroup || isGroupShare) && !isInGroupPath ?
             <>
@@ -107,8 +109,13 @@ function PostTitle({ postData, isYourPost, postType }) {
           }
         </div>
         <div className="flex flex-col gap-1">
-          <div className="font-bold font-sans capitalize">
-            {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
+          <div className="flex gap-2 ">
+            <span className="flex gap-2 font-bold font-sans capitalize">
+              {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
+            </span>
+            {
+              postData?.isAvataPost && <span className='text-gray-500 font-normal text-tr'>{t('sideText.avatarPost')}</span>
+            }
           </div>
           <div className="flex justify-start gap-1 text-gray-500 text-sm">
             {((isGroup || isGroupShare) && !isInGroupPath &&
@@ -137,7 +144,7 @@ function PostTitle({ postData, isYourPost, postType }) {
               {postData?.userStatus?.userStatusName || postData?.status?.userStatusName || postData?.groupStatus?.groupStatusName}
             </span>
 
-            <Modal
+            {/* <Modal
               open={isOpenModal}
               onClose={() => setIsOpenModal(!isOpenModal)}
               aria-labelledby="parent-modal-title"
@@ -176,12 +183,11 @@ function PostTitle({ postData, isYourPost, postType }) {
                           </RadioGroup>
                         )}
                       />
-                      {/* <FieldErrorAlert errors={errors} fieldName="groupType" /> */}
                     </FormControl>
                   </div>
                 </div >
               </div>
-            </Modal>
+            </Modal> */}
           </div>
         </div>
       </div>

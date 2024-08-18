@@ -70,7 +70,7 @@ namespace Application.Commands.UpdateUserVideoPost
             if (haveBadWord.Any())
             {
                 VideoPost.IsBanned = true;
-                VideoPost.Content = MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
+                VideoPost.Content = _checkContent.MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
             }
             var cgp = new Domain.CommandModels.UserPostVideo 
             {
@@ -100,17 +100,6 @@ namespace Application.Commands.UpdateUserVideoPost
             {
                 return Result<UpdateUserVideoPostCommandResult>.Success(result);
             }
-        }
-
-        public string MarkBannedWordsInContent(string content, List<BannedWord> bannedWords)
-        {
-            foreach (var bannedWord in bannedWords)
-            {
-                string wordPattern = $"\\b{bannedWord.Word}\\b";
-                string replacement = $"<span style='background-color: yellow;'>{bannedWord.Word}</span>";
-                content = System.Text.RegularExpressions.Regex.Replace(content, wordPattern, replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-            return content;
         }
     }
 }

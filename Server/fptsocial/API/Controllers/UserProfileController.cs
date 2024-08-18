@@ -1,4 +1,5 @@
-﻿using Application.Commands.BlockUser;
+﻿using Application.Commands.ActiveUserCommand;
+using Application.Commands.BlockUser;
 using Application.Commands.CancleBlockUser;
 using Application.Commands.DeactiveUserCommand;
 using Application.Commands.GetUserProfile;
@@ -453,8 +454,8 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("deactiveUserByUserId")]
-        public async Task<IActionResult> DeactiveUserByUserId([FromQuery] DeactiveUserCommand command)
+        [Route("activeUserByUserId")]
+        public async Task<IActionResult> ActiveUserByUserId([FromQuery] ActiveUserCommand command)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
@@ -470,7 +471,6 @@ namespace API.Controllers
             command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(command);
             return Success(res.Value);
-
         }
 
         [HttpGet]

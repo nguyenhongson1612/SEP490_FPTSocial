@@ -152,22 +152,16 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .ToListAsync(cancellationToken);
 
             var listUserpostId = userPosts.Select(x => x.UserPostId).ToList();
-            var react = await _context.PostReactCounts
-                .AsNoTracking()
-                .Select(x => new {
-                    x.UserPostId,
-                    ReactNumber = x.ReactCount,
-                    CommentNumber = x.CommentCount,
-                    ShareNumber = x.ShareCount,
-                })
-                .Where(x => listUserpostId.Contains((Guid)x.UserPostId))
-                .ToListAsync(cancellationToken);
 
             foreach (var item in userPosts)
             {
                 var userAvt = avt.FirstOrDefault(x => x.UserId == item.UserId && x.IsUsed == true);
                 var userName = userProfile.Where(x => x.UserId == item.UserId).Select(x => x.FullName).FirstOrDefault();
-                var reactCount = react.FirstOrDefault(x => x.UserPostId == item.UserPostId);
+
+                var reactNum = await _context.ReactPosts.CountAsync(x => x.UserPostId == item.UserPostId);
+                var commentNum = await _context.CommentPosts.CountAsync(x => x.UserPostId == item.UserPostId && x.IsHide != true && x.IsBanned != true);
+                var shareNum = _context.SharePosts.Count(x => x.UserPostId == item.UserPostId) +
+                    _context.GroupSharePosts.Count(x => x.UserPostId == item.UserPostId);
 
                 var isReact = await _context.ReactPosts
                     .Include(x => x.ReactType)
@@ -239,9 +233,9 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     UserAvatar = _mapper.Map<GetUserAvatar>(userAvt),
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = reactCount?.ReactNumber ?? 0,
-                        CommentNumber = reactCount?.CommentNumber ?? 0,
-                        ShareNumber = reactCount?.ShareNumber ?? 0,
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
+                        ShareNumber = shareNum,
                         IsReact = isReact != null ? true : false,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO
                         {
@@ -276,6 +270,9 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     x.CoverImage,
                 })
                 .FirstOrDefault(x => x.GroupId == groupId);
+
+                var reactNum = await _context.ReactSharePosts.CountAsync(x => x.SharePostId == item.SharePostId);
+                var commentNum = await _context.CommentSharePosts.CountAsync(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true);
 
                 var isReact = await _context.ReactSharePosts
                     .AsNoTracking()
@@ -332,9 +329,8 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     },
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = _context.ReactSharePosts.Count(x => x.SharePostId == item.SharePostId),
-                        CommentNumber = _context.CommentSharePosts
-                        .Count(x => x.SharePostId == item.SharePostId && x.IsHide != true && x.IsBanned != true),
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
                         ShareNumber = 0,
                         IsReact = isReact != null ? true : false,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO

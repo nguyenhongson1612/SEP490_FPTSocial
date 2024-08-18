@@ -1,4 +1,5 @@
-﻿using Application.DTO.UserPostPhotoDTO;
+﻿using Application.DTO.CreateUserDTO;
+using Application.DTO.UserPostPhotoDTO;
 using Application.DTO.UserPostVideoDTO;
 using Application.Queries.GetImageByUserId;
 using AutoMapper;
@@ -7,6 +8,7 @@ using Core.CQRS.Query;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,10 +34,31 @@ namespace Application.Queries.GetVideoByUserId
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
+            string checkRelationship = "Stranger";
+            if (request.UserId == request.StrangerId)
+            {
+                checkRelationship = "Owner";
+            }
+            else
+            {
+                bool isFriend = _context.Friends.Any(x => (x.UserId == request.UserId && x.FriendId == request.StrangerId ||
+                                                          x.UserId == request.StrangerId && x.FriendId == request.UserId)
+                                                         && x.Confirm == true);
+                if (isFriend)
+                {
+                    checkRelationship = "Friend";
+                }
+                else
+                {
+                    checkRelationship = "Stranger";
+                }
+            }
             var result = new GetVideoByUserIdQueryResult();
-
-            var userVideos = _context.UserPostVideos.Where(x => x.UserPost.UserId == request.UserId && x.IsHide != true && x.IsBanned != true)
-                                                    .Select(x => new UserVideoDTO
+            var userVideos = _context.UserPostVideos.Where(x => x.UserPost.UserId == request.StrangerId && x.IsHide != true && x.IsBanned != true
+                                                            && (checkRelationship == "Owner" ||
+                                                                (checkRelationship == "Friend" && (x.UserPost.UserStatus.StatusName == "Friend" || x.UserPost.UserStatus.StatusName == "Public")) ||
+                                                                (checkRelationship == "Stranger" && x.UserPost.UserStatus.StatusName == "Public")))
+                                                                .Select(x => new UserVideoDTO
                                                                 {
                                                                     UserId = x.UserPost.UserId,
                                                                     UserPostVideoId = x.UserPostVideoId,
@@ -43,17 +66,26 @@ namespace Application.Queries.GetVideoByUserId
                                                                     VideoUrl = x.Video.VideoUrl,
                                                                     CreateDate = x.CreatedAt
                                                                 })
+                                                                .OrderByDescending(x => x.CreateDate)
+                                                                .Skip((request.Page - 1) * 5)
+                                                                .Take(5)
                                                                 .ToList();
-
-            var userVideos2 = _context.UserPosts.Where(x => x.UserId == request.UserId && x.IsHide != true && x.IsBanned != true && !string.IsNullOrEmpty(x.VideoId.ToString()))
-                                                .Select(x => new UserVideoDTO
-                                                {
-                                                    UserId = x.UserId,
-                                                    UserPostVideoId = null,
-                                                    UserPostId = x.UserPostId,
-                                                    VideoUrl = x.Video.VideoUrl,
-                                                    CreateDate = x.CreatedAt
-                                                }).ToList();
+            var userVideos2 = _context.UserPosts.Where(x => x.UserId == request.StrangerId && x.IsHide != true && x.IsBanned != true && !string.IsNullOrEmpty(x.VideoId.ToString())
+                                                        && (checkRelationship == "Owner" ||
+                                                            (checkRelationship == "Friend" && (x.UserStatus.StatusName == "Friend" || x.UserStatus.StatusName == "Public")) ||
+                                                            (checkRelationship == "Stranger" && x.UserStatus.StatusName == "Public")))
+                                                            .Select(x => new UserVideoDTO
+                                                            {
+                                                                UserId = x.UserId,
+                                                                UserPostVideoId = null,
+                                                                UserPostId = x.UserPostId,
+                                                                VideoUrl = x.Video.VideoUrl,
+                                                                CreateDate = x.CreatedAt
+                                                            })
+                                                            .OrderByDescending(x => x.CreateDate)
+                                                            .Skip((request.Page - 1) * 5)
+                                                            .Take(5)
+                                                            .ToList();
 
             userVideos.AddRange(userVideos2);
             userVideos = userVideos.OrderByDescending(x => x.CreateDate).ToList();

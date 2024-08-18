@@ -128,5 +128,31 @@ namespace Application.Services
             public string Word { get; set; }
             public string Category { get; set; }
         }
+
+        public string MarkBannedWordsInContent(string sentence, List<BannedWord> bannedKeywords)
+        {
+            foreach (var keyword in bannedKeywords)
+            {
+                sentence = MarkKeyword(sentence, keyword.Word);
+            }
+
+            return sentence;
+        }
+
+        private string MarkKeyword(string sentence, string keyword)
+        {
+            if (KMPSearch(keyword, sentence))
+            {
+                string highlightedKeyword = $"<mark>{keyword}</mark>";
+                sentence = System.Text.RegularExpressions.Regex.Replace(sentence, keyword, highlightedKeyword, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+
+            return sentence;
+        }
+
+        private string ReplaceWholeWord(string sentence, string word, string replacement)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(sentence, $"\\b{System.Text.RegularExpressions.Regex.Escape(word)}\\b", replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        }
     }
 }

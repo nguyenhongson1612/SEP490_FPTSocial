@@ -70,7 +70,7 @@ namespace Application.Commands.UpdateUserPhotoPost
             if (haveBadWord.Any())
             {
                 photoPost.IsBanned = true;
-                photoPost.Content = MarkBannedWordsInContent(photoPost.Content, haveBadWord);
+                photoPost.Content = _checkContent.MarkBannedWordsInContent(photoPost.Content, haveBadWord);
             }
             var upp = new Domain.CommandModels.UserPostPhoto
             {
@@ -100,17 +100,6 @@ namespace Application.Commands.UpdateUserPhotoPost
             {
                 return Result<UpdateUserPhotoPostCommandResult>.Success(result);
             }
-
-        }
-        public string MarkBannedWordsInContent(string content, List<BannedWord> bannedWords)
-        {
-            foreach (var bannedWord in bannedWords)
-            {
-                string wordPattern = $"\\b{bannedWord.Word}\\b";
-                string replacement = $"<span style='background-color: yellow;'>{bannedWord.Word}</span>";
-                content = System.Text.RegularExpressions.Regex.Replace(content, wordPattern, replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-            return content;
         }
     }
 }
