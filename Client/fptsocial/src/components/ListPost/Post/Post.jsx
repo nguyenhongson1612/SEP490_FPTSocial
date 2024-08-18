@@ -13,8 +13,9 @@ import { useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 
-function Post({ postData }) {
+function Post({ postData, type }) {
   // console.log('🚀 ~ Post ~ postData:', postData)
+  const isBan = type == 'ban'
   const currentUser = useSelector(selectCurrentUser)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const isYourPost = postData?.userId == currentUser?.userId
@@ -91,19 +92,22 @@ function Post({ postData }) {
   return (
     <div id="post"
       className="w-full lg:w-[600px] flex flex-col items-center bg-white shadow-lg rounded-lg">
-      <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} />
-      <PostContents postData={postData} postType={postType} />
+      <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} isBan={isBan} />
+      <PostContents postData={postData} postType={postType} isBan={isBan} />
       {
         postData?.isShare && <div
           id='media-share'
-          className='w-[90%] border p-1 rounded-md mb-2'>
+          className={`w-[90%] border p-1 rounded-md mb-2 ${isBan && 'pointer-events-none'}`}>
           <PostMedia postData={postShareData} postType={postShareType} />
           <PostTitle postData={postShareData} isYourPost={false} postType={postShareType} />
           <PostContents postData={postShareData} postType={postShareType} />
         </div>
       }
       {!postData?.isShare && <PostMedia postData={postData} postType={postType} />}
-      <PostReactStatus postData={postData} postType={postType} postShareData={postShareData} postShareType={postShareType} isCanShare={isCanShare} />
+      {
+        !isBan &&
+        <PostReactStatus postData={postData} postType={postType} postShareData={postShareData} postShareType={postShareType} isCanShare={isCanShare} />
+      }
       {/* <PostComment postData={postData} /> */}
     </div>
   )

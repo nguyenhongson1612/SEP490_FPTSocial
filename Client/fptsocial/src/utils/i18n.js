@@ -35,6 +35,15 @@ i18n
                 contact: 'Contact'
               }
             },
+            friend: {
+              peopleSuggest: "People you may know",
+              request: "Friend requests",
+              suggest: "Friend suggestions",
+              listFriend: "Friend list",
+              noFriend: "You have no friends",
+              noRequest: "You have no friend requests",
+              noSuggest: "There are no suitable suggestions for you"
+            },
             profile: {
               updateProfile: 'Update Your Profile',
               friend: 'Friend',
@@ -68,7 +77,10 @@ i18n
               post: 'Post',
               user: 'User',
               group: 'Group',
-              all: 'All'
+              all: 'All',
+              viewAll: "View all results",
+              noData: "Data not found!",
+              writeSt: "What do you want to find?"
             },
             media: {
               save: 'Save',
@@ -102,7 +114,9 @@ i18n
             mutualFriend: 'mutual friends',
             noneSuggestion: 'No suggestions are suitable for you',
             noneNotification: 'You have no notifications',
-            yourMind: `What's on your mind`
+            contactMes: "Let's look for friends",
+            yourMind: `What's on your mind`,
+            avatarPost: "updated their profile picture."
           },
           message: {
 
@@ -133,6 +147,15 @@ i18n
                 notification: 'Thông báo mới nhất',
                 contact: 'Người liên hệ'
               }
+            },
+            friend: {
+              peopleSuggest: "Những người bạn có thể biết",
+              request: "Yêu cầu kết bạn",
+              suggest: "Đề xuất bạn bè",
+              listFriend: "Danh sách bạn bè",
+              noFriend: "Bạn chưa có người bạn nào",
+              noRequest: "Bạn chưa có yêu cầu kết bạn nào",
+              noSuggest: "Không có đề xuất nào phù hợp cho bạn"
             },
             profile: {
               updateProfile: 'Chỉnh sửa trang cá nhân',
@@ -165,7 +188,10 @@ i18n
               post: 'Bài viết',
               user: 'Mọi người',
               group: 'Hội nhóm',
-              all: 'Tất cả'
+              all: 'Tất cả',
+              viewAll: "Hiển thị tất cả kết quả",
+              noData: "Không tìm thông tin phù hợp!",
+              writeSt: "Bạn muốn tìm gì?"
             },
             media: {
               save: 'Lưu',
@@ -193,13 +219,15 @@ i18n
               comment: 'Bình luận',
               share: 'Chia sẻ',
               noReact: 'Chưa có lượt tương tác nào!'
-            }
+            },
           },
           sideText: {
             mutualFriend: 'bạn chung',
             noneSuggestion: 'Không có đề xuất nào phù hợp cho bạn',
             noneNotification: 'Bạn không có thông báo mới',
-            yourMind: `Bạn đang nghĩ gì thế`
+            contactMes: "Hãy tìm kiếm người bạn mới nào!",
+            yourMind: `Bạn đang nghĩ gì thế`,
+            avatarPost: "đã cập nhật ảnh đại diện của mình."
           },
           message: {
 

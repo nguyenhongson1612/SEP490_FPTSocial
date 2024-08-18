@@ -11,8 +11,10 @@ import { compareDateTime } from '~/utils/formatters'
 import connectionSignalR from '~/utils/signalRConnection'
 import bellImg from '~/assets/img/bell2.png'
 import noIdeaImg from '~/assets/img/no-idea.png'
+import contactChat from '~/assets/img/contactChat.png'
 import { useTranslation } from 'react-i18next'
 import { FRONTEND_ROOT } from '~/utils/constants'
+import { toast } from 'react-toastify'
 
 function HomeRightSideBar() {
   const currentUser = useSelector(selectCurrentUser)
@@ -20,38 +22,45 @@ function HomeRightSideBar() {
   const [listFriend, setListFriend] = useState([])
   const [listFriendSuggestion, setListFriendSuggestion] = useState([])
   const { t } = useTranslation()
+  const [isUpdate, setIsUpdate] = useState(false)
 
   useEffect(() => {
     getAllFriend().then(data => setListFriend(data?.allFriend))
     suggestionFriend().then(data => setListFriendSuggestion(data?.allFriend))
-  }, [])
+  }, [isUpdate])
 
   const handleAddFriend = async (userId) => {
     try {
       const response = await sendFriend({
         // userId: currentUser?.userId,
         friendId: userId
-      });
+      })
+      toast.success('Request sended!')
+      setIsUpdate(!isUpdate)
       if (response) {
         const signalRData = {
           MsgCode: 'User-001',
           Receiver: userId,
           Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
           AdditionsMsd: ''
-        };
-        // console.log(signalRData);
-        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));
+        }
+        // console.log(signalRData)
+        await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+
       }
     } catch (err) {
-      console.error('Error while starting connection: ', err);
+      console.error('Error while starting connection: ', err)
+
     }
-  };
+  }
+
   // const handleResponse = (data_) => {
   //   const data = {
   //     // userId: currentUser?.userId,
   //     friendId: user?.userId,
   //     ...data_
-  //   };
+  //   }
+
   //   updateFriendStatus(data)
   //     .then((data) => {
   //       if (data?.confirm) {
@@ -60,12 +69,16 @@ function HomeRightSideBar() {
   //           Receiver: `${user?.userId}`,
   //           Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
   //           AdditionsMsd: ''
-  //         };
-  //         connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData));
+  //         }
+
+  //         connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+
   //       }
   //     })
-  //     .then(forceUpdate);
-  // };
+  //     .then(forceUpdate)
+
+  // }
+
   const handleCheckReadNotification = (notificationId) => {
     updateReadNotification(notificationId)
   }
@@ -79,7 +92,7 @@ function HomeRightSideBar() {
             className="flex flex-col items-start "
           >
             <p className=" text-gray-500 pb-2 font-semibold">{t('standard.home.rightSidebar.suggestion')}</p>
-            {listFriendSuggestion?.map(friend => (
+            {listFriendSuggestion?.slice(0, 5).map(friend => (
               <Link key={friend?.friendId} to={`/profile?id=${friend?.friendId}`} className="w-full h-[52px] px-2 py-3 hover:bg-fbWhite-500  flex items-center justify-between cursor-pointer rounded-md">
                 <div className='flex items-center gap-2'>
                   <UserAvatar avatarSrc={friend?.avata} isOther={true} />
@@ -88,7 +101,10 @@ function HomeRightSideBar() {
                     <span className="text-xs">{friend?.mutualFriends ?? 0} {t('sideText.mutualFriend')}</span>
                   </div>
                 </div>
-                <IconButton color="primary" onClick={(e) => { e.preventDefault(); handleAddFriend(friend?.friendId) }}><IconUserPlus /></IconButton>
+                <IconButton color="primary" onClick={(e) => {
+                  e.preventDefault()
+                  handleAddFriend(friend?.friendId)
+                }}><IconUserPlus /></IconButton>
               </Link>
             ))}
             {
@@ -126,7 +142,7 @@ function HomeRightSideBar() {
               ))
             }
             {
-              listLatestNotification?.length == 0 || !listFriendSuggestion &&
+              listLatestNotification?.length == 0 &&
               <div className='flex flex-col justify-center w-full'>
                 <img src={bellImg} className='size-10' />
                 <span className='font-semibold text-sm text-gray-500'>
@@ -142,12 +158,21 @@ function HomeRightSideBar() {
             className="flex flex-col items-start "
           >
             <p className=" text-gray-500 font-semibold">{t('standard.home.rightSidebar.contact')}</p>
-            {listFriend?.map(friend => (
+            {listFriend?.slice(0, 15).map(friend => (
               <Link key={friend?.friendId} to={`/profile?id=${friend?.friendId}`} className="w-full h-[52px] px-2 py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer rounded-md">
                 <UserAvatar avatarSrc={friend?.avata} isOther={true} />
                 <span className="font-semibold capitalize">{friend?.friendName}</span>
               </Link>
             ))}
+            {
+              listFriend?.length == 0 &&
+              <div className='flex flex-col justify-center w-full py-2'>
+                <img src={contactChat} className='size-10' />
+                <span className='font-semibold text-sm text-gray-500'>
+                  {t('sideText.contactMes')}
+                </span>
+              </div>
+            }
           </div>
         </div>
       </div>

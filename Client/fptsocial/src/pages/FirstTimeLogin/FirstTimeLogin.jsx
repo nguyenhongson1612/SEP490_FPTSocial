@@ -5,14 +5,16 @@ import { useForm } from 'react-hook-form'
 import Step2 from './Step2'
 import Step3 from './Step3'
 import Progress from './Progress'
-import { createAdminProfile, createByLogin, createUserChat } from '~/apis'
+import { createAdminProfile, createByLogin, createUserChat, getStatus } from '~/apis'
 import { toast } from 'react-toastify'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DEFAULT_AVATAR, JWT_PROFILE } from '~/utils/constants'
 import AdminUpdate from './AdminUpdate'
+import { createPost } from '~/apis/postApis'
 
 function FirstTimeLogin() {
   const [step, setStep] = useState(0)
+  const [listStatus, setListStatus] = useState([])
   const location = useLocation()
   const isAdmin = location.pathname === '/updateadmin'
   const isOther = location.pathname === '/firstlogin'
@@ -40,6 +42,10 @@ function FirstTimeLogin() {
       trigger()
     }
   }, [isValid, trigger])
+
+  useEffect(() => {
+    getStatus().then(data => setListStatus(data))
+  }, [])
 
   const processWidth = () => {
     if (step >= 1) return (step - 1) / (totalStep - 1) * 100
@@ -106,18 +112,52 @@ function FirstTimeLogin() {
     }
     // console.log(initialSubmitData)
     toast.promise(
-      (isAdmin
-        ? createAdminProfile(submitUpdateAdmin)
-        : createByLogin(submitData1)
-      ),
+      (async () => {
+        if (isAdmin) {
+          await createAdminProfile(submitUpdateAdmin);
+        } else {
+          await createByLogin(submitData1);
+        }
+      })(),
       {
         pending: 'Creating...',
         success: 'Account created!'
       }
-    ).then(() => {
-      createUserChat(submitData2)
-      navigate(isAdmin ? '/dashboard' : '/')
-    })
+    )
+      .then(() => {
+        (async () => {
+          if (data?.avataphoto) {
+            await createPost({
+              "userStatusId": listStatus.find(e => e?.statusName == "Public")?.userStatusId,
+              "isAvataPost": true,
+              "content": "",
+              "photos": [
+                {
+                  "photoUrl": data?.avataphoto,
+                  "position": 0
+                }
+              ],
+            })
+          }
+          if (data?.coverImage) {
+            await createPost({
+              "userStatusId": listStatus.find(e => e?.statusName == "Public")?.userStatusId,
+              "isCoverPhotoPost": true,
+              "content": "",
+              "photos": [
+                {
+                  "photoUrl": data?.coverImage,
+                  "position": 0
+                }
+              ],
+            })
+          }
+        })()
+      })
+      .then(() => {
+        createUserChat(submitData2)
+        navigate(isAdmin ? '/dashboard' : '/')
+      })
   }
 
   return (
