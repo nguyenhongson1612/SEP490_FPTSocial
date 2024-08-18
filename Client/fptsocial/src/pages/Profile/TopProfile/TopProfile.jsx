@@ -7,11 +7,11 @@ import connectionSignalR from '~/utils/signalRConnection'
 import { Avatar, Button, Menu, MenuItem, Popover } from '@mui/material'
 import { toast } from 'react-toastify'
 import { handleCoverImg } from '~/utils/formatters'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { FRONTEND_ROOT, REPORT_TYPES } from '~/utils/constants'
 import { useTranslation } from 'react-i18next'
-import { addBlock, openModalBlock } from '~/redux/block/blockSlice'
+import { addBlock, openModalBlock, selectIsOpenBlock } from '~/redux/block/blockSlice'
 import Block from '~/components/Modal/Block/Block'
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
@@ -21,6 +21,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredFriendId, setHoveredFriendId] = useState(null)
   const { t } = useTranslation()
+  const isOpenModalBlock = useSelector(selectIsOpenBlock)
 
   const handlePopoverOpen = (event, friendId) => {
     setAnchorEl(event.currentTarget)
@@ -101,6 +102,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
 
   return (
     <div id="top-profile" className="bg-white shadow-md w-full flex flex-col items-center">
+      {isOpenModalBlock && <Block />}
       <div
         id="holderCover"
         className="w-full lg:w-[940px] aspect-[74/27] rounded-md bg-cover bg-center bg-no-repeat"
@@ -125,14 +127,15 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
               {user?.firstName + ' ' + user?.lastName}
             </span>
             <span className="text-gray-500 font-bold">
-              {listFriend?.count} friend{listFriend?.count > 1 && 's'}
+              {listFriend?.count} {listFriend?.count > 1 ? t('standard.profile.friends') : t('standard.profile.friend2')}
             </span>
 
-            <div className="flex items-center [&>img:not(:first-child)]:-ml-4">
-              {listFriend?.allFriend?.map((friend) => (
+            <div className="flex items-center">
+              {listFriend?.allFriend?.slice(0, 5)?.map((friend, i) => (
                 <Link
                   to={`/profile?id=${friend?.friendId}`}
                   key={friend?.friendId}
+                  className={i != 0 ? '-ml-2' : ''}
                   aria-owns={hoveredFriendId === friend?.friendId ? `mouse-over-popover-${friend?.friendId}` : undefined}
                   onMouseEnter={(event) => handlePopoverOpen(event, friend?.friendId)}
                   onMouseLeave={handlePopoverClose}
@@ -162,8 +165,8 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                     <div key={friend?.friendId} className="flex items-center gap-2 p-2">
                       <Avatar src={friend?.avata || './src/assets/img/avatar_holder.png'} alt="user-avatar" sx={{ width: 50, height: 50 }} />
                       <div className="flex flex-col w-full items-center">
-                        <span className='font-bold text-lg'>{friend?.friendName}</span>
-                        <span className='text-sm flex items-center'>{friend?.mutualFriends + ' mutual friends'}</span>
+                        <span className='font-bold text-md capitalize'>{friend?.friendName}</span>
+                        <span className='text-sm flex items-center'>{friend?.mutualFriends + ' ' + t('sideText.mutualFriend')}</span>
                       </div>
                     </div>
                   </Popover>
@@ -172,119 +175,121 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             </div>
           </div>
 
-          {user?.userId == currentUser?.userId ? (
-            <div
-              onClick={() => setIsOpenModalUpdateProfile(true)}
-              className="flex flex-col justify-end mb-4 cursor-pointer"
-            >
-              <span></span>
-              <span className="font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2">
-                <IconEdit />
-                {t('standard.profile.updateProfile')}
-              </span>
-            </div>
-          ) : buttonProfile?.friend ? (
-            <div className="flex flex-col justify-end mb-4 cursor-pointer">
-              <span
-                onClick={openDeleteModal}
-                className="font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2"
+          <div className='flex gap-2'>
+            {user?.userId == currentUser?.userId ? (
+              <div
+                onClick={() => setIsOpenModalUpdateProfile(true)}
+                className="flex flex-col justify-end mb-4 cursor-pointer"
               >
-                <IconUserCheck stroke={3} />
-                {t('standard.profile.friend')}
-              </span>
-            </div>
-          ) : buttonProfile?.request ? (
-            <div
-              onClick={() =>
-                handleResponse({
-                  confirm: false,
-                  cancle: true,
-                  reject: false
-                })
-              }
-              className="interceptor-loading flex flex-col justify-end mb-4 cursor-pointer"
-            >
-              <span className="font-bold text-lg text-white p-2 rounded-md  bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
-                <IconUserX stroke={3} />
-                {t('standard.profile.cancelRequest')}
-              </span>
-            </div>
-          ) : !buttonProfile?.confirm ? (
-            <div onClick={handleAddFriend} className="flex flex-col justify-end mb-4 cursor-pointer">
-              <span className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
-                <IconUserPlus stroke={3} />
-                {t('standard.profile.addFriend')}
-              </span>
-            </div>
-          ) : (
-            <div className="flex flex-col justify-end mb-4 cursor-pointer">
-              <div className="flex gap-2">
-                <span
-                  onClick={() =>
-                    handleResponse({
-                      confirm: true,
-                      cancle: false,
-                      reject: false
-                    })
-                  }
-                  className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700"
-                >
-                  {t('standard.profile.confirmRequest')}
-                </span>
-                <span
-                  onClick={() =>
-                    handleResponse({
-                      confirm: false,
-                      cancle: false,
-                      reject: true
-                    })
-                  }
-                  className="font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500"
-                >
-                  {t('standard.profile.deleteRequest')}
+                <span></span>
+                <span className="font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2">
+                  <IconEdit />
+                  {t('standard.profile.updateProfile')}
                 </span>
               </div>
-            </div>
-          )}
-          {
-            user?.userId !== currentUser?.userId &&
-            <div className='flex flex-col justify-end mb-5 cursor-pointer'>
+            ) : buttonProfile?.friend ? (
+              <div className="flex flex-col justify-end mb-4 cursor-pointer">
+                <span
+                  onClick={openDeleteModal}
+                  className="font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2"
+                >
+                  <IconUserCheck stroke={3} />
+                  {t('standard.profile.friend')}
+                </span>
+              </div>
+            ) : buttonProfile?.request ? (
               <div
-                className="rounded-md size-[40px] flex justify-center items-center bg-fbWhite cursor-pointer p-2"
-                onClick={handleClick}
-              ><IconDotsVertical /></div>
-              <Menu
-                anchorEl={anchorEl2}
-                id="account-menu"
-                open={open}
-                onClose={handleClose}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                onClick={() =>
+                  handleResponse({
+                    confirm: false,
+                    cancle: true,
+                    reject: false
+                  })
+                }
+                className="interceptor-loading flex flex-col justify-end mb-4 cursor-pointer"
               >
-                <MenuItem
-                  onClick={() => {
-                    dispatch(addReport({ reportData: { ...user }, reportType: REPORT_TYPES.PROFILE }))
-                    dispatch(openModalReport())
-                    handleClose()
-                  }}
-                  sx={{ gap: '5px' }}>
-                  <IconMessageReport />{t('standard.profile.report')}
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    dispatch(addBlock(user))
-                    dispatch(openModalBlock())
-                    handleClose()
-                  }}
-                  sx={{ gap: '5px' }}>
-                  <IconUserCancel />{t('standard.profile.block')}
-                </MenuItem>
-              </Menu>
-            </div>
-          }
+                <span className="font-bold text-lg text-white p-2 rounded-md  bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
+                  <IconUserX stroke={3} />
+                  {t('standard.profile.cancelRequest')}
+                </span>
+              </div>
+            ) : !buttonProfile?.confirm ? (
+              <div onClick={handleAddFriend} className="flex flex-col justify-end mb-4 cursor-pointer">
+                <span className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
+                  <IconUserPlus stroke={3} />
+                  {t('standard.profile.addFriend')}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col justify-end mb-4 cursor-pointer">
+                <div className="flex gap-2">
+                  <span
+                    onClick={() =>
+                      handleResponse({
+                        confirm: true,
+                        cancle: false,
+                        reject: false
+                      })
+                    }
+                    className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700"
+                  >
+                    {t('standard.profile.confirmRequest')}
+                  </span>
+                  <span
+                    onClick={() =>
+                      handleResponse({
+                        confirm: false,
+                        cancle: false,
+                        reject: true
+                      })
+                    }
+                    className="font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500"
+                  >
+                    {t('standard.profile.deleteRequest')}
+                  </span>
+                </div>
+              </div>
+            )}
+            {
+              user?.userId !== currentUser?.userId &&
+              <div className='cursor-pointer'>
+                <div
+                  className="rounded-md size-[40px] flex justify-center items-center bg-fbWhite cursor-pointer p-2"
+                  onClick={handleClick}
+                ><IconDotsVertical /></div>
+                <Menu
+                  anchorEl={anchorEl2}
+                  id="account-menu"
+                  open={open}
+                  onClose={handleClose}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(addReport({ reportData: { ...user }, reportType: REPORT_TYPES.PROFILE }))
+                      dispatch(openModalReport())
+                      handleClose()
+                    }}
+                    sx={{ gap: '5px' }}>
+                    <IconMessageReport />{t('standard.profile.report')}
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(addBlock(user))
+                      dispatch(openModalBlock())
+                      handleClose()
+                    }}
+                    sx={{ gap: '5px' }}>
+                    <IconUserCancel />{t('standard.profile.block')}
+                  </MenuItem>
+                </Menu>
+              </div>
+            }
+          </div>
+
         </div>
       </div>
-      <Block />
     </div>
   )
 }

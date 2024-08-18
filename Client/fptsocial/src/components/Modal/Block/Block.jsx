@@ -6,7 +6,6 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import { IconX } from '@tabler/icons-react'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import { Button, Modal } from '@mui/material'
-import { clearReport } from '~/redux/report/reportSlice'
 import { clearBlock, selectBlockData, selectIsOpenBlock } from '~/redux/block/blockSlice'
 import { blockUser } from '~/apis'
 import { useNavigate } from 'react-router-dom'
@@ -17,6 +16,7 @@ function Block() {
   const blockData = useSelector(selectBlockData)
   const dispatch = useDispatch()
   const isOpenModalBlock = useSelector(selectIsOpenBlock)
+  console.log('🚀 ~ Block ~ isOpenModalBlock:', isOpenModalBlock)
 
   useEffect(() => {
   }, [])
@@ -28,11 +28,13 @@ function Block() {
     }
     toast.promise(
       blockUser(submitData),
-      { pending: 'Processing...' }
+      {
+        pending: 'Processing...',
+        success: 'Blocked!'
+      }
     ).then(() => {
+      dispatch(clearBlock())
       navigate('/homepage')
-      dispatch(clearReport())
-      toast.success('Blocked!')
     })
   }
   return (

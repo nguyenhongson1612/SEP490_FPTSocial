@@ -127,7 +127,7 @@ function PostTitle({ postData, isYourPost, postType, isBan }) {
               </>
             )}
             {
-              (isGroup || isGroupShare) ? <a href={`/groups/${postData?.groupId}/post/${postData?.userPostId || postData?.postId}`} className='font-thin'>
+              (isGroup || isGroupShare) ? <a href={`/groups/${postData?.groupId}/post/${postData?.userPostId || postData?.postId}?share=${isGroupShare ? 1 : 0}`} className='font-thin'>
                 {compareDateTime(postData?.createdAt || postData?.createdDate)}
               </a>
                 : <Link to={`/post/${postData?.userPostId || postData?.postId}?share=${isShare ? 1 : 0}`} className='font-thin'>

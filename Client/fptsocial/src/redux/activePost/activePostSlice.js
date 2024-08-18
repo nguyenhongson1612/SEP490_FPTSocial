@@ -40,12 +40,12 @@ export const activePostSlice = createSlice({
       state.postReactStatus = action.payload
     },
     clearAndHireCurrentActivePost: (state) => {
-      state.currentActivePost = null,
-        state.postReactStatus = null,
-        state.isShowModalActivePost = false,
-        state.isShowUpdatePost = false,
-        state.isShowModalSharePost = false,
-        state.isShowModalCreatePost = false
+      state.currentActivePost = null
+      state.postReactStatus = null
+      state.isShowModalActivePost = false
+      state.isShowUpdatePost = false
+      state.isShowModalSharePost = false
+      state.isShowModalCreatePost = false
     },
     updateCurrentActivePost: (state, action) => {
       state.currentActivePost = action.payload

@@ -142,7 +142,7 @@ function HomeRightSideBar() {
               ))
             }
             {
-              listLatestNotification?.length == 0 &&
+              listLatestNotification?.length == 0 && !listLatestNotification &&
               <div className='flex flex-col justify-center w-full'>
                 <img src={bellImg} className='size-10' />
                 <span className='font-semibold text-sm text-gray-500'>

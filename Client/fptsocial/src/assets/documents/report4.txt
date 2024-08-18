@@ -1,0 +1,409 @@
+
+
+
+
+
+
+
+
+
+CAPSTONE PROJECT REPORT
+Report 4 - Software Design Document
+
+
+
+
+
+
+
+- Hanoi, August 2019 -
+
+
+Table of Contents
+I. Record of Changes	3
+II. Software Design Document	4
+1. System Design	4
+1.1 System Architecture	4
+1.2 Package Diagram	4
+2. Database Design	4
+3. Detailed Design	5
+3.1 <Feature/Function Name1>	5
+3.2 <Feature/Function Name2>	6
+
+
+
+I. Record of Changes
+DateA*
+M, DIn chargeChange Description*A - Added M - Modified D - Deleted
+
+
+II. Software Design Document
+1. System Design
+1.1 System Architecture
+
+Figure 1.1. System overview diagram
+1.1.1 System High-Level Design
+1.1.1.1 CQRS in FUSP
+ 	The social networking application "FUSP" is a platform where user interactions are primarily through reading content, including posts, comments, and user profiles. The volume of read operations is significantly higher compared to write operations, although the latter still needs to be handled with accuracy and efficiency.
+
+Specific Issues:
+- High Read Load:
+? High read load: A significant number of read requests, especially as users continuously browse posts, view profiles, and search for content.
+? Low latency: Users expect quick and smooth data retrieval.
+? Consistency: Read data must be consistent and accurate, especially when users perform updates or add new content.
+
+- Write Load:
+? Lower but critical write load: Actions like posting, commenting, and liking posts need to be processed accurately and promptly to maintain a good user experience.
+? Consistency: Ensuring newly updated data is consistent and accurately reflected in subsequent read operations.
+
+- Bottlenecks and Performance:
+? Data bottlenecks: Processing both read and write loads on a single database can lead to bottlenecks and reduced performance.
+? Scalability: The system must be scalable to handle increasing traffic over time.
+
+- Maintenance and Development:
+? Complexity: Maintaining a single database for both read and write operations can be complex and prone to errors.
+? Development flexibility: The system needs to easily integrate new features without impacting performance and data consistency.
+
+Solution Approach:
+- Using CQRS to separate read and write operations helps optimize and enhance the system's performance.
+
+- Separate Read and Write Models:
+? Command Model: Data model and write operations such as creating posts, updating profiles, adding comments.
+? Query Model: Data model and read operations such as querying posts, searching for users, viewing profiles.
+
+- Implement Command Model:
+? Use a database designed for writes, like SQL Server or NoSQL databases.
+? Build APIs to handle commands like creating, updating, deleting data.
+
+- Implement Query Model:
+? Use a database optimized for querying and reading data.
+? Build APIs to handle queries, optimized for fast and efficient data retrieval.
+
+Benefits of Implementing CQRS:
+- Improved Performance: Optimizes the handling of read and write requests separately.
+- Scalability: Easily scale individual parts of the system independently.
+- Consistency: Use synchronization mechanisms to ensure data consistency across models.
+
+1.1.1.2 Back-end component
+? Chat Engine
+
+       We use chatengine.io as the core and customize it with project data and logic to develop the chat feature.
+       
+? SignalR
+
+       We use signalR to develop real-time notifications system.
+       
+? Cloudinary (Cloud)
+
+	We use Cloudinary to store large data, media such as: photos, videos,... to serve features such as: posting photos, videos or avatars
+
+? GeminiAI
+
+	We use GeminiAI for FAQ purposes as well as content on the FUSP system.
+
+1.1.2 Algorithms used in FUSP
+1.1.2.1 The Knuth-Morris-Pratt algorithm
+       The social network application "FUSP" aims to provide a safe and compliant environment for users. To achieve this, it is important to effectively detect and filter out posts that contain offensive or banned words. With the desire to help moderation teams and administrators more easily detect violating content, this requires a powerful and effective text search algorithm that can quickly identify words. or specific phrases in user-generated content.
+       
+- Specific Issues:
+? High Volume of Content: Users generate a significant amount of content continuously, requiring real-time text analysis.
+? Efficiency and Speed: The algorithm needs to be fast enough to handle large volumes of text without causing delays in content posting.
+? Accuracy: It must accurately identify prohibited words to ensure the safety and compliance of the platform.
+? Scalability: The solution must scale with the growing number of users and the corresponding increase in content volume.
+
+- Solution approach: Use the Knuth-Morris-Pratt (KMP) algorithm for the following reasons:
+? Linear Time Complexity: The KMP algorithm has a time complexity of O(n + m), where n is the length of the text and m is the length of the pattern (prohibited word). This ensures that even for large texts, the search operation remains efficient.
+? Preprocessing Step: KMP preprocesses the pattern to create a partial match table (also known as the "pi" table) which helps in skipping unnecessary comparisons during the search. This preprocessing step runs in O(m) time.
+? Efficient Search: Unlike naive search algorithms that can degrade to O(n*m) in the worst case, KMP efficiently skips over portions of the text that have been matched already, making it much faster.
+? Robustness: The algorithm is well-suited for applications requiring frequent and rapid text searches, ensuring that all instances of prohibited words are detected without repeated scanning.
+
+
+1.1.2.2 The EdgeRank algorithm
+       The social networking application "FUSP" aims to provide a personalized and engaging user experience by displaying relevant posts to users. With a high volume of user-generated content, it becomes essential to prioritize and rank posts effectively to ensure that users see the most relevant and engaging content first.
+       
+- Specific Issues:
+? Content Overload: Users generate a vast amount of content daily, making it challenging to show every post in a user's feed.
+? Relevance: Not all posts are equally relevant to every user. It is crucial to prioritize content that is more likely to engage the user.
+? User Engagement: Displaying relevant posts can increase user engagement and time spent on the platform.
+? Updates: The ranking algorithm needs to work, reflect the latest interactions and activities.
+       
+- Using the EdgeRank Algorithm (simple, lite version)
+       EdgeRank determines the relevance of posts in a user's news feed. It scores and ranks posts based on three main factors:
+? Affinity: The relationship between the user and the content creator. Higher interaction frequency between the user and the creator increases the affinity score. (This is the most difficult factor and we have not yet implemented it in the project)
+? Weight: The type of interaction. Different types of interactions (likes, comments, shares) have different weights. Comments and shares generally carry more weight than likes.
+? Time Decay: The age of the post. Newer posts are prioritized over older ones to keep the content fresh and timely.
+       
+	
+1.2 Package Diagram
+1.2.1 Front-end Package Diagram
+
+Package Descriptions
+NoPackageDescription01assetsFolder containing external elements (img, gift, svg, icons,...)02componentsSharing component react element 03pagesSource code of page04apisHttp request config for call api05ultilsCommon functions support app06imgFolder containing images
+1.2.2 Back-end Package Diagram
+
+
+Package Descriptions
+NoPackageDescription01ControllerContains classes that are defined as controllers, the main function is connected between client and server through API endpoints02MapperContains class definitions and methods to map between two objects (serving for auto mapper)03MiddlewaresContains classes that define Middlewares methods such as: handle authentication, handle exception, handle email, SQL table dependency, etc04HubContains classes that are defined as hub (signalR) and hub service, the main function is connected between client and server through WebSocket05CQRSDefine command and query interfaces to serve the implementation of CQRD architecture06HelperContains classes that define common functions07CommandsContains classes that implement main logic with methods whose purposes are: create, update, delete (write to database)08QueriesContains classes that implement main logic with methods whose purposes are: select (read from database)09DTOContains classes that declare necessary attributes to serve requests and responses10ServicesContains classes with methods (code base) of services11ApiModelsContains classes with methods (codebase) to create custom api12CommandModelsContains entities that interact with the database (reserved for database writing)13QueryModelsContains entities that interact with the database (reserved for database reading)14EnumsDefine enums for notifications, entities type and exceptions15ExceptionsCodebase for exception types16ExtensionsContains some  common method for enum,...
+2. Database Design
+2.1 Operational Database Design
+
+
+2.2 Table Description
+2.2.1 AvataPhoto
+
+#Field NameTypeUniqueNot NullPK/FKNote1AvataPhotosIduniqueidentifierxxPK 2AvataPhotosUrlvarchar(2000) x  3UserIduniqueidentifier x FK  4UserStatusIduniqueidentifier xFK 5IsUsedbit  x  6CreatedAtdatetime   7UpdatedAtdatetimeTable 2.1. AvataPhoto
+
+2.2.2 BlockType
+
+#Field NameTypeUniqueNot NullPK/FKNote1BlockTypeIduniqueidentifierxxPK 2BlockTypeNamevarchar(100) x  3CreatedAtdatetime   4UpdatedAtdatetimeTable 2.2. BlockType
+2.2.3 BlockUser
+
+#Field NameTypeUniqueNot NullPK/FKNote1BlockUserIduniqueidentifierxxPK 2UserIduniqueidentifier x FK 3UserIsBlockedIduniqueidentifierxFK4BlockTypeIduniqueidentifierFK5IsBlockbit6CreatedAtdatetime   7UpdatedAtdatetimeTable 2.3. BlockUser
+2.2.4 CommentGroupPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.4. CommentGroupPost
+2.2.5 CommentGroupVideoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupVideoPostIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.5. CommentGroupVideoPost
+
+2.2.6 CommentPhotoGroupPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentPhotoGroupPostIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.6. CommentPhotoGroupPost
+2.2.7 CommentPhotoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentPhotoPostIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.7. CommentPhotoPost
+2.2.8 CommentPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentIduniqueidentifierxxPK 2UserPostIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.8. CommentPost
+2.2.9 CommentVideoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentVideoPostIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.9. CommentVideoPost
+2.2.10 ContactInfo
+
+#Field NameTypeUniqueNot NullPK/FKNote1ContactInfoIduniqueidentifierxxPK 2UserStatusIduniqueidentifier xFK 3UserIduniqueidentifierxFK4SecondEmailvarchar(255)5PrimaryNumbervarchar(11)x6SecondNumbervarchar(11)7CreatedAtdatetime   8UpdatedAtdatetimeTable 2.10. ContactInfo
+2.2.11 Follower
+
+#Field NameTypeUniqueNot NullPK/FKNote1FollowerIduniqueidentifierxxPK 2FollowedIduniqueidentifier xFK Table 2.11. Follower
+2.2.12 Gender
+
+#Field NameTypeUniqueNot NullPK/FKNote1GenderIduniqueidentifierxxPK 2GenderNamevarchar(1000) x 3CreatedAtdatetime4UpdatedAtdatetimeTable 2.12. Gender
+2.2.13 ReactSharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactSharePostIduniqueidentifierxxPK 2SharePostIduniqueidentifier xFK 3ReactTypeIduniqueidentifierx4UserIduniqueidentifierxFK5CreateDatedatetimeTable 2.13. ReactSharePost
+2.2.14 PostReactCount
+
+#Field NameTypeUniqueNot NullPK/FKNote1PostReactCountIduniqueidentifierxxPK 2UserPostIduniqueidentifier xFK 3UserPostPhotoIduniqueidentifierxFK4UserPostVideoIduniqueidentifierxFK5ReactCountint6CommentCountint7ShareCountint8CreateAtdatetime9UpdateAtdatetimeTable 2.14. PostReactCount
+2.2.15 ReactGroupSharePostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupSharePosCommentIduniqueidentifierxxPK 2GroupSharePostIduniqueidentifier xFK 3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CommentGroupSharePostIduniqueidentifier6CreatedDatedatetimeTable 2.15. ReactGroupSharePostComment
+2.2.16 GroupFPT
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupIduniqueidentifierxxPK 2CreatedByIduniqueidentifierxFK3GroupTypeIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5GroupNumbervarchar(50)  6GroupNamenvarchar(200)x7GroupDescriptionnvarchar(1000)x8CreateAtdatetime9UpdateAtdatetimeTable 2.16. GroupFPT
+2.2.17 GroupInvitation
+
+#Field NameTypeUniqueNot NullPK/FKNote1InvitationIduniqueidentifierxxPK 2InviterIduniqueidentifierxFK3InvitedIduniqueidentifierxFK4GroupIduniqueidentifierxFK5StatusAcceptbit x 8CreateAtdatetime9UpdateAtdatetimeTable 2.17. GroupInvitation
+2.2.18 GroupMember
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupIduniqueidentifierxxPK 2UserIduniqueidentifierxPK3GroupRoleIduniqueidentifierxFK4IsJoinedbit5JoinedDatedatetimeTable 2.18. GroupMember
+2.2.19 GroupPhoto
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupPhotoIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoUrlvarchar(1000)x5PhotoBigUrlvarchar(1000)6PhotoSmallUrlvarchar(1000)7GroupPhotoNumbervarchar(50)8CreateAtdatetime9UpdateAtdatetimeTable 2.19. GroupPhoto
+2.2.20 GroupPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupPostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3GroupStatusIduniqueidentifierxFK4GroupPhotoIduniqueidentifierFK5GroupVideoIduniqueidentifierFK6Contenttext7GroupPostNumbervarchar(50)8IsHidebit9NumberPostint10CreateAtdatetime11UpdateAtdatetimeTable 2.20. GroupPost
+2.2.21 GroupPostPhoto
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupPostPhotoIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupPhotoIduniqueidentifierxFK4GroupPhotoIduniqueidentifierxFK5PostPositionint6Contenttext7GroupPostPhotoNumbervarchar(50)8IsHidebit9CreateAtdatetime10UpdateAtdatetimeTable 2.21. GroupPostPhoto
+2.2.22 GroupPostVideo
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupPostVideoIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupVideoIduniqueidentifierxFK4GroupVideoIduniqueidentifierxFK5PostPositionint6Contenttext7GroupPostPhotoNumbervarchar(50)8IsHidebit9CreateAtdatetime10UpdateAtdatetimeTable 2.22. GroupPostVideo
+2.2.23 GroupRole
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupRoleIduniqueidentifierxxPK 2GroupRoleNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.23. GroupRole
+2.2.24 GroupSetting
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupSettingIduniqueidentifierxxPK 2GroupSettingNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.24. GroupSetting
+2.2.25 GroupSettingUse
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupSettingIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3GroupStatusIduniqueidentifierxFK4CreatedAtdatetime5UpdatedAtdatetimeTable 2.25. GroupSettingUse
+2.2.26 GroupSharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupSharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserPostIduniqueidentifier4UserPostVideoIduniqueidentifier5UserPostPhotoIduniqueidentifier6GroupPostIduniqueidentifier7GroupPostPhotoIduniqueidentifier8GroupPostVideoIduniqueidentifier9SharedToUserIduniqueidentifier10Contenttext11CreatedAtdatetimeTable 2.26. GroupSharePost
+2.2.27 GroupSettingUse
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupStatusIduniqueidentifierxxPK 2GroupStatusNamevarchar(100)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.27. GroupSettingUse
+2.2.28 GroupTag
+
+#Field NameTypeUniqueNot NullPK/FKNote1TagIduniqueidentifierxxPK 2TagNamevarchar(255)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.28. GroupTag
+2.2.29 GroupTagUsed
+
+#Field NameTypeUniqueNot NullPK/FKNote1TagIduniqueidentifierxxPK 2GroupIduniqueidentifierxPK3UserStatusIduniqueidentifier xFK4CreatedAtdatetime5UpdatedAtdatetimeTable 2.29. GroupTagUsed
+2.2.30 GroupType
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupTypeIduniqueidentifierxxPK 2GroupTypeNamevarchar(100)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.30. GroupType
+2.2.31 GroupVideo
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupVideoIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4VideoUrlvarchar(1000)x5GroupVideoNumbervarchar(50)6CreatedAtdatetime7UpdatedAtdatetimeTable 2.31. GroupVideo
+2.2.32 Interest
+
+#Field NameTypeUniqueNot NullPK/FKNote1InterestIduniqueidentifierxxPK 2InterestNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.32. Interest
+2.2.33 LookingFor
+
+#Field NameTypeUniqueNot NullPK/FKNote1LookingForIduniqueidentifierxxPK 2LookingForNamevarchar(1000)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.33. LookingFor
+2.2.34 Notifications
+
+#Field NameTypeUniqueNot NullPK/FKNote1NotificationIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3SenderIduniqueidentifierxFK4NotificationTypeIduniqueidentifierxFK5UserStatusIduniqueidentifierxFK6NotiMessagevarchar(255)7IsReadbit8CreatedAtdatetimeTable 2.34. Notifications
+2.2.35 NotificationType
+
+#Field NameTypeUniqueNot NullPK/FKNote1NotificationTypeIduniqueidentifierxxPK 2NotificationTypeNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.35. NotificationType
+
+2.2.36 Photo
+
+#Field NameTypeUniqueNot NullPK/FKNote1PhotoIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoUrlvarchar(1000)x5PhotoBigUrlvarchar(1000)6PhotoSmallUrlvarchar(1000)7PhotoNumbervarchar(50)8CreatedAtdatetime9UpdatedAtdatetimeTable 2.36. Photo
+2.2.37 ReactComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactCommentIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentIduniqueidentifierxFK6CreatedAtdatetimeTable 2.37. ReactComment
+2.2.38 ReactGroupSharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupSharePostIduniqueidentifierxxPK 2GroupSharePostIduniqueidentifierxFK3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CreatedDatedatetimeTable 2.38. ReactGroupSharePost
+2.2.39 ReactGroupCommentPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupCommentPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentGroupPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.39. ReactGroupCommentPost
+2.2.40 ReactGroupPhotoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupPhotoPostIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.40. ReactGroupPhotoPost
+2.2.41 ReactGroupPhotoPostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostCommentIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentPhotoGroupPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.41. ReactGroupPhotoPostComment
+2.2.42 ReactGroupPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.42. ReactGroupPost
+2.2.43 ReactGroupVideoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupVideoPostIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.43. ReactGroupVideoPost
+2.2.44 ReactGroupVideoPostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupVideoCommentIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentGroupVideoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.44. ReactGroupVideoPostComment
+
+2.2.45 ReactPhotoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.45. ReactPhotoPost
+2.2.46 ReactPhotoPostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostCommentIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentPhotoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.46. ReactPhotoPostComment
+2.2.47 ReactPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactPostIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.47. ReactPost
+2.2.48 ReactType
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactTypeIduniqueidentifierxxPK 2ReactTypeNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.48. ReactType
+
+2.2.49 ReactSharePostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactSharePosCommentIduniqueidentifierxxPK 2SharePostIduniqueidentifierxFK3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CommentSharePostIduniqueidentifierxFK6CreatedDatedatetimeTable 2.49. ReactSharePostComment
+
+2.2.50 ReactVideoPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactVideoPostIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.50. ReactVideoPost
+
+2.2.51 ReactVideoPostComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReactVideoPostCommentIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentVideoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.51. ReactVideoPostComment
+2.2.52 Relationship
+
+#Field NameTypeUniqueNot NullPK/FKNote1RelationshipIduniqueidentifierxxPK 2RelationshipNamevarchar(100)xFK3CreatedAtdatetime4UpdateAtdatetimeTable 2.52. Relationship
+2.2.53 ReportComment
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReportCommentIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3CommentIduniqueidentifierxFK4CommentPhotoPostIduniqueidentifierxFK5CommentVideoPostIduniqueidentifierxFK6CommentGroupPostIduniqueidentifierxFK7CommentPhotoGroupPostIduniqueidentifierxFK8CommentGroupVideoPostIduniqueidentifierxFK9ReportByIduniqueidentifierxFK10Contenttext11ReportStatusbit12CreatedAtdatetimeTable 2.53. ReportComment
+2.2.54 CommentSharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentSharePostIduniqueidentifierxxPK 2SharePostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ParentCommentIduniqueidentifier5Contentntext6ListNumbervarchar(100)7LevelCmtint8IsHidebit9IsBannedbit10CreatedAtdatetimeTable 2.54. CommentSharePost
+2.2.55 ReportPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReportPostIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3GroupPostIduniqueidentifierxFK4UserPostIduniqueidentifierxFK5ReportByIduniqueidentifierxFK6ReportStatusbit7CreatedAtdatetimeTable 2.55. ReportPost
+2.2.56 ReportProfile
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReportProfileIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3GroupIduniqueidentifierxFK4UserIduniqueidentifierxFK5ReportByIduniqueidentifierxFK6ReportStatusbit7CreatedAtdatetimeTable 2.56. ReportProfile
+2.2.57 ReportType
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReportTypeIduniqueidentifierxxPK 2ReportTypeNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.57. ReportType
+2.2.58 ReportProfile
+
+#Field NameTypeUniqueNot NullPK/FKNote1ReportTypeIduniqueidentifierxFK2UserChatIduniqueidentifierxFK3ReportByIduniqueidentifierxFK4ReportStatusbit5CreatedAtdatetimeTable 2.58. ReportProfile
+2.2.59 Role
+
+#Field NameTypeUniqueNot NullPK/FKNote1RoleIduniqueidentifierxxPK 2NameRolenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.59. Role
+2.2.60 Setting
+
+#Field NameTypeUniqueNot NullPK/FKNote1SettingIduniqueidentifierxxPK 2SettingNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.60. Setting
+2.2.61 SharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1SharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserPostIduniqueidentifierFK4UserPostVideoIduniqueidentifierFK5UserPostPhotoIduniqueidentifierFK6GroupPostIduniqueidentifierFK7GroupPostPhotoIduniqueidentifierFK8GroupPostVideoIduniqueidentifierFK9SharedToUserIduniqueidentifierFK10Contenttext11CreatedAtdatetimeTable 2.61. SharePost
+2.2.62 UserChat
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserChatIduniqueidentifierxxPK 2UserIduniqueidentifierxFK2NameChatnvarchar(300)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.62. UserChat
+2.2.63 UserChatMessage
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserChatMessageIduniqueidentifierxxPK 2UserChatIduniqueidentifierxFK3FromUserIduniqueidentifierxFK4MessageChattextx5IsPinbit6IsHidebit7CreatedAtdatetimeTable 2.63. UserChatMessage
+2.2.64 UserChatWithUser
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserChatWithUserIduniqueidentifierxxPK 2UserChatIduniqueidentifierxFK3WithUserIduniqueidentifierxFK4CreatedAtdatetimeTable 2.64. UserChatWithUser
+2.2.65 UserGender
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserGenderIduniqueidentifierxxPK 2GenderIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.65. UserGender
+2.2.66 UserInterest
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserInterestIduniqueidentifierxxPK 2InterestIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.66. UserInterest
+2.2.67 UserLookingFor
+
+#Field NameTypeUniqueNot NullPK/FKNote1LookingForIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4CreatedAtdatetime5UpdateAtdatetimeTable 2.67. UserLookingFor
+2.2.68 UserPost
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserPostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoIduniqueidentifierFK5VideoIduniqueidentifierFK6Contenttext7UserPostNumbervarchar(50)8IsAvataPostbit9IsCoverPhotoPostbit10IsHidebit11NumberPostint12CreatedAtdatetime13UpdateAtdatetimeTable 2.68. UserPost
+2.2.69 UserPostPhoto
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserPostPhotoIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3PhotoIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5Contenttext6UserPostPhotoNumbervarchar(50)7IsHidebit8PostPositionint9CreatedAtdatetime10UpdateAtdatetimeTable 2.69. UserPostPhoto
+2.2.70 UserPostVideo
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserPostVideoIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3VideoIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5Contenttext6UserPostVideoNumbervarchar(50)7IsHidebit8PostPositionint9CreatedAtdatetime10UpdateAtdatetimeTable 2.70. UserPostVideo
+2.2.71 UserProfile
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserIduniqueidentifierxxPK 2RoleIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4FirstNamenvarchar(100)x5LastNamenvarchar(100)x6Emailvarchar(255)7FeIdvarchar(255)8BirthDaydatex9AboutMenvarchar(1000)10HomeTownnvarchar(500)11CoverImagevarchar(1000)12UserNumbervarchar(50)13IsFirstTimeLoginbitx14IsActivebitx15CreatedAtdatetime16UpdateAtdatetimeTable 2.71. UserProfile
+2.2.72 UserRelationship
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserRelationshipIduniqueidentifierxxPK 2RelationshipIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.72. UserRelationship
+2.2.73 UserSetting
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserSettingIduniqueidentifierxxPK 2SettingIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFKTable 2.73. UserSetting
+2.2.74 UserStatus
+
+#Field NameTypeUniqueNot NullPK/FKNote1UserStatusIduniqueidentifierxxPK 2StatusNamevarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.74. UserStatus
+2.2.75 Video
+
+#Field NameTypeUniqueNot NullPK/FKNote1VideoIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4VideoUrlvarchar(1000)x5VideoNumbervarchar(50)6CreatedAtdatetime7UpdateAtdatetimeTable 2.75. Video
+
+2.2.76 CommentGroupSharePost
+
+#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupSharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3GroupSharePostIduniqueidentifierxFK4ParentCommentIduniqueidentifier5Contentntextx6ListNumbervarchar(100)7LevelCmtint8IsHidebit9CreatedAtdatetime10IsBannedbitTable 2.76. CommentGroupSharePost
+2.2.77 WorkPlace
+
+#Field NameTypeUniqueNot NullPK/FKNote1WorkPlaceIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4WorkPlaceNamevarchar(200)x5CreatedAtdatetime6UpdateAtdatetimeTable 2.77. WorkPlace
+2.2.78 GroupPostReactCount
+
+#Field NameTypeUniqueNot NullPK/FKNote1GroupPostReactCountIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupPostPhotoIduniqueidentifierxFK4GroupPostVideoIduniqueidentifierxFK5ReactCountint6CommentCountint7ShareCountintTable 2.78. GroupPostReactCount
+
+
+
+
+
+3. Detailed Design
+3.1 <Feature/Function Name1>
+3.1.1 Class Diagram
+
+3.1.2 <Sequence Diagram Name1>
+
+3.1.3 <Sequence Diagram Name2>
+3.1.4 ...
+
+3.2 <Feature/Function Name2>
+...

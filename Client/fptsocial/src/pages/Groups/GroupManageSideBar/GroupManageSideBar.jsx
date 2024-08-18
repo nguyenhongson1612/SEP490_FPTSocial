@@ -29,7 +29,7 @@ function GroupManageSideBar({ group }) {
 
   return (
     <>
-      <div className='absolute top-2 left-2 z-20'>
+      <div className='absolute top-2 left-2 z-[500]'>
         <IconAppsFilled className='size-12 p-2 bg-orangeFpt text-white cursor-pointer rounded-full' onClick={toggleDrawer(true)} />
       </div>
       <Drawer open={open} onClose={toggleDrawer(false)}>

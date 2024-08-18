@@ -1,8 +1,6 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
-
-
 export const suggestionGroup = async ({ userId, showAll = true }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/suggestionGroup?UserId=${userId}&ShowAll=${showAll}`)
   return response.data?.data
@@ -21,6 +19,14 @@ export const getListFriendInvited = async (id) => {
 }
 export const getListMemberGroup = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getlistmemberingroup?GroupId=${id}`)
+  return response.data?.data
+}
+export const getImageInGroup = async ({ groupId, page = 1 }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getImageInGroup?GroupId=${groupId}&Page=${page}`)
+  return response.data?.data
+}
+export const getVideoInGroup = async ({ groupId, page = 1 }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getVideoInGroup?GroupId=${groupId}&Page=${page}`)
   return response.data?.data
 }
 

@@ -10,6 +10,10 @@ export const getGroupPostByGroupPostId = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPostByGroupPostId?GroupPostId=${id}`)
   return response.data?.data
 }
+export const getGroupSharePostByGroupPostId = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupSharePostByGroupPostId?GroupSharePostId=${id}`)
+  return response.data?.data
+}
 export const getChildGroupPost = async (id) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getChildGroupPost?GroupPostMediaId=${id}`)
   return response.data?.data

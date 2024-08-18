@@ -31,11 +31,11 @@ export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
     else return []
   }
   const purifyConfig = {
-    ALLOWED_TAGS: ['p', 'span', 'b', 'i', 'em', 'strong', 'a', 'br'],
-    ALLOWED_ATTR: ['style', 'href', 'target'],
-    ALLOW_DATA_ATTR: false,
-    ADD_TAGS: ['span'],
-    ADD_ATTR: ['style'],
+    // ALLOWED_TAGS: ['p', 'span', 'b', 'i', 'em', 'strong', 'a', 'br'],
+    // ALLOWED_ATTR: ['style', 'href', 'target'],
+    // ALLOW_DATA_ATTR: false,
+    // ADD_TAGS: ['span'],
+    // ADD_ATTR: ['style'],
   }
   const cleanHtml = parse(DOMPurify.sanitize(html, purifyConfig))
   return cleanHtml

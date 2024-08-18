@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { uploadImage, uploadVideo } from '~/apis'
 import { singleFileValidator } from '~/utils/validators'
 import { toast } from 'react-toastify'
@@ -18,18 +18,17 @@ import { Mark } from '@tiptap/core';
 
 const BackgroundColor = Mark.create({
   name: 'backgroundColor',
-
   addAttributes() {
     return {
       color: {
         default: null,
-        parseHTML: element => element.style.backgroundColor || null,
+        parseHTML: element => element.hasAttribute('data-color') ? element.getAttribute('data-color') : null,
         renderHTML: attributes => {
           if (!attributes.color) {
             return {};
           }
           return {
-            style: `background-color: ${attributes.color}`,
+            'data-color': attributes.color,
           };
         },
       },
@@ -39,21 +38,18 @@ const BackgroundColor = Mark.create({
   parseHTML() {
     return [
       {
-        tag: 'span[style*=background-color]',
+        tag: 'mark',
       },
     ];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['span', HTMLAttributes, 0];
+    return ['mark', HTMLAttributes, 0];
   },
 });
 
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
-  console.log('🚀 ~ Tiptap ~ content:', content)
   const isEmptyComment = ((content?.replace(/<\/?[^>]+(>|$)/g, "")?.length == 0 || !content) && listMedia?.length == 0)
-
-  // console.log('🚀 ~ Tiptap ~ listMedia:', listMedia)
   const [isChoseFile, setIsChoseFile] = useState(false)
   const [isHoverMedia, setIsHoverMedia] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -85,8 +81,8 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
         confirmationText: 'Confirm',
         cancellationText: 'Cancel'
       })
+      setIsLoading((pre) => true)
 
-      setIsLoading(true)
       for (const file of files) {
         const formData = new FormData()
         formData.append('file', file)
@@ -94,7 +90,8 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
         const data = type === 'image'
           ? await uploadImage({ userId: null, data: formData })
           : await uploadVideo({ userId: null, data: formData })
-        setListMedia(prev => [...prev, { url: data.url, type }])
+
+        setListMedia(prev => [...prev, { url: data.url, type, position: prev?.length || 0 }])
       }
     } catch (error) {
       // Handle cancel or error

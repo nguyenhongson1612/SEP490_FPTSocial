@@ -5,6 +5,7 @@ import { getGroupPostByGroupId } from '~/apis/groupPostApis'
 import ListPost from '~/components/ListPost/ListPost'
 import NewPost from '~/components/Modal/NewPost/NewPost'
 import { POST_TYPES } from '~/utils/constants'
+import PostGroupDetail from './PostDetail'
 
 function GroupHomeDiscussions({ group, isPostDetail }) {
   const [filterType, setFilterType] = useState('New')
@@ -34,15 +35,15 @@ function GroupHomeDiscussions({ group, isPostDetail }) {
     <div id='list-group-post'
       className='flex flex-col items-center lg:flex-row lg:justify-center lg:items-start w-full gap-3 bg-fbWhite'>
       <div className='relative flex flex-col gap-3'>
-        {/* {
-          isPostDetail && <NewPost postType={POST_TYPES.GROUP_POST} groupId={group?.groupId} />
-        } */}
+        {
+          isPostDetail && <PostGroupDetail />
+        }
         <div>
           {
             !isPostDetail &&
             <>
               <NewPost postType={POST_TYPES.GROUP_POST} groupId={group?.groupId} />
-              <div onClick={handleClick} className='font-semibold text-blue-500 text-sm flex cursor-pointer w-fit'>
+              <div onClick={handleClick} className='font-semibold text-blue-500 text-sm flex cursor-pointer w-fit py-2'>
                 {filterType == 'New' ? 'Newest post' : 'Relative post'}<IconCaretDownFilled />
               </div>
               <Popover

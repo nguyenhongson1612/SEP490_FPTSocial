@@ -2,7 +2,7 @@ import { IconUserPlus, IconUserShare, IconUsersGroup } from '@tabler/icons-react
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-function FriendsSideBar({ isRequests, isSuggestions, isFriendList }) {
+function FriendsSideBar({ isRequests, isSuggestions, isFriendList, isSendedRequests }) {
   const { t } = useTranslation()
   return (
     <div className="max-h-[calc(100vh_-_55px)] w-[380px] flex flex-col overflow-y-auto scrollbar-none-track border-r shadow-lg">
@@ -25,6 +25,11 @@ function FriendsSideBar({ isRequests, isSuggestions, isFriendList }) {
             className={`w-full hover:text-white hover:bg-fbWhite ${isFriendList && 'text-white bg-fbWhite'} flex items-center rounded-md gap-3 p-2 cursor-pointer`}>
             <IconUsersGroup className='text-white bg-orangeFpt size-9 p-1 rounded-full' />
             <span className="font-semibold text-gray-900 ">{t('standard.friend.listFriend')}</span>
+          </Link>
+          <Link to={'/friends/sendrequests'}
+            className={`w-full hover:text-white hover:bg-fbWhite ${isSendedRequests && 'text-white bg-fbWhite'} flex items-center rounded-md gap-3 p-2 cursor-pointer`}>
+            <IconUsersGroup className='text-white bg-orangeFpt size-9 p-1 rounded-full' />
+            <span className="font-semibold text-gray-900 ">{t('standard.friend.yourRequest')}</span>
           </Link>
         </div>
       </div>

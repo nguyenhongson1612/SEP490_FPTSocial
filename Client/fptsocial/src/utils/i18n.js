@@ -1,5 +1,6 @@
 import i18n from "i18next"
 import { initReactI18next } from "react-i18next"
+import { memberJoinStatus } from '~/apis/groupApis';
 
 i18n
   .use(initReactI18next)
@@ -40,24 +41,42 @@ i18n
               request: "Friend requests",
               suggest: "Friend suggestions",
               listFriend: "Friend list",
+              yourRequest: "Your friend request",
+              noBlock: "You haven't blocked anyone :D",
               noFriend: "You have no friends",
               noRequest: "You have no friend requests",
-              noSuggest: "There are no suitable suggestions for you"
+              noSuggest: "There are no suitable suggestions for you",
+              sendMessage: "Send message",
+              unFriend: "Unfriend",
+              noYourRequest: "You're not asking to be friends with someone :D"
             },
             profile: {
               updateProfile: 'Update Your Profile',
               friend: 'Friend',
+              friend2: 'friend',
               cancelRequest: 'Cancel request',
               addFriend: 'Add friend',
               confirmRequest: 'Confirm request',
               deleteRequest: ' Delete request',
               report: 'Report',
               block: 'Block',
+              blockUser: 'Block users',
+              unblockUserMes: 'Unblock',
               posts: 'Posts',
               about: 'About',
               friends: 'Friends',
               photos: 'Photos',
               videos: 'Videos',
+              live: 'Lives in',
+              gender: 'Gender',
+              relationship: 'Relationship',
+              birthday: 'Birthday',
+              general: 'General',
+              contact: 'Contact',
+              webAffiliation: 'Web affiliations',
+              webAffiliationMes: 'Websites and social links',
+              phone: 'Phone',
+              workPlace: 'Work place',
             },
             newPost: {
               createPost: 'Create post',
@@ -108,6 +127,14 @@ i18n
               comment: 'Comment',
               share: 'Share',
               noReact: 'There have been no reactions yet!',
+            },
+            group: {
+              discus: 'Discussion',
+              member: 'Members',
+              file: 'Medias',
+              invite: 'Invite',
+              leave: 'Leave',
+              join: 'Join',
             }
           },
           sideText: {
@@ -153,24 +180,42 @@ i18n
               request: "Yêu cầu kết bạn",
               suggest: "Đề xuất bạn bè",
               listFriend: "Danh sách bạn bè",
+              yourRequest: "Yêu cầu bạn gửi",
+              noBlock: "Bạn chưa block ai cả :D",
               noFriend: "Bạn chưa có người bạn nào",
               noRequest: "Bạn chưa có yêu cầu kết bạn nào",
-              noSuggest: "Không có đề xuất nào phù hợp cho bạn"
+              noSuggest: "Không có đề xuất nào phù hợp cho bạn",
+              sendMessage: "Nhắn tin",
+              unFriend: "Huỷ kết bạn",
+              noYourRequest: "Bạn đang không yêu cầu kết bạn với ai :D"
             },
             profile: {
               updateProfile: 'Chỉnh sửa trang cá nhân',
               friend: 'Bạn bè',
+              friend2: 'bạn',
               cancelRequest: 'Hủy yêu cầu',
               addFriend: 'Thêm bạn bè',
               confirmRequest: 'Chấp nhận lời mời',
               deleteRequest: 'Xóa yêu cầu',
               report: 'Báo cáo',
               block: 'Chặn',
+              blockUser: 'Người dùng bị chặn',
+              unblockUserMes: 'Bỏ chặn',
               posts: 'Bài viết',
               about: 'Giới thiệu',
-              friends: 'Bạn bè',
+              friends: 'Bạn',
               photos: 'Ảnh',
               videos: 'Video',
+              live: 'Nơi ở',
+              gender: 'Giới tính',
+              relationship: 'Mối quan hệ',
+              birthday: 'Sinh nhật',
+              general: 'Thông tin cơ bản',
+              contact: 'Liên hệ',
+              webAffiliation: 'Liên kết ngoài',
+              webAffiliationMes: 'Các liên kết web và mạng xã hội',
+              phone: 'Phone',
+              workPlace: 'Công việc',
             },
             newPost: {
               createPost: 'Tạo bài viết',
@@ -220,6 +265,14 @@ i18n
               share: 'Chia sẻ',
               noReact: 'Chưa có lượt tương tác nào!'
             },
+            group: {
+              discus: 'Thảo luận',
+              member: 'Thành viên',
+              file: 'File phương tiện',
+              invite: 'Mời',
+              leave: 'Rời nhóm',
+              join: 'Tham gia'
+            }
           },
           sideText: {
             mutualFriend: 'bạn chung',

@@ -9,7 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Modal } from '@mui/material'
 import { getAllFriend, getAllFriendOtherProfile, getBlockedUserList, getButtonFriend, getOtherUserByUserId } from '~/apis'
 import { getOtherUserPost, getUserPostByUserId } from '~/apis/postApis'
-import { selectIsReload } from '~/redux/ui/uiSlice'
+import { selectIsReload, triggerReload } from '~/redux/ui/uiSlice'
 import { clearCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 
 function Profile() {
@@ -33,7 +33,7 @@ function Profile() {
 
   useEffect(() => {
     dispatch(clearCurrentActiveListPost())
-
+    dispatch(triggerReload())
   }, [paramUserId])
   useEffect(() => {
     if (isYourProfile) {

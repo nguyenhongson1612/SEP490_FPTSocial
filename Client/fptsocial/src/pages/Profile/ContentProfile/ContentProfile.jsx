@@ -3,7 +3,7 @@ import About from './About'
 import { Box, Tab, Tabs } from '@mui/material'
 import { IconArticle, IconFriends, IconMovie, IconPhoto, IconUserCircle } from '@tabler/icons-react'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FriendProfile from './FriendProfile'
 import { useTranslation } from 'react-i18next'
 import Photos from './Photos'
@@ -16,6 +16,9 @@ function ContentProfile({ user, blockedUserList }) {
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
+  useEffect(() => {
+    setValue('1')
+  }, [user])
 
   return (
     <div

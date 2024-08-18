@@ -30,7 +30,7 @@ const InfiniteScroll = ({
   }, [hasMore])
 
   return (
-    <div >
+    <div className='flex flex-col'>
       <div className={className}>
         {children}
       </div>

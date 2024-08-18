@@ -89,6 +89,7 @@ export const SEARCH_TYPE = {
   USER: "User",
   POST: "Post",
   AVATAR: "Avata",
+  COVER: "Cover",
 }
 
 export const ADMIN = "admin"

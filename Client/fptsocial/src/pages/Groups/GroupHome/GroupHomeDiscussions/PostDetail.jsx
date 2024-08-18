@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { commentGroupPost, commentGroupSharePost, getGroupPostByGroupPostId, getGroupPostComment, getGroupSharePostByGroupPostId, getGroupSharePostComment } from '~/apis/groupPostApis'
 import { commentPost, commentSharePost, getComment, getSharePostById, getSharePostComment, getUserPostById } from '~/apis/postApis'
 import { getAllReactByPostId, getAllReactType } from '~/apis/reactApis'
 // import Post from '~/components/ListPost/Post/Post'
@@ -24,6 +25,8 @@ import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
 
 function PostGroupDetail() {
   const { postId } = useParams()
+  const { groupId } = useParams()
+
   const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
   const isShare = searchParams.get('share')
@@ -37,29 +40,35 @@ function PostGroupDetail() {
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
   const commentFilterType = useSelector(selectCommentFilterType)
+  const navigate = useNavigate()
 
-  const postType = isShare == 0 ? POST_TYPES.PROFILE_POST : POST_TYPES.SHARE_POST
+  const postType = isShare == 0 ? POST_TYPES.GROUP_POST : POST_TYPES.GROUP_SHARE_POST
 
   let getCommentFn
   let commentFn
   let postIdParam = {}
   if (isShare == 1) {
-    getCommentFn = getSharePostComment
-    commentFn = commentSharePost
-    postIdParam = { sharePostId: postId }
+    getCommentFn = getGroupSharePostComment
+    commentFn = commentGroupSharePost
+    postIdParam = { groupSharePostId: postId }
   }
   else if (isShare == 0) {
-    commentFn = commentPost
-    getCommentFn = getComment
-    postIdParam = { userPostId: postId }
+    commentFn = commentGroupPost
+    getCommentFn = getGroupPostComment
+    postIdParam = { groupPostId: postId }
   }
 
   useEffect(() => {
     (async () => {
       getAllReactType().then(data => dispatch(addListReactType(data)))
-      const postData = await (isShare == 0 ? getUserPostById(postId) : getSharePostById(postId))
-      const postReact = await getAllReactByPostId(postId)
-      dispatch(updateCurrentActivePost({ ...postData, postReactStatus: postReact }))
+      try {
+        const postData = await (isShare == 0 ? getGroupPostByGroupPostId(postId) : getGroupSharePostByGroupPostId(postId))
+        const postReact = await getAllReactByPostId(postId)
+        dispatch(updateCurrentActivePost({ ...postData, postReactStatus: postReact }))
+      } catch (error) {
+        navigate(`/groups/${groupId}`)
+      }
+
     })()
   }, [isShowModalShare])
 
