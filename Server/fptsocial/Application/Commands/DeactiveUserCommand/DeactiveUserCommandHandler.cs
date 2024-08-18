@@ -68,14 +68,14 @@ namespace Application.Commands.DeactiveUserCommand
             /*await _context.SaveChangesAsync(cancellationToken);*/
 
             // Chỉnh avatar isUse thành false
-            var avatar = await _context.AvataPhotos
+            /*var avatar = await _context.AvataPhotos
                 .AsNoTracking()
                 .Where(x => x.UserId == user.UserId)
                 .FirstOrDefaultAsync(cancellationToken);
             if(avatar != null)
             {
                 avatar.IsUsed = false;
-            }
+            }*/
 
             // Ẩn comment
             var commentPost = await _context.CommentPosts
