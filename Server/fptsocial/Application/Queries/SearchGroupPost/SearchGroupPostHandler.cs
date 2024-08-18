@@ -133,7 +133,12 @@ namespace Application.Queries.SearchGroupPost
                                 UserStatusId = x.UserStatusId,
                             })
                             .FirstOrDefault();
-                        var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == groupPost.GroupPostId);
+
+                        var reactNum = await _context.ReactGroupPosts.CountAsync(x => x.GroupPostId == groupPost.GroupPostId);
+                        var commentNum = await _context.CommentGroupPosts.CountAsync(x => x.GroupPostId == groupPost.GroupPostId && x.IsHide != true && x.IsBanned != true);
+                        var shareNum = _context.SharePosts.Count(x => x.GroupPostId == groupPost.GroupPostId) +
+                            _context.GroupSharePosts.Count(x => x.GroupPostId == groupPost.GroupPostId);
+
                         var isReact = await _context.ReactGroupPosts
                             .Include(x => x.ReactType)
                             .FirstOrDefaultAsync(x => x.GroupPostId == groupPost.GroupPostId && x.UserId == request.UserId);
@@ -207,9 +212,9 @@ namespace Application.Queries.SearchGroupPost
                             GroupCorverImage = groupPost.Group.CoverImage,
                             ReactCount = new DTO.ReactDTO.ReactCount
                             {
-                                ReactNumber = react?.ReactCount ?? 0,
-                                CommentNumber = react?.CommentCount ?? 0,
-                                ShareNumber = react?.ShareCount ?? 0,
+                                ReactNumber = reactNum,
+                                CommentNumber = commentNum,
+                                ShareNumber = shareNum,
                                 IsReact = isReact != null ? true : false,
                                 UserReactType = isReact == null ? null : new ReactTypeCountDTO
                                 {
@@ -224,7 +229,7 @@ namespace Application.Queries.SearchGroupPost
                                     NumberReact = x.Count
                                 }).ToList()
                             },
-                            EdgeRank = GetEdgeRankAlo.GetEdgeRank(react?.ReactCount ?? 0, react?.CommentCount ?? 0, react?.ShareCount ?? 0, groupPost.CreatedAt ?? DateTime.Now)
+                            EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNum, commentNum, shareNum, groupPost.CreatedAt ?? DateTime.Now)
                         };
 
                         combine.Add(grouppost);
@@ -271,12 +276,8 @@ namespace Application.Queries.SearchGroupPost
                             .AsNoTracking()
                             .FirstOrDefault(x => x.GroupId == groupId);
 
-                        var reactNumber = _context.ReactGroupSharePosts
-                            .AsNoTracking()
-                            .Count(x => x.GroupSharePostId == sharePost.GroupSharePostId);
-                        var commentNumber = _context.CommentGroupSharePosts
-                            .AsNoTracking()
-                            .Count(x => x.GroupSharePostId == sharePost.GroupSharePostId);
+                        var reactNum = await _context.ReactGroupSharePosts.CountAsync(x => x.GroupSharePostId == sharePost.GroupSharePostId);
+                        var commentNum = await _context.CommentGroupSharePosts.CountAsync(x => x.GroupSharePostId == sharePost.GroupSharePostId && x.IsHide != true && x.IsBanned != true);
 
                         var isReact = await _context.ReactGroupSharePosts
                             .Include(x => x.ReactType)
@@ -333,11 +334,11 @@ namespace Application.Queries.SearchGroupPost
                             },
                             ReactCount = new DTO.ReactDTO.ReactCount
                             {
-                                ReactNumber = reactNumber,
-                                CommentNumber = commentNumber,
+                                ReactNumber = reactNum,
+                                CommentNumber = commentNum,
                                 ShareNumber = 0,
                             },
-                            EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNumber, commentNumber, 0, sharePost.CreateDate ?? DateTime.Now)
+                            EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNum, commentNum, 0, sharePost.CreateDate ?? DateTime.Now)
                         };
 
                         combine.Add(sharepost);
