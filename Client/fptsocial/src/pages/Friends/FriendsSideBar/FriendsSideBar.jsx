@@ -1,7 +1,9 @@
 import { IconUserPlus, IconUserShare, IconUsersGroup } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 function FriendsSideBar({ isRequests, isSuggestions, isFriendList }) {
+  const { t } = useTranslation()
   return (
     <div className="max-h-[calc(100vh_-_55px)] w-[380px] flex flex-col overflow-y-auto scrollbar-none-track border-r shadow-lg">
       <div className="p-3">
@@ -12,17 +14,17 @@ function FriendsSideBar({ isRequests, isSuggestions, isFriendList }) {
           <Link to={'/friends/requests'}
             className={`w-full hover:text-white hover:bg-fbWhite ${isRequests && 'text-white bg-fbWhite'} flex items-center rounded-md gap-3 p-2 cursor-pointer`}>
             <IconUserShare className='text-white bg-orangeFpt size-9 p-1 rounded-full' />
-            <span className="font-semibold text-gray-900 ">Friend Requests</span>
+            <span className="font-semibold text-gray-900 ">{t('standard.friend.request')}</span>
           </Link>
           <Link to={'/friends/suggestions'}
             className={`w-full hover:text-white hover:bg-fbWhite ${isSuggestions && 'text-white bg-fbWhite'} flex items-center rounded-md gap-3 p-2 cursor-pointer`}>
             <IconUserPlus className='text-white bg-orangeFpt size-9 p-1 rounded-full' />
-            <span className="font-semibold text-gray-900 ">Friend suggestions</span>
+            <span className="font-semibold text-gray-900 ">{t('standard.friend.suggest')}</span>
           </Link>
           <Link to={'/friends/list'}
             className={`w-full hover:text-white hover:bg-fbWhite ${isFriendList && 'text-white bg-fbWhite'} flex items-center rounded-md gap-3 p-2 cursor-pointer`}>
             <IconUsersGroup className='text-white bg-orangeFpt size-9 p-1 rounded-full' />
-            <span className="font-semibold text-gray-900 ">Friend list</span>
+            <span className="font-semibold text-gray-900 ">{t('standard.friend.listFriend')}</span>
           </Link>
         </div>
       </div>

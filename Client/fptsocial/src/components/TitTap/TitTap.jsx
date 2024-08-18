@@ -14,7 +14,43 @@ import { Button } from '@mui/material'
 import Toolbar from './ToolBar'
 import { useTranslation } from 'react-i18next'
 
+import { Mark } from '@tiptap/core';
+
+const BackgroundColor = Mark.create({
+  name: 'backgroundColor',
+
+  addAttributes() {
+    return {
+      color: {
+        default: null,
+        parseHTML: element => element.style.backgroundColor || null,
+        renderHTML: attributes => {
+          if (!attributes.color) {
+            return {};
+          }
+          return {
+            style: `background-color: ${attributes.color}`,
+          };
+        },
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'span[style*=background-color]',
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['span', HTMLAttributes, 0];
+  },
+});
+
 const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, actionType, editorType, handleEdit }) => {
+  console.log('🚀 ~ Tiptap ~ content:', content)
   const isEmptyComment = ((content?.replace(/<\/?[^>]+(>|$)/g, "")?.length == 0 || !content) && listMedia?.length == 0)
 
   // console.log('🚀 ~ Tiptap ~ listMedia:', listMedia)
@@ -74,6 +110,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
       StarterKit,
       Underline,
       Placeholder.configure({ emptyEditorClass: 'is-editor-empty', placeholder: t('standard.newPost.writeSt') }),
+      BackgroundColor
     ],
     editorProps: { attributes: { class: 'mb-2 text-base rounded-md outline-none', spellcheck: 'false', } },
     onUpdate: ({ editor }) => setContent(editor.getHTML())

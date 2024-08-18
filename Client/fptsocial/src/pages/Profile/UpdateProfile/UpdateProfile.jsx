@@ -15,6 +15,7 @@ import { getUserByUserId } from '~/redux/user/userSlice'
 import { IconX } from '@tabler/icons-react'
 import { DEFAULT_AVATAR } from '~/utils/constants'
 import { triggerReload } from '~/redux/ui/uiSlice'
+import { createPost } from '~/apis/postApis'
 
 function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
   const { watch, register, control, setValue, handleSubmit, formState: { errors } } = useForm({
@@ -128,11 +129,43 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
       updateUserProfile(submitData),
       updateUserChat(submitDataChat),
       { pending: 'Updating is in progress...' }
-    ).then(() => {
-      setIsOpenModalUpdateProfile(false)
-      dispatch(getUserByUserId())
-      toast.success('Account updated successfully')
-    })
+    )
+      .then(() => {
+        (async () => {
+          if (data?.avataphoto && data?.avataphoto !== user?.avataPhotos?.find(e => e.isUsed == true)?.avataPhotosUrl) {
+            await createPost({
+              "userStatusId": listStatus.find(e => e?.statusName == "Public")?.userStatusId,
+              "isAvataPost": true,
+              "content": "",
+              "photos": [
+                {
+                  "photoUrl": data?.avataphoto,
+                  "position": 0
+                }
+              ],
+            })
+          }
+          if (data?.coverImage && data?.coverImage !== user?.coverImage) {
+            await createPost({
+              "userStatusId": listStatus.find(e => e?.statusName == "Public")?.userStatusId,
+              "isCoverPhotoPost": true,
+              "content": "",
+              "photos": [
+                {
+                  "photoUrl": data?.coverImage,
+                  "position": 0
+                }
+              ],
+            })
+          }
+        })()
+      })
+      .then(() => {
+        setIsOpenModalUpdateProfile(false)
+        dispatch(getUserByUserId())
+        dispatch(triggerReload())
+        toast.success('Account updated successfully')
+      })
   }
 
   return (

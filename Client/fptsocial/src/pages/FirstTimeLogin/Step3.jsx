@@ -6,7 +6,7 @@ import { handleCoverImg } from '~/utils/formatters'
 import { singleFileValidator } from '~/utils/validators'
 
 function Step3({ register, setValue, getValues, watch }) {
-  console.log(handleCoverImg(watch('coverImage')));
+  // console.log(handleCoverImg(watch('coverImage')));
 
   const confirmFile = useConfirm()
 
