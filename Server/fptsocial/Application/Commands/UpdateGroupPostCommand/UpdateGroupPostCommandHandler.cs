@@ -168,7 +168,7 @@ namespace Application.Commands.UpdateGroupPostCommand
             if (haveBadWord.Any())
             {
                 GroupPost.IsBanned = true;
-                GroupPost.Content = MarkBannedWordsInContent(GroupPost.Content, haveBadWord);
+                GroupPost.Content = _checkContent.MarkBannedWordsInContent(GroupPost.Content, haveBadWord);
             }
 
             Domain.CommandModels.GroupPost gp1 = new Domain.CommandModels.GroupPost
@@ -403,17 +403,5 @@ namespace Application.Commands.UpdateGroupPostCommand
 
             return videoEntity.GroupVideoId;
         }
-
-        public string MarkBannedWordsInContent(string content, List<BannedWord> bannedWords)
-        {
-            foreach (var bannedWord in bannedWords)
-            {
-                string wordPattern = $"\\b{bannedWord.Word}\\b";
-                string replacement = $"<span style='background-color: yellow;'>{bannedWord.Word}</span>";
-                content = System.Text.RegularExpressions.Regex.Replace(content, wordPattern, replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-            return content;
-        }
-
     }
 }

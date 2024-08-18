@@ -163,7 +163,7 @@ namespace Application.Commands.ShareGroupPostCommand
             if (haveBadWord.Any())
             {
                 sharePost.IsBanned = true;
-                sharePost.Content = MarkBannedWordsInContent(sharePost.Content, haveBadWord);
+                sharePost.Content = _checkContent.MarkBannedWordsInContent(sharePost.Content, haveBadWord);
                 await _context.SaveChangesAsync();
             }
 
@@ -177,17 +177,6 @@ namespace Application.Commands.ShareGroupPostCommand
             {
                 return Result<ShareGroupPostCommandResult>.Success(result);
             }
-        }
-
-        public string MarkBannedWordsInContent(string content, List<BannedWord> bannedWords)
-        {
-            foreach (var bannedWord in bannedWords)
-            {
-                string wordPattern = $"\\b{bannedWord.Word}\\b";
-                string replacement = $"<span style='background-color: yellow;'>{bannedWord.Word}</span>";
-                content = System.Text.RegularExpressions.Regex.Replace(content, wordPattern, replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-            return content;
         }
     }
 
