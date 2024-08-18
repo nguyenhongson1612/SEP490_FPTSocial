@@ -137,7 +137,7 @@ namespace Application.Queries.GetImageByUserId
         private List<UserPhotoDTO> GetImagePost(Guid userId, string relationshipStatus, int Page)
         {
             var postPhotos = _context.UserPostPhotos
-                .Where(x => x.UserPost.UserId == userId && x.IsHide != true && x.IsBanned != true
+                .Where(x => x.UserPost.UserId == userId && x.IsHide != true && x.IsBanned != true 
                             && (relationshipStatus == "Owner" ||
                                 (relationshipStatus == "Friend" && (x.UserPost.UserStatus.StatusName == "Friend" || x.UserPost.UserStatus.StatusName == "Public")) ||
                                 (relationshipStatus == "Stranger" && x.UserPost.UserStatus.StatusName == "Public")))
@@ -155,7 +155,7 @@ namespace Application.Queries.GetImageByUserId
                 .ToList();
 
             var postPhotos2 = _context.UserPosts
-                .Where(x => x.UserId == userId && x.IsHide != true && x.IsBanned != true && !string.IsNullOrEmpty(x.PhotoId.ToString())
+                .Where(x => x.UserId == userId && x.IsHide != true && x.IsBanned != true && !string.IsNullOrEmpty(x.PhotoId.ToString()) && x.IsAvataPost != true && x.IsCoverPhotoPost != true
                             && (relationshipStatus == "Owner" ||
                                 (relationshipStatus == "Friend" && (x.UserStatus.StatusName == "Friend" || x.UserStatus.StatusName == "Public")) ||
                                 (relationshipStatus == "Stranger" && x.UserStatus.StatusName == "Public")))
