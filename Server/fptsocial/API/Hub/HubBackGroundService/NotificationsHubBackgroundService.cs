@@ -7,6 +7,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Extensions;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -58,8 +59,8 @@ namespace API.Hub
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var rawToken = _httpContext.Request.Query["access_token"];
-
+            //var rawToken = _httpContext.Request.Query["access_token"];
+            var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
                 (!path.StartsWithSegments("/notificationsHub")))
@@ -149,8 +150,8 @@ namespace API.Hub
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var rawToken = _httpContext.Request.Query["access_token"];
-
+            //var rawToken = _httpContext.Request.Query["access_token"];
+            var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
                 (!path.StartsWithSegments("/notificationsHub")))
