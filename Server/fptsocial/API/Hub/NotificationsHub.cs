@@ -54,7 +54,8 @@ namespace Application.Hub
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var rawToken = _httpContext.Request.Query["access_token"];
+            //var rawToken = _httpContext.Request.Query["access_token"];
+            var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
 
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
@@ -83,8 +84,8 @@ namespace Application.Hub
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var rawToken = _httpContext.Request.Query["access_token"];
-
+            //var rawToken = _httpContext.Request.Query["access_token"];
+            var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
                 (!path.StartsWithSegments("/notificationsHub")))
@@ -108,8 +109,8 @@ namespace Application.Hub
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var rawToken = _httpContext.Request.Query["access_token"];
-
+            //var rawToken = _httpContext.Request.Query["access_token"];
+            var rawToken = _httpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var path = _httpContext.Request.Path;
             if (string.IsNullOrEmpty(rawToken) &&
                 (!path.StartsWithSegments("/notificationsHub")))
