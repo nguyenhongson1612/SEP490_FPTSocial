@@ -39,11 +39,11 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             var getstatus = await _context.UserStatuses.ToListAsync();
             var listfriend = await _context.Friends
               .Include(x => x.FriendNavigation)
-              .Where(x => (x.UserId == request.UserId && x.Confirm == true)).ToListAsync();
+              .Where(x => (x.UserId == request.ViewUserId && x.Confirm == true)).ToListAsync();
 
             var listfriendrq = await _context.Friends
                 .Include(x => x.User)
-                .Where(x => (x.FriendId == request.UserId && x.Confirm == true)).ToListAsync();
+                .Where(x => (x.FriendId == request.ViewUserId && x.Confirm == true)).ToListAsync();
             var list = new List<Domain.QueryModels.Friend>();
             list.AddRange(listfriend);
             list.AddRange(listfriendrq);
