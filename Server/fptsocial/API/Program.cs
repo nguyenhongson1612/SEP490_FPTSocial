@@ -40,8 +40,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
         builder => builder
-        .WithOrigins("https://localhost:3000", "http://14.225.210.40:3000",
-        "http://14.225.210.40:3000", "http://localhost:3000")
+        .WithOrigins("https://api.fptsocial.com","https://localhost:3000", "http://14.225.210.40:3000",
+        "http://14.225.210.40:3000", "http://localhost:3000",
+        "https://fptsocial.com", "http://localhost:8443")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

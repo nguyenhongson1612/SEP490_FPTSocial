@@ -1,4 +1,5 @@
-﻿using Application.Commands.BlockUser;
+﻿using Application.Commands.ActiveUserCommand;
+using Application.Commands.BlockUser;
 using Application.Commands.CancleBlockUser;
 using Application.Commands.DeactiveUserCommand;
 using Application.Commands.GetUserProfile;
@@ -7,6 +8,7 @@ using Application.Commands.UpdateUserCommand;
 using Application.Queries.CheckUserExist;
 using Application.Queries.GetAllFriend;
 using Application.Queries.GetAllFriendOtherProfiel;
+using Application.Queries.GetAllFriendRequested;
 using Application.Queries.GetAllRequestFriend;
 using Application.Queries.GetButtonFriend;
 using Application.Queries.GetButtonSendMessage;
@@ -452,8 +454,8 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("deactiveUserByUserId")]
-        public async Task<IActionResult> DeactiveUserByUserId([FromQuery] DeactiveUserCommand command)
+        [Route("activeUserByUserId")]
+        public async Task<IActionResult> ActiveUserByUserId([FromQuery] ActiveUserCommand command)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
@@ -468,6 +470,27 @@ namespace API.Controllers
             }
             command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
             var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getallfriendrequested")]
+        public async Task<IActionResult> GetAllFriendRequested()
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var input = new GetAllFriendRequestQuery();
+            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }

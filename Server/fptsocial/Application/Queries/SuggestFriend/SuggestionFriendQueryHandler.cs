@@ -42,7 +42,7 @@ namespace Application.Queries.SuggestFriend
                 .ToListAsync();
 
             var result = new SuggestionFriendQueryResult();
-            if (userFriends?.Count > 0)
+            if (userFriends?.Count > 10)
             {
                 var potentialFriends = new Dictionary<Guid, (int mutualFriends, int? reactCount)>();
                 foreach (var friendId in userFriends)

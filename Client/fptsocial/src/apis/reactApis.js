@@ -11,6 +11,11 @@ export const getReactPostDetail = async ({ postType, postId, reactName, page = 1
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getReactPostDetail?PostType=${postType}&PostId=${postId}&ReactName=${reactName}&PageNumber=${page}&UserId=${userId}`)
   return response.data?.data
 }
+export const getReactCommentPostDetail = async ({ commentType, commentId, reactName, page = 1, userId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getReactCommentPostDetail?CommentType=${commentType}&CommentId=${commentId}&ReactName=${reactName}&PageNumber=${page}&UserId=${userId}`)
+  return response.data?.data
+}
+
 export const getAllReactByPostId = async (id, page = 1) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserReact/getAllReactByPostId?UserPostId=${id}&PageNumber=${page}`)
   return response.data?.data

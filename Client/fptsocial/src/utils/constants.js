@@ -3,13 +3,19 @@ let frontendRoot = ""
 let clientId = ""
 // dev environment
 if (process.env.BUILD_MODE === "dev") {
-  apiRoot = "https://14.225.210.40:44329"
+  apiRoot = "https://localhost:44329"
   frontendRoot = "http://localhost:3000"
   clientId = "societe-front-end-dev"
 }
+// dev environment preview
+if (process.env.BUILD_MODE === "dev_preview") {
+  apiRoot = "https://api.fptsocial.com"
+  frontendRoot = "https://fptsocial.com"
+  clientId = "societe-front-end"
+}
 // deploy environment
 if (process.env.BUILD_MODE === "production") {
-  apiRoot = "https://14.225.210.40:44329"
+  apiRoot = "https://api.fptsocial.com"
   frontendRoot = "https://14.225.210.40:3000"
   clientId = "societe-front-end"
 }

@@ -1,9 +1,13 @@
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
 import { uploadImage } from '~/apis'
+import { DEFAULT_AVATAR } from '~/utils/constants'
+import { handleCoverImg } from '~/utils/formatters'
 import { singleFileValidator } from '~/utils/validators'
 
 function Step3({ register, setValue, getValues, watch }) {
+  // console.log(handleCoverImg(watch('coverImage')));
+
   const confirmFile = useConfirm()
 
   const handleUploadFile = (e, type) => {
@@ -38,10 +42,9 @@ function Step3({ register, setValue, getValues, watch }) {
             <div className='flex justify-between items-center '>
               <span className='text-xl font-bold'>Avatar</span>
               <input type='file' id='avataphoto' className='hidden' accept="image/*"
-                {...register('avataphoto', {
-                  onChange: (e) => handleUploadFile(e, 'avatar')
-                })}
+                onChange={(e) => handleUploadFile(e, 'avatar')}
               />
+              <input type='text' className='hidden' {...register('avataphoto')} />
               <label htmlFor='avataphoto' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
             </div>
             <div className='flex justify-center items-center pt-2'>
@@ -59,21 +62,21 @@ function Step3({ register, setValue, getValues, watch }) {
             <div className='flex justify-between items-center '>
               <span className='text-xl font-bold'>Cover </span>
               <input type='file' id='coverImage' className='hidden' accept="image/*"
-                {...register('coverImage', {
-                  onChange: (e) => handleUploadFile(e, 'cover')
-                })
-                } />
+                onChange={(e) => handleUploadFile(e, 'cover')} />
+
+              <input type='text' className='hidden' {...register('coverImage')} />
               <label htmlFor='coverImage' className='text-white px-4 py-2 rounded-md cursor-pointer bg-blue-500 hover:bg-blue-700'>Upload file</label>
             </div>
             <div className='flex justify-center items-center pt-2'>
               <div id='holderCover'
-                className="w-full lg:w-[940px] aspect-[74/27] rounded-md"
+                className="w-full lg:w-[940px] aspect-[74/27] rounded-md object-contain"
+                style={handleCoverImg(watch('coverImage'))}
               >
-                <img
+                {/* <img
                   id="holderAvatar"
                   src={watch('coverImage')}
                   className="w-full lg:w-[940px] aspect-[74/27] rounded-md object-cover"
-                />
+                /> */}
               </div>
             </div>
           </div>

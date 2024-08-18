@@ -1,5 +1,5 @@
 import { Menu, MenuItem, Popover } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -20,6 +20,7 @@ import { useConfirm } from 'material-ui-confirm'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { useTranslation } from 'react-i18next'
+import CommentReactDetail from './CommentReactDetail'
 
 function Comment({ comment, postType }) {
   const currentActivePost = useSelector(selectCurrentActivePost)
@@ -264,6 +265,16 @@ function Comment({ comment, postType }) {
       setContent('')
     })()
   }
+
+  const [open3, setOpen3] = useState(false)
+  const anchorRef = useRef(null)
+
+  const handleClick3 = () => {
+    setOpen3(true)
+  }
+  const handleClose3 = () => {
+    setOpen3(false)
+  }
   return (
     <div className={`${comment?.level !== 1 && 'pl-[15%] mt-3'} `}>
       <div className='flex gap-1'>
@@ -319,10 +330,35 @@ function Comment({ comment, postType }) {
                   </div>
                 </div>
                 <span id='comment-filter' className='font-semibold cursor-pointer' onClick={handleClick}>{t('standard.comment.reply')}</span>
-                <span className={`font-semibold cursor-pointer flex items-center gap-[1px] ${(listCommentReact?.sumOfReact ?? 0) == 0 && 'invisible'}`}>
-                  <img className='size-4 cursor-pointer' src={currentReact?.reactTypeName?.toLowerCase() == 'like' ? likeEmoji : angryEmoji} />
+                <span className={`font-semibold hover:underline cursor-pointer flex items-center gap-[1px] ${(listCommentReact?.sumOfReact ?? 0) == 0 && 'invisible'}`}
+                  ref={anchorRef} onClick={handleClick3}
+                >
+                  {
+                    listCommentReact?.listReact?.sort((a, b) => b?.numberReact - a?.numberReact)?.slice(0, 2)?.map((react, i) => {
+                      if (react?.numberReact > 0) {
+                        if (react?.reactTypeName.toLowerCase() == 'like')
+                          return <img key={i} className={`size-5 ${i != 0 ? '-ml-2' : 'z-10'} rounded-full outline outline-2 outline-white`} src={likeEmoji} />
+                        else return <img key={i} className={`size-5 ${i != 0 ? '-ml-2' : 'z-10'} rounded-full outline outline-2 outline-white`} src={angryEmoji} />
+                      }
+                    })
+                  }
                   {listCommentReact?.sumOfReact}
                 </span>
+                <Popover
+                  open={open3}
+                  anchorEl={anchorRef.current}
+                  onClose={handleClose3}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                >
+                  <CommentReactDetail comment={comment} postType={postType} />
+                </Popover>
                 <Popover
                   id={id}
                   open={open}

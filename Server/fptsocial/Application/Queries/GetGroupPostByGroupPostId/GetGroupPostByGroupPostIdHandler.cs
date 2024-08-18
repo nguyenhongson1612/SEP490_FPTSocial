@@ -98,7 +98,11 @@ namespace Application.Queries.GetGroupPostByGroupPostId
 
             var avt = _context.AvataPhotos.FirstOrDefault(x => x.UserId == groupPost.UserId && x.IsUsed == true);
             var user = _context.UserProfiles.FirstOrDefault(x => x.UserId == groupPost.UserId);
-            var react = _context.GroupPostReactCounts.FirstOrDefault(x => x.GroupPostId == groupPost.GroupPostId);
+
+            var reactNum = await _context.ReactGroupPosts.CountAsync(x => x.GroupPostId == groupPost.GroupPostId);
+            var commentNum = await _context.CommentGroupPosts.CountAsync(x => x.GroupPostId == groupPost.GroupPostId && x.IsHide != true && x.IsBanned != true);
+            var shareNum = _context.SharePosts.Count(x => x.GroupPostId == groupPost.GroupPostId) +
+                _context.GroupSharePosts.Count(x => x.GroupPostId == groupPost.GroupPostId);
 
             var isReact = await _context.ReactGroupPosts
                     .AsNoTracking()
@@ -188,9 +192,9 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                 GroupCorverImage = groupPost.Group?.CoverImage,
                 ReactCount = new ReactCount
                 {
-                    ReactNumber = react?.ReactCount ?? 0,
-                    CommentNumber = react?.CommentCount ?? 0,
-                    ShareNumber = react?.ShareCount ?? 0,
+                    ReactNumber = reactNum,
+                    CommentNumber = commentNum,
+                    ShareNumber = shareNum,
                     IsReact = isReact != null ? true : false,
                     UserReactType = isReact == null ? null : new ReactTypeCountDTO
                     {

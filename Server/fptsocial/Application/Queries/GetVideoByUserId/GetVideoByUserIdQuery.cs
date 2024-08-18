@@ -10,5 +10,7 @@ namespace Application.Queries.GetVideoByUserId
     public class GetVideoByUserIdQuery : IQuery<GetVideoByUserIdQueryResult>
     {
         public Guid UserId { get; set; }
+        public Guid StrangerId { get; set; }
+        public int Page {  get; set; }
     }
 }

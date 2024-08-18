@@ -2,9 +2,12 @@ import { IconMessage } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getAllFriend } from '~/apis'
+import NoDataMessage from '../NoDataMessage'
+import { useTranslation } from 'react-i18next'
 
 function FriendList() {
   const [listFriend, setListFriend] = useState([])
+  const { t } = useTranslation()
 
   useEffect(() => {
     getAllFriend().then(data => setListFriend(data?.allFriend))
@@ -14,7 +17,7 @@ function FriendList() {
     <div className='w-full'>
       <div className='p-4'>
         <div className='mb-4'>
-          <span className='text-xl font-bold'>All friends</span>
+          <span className='text-xl font-bold'>{t('standard.friend.listFriend')}</span>
         </div>
         <div className='grid grid-cols-12 gap-x-2'>
           {
@@ -41,6 +44,10 @@ function FriendList() {
             ))
           }
         </div>
+        {
+          listFriend?.length == 0 &&
+          <NoDataMessage message={t('standard.friend.noFriend')} />
+        }
       </div>
 
     </div>

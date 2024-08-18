@@ -1,8 +1,21 @@
 import FPTUen from '~/assets/img/FPTUen.png'
 import { IconArrowRight } from '@tabler/icons-react';
+import { useAuth } from 'oidc-react';
+import { toast } from 'react-toastify';
 
 
 function Step0({ handleNext }) {
+
+  const { signOutRedirect } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await signOutRedirect()
+    } catch (error) {
+      toast.error('Error during logout')
+    }
+  }
+
   return <div className='grid grid-cols-12 h-screen w-screen'>
     <div className='img-bg col-span-12 lg:col-span-8 min-h-[10rem]'></div>
     <div className='col-span-12 lg:col-span-4'>
@@ -26,6 +39,9 @@ function Step0({ handleNext }) {
             className='text-white bg-orangeFpt py-2 w-full xs:w-1/2 lg:w-full flex justify-center items-center rounded-md font-bold cursor-pointer'
             onClick={handleNext}
           ><span>Update your profile</span><IconArrowRight className='text-2xl' /></div>
+        </div>
+        <div onClick={handleLogout} className='flex flex-col items-center justify-center gap-2 w-full h-full lg:mt-auto cursor-pointer'>
+          <span className='font-bold text-blue-600'>Log with another account?</span>
         </div>
       </div>
     </div>

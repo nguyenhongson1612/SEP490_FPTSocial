@@ -88,6 +88,23 @@ function NewPost({ postType, groupId }) {
       setContent(null)
       dispatch(triggerReload())
       toast.success('Posted!')
+    }).catch((error) => {
+      if (error?.response?.data?.statusCode == "UP01") {
+        toast.warn('Your post contains sensitive words ! Please check the banned posts on your profile page !', {
+          position: "top-right",
+          autoClose: false,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        })
+        dispatch(clearAndHireCurrentActivePost())
+        setListMedia([])
+        setContent(null)
+        dispatch(triggerReload())
+      }
     })
   }
 

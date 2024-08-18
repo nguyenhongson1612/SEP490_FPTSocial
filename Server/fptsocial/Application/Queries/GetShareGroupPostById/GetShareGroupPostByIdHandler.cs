@@ -161,7 +161,7 @@ namespace Application.Queries.GetShareGroupPostById
 
             var commentGroupShareCounts = await _context.CommentGroupSharePosts
                 .AsNoTracking()
-                .CountAsync(c => c.GroupSharePostId == request.GroupSharePostId && c.IsHide != true);
+                .CountAsync(c => c.GroupSharePostId == request.GroupSharePostId && c.IsHide != true && c.IsBanned != true);
 
             var isReact = await _context.ReactGroupSharePosts
                     .Include(x => x.ReactType)

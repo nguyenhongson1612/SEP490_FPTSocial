@@ -21,6 +21,10 @@ export const getAllPost = async ({ page, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getpost?Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }
+export const getBannedPostByUserId = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getBannedPostByUserId`)
+  return response.data?.data
+}
 
 export const getComment = async (id, type = COMMENT_FILTER_TYPE.NEW) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getComment?UserPostId=${id}&Type=${type}`)

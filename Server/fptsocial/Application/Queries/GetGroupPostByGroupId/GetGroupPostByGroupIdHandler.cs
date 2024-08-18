@@ -118,11 +118,6 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .Where(ap => groupPosts.Select(gp => gp.UserId).Contains(ap.UserId) && !blockUserList.Contains(ap.UserId) && ap.IsUsed)
                 .ToListAsync(cancellationToken);
 
-            var reactCounts = await _context.GroupPostReactCounts
-                .AsNoTracking()
-                .Where(r => groupPostIds.Contains((Guid)r.GroupPostId))
-                .ToListAsync(cancellationToken);
-
             var sharePosts = await _context.GroupSharePosts
                 .AsNoTracking()
                 .Include(x => x.Group)
@@ -180,19 +175,6 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .Where(g => groupIds.Contains(g.GroupId))
                 .ToListAsync(cancellationToken);
 
-            var reactGroupShareCounts = await _context.ReactGroupSharePosts
-                .AsNoTracking()
-                .GroupBy(r => r.GroupSharePostId)
-                .Select(g => new { GroupSharePostId = g.Key, ReactCount = g.Count() })
-                .ToListAsync(cancellationToken);
-
-            var commentGroupShareCounts = await _context.CommentGroupSharePosts
-                .AsNoTracking()
-                .Where(c => c.IsHide != true)
-                .GroupBy(c => c.GroupSharePostId)
-                .Select(g => new { GroupSharePostId = g.Key, CommentCount = g.Count() })
-                .ToListAsync(cancellationToken);
-
             // Tạo danh sách kết quả
             var combine = new List<GetGroupPostByGroupIdDTO>();
 
@@ -200,7 +182,11 @@ namespace Application.Queries.GetGroupPostByGroupId
             {
                 var userProfile = userProfiles.FirstOrDefault(up => up.UserId == item.UserId);
                 var userAvatar = avatarPhotos.FirstOrDefault(ap => ap.UserId == item.UserId);
-                var react = reactCounts.FirstOrDefault(r => r.GroupPostId == item.GroupPostId);
+
+                var reactNum = await _context.ReactGroupPosts.CountAsync(x => x.GroupPostId == item.GroupPostId);
+                var commentNum = await _context.CommentGroupPosts.CountAsync(x => x.GroupPostId == item.GroupPostId && x.IsHide != true && x.IsBanned != true);
+                var shareNum =  _context.SharePosts.Count(x => x.GroupPostId == item.GroupPostId) +
+                    _context.GroupSharePosts.Count(x => x.GroupPostId == item.GroupPostId);
 
                 var isReact = await _context.ReactGroupPosts
                     .Include(x => x.ReactType)
@@ -275,9 +261,9 @@ namespace Application.Queries.GetGroupPostByGroupId
                     GroupCorverImage = item.Group.CoverImage,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = react?.ReactCount ?? 0,
-                        CommentNumber = react?.CommentCount ?? 0,
-                        ShareNumber = react?.ShareCount ?? 0,
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
+                        ShareNumber = shareNum,
                         IsReact = isReact != null ? true : false,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO
                         {
@@ -292,7 +278,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                             NumberReact = x.Count
                         }).ToList()
                     },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(react?.ReactCount ?? 0, react?.CommentCount ?? 0, react?.ShareCount ?? 0, item.CreatedAt ?? DateTime.Now)
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNum, commentNum, shareNum, item.CreatedAt ?? DateTime.Now)
                 };
 
                 combine.Add(groupPost);
@@ -305,8 +291,8 @@ namespace Application.Queries.GetGroupPostByGroupId
                 var userShareProfile = userShareProfiles.FirstOrDefault(up => up.UserId == item.UserSharedId);
                 var avatarShare = avatarSharePhotos.FirstOrDefault(ap => ap.UserId == item.UserSharedId);
 
-                var reactCount = reactGroupShareCounts.FirstOrDefault(r => r.GroupSharePostId == item.GroupSharePostId)?.ReactCount ?? 0;
-                var commentCount = commentGroupShareCounts.FirstOrDefault(c => c.GroupSharePostId == item.GroupSharePostId)?.CommentCount ?? 0;
+                var reactNum = await _context.ReactGroupSharePosts.CountAsync(x => x.GroupSharePostId == item.GroupSharePostId);
+                var commentNum = await _context.CommentGroupSharePosts.CountAsync(x => x.GroupSharePostId == item.GroupSharePostId && x.IsHide != true && x.IsBanned != true);
 
                 var groupPost = groupPostsForShare.FirstOrDefault(gp => gp.GroupPostId == item.GroupPostId);
                 var group = groups.FirstOrDefault(g => g.GroupId == groupPost?.GroupId);
@@ -370,8 +356,8 @@ namespace Application.Queries.GetGroupPostByGroupId
                     GroupCorverImage = item.Group.CoverImage,
                     ReactCount = new DTO.ReactDTO.ReactCount
                     {
-                        ReactNumber = reactCount,
-                        CommentNumber = commentCount,
+                        ReactNumber = reactNum,
+                        CommentNumber = commentNum,
                         ShareNumber = 0,
                         IsReact = isReact != null ? true : false,
                         UserReactType = isReact == null ? null : new ReactTypeCountDTO
@@ -387,7 +373,7 @@ namespace Application.Queries.GetGroupPostByGroupId
                             NumberReact = x.Count
                         }).ToList()
                     },
-                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactCount, commentCount, 0, item.CreateDate ?? DateTime.Now)
+                    EdgeRank = GetEdgeRankAlo.GetEdgeRank(reactNum, commentNum, 0, item.CreateDate ?? DateTime.Now)
                 };
 
                 combine.Add(groupSharePost);

@@ -67,13 +67,13 @@ namespace Application.Queries.GetAllFriend
                     {
                         var otherfriend = _context.Friends.Where(x => (x.UserId == friend.UserId && x.Confirm == true)
                                                         || (x.FriendId == friend.UserId && x.Confirm == true)).ToList();
-                        var mutualfriend = otherfriend.Intersect(list);
+                        var mutualfriend = otherfriend.Intersect(list).ToList();
                         var frienddto = new GetAllFriendDTO
                         {
                             FriendId = friend.UserId,
                             FriendName = friend.FirstName + " " + friend.LastName,
                             ReactCount = listreact[friend.UserId],
-                            MutualFriends = mutualfriend.Count(),
+                            MutualFriends = mutualfriend.Count() - 1,
                         };
                         if (friend.AvataPhotos.Count > 0)
                         {

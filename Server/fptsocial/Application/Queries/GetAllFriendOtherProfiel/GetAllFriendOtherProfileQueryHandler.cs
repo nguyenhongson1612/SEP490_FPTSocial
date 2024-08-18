@@ -35,15 +35,18 @@ namespace Application.Queries.GetAllFriendOtherProfiel
             var getuser = await _context.UserProfiles
                                 .Include(x => x.UserSettings)
                                 .FirstOrDefaultAsync(x => x.UserId == request.ViewUserId);
-            var listmyfriend = await _context.Friends.Include(x => x.FriendNavigation).Where(x => x.UserId == request.UserId && x.Confirm == true).ToListAsync();
+            var listmyfriend = await _context.Friends
+                .Include(x => x.FriendNavigation)
+                .Where(x => (x.UserId == request.UserId && x.Confirm == true) 
+                ||(x.FriendId == request.UserId && x.Confirm == true)).ToListAsync();
             var getstatus = await _context.UserStatuses.ToListAsync();
             var listfriend = await _context.Friends
               .Include(x => x.FriendNavigation)
-              .Where(x => (x.UserId == request.UserId && x.Confirm == true)).ToListAsync();
+              .Where(x => (x.UserId == request.ViewUserId && x.Confirm == true)).ToListAsync();
 
             var listfriendrq = await _context.Friends
                 .Include(x => x.User)
-                .Where(x => (x.FriendId == request.UserId && x.Confirm == true)).ToListAsync();
+                .Where(x => (x.FriendId == request.ViewUserId && x.Confirm == true)).ToListAsync();
             var list = new List<Domain.QueryModels.Friend>();
             list.AddRange(listfriend);
             list.AddRange(listfriendrq);
@@ -89,8 +92,10 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                 {
                    if(friend.IsActive == true)
                     {
-                        var otherfriend = _context.Friends.Where(x => x.UserId == friend.UserId && x.Confirm == true).ToList();
-                        var mutualfriend = otherfriend.Intersect(list);
+                        var otherfriend = _context.Friends
+                            .Where(x => (x.UserId == friend.UserId && x.Confirm == true)
+                            ||(x.FriendId == friend.UserId && x.Confirm == true)).ToList();
+                        var mutualfriend = otherfriend.Intersect(listmyfriend);
                         var frienddto = new GetAllFriendDTO
                         {
                             FriendId = friend.UserId,
@@ -98,6 +103,10 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                             ReactCount = listreact[friend.UserId],
                             MutualFriends = mutualfriend.Count()
                         };
+                        if(friend.UserId == request.UserId)
+                        {
+                            frienddto.MutualFriends = 0;
+                        }
                         if (friend.AvataPhotos.Count > 0)
                         {
                             frienddto.Avata = friend.AvataPhotos.FirstOrDefault(x => x.IsUsed == true).AvataPhotosUrl;
@@ -106,6 +115,7 @@ namespace Application.Queries.GetAllFriendOtherProfiel
                     }
                 }
                 result.AllFriend.OrderByDescending(x => x.ReactCount).OrderByDescending(x => x.MutualFriends);
+                result.Count = result.AllFriend.Count;
             }
             else
             {

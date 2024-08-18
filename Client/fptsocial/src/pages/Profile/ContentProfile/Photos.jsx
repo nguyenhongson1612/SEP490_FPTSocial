@@ -53,7 +53,7 @@ function Photos({ user }) {
             listPhotos?.map((e, i) => (
               <div
                 onClick={() => handleLinkTo(e)} key={i} className='col-span-12 xs:col-span-6 md:col-span-4 lg:col-span-3 cursor-pointer'>
-                <img src={e?.photoUrl} className='object-cover h-full rounded-md border' />
+                <img src={e?.photoUrl} className='object-cover h-full rounded-md border w-full' />
               </div>
             ))
           }

@@ -239,7 +239,7 @@ namespace Application.Queries.GetReactCommentDetail
                     result.ListUserReact = listGroupVideoReact;
                     break;
 
-                case "UserSharePost":
+                case "CommentUserSharePost":
                     var listUserShareReact = await (from react in _context.ReactSharePostComments
                                                     join avata in _context.AvataPhotos on react.UserId equals avata.UserId into avataGroup
                                                     from avata in avataGroup.Where(x => x.IsUsed == true).DefaultIfEmpty() // Left join

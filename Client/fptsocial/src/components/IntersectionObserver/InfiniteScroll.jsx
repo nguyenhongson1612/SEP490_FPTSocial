@@ -13,15 +13,14 @@ const InfiniteScroll = ({
   useEffect(() => {
     if (hasMore) {
       const observer = new IntersectionObserver((entries) => {
+        // console.log(entries[0].isIntersecting);
         if (entries[0].isIntersecting) {
           hasMore && fetchMore()
         }
       })
-
       if (pageEndRef.current) {
         observer.observe(pageEndRef.current)
       }
-
       return () => {
         if (pageEndRef.current) {
           observer.unobserve(pageEndRef.current)
@@ -31,8 +30,10 @@ const InfiniteScroll = ({
   }, [hasMore])
 
   return (
-    <div className={className}>
-      {children}
+    <div >
+      <div className={className}>
+        {children}
+      </div>
       <div ref={pageEndRef} className='my-4 flex justify-center'>
         {hasMore ? <div className=''><PageLoadingSpinner /></div>
           : <div className='font-semibold text-orangeFpt flex '>
@@ -40,7 +41,6 @@ const InfiniteScroll = ({
           </div>
         }
       </div>
-
     </div>
   )
 }

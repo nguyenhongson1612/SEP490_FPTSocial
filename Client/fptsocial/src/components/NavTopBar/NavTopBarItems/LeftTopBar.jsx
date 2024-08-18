@@ -1,19 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import FPTUen from '~/assets/img/FPTUen.png'
 import { IconCaretLeftFilled, IconSearch } from '@tabler/icons-react'
 import { searchAll } from '~/apis'
 import { useDebounceFn } from '~/customHooks/useDebounceFn'
 import UserAvatar from '~/components/UI/UserAvatar'
 import GroupAvatar from '~/components/UI/GroupAvatar'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import { useTranslation } from 'react-i18next'
 
 function LeftTopBar() {
   const [isSearch, setIsSearch] = useState(false)
+  const { t } = useTranslation()
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = searchParams.get('q')
   // const [searchHistoryData, setSearchHistoryData] = useState([])
   const [searchData, setSearchData] = useState([])
   const refModal = useRef()
   const checkClickOutSide = (e) => {
-    if (isSearch && !refModal.current.contains(e.target)) setIsSearch(!isSearch)
+    if (isSearch && !refModal.current.contains(e.target)) {
+      setIsSearch(!isSearch)
+    }
   }
 
   useEffect(() => {
@@ -35,15 +44,15 @@ function LeftTopBar() {
 
     // const searchPath = `?${createSearchParams({ 'q[title]': searchValue })}`
 
-    // setLoading(true)
+    setIsLoading(true)
     searchAll({ search: searchValue })
       .then(res => {
         setSearchData([...res.userProfiles, ...res.groups])
         // setSearchData([...res.userProfiles])
       })
-    //     .finally(() => {
-    //       setLoading(false)
-    //     })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
   const debounceSearchAll = useDebounceFn(handleInputSearchChange, 1000)
   const navigate = useNavigate()
@@ -86,10 +95,15 @@ function LeftTopBar() {
               </div>
 
               <input
+                autoFocus
+                defaultValue={searchQuery?.trim() || query}
                 type="text"
                 className="w-full h-[24px] bg-fbWhite p-2 text-base focus:outline-none"
                 placeholder="Search..."
-                onChange={debounceSearchAll}
+                onChange={(e) => {
+                  debounceSearchAll(e)
+                  setSearchQuery(e.target.value)
+                }}
                 onKeyDown={handlePressEnter}
               />
             </div>
@@ -106,7 +120,14 @@ function LeftTopBar() {
               <div className='w-full flex flex-col items-center'>
                 {
                   searchData?.length === 0 ? (
-                    <div className='font-semibold font-mb text-gray-500'>Data Not Found!</div>
+                    <>
+                      {
+                        (searchQuery?.length == 0 || !searchQuery) ? <div className='font-semibold font-mb text-gray-500'>{t('standard.search.writeSt')}</div>
+                          : (isLoading)
+                            ? <PageLoadingSpinner />
+                            : <div className='font-semibold font-mb text-gray-500'>{t('standard.search.noData')}</div>
+                      }
+                    </>
                   ) : (
                     searchData?.slice(0, 7)?.map(searchResult => {
                       let isGroup = !!searchResult?.groupId
@@ -114,7 +135,7 @@ function LeftTopBar() {
                       return <Link
                         to={isGroup ? `/groups/${searchResult.groupId}` : `/profile?id=${searchResult.userId}`}
                         key={isGroup ? searchResult?.groupId : searchResult?.userId}
-                        className='h-[60px] w-full rounded-3xl flex items-center gap-3 hover:bg-orangeFpt hover:text-white cursor-pointer p-2'
+                        className='h-[60px] w-full rounded-3xl flex items-center gap-3 group hover:bg-orangeFpt hover:text-white cursor-pointer p-2'
                       >
                         <div className='basis-2/12'>
                           {
@@ -124,25 +145,19 @@ function LeftTopBar() {
                         </div>
                         <div className='basis-9/12 flex flex-col capitalize'>
                           <span className='font-semibold '>{isGroup ? searchResult?.groupName : searchResult?.userName}</span>
-                          <span className='text-sm'>{isGroup ? 'Group' : 'User'}</span>
+                          <span className='text-sm text-gray-500/90 group-hover:text-white'>{isGroup ? t('standard.search.group') : t('standard.search.user')}</span>
                         </div>
-
-                        {/* {textSearch.length === 0 && (
-                          <div className='basis-1/12 cursor-pointer p-2 hover:bg-[rgb(249,216,138)] rounded-[50%]'
-                          onClick={() => setSearchHistoryData(searchHistoryData.filter(d => d.id !== data.id))}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                              <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )} */}
                       </Link>
                     }
                     )
                   )
                 }
                 {
-                  searchData.length > 0 && <div>View All</div>
+                  searchData.length > 0 &&
+                  <Link to={`/search/?q=${searchQuery}`}
+                    className='text-orangeFpt p-2 hover:bg-blue-50 rounded-md'
+                  >{t('standard.search.viewAll')}
+                  </Link>
                 }
               </div>
             </div>
@@ -162,11 +177,10 @@ function LeftTopBar() {
         </div>
 
         <input
+          defaultValue={searchQuery?.trim() || query}
           type="text"
           className={`hidden md:!block ${isSearch && '!block '} w-[196px] h-[24px] bg-fbWhite p-2 text-base focus:outline-none `}
           placeholder="Search..."
-          onChange={debounceSearchAll}
-          onKeyDown={handlePressEnter}
         />
       </div>
     </div>

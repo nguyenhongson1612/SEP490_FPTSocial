@@ -8,7 +8,7 @@ export const interceptorLoadingElements = (calling) => {
   for (let i = 0; i < elements.length; i++) {
     if (calling) {
       elements[i].style.opacity = '0.5'
-      elements[i].style.pointerEvents = 'none'
+      elements[i].style.setProperty('pointer-events', 'none', 'important')
     } else {
       elements[i].style.opacity = 'initial'
       elements[i].style.pointerEvents = 'initial'
@@ -30,8 +30,14 @@ export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
     }
     else return []
   }
-
-  const cleanHtml = parse(DOMPurify.sanitize(html))
+  const purifyConfig = {
+    ALLOWED_TAGS: ['p', 'span', 'b', 'i', 'em', 'strong', 'a', 'br'],
+    ALLOWED_ATTR: ['style', 'href', 'target'],
+    ALLOW_DATA_ATTR: false,
+    ADD_TAGS: ['span'],
+    ADD_ATTR: ['style'],
+  }
+  const cleanHtml = parse(DOMPurify.sanitize(html, purifyConfig))
   return cleanHtml
 };
 
@@ -43,7 +49,12 @@ export const compareDateTime = (date) => {
 
 export const handleCoverImg = (coverUrl) => {
   return coverUrl
-    ? { backgroundImage: `url(${coverUrl})` }
+    ? {
+      backgroundImage: `url(${coverUrl})`,
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover'
+    }
     : {
       background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
     }

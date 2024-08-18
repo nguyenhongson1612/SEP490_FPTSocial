@@ -1,5 +1,5 @@
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import FriendRequests from './FriendRequests/FriendRequests'
 import FriendSuggestions from './FriendSuggestions/FriendSuggestions'
@@ -9,6 +9,13 @@ import FriendsSideBar from './FriendsSideBar/FriendsSideBar'
 
 function Friends() {
   const location = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (location.pathname === '/friends') {
+      navigate('/friends/requests', { replace: true });
+    }
+  }, [location, navigate]);
+
   const isRequests = location.pathname === '/friends/requests'
   const isSuggestions = location.pathname === '/friends/suggestions'
   const isFriendList = location.pathname === '/friends/list'
