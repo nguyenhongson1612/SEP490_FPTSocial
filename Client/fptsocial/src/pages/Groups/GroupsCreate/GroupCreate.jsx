@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { getStatus, uploadImage } from '~/apis'
 import { createGroup, getGroupStatusForCreate, getGroupType } from '~/apis/groupApis'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import CurrentUserAvatar from '~/components/UI/UserAvatar'
+import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE, singleFileValidator } from '~/utils/validators'
 
@@ -42,7 +42,7 @@ function GroupCreate() {
   }, [])
 
   const submitLogIn = (data) => {
-    console.log(data);
+    // console.log(data);
     const groupSubmittedData = {
       'groupName': data?.groupName,
       'groupDescription': data?.groupDescription,
@@ -95,9 +95,9 @@ function GroupCreate() {
           <div className="flex flex-col items-start gap-4">
             <span className='font-bold text-xl'>Create New Group</span>
             <div className="flex justify-start items-center mb-2 text-gray-500 gap-3" href='#'>
-              <CurrentUserAvatar />
+              <UserAvatar isOther={false} />
               <div className='flex flex-col '>
-                <span className='font-semibold text-gray-900'>{currentUser?.firstName + ' ' + currentUser?.lastName}</span>
+                <span className='font-semibold text-gray-900 capitalize'>{currentUser?.firstName + ' ' + currentUser?.lastName}</span>
                 <span>Group Admin</span>
               </div>
             </div>

@@ -42,11 +42,11 @@ function SearchAll() {
         {
           searchResults?.groups?.map(group => (
             <div key={group?.groupId} className='flex gap-2 bg-white py-2 px-3 rounded-md shadow-lg w-full'>
-              <Link to={`/profile?id=${group?.groupId}`}>
+              <Link to={`/groups/${group?.groupId}`}>
                 <GroupAvatar avatarSrc={group?.coverImage} />
               </Link>
               <div className='grow'>
-                <span className='capitalize'>{group?.groupName}</span>
+                <Link to={`/groups/${group?.groupId}`} className='capitalize hover:underline'>{group?.groupName}</Link>
                 <div className='first-letter:uppercase text-sm font-light'>{group?.groupDescription}</div>
               </div>
 
