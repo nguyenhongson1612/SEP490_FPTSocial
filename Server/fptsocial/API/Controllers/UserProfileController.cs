@@ -392,7 +392,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getbuttonsendmessage")]
-        public async Task<IActionResult> GetButtonSendMessage(GetButtonSendMessageQuery input)
+        public async Task<IActionResult> GetButtonSendMessage([FromQuery] GetButtonSendMessageQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
