@@ -9,8 +9,10 @@ import { cancelBlockUser, getAllFriend, getAllFriendOtherProfile, searchFriendBy
 import GroupAvatar from '~/components/UI/GroupAvatar';
 import UserAvatar from '~/components/UI/UserAvatar';
 import { useDebounceFn } from '~/customHooks/useDebounceFn';
+import NoDataMessage from '~/pages/Friends/NoDataMessage';
 import { triggerReload } from '~/redux/ui/uiSlice';
 import { selectCurrentUser } from '~/redux/user/userSlice';
+import userImg from '~/assets/img/banUser.png'
 
 function FriendProfile({ user, blockedUserList }) {
   const [listFriend, setListFriend] = useState([])
@@ -64,7 +66,7 @@ function FriendProfile({ user, blockedUserList }) {
           <div className='flex justify-between'>
             <div className="relative text-gray-600" >
               <input className="w-full bg-fbWhite h-10 px-5 pr-16 rounded-xl text-sm font-light focus:outline-none"
-                type="search" placeholder="Search friend"
+                type="search" placeholder="Search"
                 onChange={debounceSearchBoard}
               />
               <span className='absolute right-2 top-1/2 -translate-y-1/2'><IconSearch className='text-orangeFpt' /></span>
@@ -75,8 +77,8 @@ function FriendProfile({ user, blockedUserList }) {
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="lab API tabs example">
-                  <Tab label="Friends" value="1" />
-                  {isYourProfile && <Tab label="Block users" value="2" />}
+                  <Tab label={t('standard.profile.friend')} value="1" />
+                  {isYourProfile && <Tab label={t('standard.profile.blockUser')} value="2" />}
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -99,6 +101,9 @@ function FriendProfile({ user, blockedUserList }) {
                     </Link>
                   ))}
                 </div>
+                {
+                  listFriend?.length == 0 && <NoDataMessage message={t('standard.friend.noFriend')} />
+                }
               </TabPanel>
               <TabPanel value="2">
                 <div className='grid grid-cols-2 gap-2'>
@@ -114,11 +119,19 @@ function FriendProfile({ user, blockedUserList }) {
                       />
                       <div className='flex flex-col gap-2'>
                         <span className='capitalize font-semibold'>{e?.fullName}</span>
-                        <Button onClick={() => handleUnblock(e?.userBlockedId)} variant='contained' color='warning' size='small'>Unblock</Button>
+                        <Button onClick={() => handleUnblock(e?.userBlockedId)} variant='contained' color='warning' size='small'>{t('standard.profile.unblockUserMes')}</Button>
                       </div>
                     </div>
                   ))}
                 </div>
+                {
+                  blockedUserList?.length == 0 && <div className='flex justify-center'>
+                    <div className='flex flex-col items-center gap-2'>
+                      <img src={userImg} className='size-20' />
+                      <p className='text-lg text-gray-500/90'>{t('standard.friend.noBlock')} </p>
+                    </div>
+                  </div>
+                }
               </TabPanel>
             </TabContext>
           </Box>

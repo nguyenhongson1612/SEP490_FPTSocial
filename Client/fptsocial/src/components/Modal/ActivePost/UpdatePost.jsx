@@ -279,11 +279,8 @@ function UpdatePost() {
                   </div>
                 }
                 <div className='interceptor-loading py-4 flex justify-center items-center'>
-                  <button className='h-9 w-full  mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
-                    style={{
-                      opacity: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
-                      pointerEvents: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
-                    }}
+                  <button className={`h-9 w-full mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer
+                    ${(!content?.replace(/<\/?[^>]+(>|$)/g, "") && listMedia.length == 0) && 'opacity-50 pointer-events-none'}`}
                   >{t('standard.newPost.savePost')}
                   </button>
                 </div>

@@ -30,7 +30,7 @@ import { JWT_TOKEN } from './utils/constants'
 const jwtToken = JWT_TOKEN
 
 const ProtectedRouteByJWT = ({ jwtToken }) => {
-  if (!jwtToken) return window.location.assign('/login');
+  if (!jwtToken) return window.location.assign('/login')
   return <Outlet />
 }
 
@@ -116,6 +116,7 @@ function App() {
             <Route path='/friends' element={<Friends />}>
               {/* <Route path='' element={<Friends />} /> */}
               <Route path='requests' element={<Friends />} />
+              <Route path='sendrequests' element={<Friends />} />
               <Route path='suggestions' element={<Friends />} />
               <Route path='list' element={<Friends />} />
             </Route>

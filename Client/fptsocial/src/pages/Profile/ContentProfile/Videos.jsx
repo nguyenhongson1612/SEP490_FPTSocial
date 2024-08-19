@@ -2,16 +2,21 @@ import { TabContext, TabList } from '@mui/lab';
 import { Box, Tab } from '@mui/material';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { getImageByUserId, getVideoByUserId } from '~/apis';
+import { getVideoByUserId } from '~/apis';
 import { SEARCH_TYPE } from '~/utils/constants';
 import notFoundImg from '~/assets/img/not_found.png'
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '~/redux/user/userSlice';
 
 function Videos({ user }) {
   const [listVideos, setListVideos] = useState([])
+  const currentUser = useSelector(selectCurrentUser)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
     user &&
-      getVideoByUserId({ userId: user?.userId }).then(data => setListVideos(data?.videos))
+      getVideoByUserId({ userId: currentUser?.userId, strangerId: user?.userId, page }).then(data => setListVideos(data?.videos))
   }, [user])
 
   const navigate = useNavigate()

@@ -28,7 +28,6 @@ function Group() {
   const isReload = useSelector(selectIsReload)
   const dispatch = useDispatch()
   const { groupId } = useParams()
-  console.log('🚀 ~ Group ~ groupId:', groupId)
   const group = useSelector(selectCurrentActiveGroup)
   useEffect(() => {
     dispatch(clearCurrentActiveListPost())

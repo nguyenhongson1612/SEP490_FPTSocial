@@ -88,6 +88,7 @@ const Chatbot = () => {
         const file1 = await fetch('/src/assets/documents/report1.txt').then(res => res.text())
         const file2 = await fetch('/src/assets/documents/report2.txt').then(res => res.text())
         const file3 = await fetch('/src/assets/documents/report3.txt').then(res => res.text())
+        const file4 = await fetch('/src/assets/documents/report4.txt').then(res => res.text())
         const initialHistory = [
           {
             role: "user",
@@ -95,6 +96,7 @@ const Chatbot = () => {
               { text: file1 },
               { text: file2 },
               { text: file3 },
+              { text: file4 },
             ],
           },
         ]

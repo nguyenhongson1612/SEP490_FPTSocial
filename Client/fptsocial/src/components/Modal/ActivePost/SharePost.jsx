@@ -246,7 +246,7 @@ function SharePost() {
                       ${shareType == EDITOR_TYPE.STORY && 'bg-orange-100'}`}>
                       <IconBook className={`size-[60px] rounded-full p-4 text-orangeFpt bg-orange-100 
                         ${shareType == EDITOR_TYPE.STORY && '!bg-orangeFpt text-white'}`} />
-                      <span className={`text-sm ${shareType == EDITOR_TYPE.STORY && 'text-orangeFpt'}`}></span>
+                      <span className={`text-sm ${shareType == EDITOR_TYPE.STORY && 'text-orangeFpt'}`}>Your feed</span>
                     </div>
                     <div
                       onClick={() => { setShareType(EDITOR_TYPE.GROUP, setIsChooseGroup(!isChooseGroup)) }}

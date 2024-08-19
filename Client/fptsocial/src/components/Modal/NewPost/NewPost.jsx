@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 import EditMedia from '../EditMedia'
 
 function NewPost({ postType, groupId }) {
+
   const { handleSubmit } = useForm()
   const [isEdit, setIsEdit] = useState(false)
   const [content, setContent] = useState(null)
@@ -29,7 +30,6 @@ function NewPost({ postType, groupId }) {
   const currentUser = useSelector(selectCurrentUser)
   const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const isShowModalCreatePost = useSelector(selectIsShowModalCreatePost)
-
   const isProfile = postType === POST_TYPES.PROFILE_POST
   const isGroup = postType === POST_TYPES.GROUP_POST
   const { t } = useTranslation()
@@ -83,9 +83,7 @@ function NewPost({ postType, groupId }) {
 
     const postFunction = isProfile ? createPost : createGroupPost
     postFunction(submitData).then(() => {
-      dispatch(clearAndHireCurrentActivePost())
-      setListMedia([])
-      setContent(null)
+      clearData()
       dispatch(triggerReload())
       toast.success('Posted!')
     }).catch((error) => {
@@ -100,12 +98,16 @@ function NewPost({ postType, groupId }) {
           progress: undefined,
           theme: "light",
         })
-        dispatch(clearAndHireCurrentActivePost())
-        setListMedia([])
-        setContent(null)
+        clearData()
         dispatch(triggerReload())
       }
     })
+  }
+
+  const clearData = () => {
+    dispatch(clearAndHireCurrentActivePost())
+    setListMedia([])
+    setContent(null)
   }
 
   const handleEdit = () => {
@@ -128,7 +130,7 @@ function NewPost({ postType, groupId }) {
           </p>
         </div>
       </div>
-      <Modal open={isShowModalCreatePost} onClose={() => dispatch(clearAndHireCurrentActivePost())}>
+      <Modal open={isShowModalCreatePost} onClose={clearData}>
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[800px] max-h-[90%] rounded-md overflow-y-auto scrollbar-none-track'>
           <div className='bg-white shadow-4edges'>
             {!isEdit ? (
@@ -137,7 +139,7 @@ function NewPost({ postType, groupId }) {
                   <div className='h-[60px] flex justify-between items-center px-2 border-b'>
                     <span></span>
                     <span className='text-2xl font-bold'>{t('standard.newPost.createPost')}</span>
-                    <IconX className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={() => dispatch(clearAndHireCurrentActivePost())} />
+                    <IconX className='bg-orangeFpt text-white rounded-full size-9 cursor-pointer hover:bg-orange-700' onClick={clearData} />
                   </div>
                   <div className='mx-4'>
                     <div className='flex items-center h-[40] gap-2'>
@@ -184,11 +186,8 @@ function NewPost({ postType, groupId }) {
                     <Tiptap setContent={setContent} content={content} postType={postType} listMedia={listMedia} setListMedia={setListMedia} handleEdit={handleEdit} />
                   </div>
                   <div className='interceptor-loading py-4 flex justify-center items-center'>
-                    <button className='h-9 w-full mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer'
-                      style={{
-                        opacity: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? '0.5' : 'initial',
-                        pointerEvents: (content?.replace(/<\/?[^>]+(>|$)/g, "").length == 0 && listMedia.length == 0) ? 'none' : 'initial'
-                      }}
+                    <button className={`h-9 w-full mx-4 bg-orangeFpt font-bold text-white rounded-lg cursor-pointer
+                    ${(!content?.replace(/<\/?[^>]+(>|$)/g, "") && listMedia.length == 0) && 'opacity-50 pointer-events-none'}`}
                     >
                       {t('standard.newPost.post')}
                     </button>

@@ -134,6 +134,14 @@ export const getAllFriendRequest = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriendrequest`)
   return response.data?.data
 }
+export const getButtonSendMessage = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getbuttonsendmessage`)
+  return response.data?.data
+}
+export const getAllYourFriendRequested = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriendrequested`)
+  return response.data?.data
+}
 export const blockUser = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/blockuser`, data)
   return response.data?.data
@@ -147,12 +155,12 @@ export const getBlockedUserList = async () => {
   return response.data?.data
 }
 
-export const getImageByUserId = async ({ userId, type = SEARCH_TYPE.ALL }) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getImageByUserId?UserId=${userId}&Type=${type}`)
+export const getImageByUserId = async ({ userId, type = SEARCH_TYPE.ALL, page = 1, strangerId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getImageByUserId?UserId=${userId}&Type=${type}&Page=${page}&StrangerId=${strangerId}`)
   return response.data?.data
 }
-export const getVideoByUserId = async ({ userId }) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getVideoByUserId?UserId=${userId}`)
+export const getVideoByUserId = async ({ userId, page = 1, strangerId }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getVideoByUserId?UserId=${userId}&StrangerId=${strangerId}&Page=${page}`)
   return response.data?.data
 }
 
