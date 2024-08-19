@@ -17,24 +17,26 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE, singleFileValidator } from '~/utils/validators'
+import coverDefaultUrl from '~/assets/img/groupsdefaultcoverphoto.png'
 
 function GroupCreate() {
   const [listStatus, setListStatus] = useState([])
   const [listGroupType, setListGroupType] = useState([])
   const currentUser = useSelector(selectCurrentUser)
-  const [coverImage, setCoverImage] = useState(null)
+  const [coverImage, setCoverImage] = useState(coverDefaultUrl)
   const navigate = useNavigate()
 
   const { register, setValue, clearErrors, control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
+      coverImage: coverDefaultUrl
     }
   })
 
-  const backgroundStyle = !!coverImage && coverImage.length !== 0
-    ? { backgroundImage: `url(${coverImage})`, backgroundPosition: 'center' }
-    : {
-      background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
-    }
+  // const backgroundStyle = !!coverImage && coverImage.length !== 0
+  //   ? { backgroundImage: `url(${coverImage})`, backgroundPosition: 'center' }
+  //   : {
+  //     background: 'linear-gradient(to bottom, #E9EBEE 80%, #8b9dc3 100%)'
+  //   }
 
   useEffect(() => {
     getGroupStatusForCreate().then(data => setListStatus(data))
@@ -46,7 +48,7 @@ function GroupCreate() {
     const groupSubmittedData = {
       'groupName': data?.groupName,
       'groupDescription': data?.groupDescription,
-      'coverImage': data?.coverImage,
+      'coverImage': data?.coverImage || coverDefaultUrl,
       'userStatusId': data?.groupStatus,
       'groupTypeId': data?.groupType,
       'createdById': currentUser?.userId
@@ -211,7 +213,9 @@ function GroupCreate() {
                 </label>
               </div>
               <div className="flex w-full justify-center items-center pt-2 aspect-[74/27] rounded-md bg-cover bg-no-repeat"
-                style={backgroundStyle}>
+                style={
+                  { backgroundImage: `url(${coverImage})`, backgroundPosition: 'center' }
+                }>
               </div>
               <FieldErrorAlert errors={errors} fieldName="coverImage" />
             </div>

@@ -9,7 +9,7 @@ import FPTUen from '~/assets/img/FPTUen.png'
 import IconGoogle from '~/assets/svg/iconGoogle'
 import CopyToClipBoard from '~/components/UI/CopyClipboard'
 import { logoutCurrentUser, selectCurrentUser } from '~/redux/user/userSlice'
-import { EMAIL_MESSAGE, EMAIL_RULE, FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators'
+import { EMAIL_MESSAGE, EMAIL_RULE, FIELD_REQUIRED_MESSAGE, USERNAME_MESSAGE, USERNAME_RULE, WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators'
 
 function Register() {
   const { register, control, getValues, reset, setValue, watch, handleSubmit, trigger, formState: { errors, isValid } } = useForm()
@@ -79,8 +79,8 @@ function Register() {
                     {...register('userName', {
                       required: FIELD_REQUIRED_MESSAGE,
                       pattern: {
-                        value: WHITESPACE_RULE,
-                        message: WHITESPACE_MESSAGE
+                        value: USERNAME_RULE,
+                        message: USERNAME_MESSAGE
                       }
                     })}
                     error={!!errors['userName']}

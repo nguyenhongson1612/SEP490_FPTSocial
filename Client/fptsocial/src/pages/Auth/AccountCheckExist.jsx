@@ -5,9 +5,10 @@ import { toast } from 'react-toastify'
 import { checkUserExist } from '~/apis'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import { addUser, getUserByUserId } from '~/redux/user/userSlice'
+import { JWT_PROFILE } from '~/utils/constants'
 
 function AccountCheckExist() {
-  const profileFeId = JSON.parse(sessionStorage.getItem('oidc.user:https://feid.ptudev.net:societe-front-end'))?.profile
+  const profileFeId = JWT_PROFILE
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {

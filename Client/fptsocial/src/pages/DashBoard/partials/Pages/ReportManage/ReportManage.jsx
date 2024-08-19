@@ -6,10 +6,8 @@ import GroupReports from './GroupReports/GroupReports'
 import CommentReports from './CommentReports'
 
 function ReportManage() {
-
   const location = useLocation()
   const { pathname } = location
-  console.log('🚀 ~ ReportManage ~ pathname:', pathname)
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg py-3 px-4 h-full">
