@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
-import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER } from "~/utils/constants";
+import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER, CHAT_KEY, USER_ID } from "~/utils/constants";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
+import { ChatEngineWrapper, Socket } from "react-chat-engine";
 
 const ChatModal = ({
   open,
@@ -50,6 +51,10 @@ const ChatModal = ({
     }
   };
 
+  const handleNewMessage = (chatId, message) => {
+    fetchChats(); // Re-fetch chats when a new message is received
+  };
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -63,20 +68,28 @@ const ChatModal = ({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={{ ...modalStyle }}>
-        <Typography variant="h6">{fullName}</Typography>
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          placeholder="Type your message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <Button onClick={handleSendMessage}>Send</Button>
-      </Box>
-    </Modal>
+    <ChatEngineWrapper>
+      <Socket
+        projectID={CHAT_KEY.ProjectID}
+        userName={USER_ID}
+        userSecret={USER_ID}
+        onNewMessage={handleNewMessage}
+      />
+      <Modal open={open} onClose={onClose}>
+        <Box sx={{ ...modalStyle }}>
+          <Typography variant="h6">{fullName}</Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            placeholder="Type your message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <Button onClick={handleSendMessage}>Send</Button>
+        </Box>
+      </Modal>
+    </ChatEngineWrapper>
   );
 };
 

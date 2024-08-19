@@ -13,10 +13,14 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
-import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER } from "~/utils/constants";
+import {
+  API_ROOT,
+  CHAT_ENGINE_CONFIG_HEADER,
+  USER_ID,
+} from "~/utils/constants";
 import ChatModal from "./ChatModal";
 
-function Sidebar({ onSelectChat }) {
+function Sidebar({ onSelectChat, allMessages }) {
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -54,7 +58,7 @@ function Sidebar({ onSelectChat }) {
         setAllUsers([]);
       }
     };
-    
+
     fetchAllUsers();
   }, []);
 
@@ -146,13 +150,31 @@ function Sidebar({ onSelectChat }) {
                   >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Avatar
-                        src={chat.avata}
+                        src={
+                          chat?.people?.find(
+                            (person) => person?.person?.username !== USER_ID
+                          )?.person?.avatar
+                        }
                         alt={chat.fullName}
                         sx={{ marginRight: 1 }}
                       />
                       <ListItemText
-                        primary={chat?.title}
-                        secondary={chat?.last_message?.text}
+                        primary={chat?.people
+                          .filter(
+                            (person) => person.person.username !== USER_ID
+                          )
+                          .map(
+                            (person) =>
+                              `${person.person.first_name} ${person.person.last_name}`
+                          )
+                          .join(", ")}
+                          secondary={
+                            allMessages[chat.id]
+                              ? allMessages[chat.id][
+                                  allMessages[chat.id].length - 1
+                                ].text
+                              : chat?.last_message?.text
+                          }
                       />
                     </Box>
                   </ListItem>
