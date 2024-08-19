@@ -1,22 +1,31 @@
 import {
+  Autocomplete,
   Avatar,
   Box,
   Drawer,
   List,
   ListItem,
   ListItemText,
-  MenuItem,
-  Select,
+  TextField,
   Toolbar,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import debounce from "lodash.debounce";
+import { useCallback, useEffect, useState } from "react";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
-import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER } from "~/utils/constants";
+import {
+  API_ROOT,
+  CHAT_ENGINE_CONFIG_HEADER,
+  USER_ID,
+} from "~/utils/constants";
 import ChatModal from "./ChatModal";
 
-function Sidebar({ onSelectChat }) {
+function Sidebar({ onSelectChat, allMessages }) {
+  const [searchResults, setSearchResults] = useState({
+    listFriend: [],
+    listUserNotFriend: [],
+  });
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -35,18 +44,6 @@ function Sidebar({ onSelectChat }) {
   const sidebarWidth = isSmallScreen ? 200 : isMediumScreen ? 240 : 300;
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const response = await authorizedAxiosInstance.get(
-          "https://api.chatengine.io/chats/",
-          CHAT_ENGINE_CONFIG_HEADER
-        );
-        setChats(response.data);
-      } catch (error) {
-        console.error("Error fetching chat list:", error);
-      }
-    };
-
     fetchChats();
   }, []);
 
@@ -70,6 +67,18 @@ function Sidebar({ onSelectChat }) {
     fetchAllUsers();
   }, []);
 
+  const fetchChats = async () => {
+    try {
+      const response = await authorizedAxiosInstance.get(
+        "https://api.chatengine.io/chats/",
+        CHAT_ENGINE_CONFIG_HEADER
+      );
+      setChats(response.data);
+    } catch (error) {
+      console.error("Error fetching chat list:", error);
+    }
+  };
+
   const handleSelectChat = (chatId) => {
     setSelectedChatId(chatId);
     onSelectChat(chatId);
@@ -89,6 +98,37 @@ function Sidebar({ onSelectChat }) {
     setModalMessages([]);
   };
 
+  const handleSearch = async (searchText) => {
+    try {
+      const response = await authorizedAxiosInstance.get(
+        `${API_ROOT}/api/Search/searchuserbyname?FindName=${encodeURIComponent(
+          searchText
+        )}`
+      );
+      if (response.data.statusCode === "Success") {
+        setSearchResults(response.data.data);
+      } else {
+        setSearchResults({ listFriend: [], listUserNotFriend: [] });
+      }
+    } catch (error) {
+      console.error("Error searching for users:", error);
+      setSearchResults({ listFriend: [], listUserNotFriend: [] });
+    }
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((searchText) => handleSearch(searchText), 1000),
+    []
+  );
+
+  const flattenedOptions = [
+    ...searchResults.listFriend.map((user) => ({ ...user, group: "Friends" })),
+    ...searchResults.listUserNotFriend.map((user) => ({
+      ...user,
+      group: "Others",
+    })),
+  ];
+
   return (
     <Drawer
       variant="permanent"
@@ -103,34 +143,33 @@ function Sidebar({ onSelectChat }) {
     >
       <Toolbar />
       <Box sx={{ padding: 2 }}>
-        <Select
-          labelId="user-select-label"
-          displayEmpty
-          fullWidth
-          value={search}
-          onChange={handleUserSelect}
-          sx={{
-            "& .MuiSelect-select": {
-              display: "flex",
-              alignItems: "center",
-              paddingY: "8px",
-            },
-          }}
-        >
-          <MenuItem value="" disabled>
-            Search Users
-          </MenuItem>
-          {allUsers.map((user) => (
-            <MenuItem key={user.id} value={user.id}>
+        <Autocomplete
+          options={flattenedOptions}
+          groupBy={(option) => option.group}
+          getOptionLabel={(option) => option.friendName}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search Users"
+              onChange={(event) => {
+                setSearch(event.target.value);
+                debouncedSearch(event.target.value);
+              }}
+            />
+          )}
+          renderOption={(props, option) => (
+            <ListItem {...props} key={option.friendId}>
               <Avatar
-                src={user.avata}
-                alt={user.fullName}
+                src={option.avata}
+                alt={option.friendName}
                 sx={{ marginRight: 1 }}
               />
-              {user.fullName}
-            </MenuItem>
-          ))}
-        </Select>
+              <ListItemText primary={option.friendName} />
+            </ListItem>
+          )}
+          onBlur={() => setSearchResults({ listFriend: [], listUserNotFriend: [] })}
+          onChange={handleUserSelect}
+        />
         <List>
           {!chats.length && selectedUsers.length === 0 ? (
             "No chats to display"
@@ -144,12 +183,35 @@ function Sidebar({ onSelectChat }) {
                     onClick={() => handleSelectChat(chat.id)}
                     selected={chat.id === selectedChatId}
                   >
-                    <Avatar
-                      src={chat.avatar}
-                      alt={chat.fullName}
-                      sx={{ marginRight: 1 }}
-                    />
-                    <ListItemText primary={chat.title} />
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar
+                        src={
+                          chat?.people?.find(
+                            (person) => person?.person?.username !== USER_ID
+                          )?.person?.avatar
+                        }
+                        alt={chat.fullName}
+                        sx={{ marginRight: 1 }}
+                      />
+                      <ListItemText
+                        primary={chat?.people
+                          .filter(
+                            (person) => person.person.username !== USER_ID
+                          )
+                          .map(
+                            (person) =>
+                              `${person.person.first_name} ${person.person.last_name}`
+                          )
+                          .join(", ")}
+                        secondary={
+                          allMessages[chat.id]
+                            ? allMessages[chat.id][
+                                allMessages[chat.id].length - 1
+                              ].text
+                            : chat?.last_message?.text
+                        }
+                      />
+                    </Box>
                   </ListItem>
                 ))}
             </>
@@ -158,12 +220,13 @@ function Sidebar({ onSelectChat }) {
       </Box>
       <ChatModal
         open={modalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setModalOpen(false)}
         username={selectedUsername}
         fullName={selectedUserFullName}
         messages={modalMessages}
         setMessages={setModalMessages}
         selectedChatId={currentSelectedUserId}
+        fetchChats={fetchChats}
       />
     </Drawer>
   );

@@ -1,27 +1,30 @@
-import React, { useState, useEffect } from "react";
 import {
   AppBar,
-  Toolbar,
-  Typography,
   Box,
-  TextField,
-  IconButton,
+  Toolbar,
+  Typography
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import axios from "axios";
-import Sidebar from "~/components/ChatPagesComponents/Sidebar";
+import { useState } from "react";
 import ChatWindow from "~/components/ChatPagesComponents/ChatWindow";
-import { API_ROOT } from "~/utils/constants";
+import Sidebar from "~/components/ChatPagesComponents/Sidebar";
 
 function ChatPages() {
   const [selectedChatId, setSelectedChatId] = useState(null);
+  const [allMessages, setAllMessages] = useState({});
 
-
-
+  const handleNewMessage = (chatId, message) => {
+    setAllMessages((prevMessages) => ({
+      ...prevMessages,
+      [chatId]: [...(prevMessages[chatId] || []), message],
+    }));
+  };
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      <Sidebar onSelectChat={setSelectedChatId} />
+      <Sidebar
+        onSelectChat={setSelectedChatId}
+        allMessages={allMessages}
+      />
       <Box
         component="main"
         sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
@@ -33,8 +36,26 @@ function ChatPages() {
             </Typography>
           </Toolbar>
         </AppBar>
-        <ChatWindow selectedChatId={selectedChatId} />
-       </Box>
+        {selectedChatId ? (
+          <ChatWindow
+            selectedChatId={selectedChatId}
+            onNewMessage={handleNewMessage}
+          />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexGrow: 1,
+            }}
+          >
+            <Typography variant="h4" color="textSecondary">
+              Select a chat to start messaging
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </div>
   );
 }

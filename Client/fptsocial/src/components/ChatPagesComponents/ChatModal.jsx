@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
-import { API_ROOT } from "~/utils/constants";
+import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER, CHAT_KEY, USER_ID } from "~/utils/constants";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
+import { ChatEngineWrapper, Socket } from "react-chat-engine";
 
 const ChatModal = ({
   open,
   onClose,
   username,
-  messages,
   fullName,
-  selectedChatId,
-  fetchMessages,
+  fetchChats,
 }) => {
   const [message, setMessage] = useState("");
   const [chatId, setChatId] = useState(null);
@@ -23,7 +22,7 @@ const ChatModal = ({
       const createChatResponse = await authorizedAxiosInstance.post(
         `${API_ROOT}/api/Chat/createchatbox`,
         {
-          otherId: username, // Use the selected username here
+          otherId: username,
           title: "",
         }
       );
@@ -31,30 +30,29 @@ const ChatModal = ({
       currentChatId = createChatResponse.data.data.chatId;
       setChatId(currentChatId);
 
-      const sessionKey = "oidc.user:https://feid.ptudev.net:societe-front-end";
-      const sessionValue = sessionStorage.getItem(sessionKey);
-      const profile = JSON.parse(sessionValue).profile;
-
-      const config = {
-        headers: {
-          "Project-ID": "d7c4f700-4fc1-4f96-822d-8ffd0920b438",
-          "User-Name": profile.userId,
-          "User-Secret": profile.userId,
-        },
-      };
-
       await authorizedAxiosInstance.post(
         `https://api.chatengine.io/chats/${currentChatId}/messages/`,
         {
           text: message,
         },
-        config
+        CHAT_ENGINE_CONFIG_HEADER
       );
+
+      if (createChatResponse.data.data) {
+        onClose();
+        fetchChats();
+      } else {
+        console.error("Error sending message");
+      }
 
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
+  };
+
+  const handleNewMessage = (chatId, message) => {
+    fetchChats(); // Re-fetch chats when a new message is received
   };
 
   const modalStyle = {
@@ -70,20 +68,28 @@ const ChatModal = ({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={{ ...modalStyle }}>
-        <Typography variant="h6">{fullName}</Typography>
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          placeholder="Type your message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <Button onClick={handleSendMessage}>Send</Button>
-      </Box>
-    </Modal>
+    <ChatEngineWrapper>
+      <Socket
+        projectID={CHAT_KEY.ProjectID}
+        userName={USER_ID}
+        userSecret={USER_ID}
+        onNewMessage={handleNewMessage}
+      />
+      <Modal open={open} onClose={onClose}>
+        <Box sx={{ ...modalStyle }}>
+          <Typography variant="h6">{fullName}</Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            placeholder="Type your message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <Button onClick={handleSendMessage}>Send</Button>
+        </Box>
+      </Modal>
+    </ChatEngineWrapper>
   );
 };
 
