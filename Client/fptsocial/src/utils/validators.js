@@ -2,6 +2,9 @@ export const WHITESPACE_RULE = /\S/
 export const FIELD_REQUIRED_MESSAGE = 'This field is required.'
 export const WHITESPACE_MESSAGE = 'Not accept only whitespace.'
 
+export const USERNAME_RULE = /^[\p{L}0-9._]{3,20}$/u
+export const USERNAME_MESSAGE = 'The username must be between 3 and 20 characters, No spaces allowed.'
+
 export const PHONE_NUMBER_RULE = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
 export const PHONE_NUMBER_MESSAGE = 'Phone number is invalid in vietnam'
 
