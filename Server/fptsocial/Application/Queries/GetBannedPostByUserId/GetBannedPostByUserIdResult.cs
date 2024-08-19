@@ -15,6 +15,12 @@ namespace Application.Queries.GetBannedPostByUserId
 {
     public class GetBannedPostByUserIdResult
     {
+        public List<GetBannedPostByUserId>? result  {get; set; }
+        public int? totalPage { get; set; }
+    }
+
+    public class GetBannedPostByUserId
+    {
         public Guid PostId { get; set; }
         public Guid UserId { get; set; }
         public string? Content { get; set; }
@@ -70,12 +76,14 @@ namespace Application.Queries.GetBannedPostByUserId
         public virtual GroupPostVideoDTO? GroupPostVideoShare { get; set; }
         public virtual string? UserNameShare { get; set; }
         public virtual GetUserAvatar? UserAvatarShare { get; set; }
+        public Guid? GroupShareId { get; set; }
+        public string? GroupShareName { get; set; }
+        public string? GroupShareCorverImage { get; set; }
 
         //General
         public virtual string? UserName { get; set; }
         public virtual GetUserAvatar? UserAvatar { get; set; }
         public virtual GetUserStatusDTO? UserStatus { get; set; }
-        //public ReactCount? ReactCount { get; set; }
-        //public double? EdgeRank { get; set; }
+
     }
 }
