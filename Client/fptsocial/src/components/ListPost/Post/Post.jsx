@@ -13,9 +13,8 @@ import { useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 
-function Post({ postData, type }) {
+function Post({ postData, isBan = false }) {
   // console.log('🚀 ~ Post ~ postData:', postData)
-  const isBan = type == 'ban'
   const currentUser = useSelector(selectCurrentUser)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const isYourPost = postData?.userId == currentUser?.userId

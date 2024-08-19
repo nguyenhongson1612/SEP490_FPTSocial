@@ -60,7 +60,7 @@ function GroupsDiscover() {
                 </Link>
                 <div className='p-3 h-full flex flex-col'>
                   <div>
-                    <span className='font-bold capitalize'>{suggestion?.groupName}</span>
+                    <Link to={`/groups/${suggestion?.groupId}`} className='font-bold capitalize hover:underline'>{suggestion?.groupName}</Link>
                     <div>
                       <span className='text-gray-500 text-sm'>{suggestion?.numberOfMember} members</span>
                     </div>

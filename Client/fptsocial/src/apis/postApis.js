@@ -21,8 +21,8 @@ export const getAllPost = async ({ page, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getpost?Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }
-export const getBannedPostByUserId = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getBannedPostByUserId`)
+export const getBannedPostByUserId = async ({ page = 1, pageSize = 10 }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getBannedPostByUserId?Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }
 

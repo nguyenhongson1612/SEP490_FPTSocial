@@ -10,6 +10,7 @@ import PostGroupDetail from './PostDetail'
 function GroupHomeDiscussions({ group, isPostDetail }) {
   const [filterType, setFilterType] = useState('New')
   const [anchorEl, setAnchorEl] = useState(null)
+
   const handleGetPost = useCallback(({ page, pageSize }) =>
     getGroupPostByGroupId({
       groupId: group?.groupId,

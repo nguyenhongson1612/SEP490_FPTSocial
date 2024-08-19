@@ -17,13 +17,21 @@ const initialState = {
 export const activeGroupSlice = createSlice({
   name: 'activeGroup',
   initialState,
-  reducers: {},
+  reducers: {
+    clearCurrentGroup: (state) => {
+      state.currentActiveGroup = null
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(getGroupByGroupId.fulfilled, (state, action) => {
       state.currentActiveGroup = action.payload
     })
   }
 })
+
+export const {
+  clearCurrentGroup
+} = activeGroupSlice.actions
 
 export const selectCurrentActiveGroup = (state) => {
   return state.activeGroup.currentActiveGroup

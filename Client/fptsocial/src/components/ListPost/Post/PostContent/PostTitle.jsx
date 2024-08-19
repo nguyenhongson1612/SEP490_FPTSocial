@@ -114,7 +114,8 @@ function PostTitle({ postData, isYourPost, postType, isBan }) {
               {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
             </span>
             {
-              postData?.isAvataPost && <span className='text-gray-500 font-normal text-tr'>{t('sideText.avatarPost')}</span>
+              postData?.isAvataPost ? <span className='text-gray-500 font-normal text-tr'>{t('sideText.avatarPost')}</span>
+                : postData?.isCoverPhotoPost && <span className='text-gray-500 font-normal text-tr'>{t('sideText.coverPost')}</span>
             }
           </div>
           <div className="flex justify-start gap-1 text-gray-500 text-sm">

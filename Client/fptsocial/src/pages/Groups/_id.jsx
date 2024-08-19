@@ -6,12 +6,13 @@ import { Controller, useForm } from 'react-hook-form'
 import GroupManageSideBar from './GroupManageSideBar/GroupManageSideBar.jsx'
 import { selectIsReload } from '~/redux/ui/uiSlice'
 import GroupRequest from './GroupManage/GroupRequest'
-import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup/activeGroupSlice.js'
+// import { clearCurrentGroup, getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup/activeGroupSlice.js'
 import GroupHome from './GroupHome/GroupHome.jsx'
 import GroupSetting from './GroupManage/GroupSettings.jsx'
 import GroupManageMember from './GroupManage/GroupManageMember/GroupManageMember.jsx'
 import GroupPostApproval from './GroupManage/GroupPostApproval.jsx'
 import { clearCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice.js'
+import { getGroupByGroupId } from '~/apis/groupApis.js'
 
 
 function Group() {
@@ -23,17 +24,21 @@ function Group() {
   const isSetting = /^\/groups\/[a-zA-Z0-9-]+\/settings\/?$/.test(location.pathname)
   const isPendingPost = /^\/groups\/[a-zA-Z0-9-]+\/pending-posts\/?$/.test(location.pathname)
 
-  const { register, watch, getValues, setValue, control, handleSubmit, formState: { errors } } = useForm()
+  // const { register, watch, getValues, setValue, control, handleSubmit, formState: { errors } } = useForm()
 
   const isReload = useSelector(selectIsReload)
   const dispatch = useDispatch()
   const { groupId } = useParams()
-  const group = useSelector(selectCurrentActiveGroup)
+  // const group = useSelector(selectCurrentActiveGroup)
+  const [group, setGroup] = useState({ groupId: groupId })
+
   useEffect(() => {
     dispatch(clearCurrentActiveListPost())
+    // dispatch(clearCurrentGroup())
   }, [groupId])
+
   useEffect(() => {
-    dispatch(getGroupByGroupId(groupId))
+    getGroupByGroupId(groupId).then(data => setGroup(data))
   }, [groupId, isReload])
 
   return (

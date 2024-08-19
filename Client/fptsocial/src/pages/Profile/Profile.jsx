@@ -33,8 +33,8 @@ function Profile() {
 
   useEffect(() => {
     dispatch(clearCurrentActiveListPost())
-    dispatch(triggerReload())
-  }, [paramUserId])
+  }, [])
+
   useEffect(() => {
     if (isYourProfile) {
       setUserProfile(currentUser)
@@ -47,7 +47,7 @@ function Profile() {
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
     getBlockedUserList().then(data => setBlockedUserList(data))
-  }, [paramUserId, isReload, currentUser])
+  }, [paramUserId, isReload])
 
   useEffect(() => {
     userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)

@@ -41,7 +41,7 @@ export const activeListPost = createSlice({
     },
     clearCurrentActiveListPost: (state) => {
       state.currentActiveListPost = null
-      state.totalPage = null
+      state.totalPage = 0
     },
     addCurrentActiveListPost: (state, action) => {
       state.currentActiveListPost = [...state.currentActiveListPost || [], ...action.payload?.result || []]

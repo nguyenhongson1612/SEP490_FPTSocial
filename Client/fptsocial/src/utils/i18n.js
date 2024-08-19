@@ -143,7 +143,8 @@ i18n
             noneNotification: 'You have no notifications',
             contactMes: "Let's look for friends",
             yourMind: `What's on your mind`,
-            avatarPost: "updated their profile picture."
+            avatarPost: "updated their profile picture.",
+            coverPost: "updated their cover picture."
           },
           message: {
 
@@ -280,7 +281,8 @@ i18n
             noneNotification: 'Bạn không có thông báo mới',
             contactMes: "Hãy tìm kiếm người bạn mới nào!",
             yourMind: `Bạn đang nghĩ gì thế`,
-            avatarPost: "đã cập nhật ảnh đại diện của mình."
+            avatarPost: "đã cập nhật ảnh đại diện của mình.",
+            coverPost: "đã cập nhật ảnh bìa của mình."
           },
           message: {
 
