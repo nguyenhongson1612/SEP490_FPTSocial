@@ -304,8 +304,9 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             foreach (var item in sharePosts)
             {
-                var userProfile = userProfiles.FirstOrDefault(up => up.UserId == item.UserId);
-                var userAvatar = avatarPhotos.FirstOrDefault(ap => ap.UserId == item.UserId);
+                var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(up => up.UserId == item.UserId);
+                var userAvatar = await _context.AvataPhotos.FirstOrDefaultAsync(ap => ap.UserId == item.UserId && ap.IsUsed == true);
+
                 var userShareProfile = userShareProfiles.FirstOrDefault(up => up.UserId == item.UserSharedId);
                 var avatarShare = avatarSharePhotos.FirstOrDefault(ap => ap.UserId == item.UserSharedId);
 
