@@ -32,11 +32,11 @@ function GroupSearch() {
           {
             searchResults?.map(group => (
               <div key={group?.groupId} className='flex gap-2 bg-white py-2 px-3 rounded-md shadow-lg'>
-                <Link to={`/profile?id=${group?.groupId}`}>
+                <Link to={`/groups/${group?.groupId}`}>
                   <GroupAvatar avatarSrc={group?.coverImage} />
                 </Link>
                 <div className='grow'>
-                  <span className='capitalize'>{group?.groupName}</span>
+                  <Link to={`/groups/${group?.groupId}`} className='capitalize hover:underline'>{group?.groupName}</Link>
                   <div className='first-letter:uppercase text-sm font-light'>{group?.groupDescription}</div>
                 </div>
                 <div className='flex item-center justify-start bg-blue-50 hover:bg-blue-100 text-blue-500 p-2 rounded-md cursor-pointer'>Join</div>
