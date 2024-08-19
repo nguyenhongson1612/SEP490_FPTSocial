@@ -52,7 +52,7 @@ namespace Application.Queries.GetOtherUser
             
             var result = _mapper.Map<GetOtherUserQueryResult>(getuser);
             result.ButtonFriend = true;
-            if (getuser == null)
+            if (getuser == null || getusersetting.Count == 0)
             {
                 throw new ErrorException(StatusCodeEnum.U01_Not_Found);
             }

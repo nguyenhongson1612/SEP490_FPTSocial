@@ -40,6 +40,10 @@ namespace Application.Queries.GetUserOnChat
             {
                 var userId = Guid.Parse(item.Username);
                 var user = await _context.UserProfiles.Include(x => x.AvataPhotos).FirstOrDefaultAsync(x => x.UserId == userId);
+                if(user == null)
+                {
+                    continue;
+                }
                 var blockuser = await _context.BlockUsers
                     .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.UserIsBlockedId == userId
                                         || x.UserIsBlockedId == request.UserId && x.UserId == userId);
