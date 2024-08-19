@@ -112,6 +112,7 @@ namespace Application.Queries.GetUserPost
                     IsShare = false,
                     CreatedAt = item.CreatedAt,
                     UpdateAt = item.UpdatedAt,
+                    IsCoverPhotoPost = item.IsCoverPhotoPost,
                     PhotoId = item.PhotoId,
                     VideoId = item.VideoId,
                     Photo = _mapper.Map<PhotoDTO>(item.Photo),

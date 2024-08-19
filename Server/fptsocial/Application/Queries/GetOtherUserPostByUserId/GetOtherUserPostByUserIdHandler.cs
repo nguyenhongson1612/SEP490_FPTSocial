@@ -104,7 +104,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     .ThenInclude(x => x.Photo)
                 .Include(x => x.UserPostVideos.Where(x => x.IsHide != true))
                     .ThenInclude(x => x.Video)
-                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains(x.UserStatusId) && x.IsHide != true)
+                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains(x.UserStatusId) && x.IsHide != true && x.IsBanned != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 
@@ -197,6 +197,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     IsShare = false,
                     CreatedAt = item.CreatedAt,
                     UpdateAt = item.UpdatedAt,
+                    IsCoverPhotoPost = item.IsCoverPhotoPost,
                     PhotoId = item.PhotoId,
                     VideoId = item.VideoId,
                     Photo = _mapper.Map<PhotoDTO>(item.Photo),

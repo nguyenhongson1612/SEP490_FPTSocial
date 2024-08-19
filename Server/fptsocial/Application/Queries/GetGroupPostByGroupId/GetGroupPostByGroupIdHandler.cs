@@ -15,6 +15,7 @@ using Domain.Enums;
 using Domain.Exceptions;
 using Domain.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -89,6 +90,26 @@ namespace Application.Queries.GetGroupPostByGroupId
             if (isGroupAdmin)
             {
                 blockUserList = new List<Guid>();
+            }
+
+            var isPublic = await _context.GroupSettingUses
+                .AsNoTracking()
+                .Include(x => x.GroupStatus)
+                .AnyAsync(x => x.GroupId == request.GroupId  && x.GroupStatus.GroupStatusName == "Public");
+
+            var isJoin = await _context.GroupMembers
+                .AsNoTracking()
+                .AnyAsync(x => x.GroupId == request.GroupId && x.UserId == request.UserId && x.IsJoined == true);
+
+            // Tạo danh sách kết quả
+            var combine = new List<GetGroupPostByGroupIdDTO>();
+            if (!isJoin && !isPublic)
+            {
+                var getgroupposts = new GetGroupPostByGroupIdResult();
+
+                getgroupposts.totalPage = 0;
+                getgroupposts.result = combine;
+                return Result<GetGroupPostByGroupIdResult>.Success(getgroupposts);
             }
 
             // Truy vấn các bài đăng nhóm với các thông tin liên quan
@@ -174,9 +195,6 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .AsNoTracking()
                 .Where(g => groupIds.Contains(g.GroupId))
                 .ToListAsync(cancellationToken);
-
-            // Tạo danh sách kết quả
-            var combine = new List<GetGroupPostByGroupIdDTO>();
 
             foreach (var item in groupPosts)
             {

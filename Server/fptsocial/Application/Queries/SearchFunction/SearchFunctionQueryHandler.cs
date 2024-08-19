@@ -154,7 +154,7 @@ namespace Application.Queries.SearchFunction
                                                      .ToListAsync();
 
             // Chuẩn hóa nội dung tìm kiếm
-            var normalizedSearchString = request.SearchContent.RemoveDiacritics();
+            var normalizedSearchString = request.SearchContent.RemoveDiacritics().ToLower();
             var searchWords = normalizedSearchString.SplitIntoWords();
 
             // Lọc danh sách các nhóm theo nội dung tìm kiếm
@@ -233,7 +233,7 @@ namespace Application.Queries.SearchFunction
                 throw new ErrorException("Search content is required");
             }
 
-            var normalizedSearchString = request.SearchContent.RemoveDiacritics();
+            var normalizedSearchString = request.SearchContent.RemoveDiacritics().ToLower();
             var searchWords = normalizedSearchString.SplitIntoWords();
 
             var users = await _context.UserProfiles.Include(x => x.AvataPhotos).Where(x => x.IsActive == true).ToListAsync();
