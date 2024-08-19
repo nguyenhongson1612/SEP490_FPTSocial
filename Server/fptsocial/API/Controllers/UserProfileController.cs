@@ -454,6 +454,26 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [Route("deactiveUserByUserId")]
+        public async Task<IActionResult> ActiveUserByUserId([FromQuery] DeactiveUserCommand command)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var res = await _sender.Send(command);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
         [Route("activeUserByUserId")]
         public async Task<IActionResult> ActiveUserByUserId([FromQuery] ActiveUserCommand command)
         {
