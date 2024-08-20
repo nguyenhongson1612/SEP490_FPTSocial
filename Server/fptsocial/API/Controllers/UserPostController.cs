@@ -453,9 +453,8 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getBannedPostByUserId")]
-        public async Task<IActionResult> GetBannedPostByUserId()
+        public async Task<IActionResult> GetBannedPostByUserId([FromQuery] GetBannedPostByUserIdQuery input)
         {
-            var input = new GetBannedPostByUserIdQuery();
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
             {
