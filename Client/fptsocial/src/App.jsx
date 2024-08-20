@@ -67,16 +67,16 @@ function App() {
 
   return (
     <Routes>
-      {/* Unprotected Route */}
-      <Route element={<UnauthorizeRoute jwtToken={jwtToken} />}>
-        {/* Authentication */}
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/forgot' element={<ForgotPassword />} />
-      </Route>
-
       {/* AuthProvider Wrapper */}
       <Route element={<AuthProvider {...oidcConfig}><Outlet /></AuthProvider>}>
+        {/* Unprotected Route */}
+        <Route element={<UnauthorizeRoute jwtToken={jwtToken} />}>
+          {/* Authentication */}
+          <Route path='/login' element={<Login />} />
+          <Route path='/signin' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/forgot' element={<ForgotPassword />} />
+        </Route>
         {/* Check after FEID login page */}
         <Route path='/home' element={<Home />} />
 
