@@ -12,6 +12,6 @@ namespace Application.Queries.GetImageByUserId
         public Guid UserId { get; set; }
         public Guid StrangerId { get; set; }
         public string? Type { get; set; }
-        public int Page {  get; set; }
+        public int Page { get; set; } = 1;
     }
 }

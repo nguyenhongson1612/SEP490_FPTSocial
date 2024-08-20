@@ -100,7 +100,7 @@ namespace Application.Commands.CreateUserCommentPhotoPost
 
             // Check for banned words
             List<CheckingBadWord.BannedWord> badWords = _checkContent.Compare2String(comment.Content);
-            if (badWords.Any())
+            if (badWords.Any() && !badWords.Any())
             {
                 comment.IsHide = true;
             }

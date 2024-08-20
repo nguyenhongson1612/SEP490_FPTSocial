@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Application.Services
@@ -45,7 +46,8 @@ namespace Application.Services
 
             foreach (var keyword in bannedKeywords)
             {
-                if (KMPSearch(keyword.Word, sentence))
+                // Chuyển cả mẫu và văn bản về chữ thường trước khi tìm kiếm
+                if (KMPSearch(keyword.Word.ToLower(), sentence.ToLower()))
                 {
                     detectedKeywords.Add(keyword);
                 }
@@ -131,28 +133,41 @@ namespace Application.Services
 
         public string MarkBannedWordsInContent(string sentence, List<BannedWord> bannedKeywords)
         {
-            foreach (var keyword in bannedKeywords)
+            // Tạo một StringBuilder để xây dựng lại câu với các từ bị cấm được đánh dấu
+            var stringBuilder = new StringBuilder();
+
+            // Duyệt qua từng từ trong câu
+            int currentIndex = 0;
+            while (currentIndex < sentence.Length)
             {
-                sentence = MarkKeyword(sentence, keyword.Word);
+                bool foundBannedWord = false;
+
+                // Kiểm tra từng từ bị cấm
+                foreach (var keyword in bannedKeywords)
+                {
+                    // So sánh không phân biệt hoa thường
+                    string keywordLower = keyword.Word.ToLower();
+                    string currentWord = sentence.Substring(currentIndex, Math.Min(keywordLower.Length, sentence.Length - currentIndex)).ToLower();
+
+                    if (currentWord == keywordLower)
+                    {
+                        // Nếu tìm thấy từ bị cấm, đánh dấu nó và thêm vào StringBuilder
+                        stringBuilder.Append($"<mark>{sentence.Substring(currentIndex, keywordLower.Length)}</mark>");
+                        currentIndex += keywordLower.Length;
+                        foundBannedWord = true;
+                        break;
+                    }
+                }
+
+                // Nếu không tìm thấy từ bị cấm, thêm ký tự hiện tại vào StringBuilder
+                if (!foundBannedWord)
+                {
+                    stringBuilder.Append(sentence[currentIndex]);
+                    currentIndex++;
+                }
             }
 
-            return sentence;
-        }
-
-        private string MarkKeyword(string sentence, string keyword)
-        {
-            if (KMPSearch(keyword, sentence))
-            {
-                string highlightedKeyword = $"<mark>{keyword}</mark>";
-                sentence = System.Text.RegularExpressions.Regex.Replace(sentence, keyword, highlightedKeyword, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            }
-
-            return sentence;
-        }
-
-        private string ReplaceWholeWord(string sentence, string word, string replacement)
-        {
-            return System.Text.RegularExpressions.Regex.Replace(sentence, $"\\b{System.Text.RegularExpressions.Regex.Escape(word)}\\b", replacement, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            return stringBuilder.ToString();
         }
     }
 }
