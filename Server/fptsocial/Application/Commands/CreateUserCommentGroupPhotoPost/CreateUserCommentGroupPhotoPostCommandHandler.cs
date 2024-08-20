@@ -105,7 +105,7 @@ namespace Application.Commands.CreateUserCommentGroupPhotoPost
                 comment.IsHide = true;
             }
 
-            if (postReactCount != null)
+            if (postReactCount != null && !badWords.Any())
             {
                 postReactCount.CommentCount++;
             }
