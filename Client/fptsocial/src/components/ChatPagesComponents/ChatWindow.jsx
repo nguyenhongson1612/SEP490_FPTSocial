@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, IconButton } from "@mui/material";
+import { Box, Typography, TextField, IconButton, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
 import {
@@ -13,6 +13,7 @@ import { ChatEngineWrapper, Socket } from "react-chat-engine";
 function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
     if (selectedChatId) {
@@ -46,15 +47,19 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
   const sendMessage = async () => {
     if (!message.trim()) return;
 
+    const requestBody = {
+      text: message,
+      attachment_urls: attachments.length > 0 ? attachments : undefined,
+    };
+
     try {
       await authorizedAxiosInstance.post(
         `https://api.chatengine.io/chats/${selectedChatId}/messages/`,
-        {
-          text: message,
-        },
+        requestBody,
         CHAT_ENGINE_CONFIG_HEADER
       );
       setMessage("");
+      setAttachments([]);
       fetchChatMessages(selectedChatId);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -67,6 +72,12 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
     }
     onNewMessage(chatId, message);
     fetchChats(); // Re-fetch chats when a new message is received
+  };
+
+  const handleAttachmentChange = (event) => {
+    const files = Array.from(event.target.files);
+    const attachmentUrls = files.map((file) => URL.createObjectURL(file));
+    setAttachments(attachmentUrls);
   };
 
   return (
@@ -146,6 +157,18 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
           }}
           sx={{ marginRight: 1 }}
         />
+         {/* <input
+          type="file"
+          multiple
+          onChange={handleAttachmentChange}
+          style={{ display: "none" }}
+          id="attachment-input"
+        />
+        <label htmlFor="attachment-input">
+          <Button component="span" variant="contained" sx={{ marginRight: 1 }}>
+            Attach
+          </Button>
+        </label> */}
         <IconButton
           color="primary"
           sx={{ backgroundColor: "orange", color: "white" }}

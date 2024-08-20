@@ -8,7 +8,7 @@ import {
   ListItemText,
   TextField,
   Toolbar,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import debounce from "lodash.debounce";
@@ -20,6 +20,8 @@ import {
   USER_ID,
 } from "~/utils/constants";
 import ChatModal from "./ChatModal";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import FPTUen from "~/assets/img/FPTUen.png";
 
 function Sidebar({ onSelectChat, allMessages }) {
   const [searchResults, setSearchResults] = useState({
@@ -93,11 +95,6 @@ function Sidebar({ onSelectChat, allMessages }) {
     setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setModalMessages([]);
-  };
-
   const handleSearch = async (searchText) => {
     try {
       const response = await authorizedAxiosInstance.get(
@@ -141,7 +138,11 @@ function Sidebar({ onSelectChat, allMessages }) {
         },
       }}
     >
-      <Toolbar />
+      <Toolbar>
+        <Link to={"/home"} className="flex items-center">
+          <img src={FPTUen} alt="home-img" className="h-[55px]" />
+        </Link>
+      </Toolbar>
       <Box sx={{ padding: 2 }}>
         <Autocomplete
           options={flattenedOptions}
@@ -158,7 +159,16 @@ function Sidebar({ onSelectChat, allMessages }) {
             />
           )}
           renderOption={(props, option) => (
-            <ListItem {...props} key={option.friendId}>
+            <ListItem
+              {...props}
+              key={option.friendId}
+              onClick={(e) => {
+                setModalOpen(true);
+                setSelectedUsername(option.friendId);
+                setSelectedUserFullName(option.friendName);
+                setCurrentSelectedUserId(option.friendId);
+              }}
+            >
               <Avatar
                 src={option.avata}
                 alt={option.friendName}
@@ -167,7 +177,9 @@ function Sidebar({ onSelectChat, allMessages }) {
               <ListItemText primary={option.friendName} />
             </ListItem>
           )}
-          onBlur={() => setSearchResults({ listFriend: [], listUserNotFriend: [] })}
+          onBlur={() =>
+            setSearchResults({ listFriend: [], listUserNotFriend: [] })
+          }
           onChange={handleUserSelect}
         />
         <List>
