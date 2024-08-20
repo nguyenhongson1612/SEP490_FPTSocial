@@ -1,4 +1,5 @@
 import { IconArrowRight, IconLogin2 } from '@tabler/icons-react'
+import { useAuth } from 'oidc-react'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
@@ -14,10 +15,11 @@ function Login() {
       dispatch(logoutCurrentUser())
   }, [])
 
+  const auth = useAuth();
   const navigate = useNavigate()
   const handleLogin = () => {
     // navigate('/home')
-    window.location.href = (`https://feid.ptudev.net/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3D${CLIENT_ID}%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A3000%252Fhome%26response_type%3Dcode%26scope%3Dopenid%2520profile%2520offline_access%26state%3D00a0d43d0bd044b8a1da7126034390c4%26code_challenge%3DEhO5O3Yze4yhg4FA7INuyVu1CTo8JI1YzQbgTBXWQrc%26code_challenge_method%3DS256%26response_mode%3Dquery`);
+    auth.signIn()
   }
   return (
     <div className='grid grid-cols-12 h-screen'>

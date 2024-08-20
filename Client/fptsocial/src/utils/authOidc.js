@@ -10,5 +10,6 @@ const oidcConfig = {
   postLogoutRedirectUri: `${FRONTEND_ROOT}/login`,
   scope: 'openid profile offline_access',
   responseType: 'code',
+  autoSignIn: false,
 }
 export default oidcConfig
