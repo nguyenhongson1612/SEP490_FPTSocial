@@ -66,9 +66,31 @@ namespace Application.Queries.GetChildGroupPost
                 .Select(x => x.UserId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (blockUserList.Contains(userId))
+            var groupId = await _context.GroupPosts
+                .Where(x => x.GroupPostId == groupPostId)
+                .Select(x => x.GroupId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
+            if (blockUserList.Contains(userId) && !isAdmin)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
+            }
+
+            var isJoin = await _context.GroupMembers
+                    .AsNoTracking()
+                    .AnyAsync(x => x.GroupId == groupId && x.UserId == request.UserId);
+
+            var isPrivate = await _context.GroupPosts
+                    .AsNoTracking()
+                    .Include(x => x.GroupStatus)
+                    .AnyAsync(x => x.GroupStatus.GroupStatusName == "Private" && x.GroupPostId == groupPostId && x.UserId != request.UserId && !isJoin);
+
+            if (!isAdmin && isPrivate)
+            {
+                throw new ErrorException(StatusCodeEnum.GR16_User_Not_Exist_In_Group);
             }
 
             var combinedResults = new List<GetChildGroupPostResult>();

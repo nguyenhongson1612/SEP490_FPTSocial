@@ -71,21 +71,30 @@ namespace Application.Queries.GetOtherUserPostByUserId
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.UserId == request.OtherUserId && x.SettingId == idprofilestatus && x.UserStatusId == idpublic);
 
-            if (setting == null)
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
+
+            if (!isAdmin && setting == null)
             {
                 throw new ErrorException(StatusCodeEnum.PS01_Profile_Status_Private);
             }
 
             var isFriend = await _context.Friends
                             .AsNoTracking()
-                            .FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId && x.Confirm == true)
+                            .AnyAsync(x => (x.UserId == request.UserId && x.FriendId == request.OtherUserId && x.Confirm == true)
                             || (x.UserId == request.OtherUserId && x.FriendId == request.UserId && x.Confirm == true));
 
             var sttNames = new List<string> { "Public" };
 
-            if (isFriend != null)
+            if (isFriend || isAdmin)
             {
                 sttNames.Add("Friend");
+            }
+
+            if (isAdmin)
+            {
+                sttNames.Add("Private");
             }
 
             var sttStatuses = await _context.UserStatuses
@@ -131,7 +140,7 @@ namespace Application.Queries.GetOtherUserPostByUserId
                     .ThenInclude(x => x.GroupPhoto)
                 .Include(x => x.GroupPostVideo)
                     .ThenInclude(x => x.GroupVideo)
-                .Where(x => x.UserId == request.OtherUserId && x.IsHide != true && x.IsBanned != true)
+                .Where(x => x.UserId == request.OtherUserId && sttStatusIds.Contains((Guid)x.UserStatusId) && x.IsHide != true && x.IsBanned != true)
                 .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync(cancellationToken);
 

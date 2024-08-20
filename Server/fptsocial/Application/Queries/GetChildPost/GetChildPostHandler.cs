@@ -64,7 +64,33 @@ namespace Application.Queries.GetChildPost
                 .Select(x => x.UserId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (blockUserList.Contains(userId))
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
+            var isPrivate = await _context.UserPosts
+                .AsNoTracking()
+                .AnyAsync(x => x.UserPostId == userPostId && x.UserStatus.StatusName == "Private");
+
+            if(!isAdmin && isPrivate)
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
+            var isFriend = await _context.Friends
+                    .AnyAsync(x => ((x.UserId == userId && x.FriendId == request.UserId)
+                                    || (x.UserId == request.UserId && x.FriendId == userId))
+                                    && x.Confirm == true);
+
+            var isFriendStatus = await _context.UserPosts
+                    .Include(x => x.UserStatus)
+                    .AnyAsync(x => x.UserStatus.StatusName == "Friend" && x.UserPostId == userPostId && x.UserId != request.UserId && !isFriend);
+
+            if (!isAdmin && isFriendStatus)
+            {
+                throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
+            }
+
+            if (blockUserList.Contains(userId) && !isAdmin)
             {
                 throw new ErrorException(StatusCodeEnum.UP02_Post_Not_Found);
             }

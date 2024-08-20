@@ -51,11 +51,14 @@ namespace Application.Queries.GetUserPostById
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
 
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
             var isPrivate = await _context.UserPosts
                     .Include(x => x.UserStatus)
                     .AnyAsync(x => x.UserStatus.StatusName == "Private" && x.UserPostId == request.UserPostId && x.UserId != request.UserId);
 
-            if (isPrivate)
+            if (!isAdmin && isPrivate)
             {
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
@@ -75,7 +78,7 @@ namespace Application.Queries.GetUserPostById
                     .Include(x => x.UserStatus)
                     .AnyAsync(x => x.UserStatus.StatusName == "Friend" && x.UserPostId == request.UserPostId && x.UserId != request.UserId && !isFriend);
 
-            if (isFriendStatus)
+            if (!isAdmin &&  isFriendStatus)
             {
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
