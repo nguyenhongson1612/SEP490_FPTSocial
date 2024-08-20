@@ -12,6 +12,7 @@ import { updateReadNotification } from '~/apis'
 import { useTranslation } from 'react-i18next'
 import i18n from '~/utils/i18n'
 import { LANGUAGES } from '~/utils/constants'
+import DropdownMessages from '~/components/DropdownMessages'
 
 function RightTopBar() {
   const dispatch = useDispatch()
@@ -54,9 +55,7 @@ function RightTopBar() {
         </li>
         <li id='message-top-bar'
           className="">
-          <Link to={'/home'} className="flex items-center">
-            <IconBrandMessenger className='size-10 p-1 text-orangeFpt rounded-full' />
-          </Link>
+          <DropdownMessages />
         </li>
 
         <li id='notification-top-bar '
