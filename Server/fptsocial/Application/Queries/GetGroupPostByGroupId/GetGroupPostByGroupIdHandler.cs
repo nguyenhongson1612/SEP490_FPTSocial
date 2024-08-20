@@ -87,7 +87,10 @@ namespace Application.Queries.GetGroupPostByGroupId
                 .Include(x => x.GroupRole)
                 .AnyAsync(x => x.GroupRole.GroupRoleName == "Admin" || x.GroupRole.GroupRoleName == "Censor");
 
-            if (isGroupAdmin)
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
+            if (isGroupAdmin || isAdmin)
             {
                 blockUserList = new List<Guid>();
             }
@@ -103,7 +106,7 @@ namespace Application.Queries.GetGroupPostByGroupId
 
             // Tạo danh sách kết quả
             var combine = new List<GetGroupPostByGroupIdDTO>();
-            if (!isJoin && !isPublic)
+            if (!isJoin && !isPublic && !isAdmin)
             {
                 var getgroupposts = new GetGroupPostByGroupIdResult();
 

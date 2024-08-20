@@ -65,6 +65,9 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
 
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
             // Kiểm tra xem user có trong group hay không
             var isJoin = await _context.GroupMembers
                     .AsNoTracking()
@@ -75,7 +78,7 @@ namespace Application.Queries.GetGroupPostByGroupPostId
                     .Include(x => x.GroupStatus)
                     .AnyAsync(x => x.GroupStatus.GroupStatusName == "Private" && x.GroupPostId == request.GroupPostId && x.UserId != request.UserId && !isJoin);
 
-            if (isPrivate)
+            if (!isAdmin && isPrivate)
             {
                 throw new ErrorException(StatusCodeEnum.GR16_User_Not_Exist_In_Group);
             }

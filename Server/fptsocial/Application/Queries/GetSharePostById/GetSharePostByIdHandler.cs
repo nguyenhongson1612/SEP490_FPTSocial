@@ -65,7 +65,10 @@ namespace Application.Queries.GetSharePostById
                     .Include(x => x.UserStatus)
                     .AnyAsync(x => x.UserStatus.StatusName == "Private" && x.SharePostId == request.SharePostId && x.UserId != request.UserId);
 
-            if (isPrivate)
+            var isAdmin = await _context.AdminProfiles
+                .AnyAsync(x => x.AdminId == request.UserId && x.Role.NameRole == "Societe-admin");
+
+            if (!isAdmin && isPrivate)
             {
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
@@ -79,7 +82,7 @@ namespace Application.Queries.GetSharePostById
                     .Include(x => x.UserStatus)
                     .AnyAsync(x => x.UserStatus.StatusName == "Friend" && x.SharePostId == request.SharePostId && x.UserId != request.UserId && !isFriend);
 
-            if (isFriendStatus)
+            if (!isAdmin && isFriendStatus)
             {
                 throw new ErrorException(StatusCodeEnum.UP05_Can_Not_See_Content);
             }
