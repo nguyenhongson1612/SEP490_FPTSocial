@@ -15,21 +15,22 @@ import { getStatus } from '~/apis'
 import { getAllReactType } from '~/apis/reactApis'
 import { addListReactType, addListUserStatus } from '~/redux/sideData/sideDataSlice'
 import SearchNotFound from '../UI/SearchNotFound'
+import { useLocation } from 'react-router-dom'
 
-function ListPost({ getListPostFn }) {
+function ListPost({ getListPostFn, isBan = false }) {
+  const location = useLocation()
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const [page, setPage] = useState(1)
   const totalPage = useSelector(selectTotalPage)
   const dispatch = useDispatch()
   const isReload = useSelector(selectIsReload)
-  const isFirstRender = useRef(true)
-  // const [isLoading, setIsLoading] = useSelector(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const latestRequestIdRef = useRef(0)
 
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const isShowUpdatePost = useSelector(selectIsShowModalUpdatePost)
   const isShowSharePost = useSelector(selectIsShowModalSharePost)
   const isShowModalReport = useSelector(selectIsOpenReport)
-
 
   useEffect(() => {
     getStatus().then(data => dispatch(addListUserStatus(data)))
@@ -37,62 +38,78 @@ function ListPost({ getListPostFn }) {
   }, [])
 
   useEffect(() => {
+    setPage(1)
     dispatch(clearCurrentActiveListPost())
-  }, [getListPostFn])
+    setIsLoading(true)
+  }, [location, dispatch, getListPostFn, isBan, isReload])
 
   useEffect(() => {
-    getListPostFn &&
-      getListPostFn({ page: page }).then((res) => dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage })))
-  }, [getListPostFn, page,])
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    if (isReload !== 0) {
-      dispatch(clearCurrentActiveListPost())
-      if (getListPostFn) {
-        getListPostFn({ page: 1 }).then((res) =>
-          dispatch(updateCurrentActiveListPost(res?.result || res.userPosts))
-        )
+    if (getListPostFn) {
+      const fetchData = async () => {
+        const currentRequestId = ++latestRequestIdRef.current
+        try {
+          const res = await getListPostFn({ page: 1 })
+          if (currentRequestId === latestRequestIdRef.current) {
+            dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage }))
+            setIsLoading(false)
+          }
+        } catch (error) {
+          if (currentRequestId === latestRequestIdRef.current) {
+            console.error('Error fetching data:', error)
+            setIsLoading(false)
+          }
+        }
       }
+      fetchData()
     }
-  }, [isReload])
+  }, [getListPostFn, dispatch, isBan, isReload])
+
+  useEffect(() => {
+    if (page > 1 && getListPostFn) {
+      const fetchMoreData = async () => {
+        const currentRequestId = ++latestRequestIdRef.current
+        try {
+          const res = await getListPostFn({ page })
+          if (currentRequestId === latestRequestIdRef.current) {
+            dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage }))
+          }
+        } catch (error) {
+          if (currentRequestId === latestRequestIdRef.current) {
+            console.error('Error fetching more data:', error)
+          }
+        }
+      }
+      fetchMoreData()
+    }
+  }, [page, getListPostFn, dispatch])
 
   return (
-    <div id="post-list"
-      className="relative min-h-[1000px]"
-    >
+    <div id="post-list" className="relative min-h-[1000px] w-full">
       {isShowActivePost && <ActivePost />}
       {isShowUpdatePost && <UpdatePost />}
       {isShowSharePost && <SharePost />}
       {isShowModalReport && <Report />}
 
-      {!currentActiveListPost ?
+      {isLoading ? (
         <div className='absolute flex items-center top-[100px] left-1/2 -translate-x-1/2 '>
           <PageLoadingSpinner />
         </div>
-        : currentActiveListPost?.length == 0 && <SearchNotFound isNoneData={true} />
-      }
-      {
-        currentActiveListPost?.length > 0 &&
+      ) : currentActiveListPost?.length === 0 ? (
+        <SearchNotFound isNoneData={true} />
+      ) : (
         <InfiniteScroll
-          // className="w-[800px] mx-auto my-10"
           className=""
           fetchMore={() => setPage((prev) => prev + 1)}
           hasMore={page < totalPage}
           endMessage={'You have seen it all'}
         >
           <div className='flex flex-col items-center gap-5'>
-            {currentActiveListPost?.map((post, key) => {
-              return <Post
-                key={key}
-                postData={post} />
-            })}
+            {currentActiveListPost?.map((post, key) => (
+              <Post key={key} postData={post} isBan={isBan} />
+            ))}
           </div>
         </InfiniteScroll>
-      }
+      )}
     </div>
   )
 }

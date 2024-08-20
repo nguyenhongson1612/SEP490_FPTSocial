@@ -1,6 +1,11 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 
+export const getGroupByGroupId = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Group/getgroupbygroupid?GroupId=${id}`)
+  return response.data?.data
+}
+
 export const suggestionGroup = async ({ userId, showAll = true }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/suggestionGroup?UserId=${userId}&ShowAll=${showAll}`)
   return response.data?.data

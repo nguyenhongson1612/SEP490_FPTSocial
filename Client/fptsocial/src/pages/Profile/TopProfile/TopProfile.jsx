@@ -8,11 +8,12 @@ import { Avatar, Button, Menu, MenuItem, Popover } from '@mui/material'
 import { toast } from 'react-toastify'
 import { handleCoverImg } from '~/utils/formatters'
 import { useDispatch, useSelector } from 'react-redux'
-import { addReport, openModalReport } from '~/redux/report/reportSlice'
+import { addReport, openModalReport, selectIsOpenReport } from '~/redux/report/reportSlice'
 import { FRONTEND_ROOT, REPORT_TYPES } from '~/utils/constants'
 import { useTranslation } from 'react-i18next'
 import { addBlock, openModalBlock, selectIsOpenBlock } from '~/redux/block/blockSlice'
 import Block from '~/components/Modal/Block/Block'
+import Report from '~/components/Modal/Report/Report'
 
 function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProfile, forceUpdate, listFriend }) {
 
@@ -22,6 +23,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
   const [hoveredFriendId, setHoveredFriendId] = useState(null)
   const { t } = useTranslation()
   const isOpenModalBlock = useSelector(selectIsOpenBlock)
+  const isOpenModalReport = useSelector(selectIsOpenReport)
 
   const handlePopoverOpen = (event, friendId) => {
     setAnchorEl(event.currentTarget)
@@ -54,7 +56,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
           AdditionsMsd: '',
           ActionId: 'true'
         }
-        console.log(signalRData)
+        // console.log(signalRData)
         await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
       }
     } catch (err) {
@@ -103,6 +105,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
   return (
     <div id="top-profile" className="bg-white shadow-md w-full flex flex-col items-center">
       {isOpenModalBlock && <Block />}
+      {isOpenModalReport && <Report />}
       <div
         id="holderCover"
         className="w-full lg:w-[940px] aspect-[74/27] rounded-md bg-cover bg-center bg-no-repeat"

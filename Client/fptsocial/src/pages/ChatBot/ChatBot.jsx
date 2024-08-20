@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import NavTopBar from '~/components/NavTopBar/NavTopBar'
 import { cleanAndParseHTML } from '~/utils/formatters'

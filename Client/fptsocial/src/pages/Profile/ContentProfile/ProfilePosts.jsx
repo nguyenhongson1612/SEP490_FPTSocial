@@ -26,11 +26,20 @@ function ProfilePosts({ user }) {
   const isReload = useSelector(selectIsReload)
 
   useEffect(() => {
-    isYourProfile && user &&
-      getBannedPostByUserId().then(data => {
-        setListBannedPost(data)
+    isYourProfile && user ?
+      getBannedPostByUserId({ page: 1 }).then(data => {
+        setListBannedPost(data?.result)
       })
+      : setListBannedPost([])
   }, [user, isReload])
+
+  const getUserPostFn = useCallback(({ page, pageSize }) => {
+    if (!user) return () => Promise.resolve([])
+    return (isBan && isYourProfile) ? getBannedPostByUserId({ page: page, pageSize })
+      : isYourProfile
+        ? getUserPostByUserId({ page, pageSize })
+        : getOtherUserPost({ userId: user.userId, page, pageSize })
+  }, [user, isBan, isYourProfile])
 
   return (
     <div id=''
@@ -69,7 +78,7 @@ function ProfilePosts({ user }) {
               </div>
             </div>
           }
-          {
+          {/* {
             isBan && <div className='flex flex-col gap-4 w-full min-w-[300px]'>
               {
                 listBannedPost?.map(bp => (
@@ -80,10 +89,12 @@ function ProfilePosts({ user }) {
                 listBannedPost?.length == 0 && <SearchNotFound isNoneData={true} />
               }
             </div>
-          }
+          } */}
           {
-            !isBan && <>
-              <ListPost getListPostFn={user && (isYourProfile && user ? getUserPostByUserId : ({ page, pageSize }) => getOtherUserPost({ userId: user?.userId, page, pageSize }))} />
+            <>
+              {
+                user && <ListPost getListPostFn={getUserPostFn} isBan={isBan} />
+              }
             </>
           }
         </div>

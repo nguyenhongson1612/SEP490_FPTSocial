@@ -28,7 +28,7 @@ function GroupJoins() {
                 </Link>
                 <div className='p-3 h-full flex flex-col'>
                   <div>
-                    <span className='font-bold capitalize'>{group?.groupName}</span>
+                    <Link to={`/groups/${group?.groupId}`} className='font-bold capitalize hover:underline'>{group?.groupName}</Link>
                     <div>
                       {/* <span className='text-gray-500 text-sm'>{group?.numberOfMember} members</span> */}
                     </div>
