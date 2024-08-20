@@ -10,6 +10,7 @@ namespace API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Societe-admin")]
     public class CreateUserDetailsController : BaseController
     {
         private readonly ISender _sender;

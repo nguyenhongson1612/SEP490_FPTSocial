@@ -37,7 +37,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.AdminId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.AdminId = Guid.Parse(uid);
             input.RoleName = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "role").Value;
             var res = await _sender.Send(input);
             return Success(res.Value);

@@ -141,7 +141,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -161,7 +166,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -181,7 +191,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -201,7 +216,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -221,7 +241,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -241,7 +266,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -313,7 +343,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -333,7 +368,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -353,7 +393,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -373,7 +418,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -393,7 +443,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -413,7 +468,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -449,7 +509,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -469,7 +534,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }
@@ -505,7 +575,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
 
@@ -526,7 +601,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            query.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            query.UserId = Guid.Parse(uid);
             var res = await _sender.Send(query);
             return Success(res.Value);
         }

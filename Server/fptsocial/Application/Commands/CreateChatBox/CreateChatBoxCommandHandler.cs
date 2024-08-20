@@ -43,6 +43,10 @@ namespace Application.Commands.CreateChatBox
             var otherChat = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.OtherId);
             var block = await _context.BlockUsers.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.UserIsBlockedId == request.OtherId)
                                                   || (x.UserId == request.OtherId && x.UserIsBlockedId == request.UserId));
+            if (string.IsNullOrEmpty(request.Title))
+            {
+                request.Title = "";
+            }
             request.Title = otherChat.FirstName + " " + otherChat.LastName;
             var chat = await _service.CreateChatAsync(request.Title, request.UserId.ToString());
             if(block != null || otherChat.IsActive == false)

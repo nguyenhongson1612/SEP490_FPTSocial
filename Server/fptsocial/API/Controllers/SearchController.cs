@@ -39,7 +39,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.AccessUserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.AccessUserId = Guid.Parse(uid);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
@@ -59,7 +64,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
@@ -79,7 +89,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
@@ -99,7 +114,12 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-            input.UserId = Guid.Parse(jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value);
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
