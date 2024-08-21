@@ -83,9 +83,6 @@ namespace Application.Commands.UpdateUserPostCommand
             var newPhotos = newPhotoUrls.Except(existingPhotoUrls).ToList();
             var newVideos = newVideoUrls.Except(existingVideoUrls).ToList();
 
-            var photosToDelete = existingPhotoUrls.Except(newPhotoUrls).ToList();
-            var videosToDelete = existingVideoUrls.Except(newVideoUrls).ToList();
-
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
