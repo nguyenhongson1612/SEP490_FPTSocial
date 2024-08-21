@@ -159,7 +159,11 @@ namespace Application.Queries.GetGroupByGroupId
                             GroupRoleId = mem.GroupRoleId,
                             GroupRoleName = mem.GroupRole.GroupRoleName
                         };
-                        getgroup.GroupMember.Add(gmem);
+                        var oldmem = getgroup.GroupMember.FirstOrDefault(x => x.UserId == mem.UserId);
+                        if (oldmem == null) 
+                        {
+                            getgroup.GroupMember.Add(gmem);
+                        } 
 
                     }
                     
