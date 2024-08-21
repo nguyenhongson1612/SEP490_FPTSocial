@@ -60,7 +60,8 @@ namespace Application.Commands.CreateChatBox
             {
                 UserChatId = int.Parse(id),
                 UserId = (Guid)request.UserId,
-                CreateDate = DateTime.Now
+                CreateDate = DateTime.Now,
+                ChatWithId = request.OtherId,
             };
             await _commandContext.UserChats.AddAsync(newchat);
             await _commandContext.SaveChangesAsync();

@@ -5,6 +5,7 @@ using Application.Commands.UpdateUserChat;
 using Application.Queries.GetChatDetails;
 using Application.Queries.GetUserByUserId;
 using Application.Queries.GetUserOnChat;
+using Application.Queries.SearchUserInChat;
 using Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -130,6 +131,31 @@ namespace API.Controllers
         [HttpGet]
         [Route("searchinchat")]
         public async Task<IActionResult> GetUserInChat([FromQuery] GetUserOnChatQuery input)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("searchuserforchat")]
+        public async Task<IActionResult> SearchUserForChat([FromQuery] SearchUserInChatQuery input)
         {
             var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             if (string.IsNullOrEmpty(rawToken))
