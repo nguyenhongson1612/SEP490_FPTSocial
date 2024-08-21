@@ -543,7 +543,7 @@ namespace API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("deactiveUserByUserId")]
         public async Task<IActionResult> ActiveUserByUserId([FromQuery] DeactiveUserCommand command)
         {
@@ -568,7 +568,7 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("activeUserByUserId")]
         public async Task<IActionResult> ActiveUserByUserId([FromQuery] ActiveUserCommand command)
         {

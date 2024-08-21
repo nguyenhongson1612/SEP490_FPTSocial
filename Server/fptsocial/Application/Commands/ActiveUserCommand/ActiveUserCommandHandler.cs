@@ -64,7 +64,8 @@ namespace Application.Commands.ActiveUserCommand
             }
 
             commandUser.IsActive = true;
-            var results = new DeactiveUserCommandResult();
+            await _context.SaveChangesAsync(cancellationToken);
+            var results = new ActiveUserCommandResult();
             results.Message = "Sucess to active user.";
             return Result<ActiveUserCommandResult>.Success(results);
         }

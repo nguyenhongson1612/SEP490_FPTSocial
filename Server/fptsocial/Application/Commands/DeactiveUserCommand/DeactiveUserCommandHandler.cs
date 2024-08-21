@@ -266,7 +266,11 @@ namespace Application.Commands.DeactiveUserCommand
 
                         foreach (var childComment in childComments)
                         {
-                            stack.Push(EF.Property<Guid>(childComment, commentIdProperty));
+                            var childCommentId = (Guid)typeof(TEntity)
+                                .GetProperty(commentIdProperty)
+                                .GetValue(childComment);
+
+                            stack.Push(childCommentId);
                             commentsToUpdate.Add(childComment);
                         }
                     }
