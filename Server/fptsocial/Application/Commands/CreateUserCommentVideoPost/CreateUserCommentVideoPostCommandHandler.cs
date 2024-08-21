@@ -106,7 +106,7 @@ namespace Application.Commands.CreateUserCommentVideoPost
                 comment.IsHide = true;
             }
 
-            if (postReactCount != null)
+            if (postReactCount != null && !badWords.Any())
             {
                 postReactCount.CommentCount++;
             }

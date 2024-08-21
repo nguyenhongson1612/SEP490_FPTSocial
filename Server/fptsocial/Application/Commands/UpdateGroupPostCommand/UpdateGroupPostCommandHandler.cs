@@ -63,14 +63,14 @@ namespace Application.Commands.UpdateGroupPostCommand
             var videos = request.Videos ?? new List<VideoAddOnPost>();
 
             var existingPhotos = await _querycontext.GroupPostPhotos
-                                                .Where(p => p.GroupPostId == GroupPost.GroupPostId)
+                                                .Where(p => p.GroupPostId == GroupPost.GroupPostId && p.IsHide != true)
                                                 .Include(p => p.GroupPhoto)
                                                 .ToListAsync();
 
             var existingPhotoUrls = existingPhotos.Select(p => p.GroupPhoto.PhotoUrl).ToList();
 
             var existingVideos = await _querycontext.GroupPostVideos
-                                                .Where(p => p.GroupPostId == GroupPost.GroupPostId)
+                                                .Where(p => p.GroupPostId == GroupPost.GroupPostId && p.IsHide != true)
                                                 .Include(p => p.GroupVideo)
                                                 .ToListAsync();
 
@@ -82,86 +82,240 @@ namespace Application.Commands.UpdateGroupPostCommand
             var newPhotos = newPhotoUrls.Except(existingPhotoUrls).ToList();
             var newVideos = newVideoUrls.Except(existingVideoUrls).ToList();
 
-            var photosToDelete = existingPhotoUrls.Except(newPhotoUrls).ToList();
-            var videosToDelete = existingVideoUrls.Except(newVideoUrls).ToList();
-
             Guid groupStatusId = (Guid)_context.GroupFpts.Where(x => x.GroupId == GroupPost.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
-
-            if (GroupPost.GroupPhotoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
-            {
-                Domain.CommandModels.GroupPost gp = new Domain.CommandModels.GroupPost
-                {
-                    GroupPostId = GroupPost.GroupPostId,
-                    UserId = GroupPost.UserId,
-                    Content = GroupPost.Content,
-                    GroupPostNumber = GroupPost.GroupPostNumber,
-                    GroupStatusId = groupStatusId,
-                    IsHide = GroupPost.IsHide,
-                    CreatedAt = GroupPost.CreatedAt,
-                    UpdatedAt = DateTime.Now,
-                    GroupPhotoId = null,
-                    GroupVideoId = GroupPost.GroupVideoId,
-                    NumberPost = GroupPost.NumberPost,
-                    IsBanned = GroupPost.IsBanned,
-                    GroupId = GroupPost.GroupId,
-                    IsPending = GroupPost.IsPending,
-                };
-                _context.GroupPosts.Update(gp);
-                _context.SaveChanges();
-            }
-
-            if (GroupPost.GroupVideoId != null && (newPhotos.Count > 1 || newVideos.Count > 1))
-            {
-                Domain.CommandModels.GroupPost gp = new Domain.CommandModels.GroupPost
-                {
-                    GroupPostId = GroupPost.GroupPostId,
-                    UserId = GroupPost.UserId,
-                    Content = GroupPost.Content,
-                    GroupPostNumber = GroupPost.GroupPostNumber,
-                    GroupStatusId = groupStatusId,
-                    IsHide = GroupPost.IsHide,
-                    CreatedAt = GroupPost.CreatedAt,
-                    UpdatedAt = DateTime.Now,
-                    GroupPhotoId = GroupPost.GroupPhotoId,
-                    GroupVideoId = null,
-                    NumberPost = GroupPost.NumberPost,
-                    IsBanned = GroupPost.IsBanned,
-                    GroupId = GroupPost.GroupId,
-                    IsPending = GroupPost.IsPending,
-                };
-                _context.GroupPosts.Update(gp);
-                _context.SaveChanges();
-            }
-
-            await _context.SaveChangesAsync(); // Save the changes to the database
 
             Guid PhotoIdSingle = Guid.Empty;
             Guid VideoIdSingle = Guid.Empty;
             int numberPost = photos.Count() + videos.Count();
-
-            if (photos.Count() == 1 && numberPost == 1)
+            if (numberPost == 1)
             {
-                PhotoIdSingle = await UploadImage(photos.First().PhotoUrl, (Guid)GroupPost.GroupId);
+                if (photos.Count() == 1 && numberPost == 1)
+                {
+                    PhotoIdSingle = await UploadImage(photos.First().PhotoUrl, (Guid)GroupPost.GroupId);
+                }
+                if (videos.Count() == 1 && numberPost == 1)
+                {
+                    VideoIdSingle = await UploadVideo(videos.First().VideoUrl, (Guid)GroupPost.GroupId);
+                }
+
+                foreach (var photo in existingPhotos)
+                {
+                    var updatePhoto = new Domain.CommandModels.GroupPostPhoto
+                    {
+                        GroupPostPhotoId = photo.GroupPostPhotoId,
+                        GroupPostId = photo.GroupPostId,
+                        GroupPhotoId = photo.GroupPhotoId,
+                        Content = photo.Content,
+                        GroupPostPhotoNumber = photo.GroupPostPhotoNumber,
+                        GroupStatusId = groupStatusId,
+                        IsHide = true,
+                        CreatedAt = photo.CreatedAt,
+                        UpdatedAt = DateTime.Now,
+                        PostPosition = photo.PostPosition,
+                    };
+                    _context.GroupPostPhotos.Update(updatePhoto);
+                    _context.SaveChanges();
+                }
+
+                foreach (var video in existingVideos)
+                {
+                    var updateVideo = new Domain.CommandModels.GroupPostVideo
+                    {
+                        GroupPostVideoId = video.GroupPostVideoId,
+                        GroupPostId = video.GroupPostId,
+                        GroupVideoId = video.GroupVideoId,
+                        Content = video.Content,
+                        GroupPostVideoNumber = video.GroupPostVideoNumber,
+                        GroupStatusId = groupStatusId,
+                        IsHide = true,
+                        CreatedAt = video.CreatedAt,
+                        UpdatedAt = DateTime.Now,
+                        PostPosition = video.PostPosition,
+                    };
+                    _context.GroupPostVideos.Update(updateVideo);
+                    _context.SaveChanges();
+                }
+
+
+                if (PhotoIdSingle != Guid.Empty)
+                {
+                    GroupPost.GroupPhotoId = PhotoIdSingle;
+                }
+
+                if (VideoIdSingle != Guid.Empty)
+                {
+                    GroupPost.GroupVideoId = VideoIdSingle;
+                }
             }
-            if (videos.Count() == 1 && numberPost == 1)
+            else
             {
-                VideoIdSingle = await UploadVideo(videos.First().VideoUrl, (Guid)GroupPost.GroupId);
-            }
+                foreach (var photo in photos)
+                {
+                    var existingPhoto = existingPhotos
+                        .FirstOrDefault(p => p.GroupPhoto.PhotoUrl == photo.PhotoUrl);
 
-            GroupPost.Content = request.Content;
-            GroupPost.GroupStatusId = groupStatusId;
-            GroupPost.UpdatedAt = DateTime.Now;
-            GroupPost.NumberPost = numberPost;
-            GroupPost.IsBanned = false;
+                    if (existingPhoto != null)
+                    {
+                        // Ảnh đã tồn tại, chỉ cần cập nhật lại Position
+                        var updatePhoto = new Domain.CommandModels.GroupPostPhoto
+                        {
+                            GroupPostPhotoId = existingPhoto.GroupPostPhotoId,
+                            GroupPostId = existingPhoto.GroupPostId,
+                            GroupPhotoId = existingPhoto.GroupPhotoId,
+                            Content = existingPhoto.Content,
+                            GroupPostPhotoNumber = existingPhoto.GroupPostPhotoNumber,
+                            GroupStatusId = existingPhoto.GroupStatusId,
+                            IsHide = existingPhoto.IsHide,
+                            CreatedAt = existingPhoto.CreatedAt,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = photo.Position,
+                        };
+                        _context.GroupPostPhotos.Update(updatePhoto);
+                    }
+                    else
+                    {
+                        // Ảnh mới, tạo mới
+                        Guid photoId = await UploadImage(photo.PhotoUrl, (Guid)GroupPost.GroupId);
+                        var newGroupPostPhoto = new Domain.CommandModels.GroupPostPhoto
+                        {
+                            GroupPostPhotoId = _helper.GenerateNewGuid(),
+                            GroupPostId = GroupPost.GroupPostId,
+                            GroupPhotoId = photoId,
+                            Content = string.Empty,
+                            GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
+                            GroupStatusId = GroupPost.GroupStatusId,
+                            IsHide = GroupPost.IsHide,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = photo.Position,
+                        };
+                        await _context.GroupPostPhotos.AddAsync(newGroupPostPhoto);
 
-            if (PhotoIdSingle != Guid.Empty)
-            {
-                GroupPost.GroupPhotoId = PhotoIdSingle;
-            }
+                        Domain.CommandModels.GroupPostReactCount photoPostReactCount = new Domain.CommandModels.GroupPostReactCount
+                        {
+                            GroupPostReactCountId = _helper.GenerateNewGuid(),
+                            GroupPostPhotoId = newGroupPostPhoto.GroupPostPhotoId,
+                            ReactCount = 0,
+                            CommentCount = 0,
+                            ShareCount = 0,
+                        };
+                        await _context.GroupPostReactCounts.AddAsync(photoPostReactCount);
+                    }
+                }
+                foreach (var video in videos)
+                {
+                    var existingVideo = existingVideos
+                        .FirstOrDefault(v => v.GroupVideo.VideoUrl == video.VideoUrl);
 
-            if (VideoIdSingle != Guid.Empty)
-            {
-                GroupPost.GroupVideoId = VideoIdSingle;
+                    if (existingVideo != null)
+                    {
+                        var updateVideo = new Domain.CommandModels.GroupPostVideo
+                        {
+                            GroupPostVideoId = existingVideo.GroupPostVideoId,
+                            GroupPostId = existingVideo.GroupPostId,
+                            GroupVideoId = existingVideo.GroupVideoId,
+                            Content = existingVideo.Content,
+                            GroupPostVideoNumber = existingVideo.GroupPostVideoNumber,
+                            GroupStatusId = existingVideo.GroupStatusId,
+                            IsHide = existingVideo.IsHide,
+                            CreatedAt = existingVideo.CreatedAt,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = video.Position,
+                        };
+                        _context.GroupPostVideos.Update(updateVideo);
+                    }
+                    else
+                    {
+                        // Video mới, tạo mới
+                        Guid videoId = await UploadVideo(video.VideoUrl, (Guid)GroupPost.GroupId);
+                        var newGroupPostVideo = new Domain.CommandModels.GroupPostVideo
+                        {
+                            GroupPostVideoId = _helper.GenerateNewGuid(),
+                            GroupPostId = GroupPost.GroupPostId,
+                            GroupVideoId = videoId,
+                            Content = string.Empty,
+                            GroupPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
+                            GroupStatusId = GroupPost.GroupStatusId,
+                            IsHide = GroupPost.IsHide,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = video.Position
+                        };
+                        await _context.GroupPostVideos.AddAsync(newGroupPostVideo);
+
+                        Domain.CommandModels.GroupPostReactCount videoPostReactCount = new Domain.CommandModels.GroupPostReactCount
+                        {
+                            GroupPostReactCountId = _helper.GenerateNewGuid(),
+                            GroupPostVideoId = newGroupPostVideo.GroupPostVideoId,
+                            ReactCount = 0,
+                            CommentCount = 0,
+                            ShareCount = 0,
+                        };
+                        await _context.GroupPostReactCounts.AddAsync(videoPostReactCount);
+                    }
+                }
+
+                // Ẩn các ảnh không có trong danh sách cập nhật
+                foreach (var existingPhoto in existingPhotos)
+                {
+                    if (!newPhotoUrls.Contains(existingPhoto.GroupPhoto.PhotoUrl))
+                    {
+                        var newGroupPostPhoto = new Domain.CommandModels.GroupPostPhoto
+                        {
+                            GroupPostPhotoId = existingPhoto.GroupPostPhotoId,
+                            GroupPostId = existingPhoto.GroupPostId,
+                            GroupPhotoId = existingPhoto.GroupPhotoId,
+                            Content = existingPhoto.Content,
+                            GroupPostPhotoNumber = existingPhoto.GroupPostPhotoNumber,
+                            GroupStatusId = existingPhoto.GroupStatusId,
+                            IsHide = true,
+                            CreatedAt = existingPhoto.CreatedAt,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = existingPhoto.PostPosition,
+                            GroupId = existingPhoto.GroupId,
+                            IsBanned = existingPhoto.IsBanned,
+                            IsPending = existingPhoto.IsPending,
+                        };
+                        _context.GroupPostPhotos.Update(newGroupPostPhoto);
+                    }
+                }
+
+                // Ẩn các video không có trong danh sách cập nhật
+                foreach (var existingVideo in existingVideos)
+                {
+                    if (!newVideoUrls.Contains(existingVideo.GroupVideo.VideoUrl))
+                    {
+                        var newGroupPostVideo = new Domain.CommandModels.GroupPostVideo
+                        {
+                            GroupPostVideoId = existingVideo.GroupPostVideoId,
+                            GroupPostId = existingVideo.GroupPostId,
+                            GroupVideoId = existingVideo.GroupVideoId,
+                            Content = existingVideo.Content,
+                            GroupPostVideoNumber = existingVideo.GroupPostVideoNumber,
+                            GroupStatusId = existingVideo.GroupStatusId,
+                            IsHide = true,
+                            CreatedAt = existingVideo.CreatedAt,
+                            UpdatedAt = DateTime.Now,
+                            PostPosition = existingVideo.PostPosition,
+                            GroupId = existingVideo.GroupId,
+                            IsBanned = existingVideo.IsBanned,
+                            IsPending = existingVideo.IsPending,
+                        };
+                        _context.GroupPostVideos.Update(newGroupPostVideo);
+                    }
+                }
+
+                if (GroupPost.GroupPhotoId != null)
+                {
+                    GroupPost.GroupPhotoId = null;
+                }
+
+                if (GroupPost.GroupVideoId != null)
+                {
+                    GroupPost.GroupVideoId = null;
+                }
+
+                await _context.SaveChangesAsync();
             }
 
             List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(GroupPost.Content);
@@ -170,6 +324,12 @@ namespace Application.Commands.UpdateGroupPostCommand
                 GroupPost.IsBanned = true;
                 GroupPost.Content = _checkContent.MarkBannedWordsInContent(GroupPost.Content, haveBadWord);
             }
+
+            GroupPost.Content = request.Content;
+            GroupPost.GroupStatusId = groupStatusId;
+            GroupPost.UpdatedAt = DateTime.Now;
+            GroupPost.NumberPost = numberPost;
+            GroupPost.IsBanned = false;
 
             Domain.CommandModels.GroupPost gp1 = new Domain.CommandModels.GroupPost
             {
@@ -190,171 +350,7 @@ namespace Application.Commands.UpdateGroupPostCommand
             };
             _context.GroupPosts.Update(gp1);
             _context.SaveChanges();
-
-            foreach (var photo in photos)
-            {
-                var existingPhoto = existingPhotos
-                    .FirstOrDefault(p => p.GroupPhoto.PhotoUrl == photo.PhotoUrl);
-
-                if (existingPhoto != null)
-                {
-                    // Ảnh đã tồn tại, chỉ cần cập nhật lại Position
-                    var updatePhoto = new Domain.CommandModels.GroupPostPhoto
-                    {
-                        GroupPostPhotoId = existingPhoto.GroupPostPhotoId,
-                        GroupPostId = existingPhoto.GroupPostId,
-                        GroupPhotoId = existingPhoto.GroupPhotoId,
-                        Content = existingPhoto.Content,
-                        GroupPostPhotoNumber = existingPhoto.GroupPostPhotoNumber,
-                        GroupStatusId = existingPhoto.GroupStatusId,
-                        IsHide = existingPhoto.IsHide,
-                        CreatedAt = existingPhoto.CreatedAt,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = existingPhoto.PostPosition,
-                        GroupId = existingPhoto.GroupId,
-                        IsBanned = existingPhoto.IsBanned,
-                        IsPending = existingPhoto.IsPending,
-                    };
-                    _context.GroupPostPhotos.Update(updatePhoto);
-                }
-                else
-                {
-                    // Ảnh mới, tạo mới
-                    Guid photoId = await UploadImage(photo.PhotoUrl, (Guid)GroupPost.GroupId);
-                    var newGroupPostPhoto = new Domain.CommandModels.GroupPostPhoto
-                    {
-                        GroupPostPhotoId = _helper.GenerateNewGuid(),
-                        GroupPostId = GroupPost.GroupPostId,
-                        GroupPhotoId = photoId,
-                        Content = string.Empty,
-                        GroupPostPhotoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
-                        GroupStatusId = groupStatusId,
-                        IsHide = GroupPost.IsHide,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = photo.Position
-                    };
-                    await _context.GroupPostPhotos.AddAsync(newGroupPostPhoto);
-
-                    Domain.CommandModels.GroupPostReactCount groupPostPhotoReactCount = new Domain.CommandModels.GroupPostReactCount
-                    {
-                        GroupPostReactCountId = _helper.GenerateNewGuid(),
-                        GroupPostPhotoId = newGroupPostPhoto.GroupPostPhotoId,
-                        ReactCount = 0,
-                        CommentCount = 0,
-                        ShareCount = 0,
-                    };
-                    await _context.GroupPostReactCounts.AddAsync(groupPostPhotoReactCount);
-                }
-            }
-
-            foreach (var video in videos)
-            {
-                var existingVideo = existingVideos
-                    .FirstOrDefault(v => v.GroupVideo.VideoUrl == video.VideoUrl);
-
-                if (existingVideo != null)
-                {
-                    var updateVideo = new Domain.CommandModels.GroupPostVideo
-                    {
-                        GroupPostVideoId = existingVideo.GroupPostVideoId,
-                        GroupPostId = existingVideo.GroupPostId,
-                        GroupVideoId = existingVideo.GroupVideoId,
-                        Content = existingVideo.Content,
-                        GroupPostVideoNumber = existingVideo.GroupPostVideoNumber,
-                        GroupStatusId = existingVideo.GroupStatusId,
-                        IsHide = existingVideo.IsHide,
-                        CreatedAt = existingVideo.CreatedAt,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = existingVideo.PostPosition,
-                        GroupId = existingVideo.GroupId,
-                        IsBanned = existingVideo.IsBanned,
-                        IsPending = existingVideo.IsPending,
-                    };
-                    _context.GroupPostVideos.Update(updateVideo);
-                }
-                else
-                {
-                    // Video mới, tạo mới
-                    Guid videoId = await UploadVideo(video.VideoUrl, (Guid)GroupPost.GroupId);
-                    var newGroupPostVideo = new Domain.CommandModels.GroupPostVideo
-                    {
-                        GroupPostVideoId = _helper.GenerateNewGuid(),
-                        GroupPostId = GroupPost.GroupPostId,
-                        GroupVideoId = videoId,
-                        Content = string.Empty,
-                        GroupPostVideoNumber = _helper.GenerateNewGuid().ToString().Replace("-", ""),
-                        GroupStatusId = GroupPost.GroupStatusId,
-                        IsHide = GroupPost.IsHide,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = video.Position
-                    };
-                    await _context.GroupPostVideos.AddAsync(newGroupPostVideo);
-
-                    Domain.CommandModels.GroupPostReactCount groupPostVideoReactCount = new Domain.CommandModels.GroupPostReactCount
-                    {
-                        GroupPostReactCountId = _helper.GenerateNewGuid(),
-                        GroupPostVideoId = newGroupPostVideo.GroupPostVideoId,
-                        ReactCount = 0,
-                        CommentCount = 0,
-                        ShareCount = 0,
-                    };
-                    await _context.GroupPostReactCounts.AddAsync(groupPostVideoReactCount);
-                }
-            }
-
-            // Ẩn các ảnh không có trong danh sách cập nhật
-            foreach (var existingPhoto in existingPhotos)
-            {
-                if (!newPhotoUrls.Contains(existingPhoto.GroupPhoto.PhotoUrl))
-                {
-                    var newGroupPostPhoto = new Domain.CommandModels.GroupPostPhoto
-                    {
-                        GroupPostPhotoId = existingPhoto.GroupPostPhotoId,
-                        GroupPostId = existingPhoto.GroupPostId,
-                        GroupPhotoId = existingPhoto.GroupPhotoId,
-                        Content = existingPhoto.Content,
-                        GroupPostPhotoNumber = existingPhoto.GroupPostPhotoNumber,
-                        GroupStatusId = existingPhoto.GroupStatusId,
-                        IsHide = true,
-                        CreatedAt = existingPhoto.CreatedAt,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = existingPhoto.PostPosition,
-                        GroupId = existingPhoto.GroupId,
-                        IsBanned = existingPhoto.IsBanned,
-                        IsPending = existingPhoto.IsPending,
-                    };
-                    _context.GroupPostPhotos.Update(newGroupPostPhoto);
-                }
-            }
-
-            // Ẩn các video không có trong danh sách cập nhật
-            foreach (var existingVideo in existingVideos)
-            {
-                if (!newVideoUrls.Contains(existingVideo.GroupVideo.VideoUrl))
-                {
-                    var newGroupPostVideo = new Domain.CommandModels.GroupPostVideo
-                    {
-                        GroupPostVideoId = existingVideo.GroupPostVideoId,
-                        GroupPostId = existingVideo.GroupPostId,
-                        GroupVideoId = existingVideo.GroupVideoId,
-                        Content = existingVideo.Content,
-                        GroupPostVideoNumber = existingVideo.GroupPostVideoNumber,
-                        GroupStatusId = existingVideo.GroupStatusId,
-                        IsHide = true,
-                        CreatedAt = existingVideo.CreatedAt,
-                        UpdatedAt = DateTime.Now,
-                        PostPosition = existingVideo.PostPosition,
-                        GroupId = existingVideo.GroupId,
-                        IsBanned = existingVideo.IsBanned,
-                        IsPending = existingVideo.IsPending,
-                    };
-                    _context.GroupPostVideos.Update(newGroupPostVideo);
-                }
-            }
-            await _context.SaveChangesAsync();
-
+            
             var result = _mapper.Map<UpdateGroupPostCommandResult>(gp1);
             result.BannedWords = new List<BannedWord>();
             result.BannedWords = haveBadWord;

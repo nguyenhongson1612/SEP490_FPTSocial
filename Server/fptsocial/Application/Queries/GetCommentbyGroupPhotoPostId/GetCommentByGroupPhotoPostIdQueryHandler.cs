@@ -34,8 +34,9 @@ namespace Application.Queries.GetCommentbyGroupPhotoPostId
 
             var commentsQuery = from c in _context.CommentPhotoGroupPosts // Thay đổi bảng truy vấn
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
+                                  join u in _context.UserPosts on c.UserId equals u.UserId
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                  where c.GroupPostPhotoId == request.GroupPostPhotoId && c.IsHide == false && c.IsBanned != true
+                                  where c.GroupPostPhotoId == request.GroupPostPhotoId && c.IsHide == false && c.IsBanned != true && u.User.IsActive == true
                                   select new GroupPhotoCommentDto // Sử dụng DTO tương ứng cho photo comment
                                   {
                                       UserId = c.UserId,
