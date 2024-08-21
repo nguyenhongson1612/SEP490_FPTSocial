@@ -85,22 +85,12 @@ const Chatbot = () => {
   useEffect(() => {
     const initChat = async () => {
       try {
-        const file1 = await fetch('/src/assets/documents/report1.txt').then(res => res.text())
-        const file2 = await fetch('/src/assets/documents/report2.txt').then(res => res.text())
-        const file3 = await fetch('/src/assets/documents/report3.txt').then(res => res.text())
-        const file4 = await fetch('/src/assets/documents/report4.txt').then(res => res.text())
-        const file5 = await fetch('/src/assets/documents/report5.txt').then(res => res.text())
-        const file6 = await fetch('/src/assets/documents/report6.txt').then(res => res.text())
+        const file1 = await fetch('/src/assets/documents/report7.txt').then(res => res.text())
         const initialHistory = [
           {
             role: "user",
             parts: [
               { text: file1 },
-              { text: file2 },
-              { text: file3 },
-              { text: file4 },
-              { text: file5 },
-              { text: file6 },
             ],
           },
         ]

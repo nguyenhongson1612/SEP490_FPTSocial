@@ -2,32 +2,19 @@ import { Button, IconButton, Modal } from '@mui/material'
 import { IconArrowBackUp } from '@tabler/icons-react'
 import { useCallback, useEffect, useState } from 'react'
 import { handleReport } from '~/apis/report'
-import { getListReportUser } from '~/apis/adminApis/reportsApis'
+import { deactiveUserByUserId, getListReportUser } from '~/apis/adminApis/reportsApis'
 import { useConfirm } from 'material-ui-confirm'
 import { useDispatch } from 'react-redux'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import ListUserReported from '../ListUserReported'
+import { getOtherUserPost } from '~/apis/postApis'
+import ListPost from '~/components/ListPost/ListPost'
 
 function ReportProfileDetailModal({ open, setOpen, userId }) {
   const handleClose = () => setOpen(false)
   const dispatch = useDispatch()
 
   const [reportedObject, setReportedObject] = useState({})
-
-  let paramPostId = {}
-  let postType = ''
-  let postId = ''
-  let fetchFunction
-  let removeFunction
-
-  useEffect(() => {
-    (async () => {
-      // await fetchFunction(postId).then(data => {
-      //   setReportedObject({ ...data, postType: postType })
-      // })
-    })()
-  }, [])
-
   const getUserReportedFn = useCallback(({ page }) => getListReportUser({ page, userId: userId }), [])
 
   const confirm = useConfirm()
@@ -48,7 +35,7 @@ function ReportProfileDetailModal({ open, setOpen, userId }) {
       },
     })
       .then(() => {
-        handleReport({ 'reportType': 'User', 'isAccepted': true, userId: userId }).then(() => removeFunction(postId))
+        handleReport({ 'reportType': 'User', 'isAccepted': true, userId: userId }).then(() => deactiveUserByUserId(userId))
       })
       .catch(() => {
         handleReport({ 'reportType': 'User', 'isAccepted': false, userId: userId })
@@ -76,10 +63,10 @@ function ReportProfileDetailModal({ open, setOpen, userId }) {
               <Button variant='contained' color='primary' sx={{ height: '30px' }} onClick={handleReportPost} size='small'>Handle Report</Button>
             </div>
           </div>
-          <div className='border h-full grid grid-cols-12'>
-            <div className='col-span-7 border-r  overflow-y-auto scrollbar-none-track '>
-              <div className='pointer-events-none mb-20 mt-4 flex justify-center'>
-                {/* <Post postData={reportedObject} /> */}
+          <div className='border h-full grid grid-cols-12 '>
+            <div className='col-span-7 border-r  overflow-y-auto scrollbar-none-track bg-fbWhite'>
+              <div className=' mb-20 mt-4 flex justify-center'>
+                <ListPost getListPostFn={({ page, pageSize }) => getOtherUserPost({ userId: userId, page, pageSize })} isBan={true} isAdmin={true} />
               </div>
             </div>
             <ListUserReported getUserReportedFn={getUserReportedFn} />

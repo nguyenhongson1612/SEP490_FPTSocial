@@ -74,7 +74,7 @@ function GroupReports() {
                 </td>
 
                 <td className="">
-                  <div className='flex items-center gap-2 cursor-pointer' onClick={() => handleViewDetailReport(report)}>
+                  <div className='flex items-center gap-2 cursor-pointer hover:shadow-lg p-4 rounded-md' onClick={() => handleViewDetailReport(report)}>
                     <GroupAvatar avatarSrc={report?.groupCoverImage} />
                     <span className='font-semibold capitalize text-black'>{report?.groupName}</span>
                   </div>

@@ -17,28 +17,22 @@ export const interceptorLoadingElements = (calling) => {
 }
 
 export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
-  if (isIncludeMedia) {
-    const mediaRegex = /<!--MEDIA:(video|image):(.+?)-->/g
-    const mediaMatches = [...html.matchAll(mediaRegex)]
+  console.log('🚀 ~ cleanAndParseHTML ~ html:', html);
+  if (isIncludeMedia && typeof html === 'string') {
+    const mediaRegex = /<!--MEDIA:(video|image):(.+?)-->/g;
+    const mediaMatches = Array.from(html.matchAll(mediaRegex));
 
     if (mediaMatches.length > 0) {
       const mediaInfo = mediaMatches.map(match => ({
         type: match[1],
         url: match[2]
-      }))
-      return mediaInfo
+      }));
+      return mediaInfo;
     }
-    else return []
+    else return [];
   }
-  const purifyConfig = {
-    // ALLOWED_TAGS: ['p', 'span', 'b', 'i', 'em', 'strong', 'a', 'br'],
-    // ALLOWED_ATTR: ['style', 'href', 'target'],
-    // ALLOW_DATA_ATTR: false,
-    // ADD_TAGS: ['span'],
-    // ADD_ATTR: ['style'],
-  }
-  const cleanHtml = parse(DOMPurify.sanitize(html, purifyConfig))
-  return cleanHtml
+  const cleanHtml = parse(DOMPurify.sanitize(html));
+  return cleanHtml;
 };
 
 export const compareDateTime = (date) => {

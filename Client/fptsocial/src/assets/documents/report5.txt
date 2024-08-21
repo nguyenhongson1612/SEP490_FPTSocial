@@ -1,132 +1,0 @@
-
-
-
-
-
-
-
-
-
-CAPSTONE PROJECT REPORT
-Report 5 - Software Test Documentation
-
-
-
-
-
-
-
-
-
-- Hanoi, August 2019 -
-Table of Contents
-I. Record of Changes	3
-II. Testing Documentation	4
-1. Scope of Testing	4
-2. Test Strategy	4
-2.1 Testing Types	4
-2.2 Test Levels	4
-2.3 Supporting Tools	4
-3. Test Plan	4
-3.1 Human Resources	4
-3.2 Test Environment	5
-3.3 Test Milestones	5
-4. Test Cases	5
-5. Test Reports	5
-
-
-
-I. Record of Changes
-DateA*
-M, DIn chargeChange Description19/07/2024ABùi Qu?c AnhI.Record of Changes, II.Testing Documentation*A - Added M - Modified D - Deleted
-
-
-II. Testing Documentation
-1. Scope of Testing
-1.1. Testing Objective
-    1.1.1. Functional Testing
-- Team members focus on the functions of the actor to be tested and executed.
-    1.1.2. Non-Functional Testing
--          Usability:
-?        Reducing the number of user actions to interact with the screen enhances the system's user-friendliness.
-?        Verify errors during interactions and provide on-screen feedback messages for users.
--          Security:
-?        The user account is authorized, allowing access to features corresponding to their role.
--          Maintainability:
-?        The source code structure is intentionally organized to facilitate maintenance and extensibility.
-1.2. Testing Scope
-            	Scope of testing the FPT eLIS include:
--          Features: Check each feature of the FUSP application
--    Bug types and severities: List functional, content, visual, usability error types by low, medium, high severity.
--          Requested devices: Using multi devices such as laptop, pc, etc.. to check responsive
-
-2. Test Strategy
-       In general, the FPT eLIS project follows the V-model testing for software testing to accommodate frequent changes in customer requirements. Additionally, due to regular interaction between the development team and the customer, promptly addressing issues and bugs is crucial.
-       
-       
-2.1 Testing Types
-
-       The different types of testing that will be carried out this project are:
-? Functional Testing: We execute functional testing to test functions and check
-       if each function is correct or not.
-? GUI Testing: We execute user interface testing, including some features such
-       as colour, spell, background, component, and resolution of screen
-? API Testing: We execute API testing to test the API of back-end services and
-       check if the data the Front-end service receive is true or not 
-
-2.2 Test Levels
-
-Type of TestsTest LevelUnitIntegrationSystemFunctional TestXXXGUI TestXXAPI TestXX
-2.3 Supporting Tools
-
-PurposeToolVendor/In-houseVersionAPI TestingPostman, SwaggerVendor Unit TestingXUnit (Visual Studio)Vendor UI/UX TestingChrome, Microsoft EdgeVendor Integration TestingChrome, Microsoft EdgeVendor Manage defects log, test casesGoogle SheetsVendor Manage issuesGoogle SheetsVendor 
-3. Test Plan
-3.1 Human Resources
-
-Worker/DoerRoleSpecific Responsibilities/CommentsHoanNKPM, Test Leader, Developer  ? Create test plan 
-  ? Execute IT test SonNHDeveloper, 
-Test Member   ? Execute IT test QuanNATechlead, 
-Test Member   ? Execute IT test 
-  ? Create test report 
-  ? Fix bugHoanLHDeveloper, 
-Test Member   ? Execute IT test 
-  ? Create test report 
-  ? Fix bugAnhBQDocumentation,
-Test Member   ? Execute IT test 
-  ? Create test report 
-3.2 Test Environment
-
-PurposeToolProviderVersionBuild test environment? Visual Studio  MicrosoftCommunity 2022 (64-bit) - Version 17.10.5
-  Test API
-? Postman
-? Swagger
-  Postman
-    Microsoft  10.24.1
-3.3 Test Milestones
-
-Milestone TaskStart DateEnd DateIteration 3Unit Testing  25/06/2024  27/06/2024Integration Testing  27/06/2024  29/06/2024Iteration 4Unit Testing  09/07/2024  11/07/2024Integration Testing  12/07/2024  14/07/2024Iteration 5Unit Testing  24/07/2024  26/07/2024Integration Testing  27/07/2024  29/07/2024Iteration 6Unit Testing  08/08/2024  10/08/2024Integration Testing  11/08/2024  13/08/2024System Testing  11/08/2024  13/08/2024Iteration 7Unit Testing  14/08/2024  16/08/2024Integration Testing  17/08/2024  19/08/2024System Testing  17/08/2024  19/08/2024
-4. Test Cases
-
-FUSP Test CasesUnit TestReport5_Unit Test.xlsxIntegration TestReport5_Integration Test Report.xlsxSystem TestReport5_System Test Report
-5. Test Reports
-5.1 Unit Test
-
-Figure 5.1.1: Unit Test Statistic
-
-
-5.2 Integration Test
-
-
-Figure 5.2.1: Integration Test Statistic
-
-Figure 5.2.2: Integration Test Case Sample
-
-5.3 System Test
-
-
-Figure 5.3.1: System Test Statistic
-
-
-Figure 5.3.2: System Test Case Sample
-
-5.4 PenTest

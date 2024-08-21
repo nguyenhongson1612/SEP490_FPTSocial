@@ -73,7 +73,7 @@ function UserReports() {
                 </td>
 
                 <td className="">
-                  <div className='flex items-center gap-2' onClick={() => handleViewDetailReport(report)}>
+                  <div className='flex items-center gap-2 cursor-pointer hover:shadow-lg p-4 rounded-md' onClick={() => handleViewDetailReport(report)}>
                     <Avatar src={report?.avatarUrl} />
                     <span className='font-semibold capitalize text-black'>{report?.userName}</span>
                   </div>

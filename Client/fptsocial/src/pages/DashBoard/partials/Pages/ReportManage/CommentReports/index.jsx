@@ -77,6 +77,20 @@ function CommentReports() {
                 <td className="">
                   <div className='flex items-center gap-2 cursor-pointer' onClick={() => handleViewDetailReport(report)}>
                     <span className='font-semibold capitalize text-black'>{cleanAndParseHTML(report?.content)}</span>
+                    <div className='max-w-[300px]'>
+                      {(() => {
+                        const mediaContent = cleanAndParseHTML(report?.content, true)
+                        if (Array.isArray(mediaContent) && mediaContent.length > 0) {
+                          const firstMedia = mediaContent[0]
+                          if (firstMedia.type === 'image') {
+                            return <img src={firstMedia.url} alt="Report content" />
+                          } else if (firstMedia.type === 'video') {
+                            return <video src={firstMedia.url} controls />
+                          }
+                        }
+                        return null
+                      })()}
+                    </div>
                   </div>
                 </td>
                 <td className="">{report?.numberReporter} reports</td>
