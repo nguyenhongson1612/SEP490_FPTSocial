@@ -26,7 +26,7 @@ import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { useTranslation } from 'react-i18next'
 
 
-function PostTitle({ postData, isYourPost, postType, isBan }) {
+function PostTitle({ postData, isYourPost, postType, isBan, isAdmin = false }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const listStatus = useSelector(selectListUserStatus)
   const { t } = useTranslation()
@@ -192,11 +192,13 @@ function PostTitle({ postData, isYourPost, postType, isBan }) {
           </div>
         </div>
       </div>
+      {
+        !isAdmin && <div
+          className="rounded-full flex justify-center items-center hover:bg-fbWhite cursor-pointer size-10"
+          onClick={handleClick}
+        ><IconDots /></div>
+      }
 
-      <div
-        className="rounded-full flex justify-center items-center hover:bg-fbWhite cursor-pointer size-10"
-        onClick={handleClick}
-      ><IconDots /></div>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"

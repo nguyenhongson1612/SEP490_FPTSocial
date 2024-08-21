@@ -1,855 +1,0 @@
-
-
-
-
-
-
-
-
-
-CAPSTONE PROJECT REPORT
-Report 4 - Software Design Document
-
-
-
-
-
-
-
-- Hanoi, August 2019 -
-
-
-Table of Contents
-I. Record of Changes	3
-II. Software Design Document	4
-1. System Design	4
-1.1 System Architecture	4
-1.2 Package Diagram	4
-2. Database Design	4
-3. Detailed Design	5
-3.1 <Feature/Function Name1>	5
-3.2 <Feature/Function Name2>	6
-
-
-
-I. Record of Changes
-DateA*
-M, DIn chargeChange Description*A - Added M - Modified D - Deleted
-
-
-II. Software Design Document
-1. System Design
-1.1 System Architecture
-
-Figure 1.1. System overview diagram
-1.1.1 System High-Level Design
-1.1.1.1 CQRS in FUSP
- 	The social networking application "FUSP" is a platform where user interactions are primarily through reading content, including posts, comments, and user profiles. The volume of read operations is significantly higher compared to write operations, although the latter still needs to be handled with accuracy and efficiency.
-
-Figure 1.2.  FUSP's Back-end architecture (CQRS Pattern)
-Specific Issues:
-- High Read Load:
-? High read load: A significant number of read requests, especially as users continuously browse posts, view profiles, and search for content.
-? Low latency: Users expect quick and smooth data retrieval.
-? Consistency: Read data must be consistent and accurate, especially when users perform updates or add new content.
-
-- Write Load:
-? Lower but critical write load: Actions like posting, commenting, and liking posts need to be processed accurately and promptly to maintain a good user experience.
-? Consistency: Ensuring newly updated data is consistent and accurately reflected in subsequent read operations.
-
-- Bottlenecks and Performance:
-? Data bottlenecks: Processing both read and write loads on a single database can lead to bottlenecks and reduced performance.
-? Scalability: The system must be scalable to handle increasing traffic over time.
-
-- Maintenance and Development:
-? Complexity: Maintaining a single database for both read and write operations can be complex and prone to errors.
-? Development flexibility: The system needs to easily integrate new features without impacting performance and data consistency.
-
-Solution Approach:
-       Using CQRS to separate read and write operations helps optimize and enhance the system's performance.
-- Separate Read and Write Models:
-? Command Model: Data model and write operations such as creating posts, updating profiles, adding comments.
-? Query Model: Data model and read operations such as querying posts, searching for users, viewing profiles.
-
-- Implement Command Model:
-? Use a database designed for writes, like SQL Server or NoSQL databases.
-? Build APIs to handle commands like creating, updating, deleting data.
-
-- Implement Query Model:
-? Use a database optimized for querying and reading data.
-? Build APIs to handle queries, optimized for fast and efficient data retrieval.
-
-Benefits of Implementing CQRS:
-- Improved Performance: Optimizes the handling of read and write requests separately.
-- Scalability: Easily scale individual parts of the system independently.
-- Consistency: Use synchronization mechanisms to ensure data consistency across models.
-
-1.1.1.2 Back-end component
-? Chat Engine
-
-       We use chatengine.io as the core and customize it with project data and logic to develop the chat feature.
-       
-? SignalR
-
-       We use signalR to develop a real-time notifications system.
-       
-? Cloudinary (Cloud)
-
-	We use Cloudinary to store large data, media such as: photos, videos,... to serve features such as: posting photos, videos or avatars.
-
-? GeminiAI
-
-	We use GeminiAI for FAQ purposes as well as content on the FUSP system.
-
-1.1.2 Algorithms used in FUSP
-1.1.2.1 The Knuth-Morris-Pratt algorithm
-       The social network application "FUSP" aims to provide a safe and compliant environment for users. To achieve this, it is important to effectively detect and filter out posts that contain offensive or banned words. With the desire to help moderation teams and administrators more easily detect violating content, this requires a powerful and effective text search algorithm that can quickly identify words. or specific phrases in user-generated content.
-       
-- Specific Issues:
-? High Volume of Content: Users generate a significant amount of content continuously, requiring real-time text analysis.
-? Efficiency and Speed: The algorithm needs to be fast enough to handle large volumes of text without causing delays in content posting.
-? Accuracy: It must accurately identify prohibited words to ensure the safety and compliance of the platform.
-? Scalability: The solution must scale with the growing number of users and the corresponding increase in content volume.
-
-- Solution approach: Use the Knuth-Morris-Pratt (KMP) algorithm for the following reasons:
-? Linear Time Complexity: The KMP algorithm has a time complexity of O(n + m), where n is the length of the text and m is the length of the pattern (prohibited word). This ensures that even for large texts, the search operation remains efficient.
-? Preprocessing Step: KMP preprocesses the pattern to create a partial match table (also known as the "pi" table) which helps in skipping unnecessary comparisons during the search. This preprocessing step runs in O(m) time.
-? Efficient Search: Unlike naive search algorithms that can degrade to O(n*m) in the worst case, KMP efficiently skips over portions of the text that have been matched already, making it much faster.
-? Robustness: The algorithm is well-suited for applications requiring frequent and rapid text searches, ensuring that all instances of prohibited words are detected without repeated scanning.
-
-
-1.1.2.2 The EdgeRank algorithm
-       The social networking application "FUSP" aims to provide a personalized and engaging user experience by displaying relevant posts to users. With a high volume of user-generated content, it becomes essential to prioritize and rank posts effectively to ensure that users see the most relevant and engaging content first.
-       
-- Specific Issues:
-? Content Overload: Users generate a vast amount of content daily, making it challenging to show every post in a user's feed.
-? Relevance: Not all posts are equally relevant to every user. It is crucial to prioritize content that is more likely to engage the user.
-? User Engagement: Displaying relevant posts can increase user engagement and time spent on the platform.
-? Updates: The ranking algorithm needs to work, reflect the latest interactions and activities.
-       
-- Using the EdgeRank Algorithm (simple, lite version)
-       EdgeRank determines the relevance of posts in a user's news feed. It scores and ranks posts based on three main factors:
-? Affinity: The relationship between the user and the content creator. Higher interaction frequency between the user and the creator increases the affinity score. (This is the most difficult factor and we have not yet implemented it in the project)
-? Weight: The type of interaction. Different types of interactions (likes, comments, shares) have different weights. Comments and shares generally carry more weight than likes.
-? Time Decay: The age of the post. Newer posts are prioritized over older ones to keep the content fresh and timely.
-       
-	
-1.2 Package Diagram
-1.2.1 Front-end Package Diagram
-
-Package Descriptions
-NoPackageDescription01assetsFolder containing external elements (img, gift, svg, icons,...)02componentsSharing component react element 03pagesSource code of page04apisHttp request config for call api05ultilsCommon functions support app06imgFolder containing images
-1.2.2 Back-end Package Diagram
-
-
-Package Descriptions
-NoPackageDescription01ControllerContains classes that are defined as controllers, the main function is connected between client and server through API endpoints02MapperContains class definitions and methods to map between two objects (serving for auto mapper)03MiddlewaresContains classes that define Middlewares methods such as: handle authentication, handle exception, handle email, SQL table dependency, etc04HubContains classes that are defined as hub (signalR) and hub service, the main function is connected between client and server through WebSocket05CQRSDefine command and query interfaces to serve the implementation of CQRD architecture06HelperContains classes that define common functions07CommandsContains classes that implement main logic with methods whose purposes are: create, update, delete (write to database)08QueriesContains classes that implement main logic with methods whose purposes are: select (read from database)09DTOContains classes that declare necessary attributes to serve requests and responses10ServicesContains classes with methods (code base) of services11ApiModelsContains classes with methods (codebase) to create custom api12CommandModelsContains entities that interact with the database (reserved for database writing)13QueryModelsContains entities that interact with the database (reserved for database reading)14EnumsDefine enums for notifications, entities type and exceptions15ExceptionsCodebase for exception types16ExtensionsContains some  common method for enum,...
-2. Database Design
-2.1 Operational Database Design
-
-[1]
-2.2 Table Description
-2.2.1 AvataPhoto
-
-#Field NameTypeUniqueNot NullPK/FKNote1AvataPhotosIduniqueidentifierxxPK 2AvataPhotosUrlvarchar(2000) x  3UserIduniqueidentifier x FK  4UserStatusIduniqueidentifier xFK 5IsUsedbit  x  6CreatedAtdatetime   7UpdatedAtdatetimeTable 2.1. AvataPhoto
-
-2.2.2 BlockType
-
-#Field NameTypeUniqueNot NullPK/FKNote1BlockTypeIduniqueidentifierxxPK 2BlockTypeNamevarchar(100) x  3CreatedAtdatetime   4UpdatedAtdatetimeTable 2.2. BlockType
-2.2.3 BlockUser
-
-#Field NameTypeUniqueNot NullPK/FKNote1BlockUserIduniqueidentifierxxPK 2UserIduniqueidentifier x FK 3UserIsBlockedIduniqueidentifierxFK4BlockTypeIduniqueidentifierFK5IsBlockbit6CreatedAtdatetime   7UpdatedAtdatetimeTable 2.3. BlockUser
-2.2.4 CommentGroupPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.4. CommentGroupPost
-2.2.5 CommentGroupVideoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupVideoPostIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.5. CommentGroupVideoPost
-
-2.2.6 CommentPhotoGroupPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentPhotoGroupPostIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4GroupStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.6. CommentPhotoGroupPost
-2.2.7 CommentPhotoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentPhotoPostIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.7. CommentPhotoPost
-2.2.8 CommentPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentIduniqueidentifierxxPK 2UserPostIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.8. CommentPost
-2.2.9 CommentVideoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentVideoPostIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifier xFK 3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5ParentCommentIduniqueidentifier6Contenttext7IsHidebit8CreatedAtdatetime   Table 2.9. CommentVideoPost
-2.2.10 ContactInfo
-
-#Field NameTypeUniqueNot NullPK/FKNote1ContactInfoIduniqueidentifierxxPK 2UserStatusIduniqueidentifier xFK 3UserIduniqueidentifierxFK4SecondEmailvarchar(255)5PrimaryNumbervarchar(11)x6SecondNumbervarchar(11)7CreatedAtdatetime   8UpdatedAtdatetimeTable 2.10. ContactInfo
-2.2.11 Follower
-
-#Field NameTypeUniqueNot NullPK/FKNote1FollowerIduniqueidentifierxxPK 2FollowedIduniqueidentifier xFK Table 2.11. Follower
-2.2.12 Gender
-
-#Field NameTypeUniqueNot NullPK/FKNote1GenderIduniqueidentifierxxPK 2GenderNamevarchar(1000) x 3CreatedAtdatetime4UpdatedAtdatetimeTable 2.12. Gender
-2.2.13 ReactSharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactSharePostIduniqueidentifierxxPK 2SharePostIduniqueidentifier xFK 3ReactTypeIduniqueidentifierx4UserIduniqueidentifierxFK5CreateDatedatetimeTable 2.13. ReactSharePost
-2.2.14 PostReactCount
-
-#Field NameTypeUniqueNot NullPK/FKNote1PostReactCountIduniqueidentifierxxPK 2UserPostIduniqueidentifier xFK 3UserPostPhotoIduniqueidentifierxFK4UserPostVideoIduniqueidentifierxFK5ReactCountint6CommentCountint7ShareCountint8CreateAtdatetime9UpdateAtdatetimeTable 2.14. PostReactCount
-2.2.15 ReactGroupSharePostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupSharePosCommentIduniqueidentifierxxPK 2GroupSharePostIduniqueidentifier xFK 3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CommentGroupSharePostIduniqueidentifier6CreatedDatedatetimeTable 2.15. ReactGroupSharePostComment
-2.2.16 GroupFPT
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupIduniqueidentifierxxPK 2CreatedByIduniqueidentifierxFK3GroupTypeIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5GroupNumbervarchar(50)  6GroupNamenvarchar(200)x7GroupDescriptionnvarchar(1000)x8CreateAtdatetime9UpdateAtdatetimeTable 2.16. GroupFPT
-2.2.17 GroupInvitation
-
-#Field NameTypeUniqueNot NullPK/FKNote1InvitationIduniqueidentifierxxPK 2InviterIduniqueidentifierxFK3InvitedIduniqueidentifierxFK4GroupIduniqueidentifierxFK5StatusAcceptbit x 8CreateAtdatetime9UpdateAtdatetimeTable 2.17. GroupInvitation
-2.2.18 GroupMember
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupIduniqueidentifierxxPK 2UserIduniqueidentifierxPK3GroupRoleIduniqueidentifierxFK4IsJoinedbit5JoinedDatedatetimeTable 2.18. GroupMember
-2.2.19 GroupPhoto
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupPhotoIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoUrlvarchar(1000)x5PhotoBigUrlvarchar(1000)6PhotoSmallUrlvarchar(1000)7GroupPhotoNumbervarchar(50)8CreateAtdatetime9UpdateAtdatetimeTable 2.19. GroupPhoto
-2.2.20 GroupPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupPostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3GroupStatusIduniqueidentifierxFK4GroupPhotoIduniqueidentifierFK5GroupVideoIduniqueidentifierFK6Contenttext7GroupPostNumbervarchar(50)8IsHidebit9NumberPostint10CreateAtdatetime11UpdateAtdatetimeTable 2.20. GroupPost
-2.2.21 GroupPostPhoto
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupPostPhotoIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupPhotoIduniqueidentifierxFK4GroupPhotoIduniqueidentifierxFK5PostPositionint6Contenttext7GroupPostPhotoNumbervarchar(50)8IsHidebit9CreateAtdatetime10UpdateAtdatetimeTable 2.21. GroupPostPhoto
-2.2.22 GroupPostVideo
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupPostVideoIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupVideoIduniqueidentifierxFK4GroupVideoIduniqueidentifierxFK5PostPositionint6Contenttext7GroupPostPhotoNumbervarchar(50)8IsHidebit9CreateAtdatetime10UpdateAtdatetimeTable 2.22. GroupPostVideo
-2.2.23 GroupRole
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupRoleIduniqueidentifierxxPK 2GroupRoleNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.23. GroupRole
-2.2.24 GroupSetting
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupSettingIduniqueidentifierxxPK 2GroupSettingNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.24. GroupSetting
-2.2.25 GroupSettingUse
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupSettingIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3GroupStatusIduniqueidentifierxFK4CreatedAtdatetime5UpdatedAtdatetimeTable 2.25. GroupSettingUse
-2.2.26 GroupSharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupSharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserPostIduniqueidentifier4UserPostVideoIduniqueidentifier5UserPostPhotoIduniqueidentifier6GroupPostIduniqueidentifier7GroupPostPhotoIduniqueidentifier8GroupPostVideoIduniqueidentifier9SharedToUserIduniqueidentifier10Contenttext11CreatedAtdatetimeTable 2.26. GroupSharePost
-2.2.27 GroupSettingUse
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupStatusIduniqueidentifierxxPK 2GroupStatusNamevarchar(100)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.27. GroupSettingUse
-2.2.28 GroupTag
-
-#Field NameTypeUniqueNot NullPK/FKNote1TagIduniqueidentifierxxPK 2TagNamevarchar(255)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.28. GroupTag
-2.2.29 GroupTagUsed
-
-#Field NameTypeUniqueNot NullPK/FKNote1TagIduniqueidentifierxxPK 2GroupIduniqueidentifierxPK3UserStatusIduniqueidentifier xFK4CreatedAtdatetime5UpdatedAtdatetimeTable 2.29. GroupTagUsed
-2.2.30 GroupType
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupTypeIduniqueidentifierxxPK 2GroupTypeNamevarchar(100)xFK3CreatedAtdatetime4UpdatedAtdatetimeTable 2.30. GroupType
-2.2.31 GroupVideo
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupVideoIduniqueidentifierxxPK 2GroupIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4VideoUrlvarchar(1000)x5GroupVideoNumbervarchar(50)6CreatedAtdatetime7UpdatedAtdatetimeTable 2.31. GroupVideo
-2.2.32 Interest
-
-#Field NameTypeUniqueNot NullPK/FKNote1InterestIduniqueidentifierxxPK 2InterestNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.32. Interest
-2.2.33 LookingFor
-
-#Field NameTypeUniqueNot NullPK/FKNote1LookingForIduniqueidentifierxxPK 2LookingForNamevarchar(1000)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.33. LookingFor
-2.2.34 Notifications
-
-#Field NameTypeUniqueNot NullPK/FKNote1NotificationIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3SenderIduniqueidentifierxFK4NotificationTypeIduniqueidentifierxFK5UserStatusIduniqueidentifierxFK6NotiMessagevarchar(255)7IsReadbit8CreatedAtdatetimeTable 2.34. Notifications
-2.2.35 NotificationType
-
-#Field NameTypeUniqueNot NullPK/FKNote1NotificationTypeIduniqueidentifierxxPK 2NotificationTypeNamevarchar(100)x3CreatedAtdatetime4UpdatedAtdatetimeTable 2.35. NotificationType
-
-2.2.36 Photo
-
-#Field NameTypeUniqueNot NullPK/FKNote1PhotoIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoUrlvarchar(1000)x5PhotoBigUrlvarchar(1000)6PhotoSmallUrlvarchar(1000)7PhotoNumbervarchar(50)8CreatedAtdatetime9UpdatedAtdatetimeTable 2.36. Photo
-2.2.37 ReactComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactCommentIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentIduniqueidentifierxFK6CreatedAtdatetimeTable 2.37. ReactComment
-2.2.38 ReactGroupSharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupSharePostIduniqueidentifierxxPK 2GroupSharePostIduniqueidentifierxFK3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CreatedDatedatetimeTable 2.38. ReactGroupSharePost
-2.2.39 ReactGroupCommentPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupCommentPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentGroupPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.39. ReactGroupCommentPost
-2.2.40 ReactGroupPhotoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupPhotoPostIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.40. ReactGroupPhotoPost
-2.2.41 ReactGroupPhotoPostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostCommentIduniqueidentifierxxPK 2GroupPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentPhotoGroupPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.41. ReactGroupPhotoPostComment
-2.2.42 ReactGroupPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupPostIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.42. ReactGroupPost
-2.2.43 ReactGroupVideoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupVideoPostIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.43. ReactGroupVideoPost
-2.2.44 ReactGroupVideoPostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactGroupVideoCommentIduniqueidentifierxxPK 2GroupPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentGroupVideoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.44. ReactGroupVideoPostComment
-
-2.2.45 ReactPhotoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.45. ReactPhotoPost
-2.2.46 ReactPhotoPostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactPhotoPostCommentIduniqueidentifierxxPK 2UserPostPhotoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentPhotoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.46. ReactPhotoPostComment
-2.2.47 ReactPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactPostIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.47. ReactPost
-2.2.48 ReactType
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactTypeIduniqueidentifierxxPK 2ReactTypeNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.48. ReactType
-
-2.2.49 ReactSharePostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactSharePosCommentIduniqueidentifierxxPK 2SharePostIduniqueidentifierxFK3ReactTypeIduniqueidentifierxFK4UserIduniqueidentifierxFK5CommentSharePostIduniqueidentifierxFK6CreatedDatedatetimeTable 2.49. ReactSharePostComment
-
-2.2.50 ReactVideoPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactVideoPostIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CreatedAtdatetimeTable 2.50. ReactVideoPost
-
-2.2.51 ReactVideoPostComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReactVideoPostCommentIduniqueidentifierxxPK 2UserPostVideoIduniqueidentifierxFK3UserIduniqueidentifierxFK4ReactTypeIduniqueidentifierxFK5CommentVideoPostIduniqueidentifierxFK6CreatedAtdatetimeTable 2.51. ReactVideoPostComment
-2.2.52 Relationship
-
-#Field NameTypeUniqueNot NullPK/FKNote1RelationshipIduniqueidentifierxxPK 2RelationshipNamevarchar(100)xFK3CreatedAtdatetime4UpdateAtdatetimeTable 2.52. Relationship
-2.2.53 ReportComment
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReportCommentIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3CommentIduniqueidentifierxFK4CommentPhotoPostIduniqueidentifierxFK5CommentVideoPostIduniqueidentifierxFK6CommentGroupPostIduniqueidentifierxFK7CommentPhotoGroupPostIduniqueidentifierxFK8CommentGroupVideoPostIduniqueidentifierxFK9ReportByIduniqueidentifierxFK10Contenttext11ReportStatusbit12CreatedAtdatetimeTable 2.53. ReportComment
-2.2.54 CommentSharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentSharePostIduniqueidentifierxxPK 2SharePostIduniqueidentifierxFK3UserIduniqueidentifierxFK4ParentCommentIduniqueidentifier5Contentntext6ListNumbervarchar(100)7LevelCmtint8IsHidebit9IsBannedbit10CreatedAtdatetimeTable 2.54. CommentSharePost
-2.2.55 ReportPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReportPostIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3GroupPostIduniqueidentifierxFK4UserPostIduniqueidentifierxFK5ReportByIduniqueidentifierxFK6ReportStatusbit7CreatedAtdatetimeTable 2.55. ReportPost
-2.2.56 ReportProfile
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReportProfileIduniqueidentifierxxPK 2ReportTypeIduniqueidentifierxFK3GroupIduniqueidentifierxFK4UserIduniqueidentifierxFK5ReportByIduniqueidentifierxFK6ReportStatusbit7CreatedAtdatetimeTable 2.56. ReportProfile
-2.2.57 ReportType
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReportTypeIduniqueidentifierxxPK 2ReportTypeNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.57. ReportType
-2.2.58 ReportProfile
-
-#Field NameTypeUniqueNot NullPK/FKNote1ReportTypeIduniqueidentifierxFK2UserChatIduniqueidentifierxFK3ReportByIduniqueidentifierxFK4ReportStatusbit5CreatedAtdatetimeTable 2.58. ReportProfile
-2.2.59 Role
-
-#Field NameTypeUniqueNot NullPK/FKNote1RoleIduniqueidentifierxxPK 2NameRolenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.59. Role
-2.2.60 Setting
-
-#Field NameTypeUniqueNot NullPK/FKNote1SettingIduniqueidentifierxxPK 2SettingNamenvarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.60. Setting
-2.2.61 SharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1SharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserPostIduniqueidentifierFK4UserPostVideoIduniqueidentifierFK5UserPostPhotoIduniqueidentifierFK6GroupPostIduniqueidentifierFK7GroupPostPhotoIduniqueidentifierFK8GroupPostVideoIduniqueidentifierFK9SharedToUserIduniqueidentifierFK10Contenttext11CreatedAtdatetimeTable 2.61. SharePost
-2.2.62 UserChat
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserChatIduniqueidentifierxxPK 2UserIduniqueidentifierxFK2NameChatnvarchar(300)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.62. UserChat
-2.2.63 UserChatMessage
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserChatMessageIduniqueidentifierxxPK 2UserChatIduniqueidentifierxFK3FromUserIduniqueidentifierxFK4MessageChattextx5IsPinbit6IsHidebit7CreatedAtdatetimeTable 2.63. UserChatMessage
-2.2.64 UserChatWithUser
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserChatWithUserIduniqueidentifierxxPK 2UserChatIduniqueidentifierxFK3WithUserIduniqueidentifierxFK4CreatedAtdatetimeTable 2.64. UserChatWithUser
-2.2.65 UserGender
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserGenderIduniqueidentifierxxPK 2GenderIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.65. UserGender
-2.2.66 UserInterest
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserInterestIduniqueidentifierxxPK 2InterestIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.66. UserInterest
-2.2.67 UserLookingFor
-
-#Field NameTypeUniqueNot NullPK/FKNote1LookingForIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4CreatedAtdatetime5UpdateAtdatetimeTable 2.67. UserLookingFor
-2.2.68 UserPost
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserPostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4PhotoIduniqueidentifierFK5VideoIduniqueidentifierFK6Contenttext7UserPostNumbervarchar(50)8IsAvataPostbit9IsCoverPhotoPostbit10IsHidebit11NumberPostint12CreatedAtdatetime13UpdateAtdatetimeTable 2.68. UserPost
-2.2.69 UserPostPhoto
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserPostPhotoIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3PhotoIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5Contenttext6UserPostPhotoNumbervarchar(50)7IsHidebit8PostPositionint9CreatedAtdatetime10UpdateAtdatetimeTable 2.69. UserPostPhoto
-2.2.70 UserPostVideo
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserPostVideoIduniqueidentifierxxPK 2UserPostIduniqueidentifierxFK3VideoIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5Contenttext6UserPostVideoNumbervarchar(50)7IsHidebit8PostPositionint9CreatedAtdatetime10UpdateAtdatetimeTable 2.70. UserPostVideo
-2.2.71 UserProfile
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserIduniqueidentifierxxPK 2RoleIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4FirstNamenvarchar(100)x5LastNamenvarchar(100)x6Emailvarchar(255)7FeIdvarchar(255)8BirthDaydatex9AboutMenvarchar(1000)10HomeTownnvarchar(500)11CoverImagevarchar(1000)12UserNumbervarchar(50)13IsFirstTimeLoginbitx14IsActivebitx15CreatedAtdatetime16UpdateAtdatetimeTable 2.71. UserProfile
-2.2.72 UserRelationship
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserRelationshipIduniqueidentifierxxPK 2RelationshipIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFK5CreatedAtdatetime6UpdateAtdatetimeTable 2.72. UserRelationship
-2.2.73 UserSetting
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserSettingIduniqueidentifierxxPK 2SettingIduniqueidentifierxFK3UserIduniqueidentifierxFK4UserStatusIduniqueidentifierxFKTable 2.73. UserSetting
-2.2.74 UserStatus
-
-#Field NameTypeUniqueNot NullPK/FKNote1UserStatusIduniqueidentifierxxPK 2StatusNamevarchar(100)x3CreatedAtdatetime4UpdateAtdatetimeTable 2.74. UserStatus
-2.2.75 Video
-
-#Field NameTypeUniqueNot NullPK/FKNote1VideoIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4VideoUrlvarchar(1000)x5VideoNumbervarchar(50)6CreatedAtdatetime7UpdateAtdatetimeTable 2.75. Video
-
-2.2.76 CommentGroupSharePost
-
-#Field NameTypeUniqueNot NullPK/FKNote1CommentGroupSharePostIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3GroupSharePostIduniqueidentifierxFK4ParentCommentIduniqueidentifier5Contentntextx6ListNumbervarchar(100)7LevelCmtint8IsHidebit9CreatedAtdatetime10IsBannedbitTable 2.76. CommentGroupSharePost
-2.2.77 WorkPlace
-
-#Field NameTypeUniqueNot NullPK/FKNote1WorkPlaceIduniqueidentifierxxPK 2UserIduniqueidentifierxFK3UserStatusIduniqueidentifierxFK4WorkPlaceNamevarchar(200)x5CreatedAtdatetime6UpdateAtdatetimeTable 2.77. WorkPlace
-2.2.78 GroupPostReactCount
-
-#Field NameTypeUniqueNot NullPK/FKNote1GroupPostReactCountIduniqueidentifierxxPK 2GroupPostIduniqueidentifierxFK3GroupPostPhotoIduniqueidentifierxFK4GroupPostVideoIduniqueidentifierxFK5ReactCountint6CommentCountint7ShareCountintTable 2.78. GroupPostReactCount
-
-
-
-
-
-3. Detailed Design
-3.1 Class Diagram
-3.1.1  User Profile[2]
-
-Figure 4.3.1. Class Diagram of  User Profile 
-3.1.2 Admin Manage User Profile
-
-FIgure 4.3.2 Manage User Profile
-
-3.1.3 User Relationship
-
-Figure 4.3.3 Class Diagram of User Relationship  
-3.1.4 User React
-
-4.3.4. Class Diagram of User React 
-3.1.5 Group Post
-
-4.3.5.Class Diagram of Group Post
-3.1.6. User Post
-4.3.6. Class Diagram of User Post
-3.1.7.  Manage Group
-
-4.3.7. Class Diagram of Manage Group
-3.1.8  Manage Report
-
-4.3.8. Class Diagram of Manage Report
-3.1.9 Search
-
-3.1.10 Chat
-
-
-4.3.10. Class Diagram of Chat
-
-
-3.2  Sequence Diagram
-3.2.1 Login FEID
-[3]
-Figure 4.3.1. Login FEID sequence diagram
-
-3.2.2  First Login (Add Required Profile)
-
-Figure 4.3.2. First Login (Add Required Profile) sequence diagram
-
-3.2.3 View user profile
-
-Figure 4.3.3. View user profile sequence diagram
-3.2.4 View other user profile
-
-Figure 4.3.4. View other user profile sequence diagram
-3.2.5 View list friend of current login user
-
-Figure 4.3.5. View list friend of current login user sequence diagram
-3.2.6 View list friend of other user
-
-Figure 4.3.6. View list friend of other user sequence diagram
-3.2.7 Update User Profile
-
-Figure 4.3.7. Update User Profile sequence diagram
-3.2.8 Get All Friend Request
-
-Figure 4.3.8. Get All Friend Request sequence diagram
-3.2.9 Suggestion Friend
-
-Figure 4.3.9. Suggestion Friend sequence diagram
-3.2.10 Suggestion Group
-
-Figure 4.3.10. Suggestion Group sequence diagram
-3.2.11 Get Invated Join To Group (List group invite)
-
-Figure 4.3.11.Get Invated Join To Group (List group invite) sequence diagram
-3.2.12 Invated To Join Group Status (Accept/Delete)
-
-Figure 4.3.12. Invated To Join Group Status (Accept/Delete) sequence diagram
-3.2.13 Block User Profile
-
-Figure 4.3.13.Block User Profile sequence diagram
-3.2.14 Get List User Is Blocked
-
-Figure 4.3.14. Get List User Is Blocked sequence diagram
-3.2.15 Cancel User Profile (List user blocked)
-
-Figure 4.3.15. Cancel User Profile (List user blocked) sequence diagram
-3.2.16 Get Button Send Message (hide if status is private)
-
-Figure 4.3.16. Get Button Send Message (hide if status is private) sequence diagram
-3.2.17 Get Image By UserId
-
-Figure 4.3.17. Get Image By UserId sequence diagram
-3.2.18 Get Video By UserId
-
-Figure 4.3.18. Get Video By UserId sequence diagram
-3.2.19 List Gender Entities
-
-Figure 4.3.19. List Gender Entities sequence diagram
-3.2.20 List Gender Entities
-
-Figure 4.3.20. List Gender Entities sequence diagram
-3.2.21 List Gender Entities
-
-Figure 4.3.21. List Gender Entities sequence diagram
-3.2.22 List Interest Entities
-
-Figure 4.3.22. List Interest Entities sequence diagram
-3.2.23 List Web Affilication Entities
-
-Figure 4.3.23. List Web Affilication Entities sequence diagram
-3.2.24 List Status Entities
-
-Figure 4.3.24. List Status Entities sequence diagram
-3.2.25 List UserSetting Entities
-Figure 4.3.25. List UserSetting Entities sequence diagram
-3.2.26 List Setting Entities
-
-Figure 4.3.26. List Setting Entities sequence diagram
-3.2.27 Create Gender Entities
-
-Figure 4.3.27.Create Gender Entities sequence diagram
-3.2.28 Create Contact for Entities
-
-Figure 4.3.28. Create Contact for Entities sequence diagram
-3.2.29 Create Status Entities
-
-Figure 4.3.29.Create Status Entities sequence diagram
-3.2.30 Create Relationship Entities
-
-Figure 4.3.30. Create Relationship Entities sequence diagram
-3.2.31 Create Setting Entities
-
-Figure 4.3.31. Create Setting Entities sequence diagram
-3.2.32 Create Role Entities
-
-Figure 4.3.32.  Create Role Entities sequence diagram
-3.2.33 Create Interest Entities
-
-Figure 4.3.33. Create Interest Entities sequence diagram
-3.2.34 Send/Accept/Cancel/Reject Friend Request
-
-Figure 4.3.34. Send/Accept/Cancel/Reject Friend Request sequence diagram
-3.2.35 View Relationship Status
-
-Figure 4.3.35. View Relationship Status sequence diagram
-3.2.36 View Setting Status
-
-Figure 4.3.36. View Setting Status sequence diagram
-3.2.37 Create New Reaction Entity(Admin)
-
-Figure 4.3.37. Create New Reaction Entity(Admin) sequence diagram
-3.2.38 Create React Post
-
-Figure 4.3.38. Create React Post sequence diagram
-3.2.39 Create React Photo Post
-
-Figure 4.3.39. Create React Photo Post sequence diagram
-3.2.40 Create React Video Post
-
-Figure 4.3.40. Create React Video Post sequence diagram
-3.2.41 Create React Comment User Post
-
-Figure 4.3.41. Create React Comment User Post sequence diagram
-3.2.42 Create React Comment User Video Post
-
-Figure 4.3.42. Create React Comment User Video Post sequence diagram
-3.2.43 Create React Comment User Photo Post
-
-Figure 4.3.43. Create React Comment User Photo Post sequence diagram
-3.2.44 Get All React Type
-
-Figure 4.3.44. Get All React Type sequence diagram
-3.2.45 Get All React By Post Id
-
-Figure 4.3.45. Get All React By Post Id sequence diagram
-3.2.46 Get All React By Photo Post Id
-
-Figure 4.3.46. Get All React By Photo Post Id sequence diagram
-3.2.47 Get All React By Video Post Id
-
-Figure 4.3.47. Get All React By Video Post Id sequence diagram
-3.2.48 Get All React By Comment Id
-
-Figure 4.3.48. Get All React By Comment Id sequence diagram
-3.2.49 Get All React By Comment Photo Id
-
-Figure 4.3.49. Get All React By Comment Photo Id sequence diagram
-3.2.50 Get All React By Comment Video Id
-
-Figure 4.3.50. Get All React By Comment Video Id sequence diagram
-3.2.51 Get User Post By User Id (Wall)
-
-Figure 4.3.51. Get User Post By User Id (Wall) sequence diagram
-3.2.52 Get Post (News Feed)
-
-Figure 4.3.52. Get Post (News Feed) sequence diagram
-3.2.53 Create Post
-
-Figure 4.3.53. Create Post sequence diagram
-3.2.54 Create Comment
-
-Figure 4.3.54. Create Comment sequence diagram
-3.2.55 Get Comment
-
-Figure 4.3.55. Get Comment sequence diagram
-3.2.56 Create Video Comment
-
-Figure 4.3.56.Create Video Comment sequence diagram
-3.2.57 Get Video Comment
-
-Figure 4.3.57. Get Video Comment sequence diagram
-3.2.58 Create Photo Comment
-
-Figure 4.3.58. Create Photo Comment sequence diagram
-3.2.59 Get Photo Comment
-
-Figure 4.3.59. Get Photo Comment sequence diagram
-3.2.60 Update User Post
-
-Figure 4.3.60. Update User Post sequence diagram
-3.2.61 Get User Post By Id ((Other User Wall))
-
-Figure 4.3.61. Get User Post By Id ((Other User Wall)) sequence diagram
-3.2.62 Share Post
-
-Figure 4.3.62. Share Post sequence diagram
-3.2.63 Get Child Post By Id
-
-Figure 4.3.63. Get Child Post By Id sequence diagram
-3.2.64  Update User Comment Post
-
-Figure 4.3.64. Update User Comment Post sequence diagram
-3.2.65 Update User Comment Photo Post
-
-Figure 4.3.65. Update User Comment Photo Post sequence diagram
-3.2.66 Update User Comment Video Post
-
-Figure 4.3.66. Update User Comment Video Post sequence diagram
-3.2.67 Update User Comment Video Post
-
-Figure 4.3.67. Update User Comment Video Post sequence diagram
-3.2.68 Delete User Post
-
-Figure 4.3.68. Delete User Post sequence diagram
-3.2.69 Delete Comment User Post
-
-Figure 4.3.69. Delete Comment User Post sequence diagram
-3.2.70 Get Other User Post By UserId (Other User Wall)
-
-Figure 4.3.70. Get Other User Post By UserId (Other User Wall) sequence diagram
-3.2.71 Get Banned Post By UserId
-
-Figure 4.3.71. Get Banned Post By UserId sequence diagram
-3.2.72 Get Share Post By Id
-
-Figure 4.3.72. Get Share Post By Id sequence diagram
-3.2.73 Get Group Post By Group Id
-
-Figure 4.3.73. Get Group Post By Group Id sequence diagram
-3.2.74 Get Group Post By Group Post Id (Admin Get Post  Is Reported)
-
-Figure 4.3.74. Get Group Post By Group Post Id (Admin Get Post  Is Reported) sequence diagram
-3.2.75 Create Group Post
-
-Figure 4.3.75. Create Group Post sequence diagram
-3.2.76 Create Group Post Comment
-
-Figure 4.3.76. Create Group Post Comment sequence diagram
-3.2.77 Get Group Post Comment
-
-Figure 4.3.77. Get Group Post Comment sequence diagram
-
-3.2.78 Create Group Video Comment
-
-Figure 4.3.78. Create Group Video Comment sequence diagram
-3.2.79 Get Group Video Post Comment
-
-Figure 4.3.79. Get Group Video Post Comment sequence diagram
-
-3.2.80 Create Group Photo Comment
-
-Figure 4.3.80. Create Group Photo Comment sequence diagram
-3.2.81 Create Group Share Post Comment
-
-Figure 4.3.81. Create Group Share Post Comment sequence diagram
-
-3.2.82 Get Group Photo Post Comment
-
-Figure 4.3.82. Get Group Photo Post Comment sequence diagram
-3.2.83 Get Group Share Post Comment
-
-Figure 4.3.83. Get Group Share Post Comment sequence diagram
-3.2.84 Update Group Post
-
-Figure 4.3.84. Update Group Post sequence diagram
-3.2.85 Update Group Photo Post
-
-Figure 4.3.85. Update Group Photo Post sequence diagram
-3.2.86 Update Group Video Post
-
-Figure 4.3.86. Update Group Video Post sequence diagram
-3.2.87 Update Group Share Post
-
-Figure 4.3.87. Update Group Share Post sequence diagram
-3.2.88 Share Group Post
-
-Figure 4.3.88. Share Group Post sequence diagram
-3.2.89 Get Child Group Post
-
-Figure 4.3.89. Get Child Group Post sequence diagram
-3.2.90 Update Group Post
-
-Figure 4.3.90. Update Group Post sequence diagram
-3.2.91 Update Group Comment Video Post
-
-Figure 4.3.91. Update Group Comment Video Post sequence diagram
-3.2.92 Update Group Comment Photo Post
-
-Figure 4.3.92. Update Group Comment Photo Post sequence diagram
-3.2.93 Update Group Comment Share Post
-
-Figure 4.3.93. Update Group Comment Share Post sequence diagram
-3.2.94 Delete Group Post
-
-Figure 4.3.94. Delete Group Post sequence diagram
-3.2.95 Delete Comment Group Post
-
-Figure 4.3.95. Delete Comment Group Post sequence diagram
-3.2.96 Create Group
-
-Figure 4.3.96. Create Group sequence diagram
-3.2.97 Get Group By User Id (Get List Group Of User)
-
-Figure 4.3.97. Get Group By User Id (Get List Group Of User) sequence diagram
-3.2.98 Request Join To Group
-
-Figure 4.3.98. Request Join To Group sequence diagram
-3.2.99 Get Request Join Group
-
-Figure 4.3.99. Get Request Join Group sequence diagram
-3.2.100 Member Join Status
-
-Figure 4.3.100. Member Join Status sequence diagram
-3.2.101 Invited Friend To Join
-
-Figure 4.3.101. Invited Friend To Join sequence diagram
-3.2.102 Cancel Request Join Group
-
-Figure 4.3.102.Cancel Request Join Group sequence diagram
-3.2.103 Left The Group
-
-Figure 4.3.103. Left The Group sequence diagram
-3.2.104 Get List Friend To Invite
-
-Figure 4.3.104. Get List Friend To Invite sequence diagram
-3.2.105 Get Group Setting By Id
-
-Figure 4.3.105. Get Group Setting By Id sequence diagram
-3.2.106 UpdateGroupSetting (Group Admin)
-
-Figure 4.3.106. UpdateGroupSetting (Group Admin) sequence diagram
-3.2.107 Get List Member With Member Role (Get Member List For Group Admin)
-
-Figure 4.3.107. Get List Member With Member Role (Get Member List For Group Admin) sequence diagram
-3.2.108 Update Or Remove Member (Group Admin)
-
-Figure 4.3.108. Update Or Remove Member (Group Admin) sequence diagram
-3.2.109 Update Group Information (Group Admin)
-
-Figure 4.3.109. Update Group Information (Group Admin) sequence diagram
-3.2.110 DeleteGroup (Group Admin)
-
-Figure 4.3.110. DeleteGroup (Group Admin) sequence diagram
-3.2.111 Get List Member In Group
-
-Figure 4.3.111. Get List Member In Group sequence diagram
-3.2.112 Get Image In Group
-
-Figure 4.3.112. Get Image In Group sequence diagram
-3.2.113 Get Video In Group
-
-Figure 4.3.113. Get Video In Group sequence diagram
-3.2.114 Create Report Type (Admin)
-
-Figure 4.3.114. Create Report Type (Admin) sequence diagram
-3.2.115 Get Report Type
-
-Figure 4.3.115.Get Report Type sequence diagram
-3.2.116 Create Report Comment
-
-Figure 4.3.116. Create Report Comment sequence diagram
-3.2.117 Create Report Post
-
-Figure 4.3.117. Create Report Post sequence diagram
-3.2.118 Create Report Profile
-
-Figure 4.3.118. Create Report Profile sequence diagram
-3.2.119 Get Report User (All report user)
-
-Figure 4.3.119. Get Report User (All report user) sequence diagram
-3.2.120 Get Report Group (All report group)
-
-Figure 4.3.120. Get Report Group (All report group) sequence diagram
-3.2.121 Get Report List (All report  post)
-
-Figure 4.3.121. Get Report Group (All report group) sequence diagram
-3.2.122 Get Report Comment (All report comment)
-
-Figure 4.3.122. Get Report Comment (All report comment) sequence diagram
-3.2.123 Get List Report User (All report user detail)
-
-Figure 4.3.123. Get List Report User (All report user detail) sequence diagram
-3.2.124 Get List Report Group (All report group detail)
-
-Figure 4.3.124. Get List Report Group (All report group detail) sequence diagram
-3.2.125 Get List Report Post (All report post detail)
-
-Figure 4.3.125. Get List Report Post (All report post detail) sequence diagram
-3.2.126 Get List Report Comment (All report Comment detail)
-
-Figure 4.3.126. Get List Report Comment (All report Comment detail) sequence diagram
-3.2.127 Process Report
-
-Figure 4.3.127. Process Report sequence diagram
-3.2.128 Create User Chat (Actually: chatbox)
-
-Figure 4.3.128. Create User Chat (Actually: chatbox) sequence diagram
-3.2.129 Create User Chat Box (Actually: userchat) 
-
-Figure 4.3.129. Create User Chat Box (Actually: userchat)  sequence diagram
-3.2.130 Update User Chat Box
-
-Figure 4.3.130. Update User Chat Box sequence diagram
-3.2.131 Get Chat Details By Id
-
-Figure 4.3.131. Get Chat Details By Id sequence diagram
-3.2.132 Get User In Chat
-
-Figure 4.3.132. Get User In Chat sequence diagram
-3.2.133 Get Group By Group Id (Search friend in profile)
-
-Figure 4.3.133. Get Group By Group Id (Search friend in profile) sequence diagram
-3.2.134 Get Info By Content (Search All)
-
-Figure 4.3.134.Get Info By Content (Search All) sequence diagram
-3.2.135 Search User By Name (Search in group to invite)
-
-Figure 4.3.135. Search User By Name (Search in group to invite) sequence diagram
-3.2.136 Search Group By Group Name
-
-Figure 4.3.136. Search Group By Group Name sequence diagram
-
-3.2.137 Search Group Post
-
-Figure 4.3.137. Search Group Post sequence diagram
-
-
-
-b? sung s? lu?ng b?ng, entitíe, ...
-Vi?t m?t do?n mô t? và b? sung thông tin t?ng s? class
-thêm s? lu?ng c?a DQD

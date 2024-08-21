@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { POST_TYPES } from '~/utils/constants'
 
-function PostMedia({ postData, postType }) {
+function PostMedia({ postData, postType, isAdmin = false }) {
   const mediaList = postType == POST_TYPES.PROFILE_POST
     ? [
       ...(postData?.userPostPhotos || postData?.userPostPhoto)?.map(e => ({ type: 'image', position: e?.postPosition, owner: 'subPost', media: e, typePost: POST_TYPES.PHOTO_POST })) ?? [],
@@ -28,14 +28,15 @@ function PostMedia({ postData, postType }) {
           id='media-container'
           className={`w-full grid grid-cols-12 `}
         >
-          {mediaList.slice(0, 4)?.map((e, i) => {
+          {mediaList.slice(0, isAdmin ? 1000 : 4)?.map((e, i) => {
             const media = e?.media
             if (e.type === 'image') {
               return (
                 <Link
                   to={e?.owner == 'subPost' ? `/photo/${media?.userPostPhotoId || media?.groupPostPhotoId}?type=${e?.typePost}`
                     : `/media/${postData?.userPostId || postData?.groupPostId || postData?.postId}?type=${e?.typePost}`}
-                  className={`relative  ${(mediaList?.length == 3 || mediaList?.length === 1) && i == 0 ? 'col-span-12' : 'col-span-6'}`}
+                  className={`relative  ${((isAdmin && mediaList?.length % 2 == 1) || (mediaList?.length == 1 || mediaList?.length == 3)) && i == 0 ? 'col-span-12' : 'col-span-6'}`}
+                  onClick={(event) => { if (isAdmin) event.preventDefault() }}
                   key={i}
                 >
                   <img
@@ -44,7 +45,7 @@ function PostMedia({ postData, postType }) {
                     loading="lazy"
                     className="object-cover w-full h-full border"
                   />
-                  {mediaList?.length > 4 && i == 3 && (
+                  {mediaList?.length > 4 && i == 3 && !isAdmin && (
                     <div className="bg-[rgba(0,0,0,0.5)] absolute right-0 top-0 bottom-0 left-0 text-white text-3xl font-bold flex justify-center items-center">
                       <span>+{mediaList.length - i - 1}</span>
                     </div>
@@ -56,7 +57,8 @@ function PostMedia({ postData, postType }) {
                 <Link
                   to={e?.owner == 'subPost' ? `/video/${media?.userPostVideoId || media?.groupPostVideoId}?type=${e?.typePost}`
                     : `/media/${postData.userPostId || postData?.groupPostId || postData?.postId}?type=${e?.typePost}`}
-                  className={`relative  ${(mediaList?.length == 3 || mediaList?.length === 1) && i == 0 ? 'col-span-12' : 'col-span-6'}`}
+                  className={`relative  ${((isAdmin && mediaList?.length % 2 == 1) || (mediaList?.length == 1 || mediaList?.length == 3)) && i == 0 ? 'col-span-12' : 'col-span-6'}`}
+                  onClick={(event) => { if (isAdmin) event.preventDefault() }}
                   key={i}
                 >
                   <video
@@ -64,7 +66,7 @@ function PostMedia({ postData, postType }) {
                     src={media?.video?.videoUrl || media?.videoUrl || media?.groupVideo?.videoUrl}
                     className=" object-cover w-full h-full border"
                   />
-                  {mediaList?.length > 4 && i == 3 && (
+                  {mediaList?.length > 4 && i == 3 && !isAdmin && (
                     <div className="bg-[rgba(0,0,0,0.5)] absolute right-0 top-0 bottom-0 left-0 text-white text-3xl font-bold flex justify-center items-center">
                       <span>+{mediaList.length - i - 1}</span>
                     </div>

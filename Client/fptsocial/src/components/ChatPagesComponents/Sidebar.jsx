@@ -20,8 +20,7 @@ import {
   USER_ID,
 } from "~/utils/constants";
 import ChatModal from "./ChatModal";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import FPTUen from "~/assets/img/FPTUen.png";
+import ChatItem from './ChatItem';
 
 function Sidebar({ onSelectChat, allMessages }) {
   const [searchResults, setSearchResults] = useState({
@@ -30,6 +29,7 @@ function Sidebar({ onSelectChat, allMessages }) {
   });
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
+  console.log('🚀 ~ Sidebar ~ chats:', chats)
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const theme = useTheme();
@@ -82,8 +82,8 @@ function Sidebar({ onSelectChat, allMessages }) {
   };
 
   const handleSelectChat = (chatId) => {
-    setSelectedChatId(chatId);
-    onSelectChat(chatId);
+    setSelectedChatId(chatId)
+    onSelectChat(chatId)
   };
 
   const handleUserSelect = (event) => {
@@ -127,23 +127,10 @@ function Sidebar({ onSelectChat, allMessages }) {
   ];
 
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: sidebarWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
-          width: sidebarWidth,
-          boxSizing: "border-box",
-        },
-      }}
+    <div
+      className='h-[calc(100vh_-_55px)] w-[400px] flex-shrink-0 flex flex-col border-r-2'
     >
-      <Toolbar>
-        <Link to={"/home"} className="flex items-center">
-          <img src={FPTUen} alt="home-img" className="h-[55px]" />
-        </Link>
-      </Toolbar>
-      <Box sx={{ padding: 2 }}>
+      <div className='p-2 flex flex-col h-full'>
         <Autocomplete
           options={flattenedOptions}
           groupBy={(option) => option.group}
@@ -182,54 +169,60 @@ function Sidebar({ onSelectChat, allMessages }) {
           }
           onChange={handleUserSelect}
         />
-        <List>
-          {!chats.length && selectedUsers.length === 0 ? (
-            "No chats to display"
-          ) : (
-            <>
-              {chats &&
-                chats.map((chat) => (
-                  <ListItem
-                    button
-                    key={chat.id}
-                    onClick={() => handleSelectChat(chat.id)}
-                    selected={chat.id === selectedChatId}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Avatar
-                        src={
-                          chat?.people?.find(
-                            (person) => person?.person?.username !== USER_ID
-                          )?.person?.avatar
-                        }
-                        alt={chat.fullName}
-                        sx={{ marginRight: 1 }}
-                      />
-                      <ListItemText
-                        primary={chat?.people
-                          .filter(
-                            (person) => person.person.username !== USER_ID
-                          )
-                          .map(
-                            (person) =>
-                              `${person.person.first_name} ${person.person.last_name}`
-                          )
-                          .join(", ")}
-                        secondary={
-                          allMessages[chat.id]
-                            ? allMessages[chat.id][
-                                allMessages[chat.id].length - 1
-                              ].text
-                            : chat?.last_message?.text
-                        }
-                      />
-                    </Box>
-                  </ListItem>
-                ))}
-            </>
-          )}
-        </List>
-      </Box>
+
+        <div className='flex-grow overflow-y-auto p-2 scrollbar-none-track'>
+          <div className='h-full'>
+            {!chats.length && selectedUsers.length === 0 ? (
+              "No chats to display"
+            ) : (
+              <>
+                {chats &&
+                  chats.map((chat) => (
+                    <ChatItem key={chat?.id} chat={chat} inPageChat handleSelectChat={handleSelectChat} />
+                    // <ListItem
+                    //   button
+                    //   key={chat.id}
+                    //   onClick={() => handleSelectChat(chat.id)}
+                    //   selected={chat.id === selectedChatId}
+                    // >
+                    //   <Box sx={{ display: "flex", alignItems: "center" }}>
+                    //     <Avatar
+                    //       src={
+                    //         chat?.people?.find(
+                    //           (person) => person?.person?.username !== USER_ID
+                    //         )?.person?.avatar
+                    //       }
+                    //       alt={chat.fullName}
+                    //       sx={{ marginRight: 1 }}
+                    //     />
+                    //     <ListItemText
+                    //       primary={chat?.people
+                    //         .filter(
+                    //           (person) => person.person.username !== USER_ID
+                    //         )
+                    //         .map(
+                    //           (person) =>
+                    //             `${person.person.first_name} ${person.person.last_name}`
+                    //         )
+                    //         .join(", ")}
+                    //       secondary={
+                    //         allMessages[chat.id]
+                    //           ? allMessages[chat.id][
+                    //             allMessages[chat.id].length - 1
+                    //           ].text
+                    //           : chat?.last_message?.text
+                    //       }
+                    //     />
+                    //   </Box>
+                    // </ListItem>
+                  ))}
+              </>
+            )}
+          </div>
+        </div>
+
+
+      </div>
       <ChatModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -240,7 +233,7 @@ function Sidebar({ onSelectChat, allMessages }) {
         selectedChatId={currentSelectedUserId}
         fetchChats={fetchChats}
       />
-    </Drawer>
+    </div>
   );
 }
 

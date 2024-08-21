@@ -47,7 +47,7 @@ function Profile() {
       getAllFriendOtherProfile(paramUserId).then(data => setListFriend(data))
     }
     getBlockedUserList().then(data => setBlockedUserList(data))
-  }, [paramUserId, isReload])
+  }, [paramUserId, isReload, currentUser])
 
   useEffect(() => {
     userProfile && getButtonFriend(currentUser?.userId, userProfile.userId)

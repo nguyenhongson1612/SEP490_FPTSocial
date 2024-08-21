@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import { cloneDeep } from 'lodash'
 import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
 
-function Post({ postData, isBan = false }) {
+function Post({ postData, isBan = false, isAdmin = false }) {
   // console.log('🚀 ~ Post ~ postData:', postData)
   const currentUser = useSelector(selectCurrentUser)
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
@@ -91,7 +91,7 @@ function Post({ postData, isBan = false }) {
   return (
     <div id="post"
       className="w-full lg:w-[600px] flex flex-col items-center bg-white shadow-lg rounded-lg">
-      <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} isBan={isBan} />
+      <PostTitle postData={postData} isYourPost={isYourPost} postType={postType} isBan={isBan} isAdmin={isAdmin} />
       <PostContents postData={postData} postType={postType} isBan={isBan} />
       {
         postData?.isShare && <div
@@ -102,7 +102,7 @@ function Post({ postData, isBan = false }) {
           <PostContents postData={postShareData} postType={postShareType} />
         </div>
       }
-      {!postData?.isShare && <PostMedia postData={postData} postType={postType} />}
+      {!postData?.isShare && <PostMedia postData={postData} postType={postType} isAdmin={isAdmin} />}
       {
         !isBan &&
         <PostReactStatus postData={postData} postType={postType} postShareData={postShareData} postShareType={postShareType} isCanShare={isCanShare} />

@@ -30,7 +30,7 @@ function ListUserReported({ getUserReportedFn }) {
     return reportType?.reportTypeName
   }
 
-  return <div className='col-span-5 p-2 bg-fbWhite overflow-y-auto scrollbar-none-track '>
+  return <div className='col-span-5 p-2  overflow-y-auto scrollbar-none-track bg-gray-50'>
     <div className='flex flex-col gap-2 '>
       {
         userReportedList?.map((report, index) => (

@@ -1,480 +1,0 @@
-
-
-
-
-
-
-
-
-
-CAPSTONE PROJECT REPORT
-Report 6 - Software User Guides
-
-
-
-
-
-
-
-
-
-- Hanoi, April 2024 -
-Table of Contents
-I. Record of Changes	3
-II. Release Package & User Guides	4
-1. Deliverable Package1. Deliverable Package	4
-2. Installation Guides	4
-2.1 System Requirements	4
-2.2 Installation Instruction	5
-3. User Manual	37
-3.1 Authentication	37
-3.2 My Profile	39
-3.3 Posting function	43
-3.4 Manage group	51
-3.5 Homepage	61
-3.6 Report	64
-3.7 Admin	67
-
-
-I. Record of Changes
-DateA*
-M, DIn chargeChange Description*A - Added M - Modified D - Deleted
-
-
-II. Release Package & User Guides
-1. Deliverable Package1. Deliverable Package
- #Deliverable ItemDescriptionTypeVersion1Web Module(FUSP) WebApplicationNew1.0.02Web API ModuleFUSP.APINew1.0.0Database1
-Initialize DatabaseFUSP.ScriptNew1.0.0Documents1Project IntroductionReport1_Project Introduction.docx2Project Management PlanReport2_Project Management Plan.docx3Software Requirement SpecificationReport3_Software Requirement Specification.docx4Software Design Document
-Report4_Software Design Document.docx5Test DocumentationReport5_Test Documentation.docx
-Test_Report folder6Software User GuidesReport6_Software User Guides.docx7Final Project ReportReport7_Final Project Report.docx2. Installation Guides
-2.1 System Requirements
-2.1.1 Hardware requirements
-PCMinimumRecommendedInternet connectionCable, Wi-fi (4 Mbps)Cable, Wi-fi (8 Mbps)ProcessorIntel Core i5 1.4GhzIntel Core i7 2.5GhzMemory4GB RAM8GB RAMStorageHDD 100GBSSD 200GBTable 6.2.1.1. Hardware Requirements
-2.1.2 Software requirements
-ComponentName and VersionDescriptionOperating SystemWindows 10/11Operating system for building applicationDBMSSQL Server 2022Used to manage database.NET.NET SDK 6.0.9 or above ,.NET Core 6.0.9 RuntimeUsed to run backend serverReactJSV20.2.0 or aboveUsed to run frontend applicationIDEVisual Studio, Visual Studio CodeUsed to run codeTable 6.2.1.2. Software Requirements
-2.2 Installation Instruction
-2.2.1 .NET 6 - Setup Development Environment
-2.2.1.1 Download and Install Visual Studio 2022
-Visual Studio 2022 is a free code editor that runs on Windows, Mac and Linux.
-a. Download
-Download Visual Studio 2022 from https://visualstudio.microsoft.com/downloads/.
-
-Figure 6.2.1. Download and Install Visual Studio(Download)
-
-b. Install
-Install the Visual Studio 2022  by opening the downloaded installer and following the prompts.
-
-Figure 6.2.2. Install Visual Studio 2022
-
-
-
-Figure 3. Install Visual Studio 2022
-
-
-Figure 4. Install Visual Studio 2022
-
-
-
-c. Test
-Launch VS Code to test that it is installed correctly.
-
-Figure 5. Install Visual Studio 2022
-
-
-
-2.2.2 React - Setup Development Environment
-2.2.2.1 Install Node.js and npm
-? Node.js and npm are the runtime and command line tools required to build and run React applications.
-? Node.js is a javascript runtime environment that enables you to run js code outside of a browser, and npm is a package manager used to download javascript packages built to run on Node. They come bundled together when you install Node.js.
-? React is built on top of Node.js and the React library itself is a package available on npm - https://www.npmjs.com/package/react.
-a. Download
-Download Node.js and npm from https://nodejs.org.
-
-Figure 6. Install Node.js and npm(Download)
-b. Install
- 
-Figure 7. Install Node.js and npm(Install )
-
- 
-Figure8. Install Node.js and npm(Install)
- 
-Figure 9. Install Node.js and npm(Install)
- 
-Figure 10. Install Node.js and npm(Install)
- Figure 11. Install Node.js and npm(Install)
- 
- Figure 12. Install Node.js and npm(Install)
- 
-Figure13. Install Node.js and npm(Install)
-c. Test
-Test that Node.js and npm were installed successfully by running the commands node -v and npm -v.
-Figure 14. Install Node.js and npm(Test)
-2.2.2.2 Install Yarn
-? Yarn is a package manager that doubles down as project manager. 
-? Yarn is an established open-source package manager used to manage dependencies in JavaScript projects. It assists with the process of installing, updating, configuring, and removing packages dependencies, eventually helping you reach your objectives faster with fewer distractions.
-? Resource Domain: https://yarnpkg.com/ 
-a. Download
-- We can install Yarn through the npm package manager, which comes bundled with Node.js when you install it on your system.
-b. Install
-run this command in terminal after Install Success npm : npm install --global yarn
-
-Figure 6.2.2.17. Install Global Yarn(Install)
-c. Test
-Test that yarn was installed successfully by running the command: yarn --version
-
-Figure 6.2.2.18. Install Node.js and npm(Install)
-
-2.2.2.3 Install the Git CLI
-The Git CLI is the command line interface used for cloning and interacting with git repositories (e.g. projects on GitHub). For more info see https://git-scm.com/book.
-a. Download
-Download the Git CLI from https://git-scm.com/downloads.
-
-Figure 6.2.2.19. Install the Git CLI(Download)
-b. Install
-Install the Git CLI by opening the downloaded installer and following the prompts.
- 
-Figure 6.2.2.20. Install the Git CLI(Install)
- 
-Figure 6.2.2.21. Install the Git CLI(Install) 
-Figure 6.2.2.22. Install the Git CLI(Install) 
-Figure 6.2.2.23. Install the Git CLI(Install) 
-Figure 6.2.2.24. Install the Git CLI(Install) 
-Figure 6.2.2.25. Install the Git CLI(Install)
-Figure 6.2.2.26. Install the Git CLI(Install)  
-Figure 6.2.2.27. Install the Git CLI(Install)  
-Figure 6.2.2.28. Install the Git CLI(Install) 
- 
-Figure 6.2.2.29. Install the Git CLI(Install) 
-
-Figure 6.2.2.30. Install the Git CLI(Install) 
-Figure 6.2.2.31. Install the Git CLI(Install) 
-c. Test
-Test that the Git CLI was installed successfully by running the command git --version.
-
-
-Figure 6.2.2.32. Install the Git CLI(Install)
-2.2.2.4 Install Visual Studio Code (VS Code)
-VS Code is a free code editor that runs on Windows, Mac and Linux.
-a. Download
-Download VS Code from https://code.visualstudio.com/.
-
-Figure 6.2.2.33. Install Visual Studio Code (VS Code)
-b. Install
-Install Visual Studio Code by opening the downloaded setup file and following the prompts. 
-Figure 6.2.2.34. Install Visual Studio Code (VS Code)
- 
-Figure 6.2.2.35. Install Visual Studio Code (VS Code)
- 
-Figure 6.2.2.36. Install Visual Studio Code (VS Code)
- 
-Figure 6.2.2.37. Install Visual Studio Code (VS Code)
- 
-Figure 6.2.2.38. Install Visual Studio Code (VS Code)
-
-Figure 6.2.2.39. Install Visual Studio Code (VS Code)
-c. Test
-Launch VS Code to test that it is installed correctly.
-Figure 6.2.2.40. Install Visual Studio Code (VS Code)
-2.2.3.Install database
-2.2.3.1 Install SQL Server 2022
-SQL Server is a relational database management system (RDBMS) developed by Microsoft.
-a. Download
-Download SQL Server 2022 from https://www.microsoft.com/en-us/sql-server/sql-server-downloads
-b. Install
-Install SQL Server 2022 by opening the downloaded setup file and following the prompts.
-
-Figure : Install SQL Server 2022
-
-Figure : Install SQL Server 2022
-
-Figure : Install SQL Server 2022
-c. Test
-Launch VS Code to test that it is installed correctly.
-
-Figure: Install SQL Server 2022 successfully
-
-2.2.3.2 Install SQL Server Management Studio 20
-SQL Server Management Studio (SSMS) 2022 is a powerful and convenient database management tool developed by Microsoft
-a. Download
-Download SQL Server Management Studio 20 from https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms
-
-Figure :  Download SQL Server Management Studio (SSMS)
-b. Install
-
-Figure L Install SQL Server Management Studio 20 (SSMS)
-
-c. Test
-
-
-
-
-3. User Manual
-3.1 Authentication
-
-
-Welcome to FPTU Sociéte Project (FUSP)! This guide will walk you through the steps to login and access the system.
-Before you continue with the authentication procedure, you need to check whether you have a valid SSO FPT account? If not, contact the related staff to get an account for yourself.
-3.1.1 Login 
-1. Access landing page
-
-
-2. Access the login page from the landing page by clicking on the "Sign in to your account" button.
-3. Enter your account credentials in the provided fields. 
-
-4. Click on the "Login" button to proceed to authentication.
-5. If your credentials are correct and you check for authentication, you will be logged in successfully. After that, whenever you access our website again, we still keep you logged in.
-
-3.1.3 Logout
-1. Locate the user icon on the navigation bar and click on it. 
-
-2. A dropdown list will appear. From the options provided, select "Logout."
-3. Upon selecting "Logout," the system will initiate the logout process.
-4. You will be automatically redirected to the landing page of FUSP
-
-3.2 My Profile
-
-
-3.2.1 View post of user
-Here is how to view your profile:
-1. Locate the user icon on the navigation bar and click on it
-
-2. Scroll down and see your post
-3.2.2 View basic information
-Here, you can view your profile information
-1. Click "ABOUT" button on navigation bar
-
-3.2.3 View friends list
-Here, you can view your profile information
-1. Click "FRIENDS" button on navigation bar
-
-
-3.2.4 View photos list
-Here, you can view your photos of user
-1. Click "PHOTOS" button on navigation bar
-
-3.2.5 View videos list
-Here, you can view your videos of user
-1. Click "VIDEOS" button on navigation bar
-
-3.2.6 User settings
-1. Click Icon of user on the right side of header
-
-2. Choose Setting, you can change setting of user profile on there
-
-
-3.3 Posting function
-3.3.1 Create post
-Learn how to create post 
-
-1. After logging into FUSP, click "What's on your mind" on header
-
-2. Fill information you want to post
-
-3. Click "Post"
-
-
-3.3.2 Update post
-Learn how to update post
-
-1. Click on the three dots button in the right corner of the post and choose "Edit post"
-
-2. Click Add new photos/videos if you want to add photos/videos or Edit all to delete photos/video you want
-
-3.  Click "Save"
-3.3.3 Delete post
-Learn how to delete your post
-
-1. Click on the three dots button in the right corner of the post and choose "Remove post"
-
-2. Click delete
-
-.
-3.3.4 Comment on post
-Learn how to comment on the post
-
-1. Click on Comment
-
-2. Write your comment
-
-3. Click icon send
-
-3.3.5 React on post
-Learn how to react 
-
-1. Click React type you want on the bottom left 
-
-3.3.6 React on comment
-Learn how react on comment
-1. Click React type you want on the bottom left 
-
-3.3.7 Share post
-Learn how to share the post
-1. Click button "Share" on the bottom right
-
-2. Fill in the information you want and choose where your share, your feed or your group
-
-3. Click "Post"
-3.4 Manage group
-
-3.4.1 Create group
-Learn how to create group
-
-1. Click "Group" on the left menu
-
-2. Click "Create New Group" on the left menu
-
-3. Fill required information
-
-4. Click "Create" button
-3.4.2 Invite member
-Learn how to invite member
-
-1. Click "INVITE" button on header of group
-
-2. Search friend on search box and choose who you want to invite
-
-3. Click button "SEND INVITES"
-3.4.3 Manage member join request
-Learn how to manage member on group
-
-1. Click Icon on the left group
-
-2. Click member join requests 
-
-3. You can accept or decline member join requests
-
-
-3.4.4 Manage pending post
-Learn how to manage pending post
-1. Click Icon on the left group
-
-2. Click "Pending post"
-
-3. You can approve or decline post
-
-3.4.5 Manage member
-Learn how to manage member
-
-1. Click Icon on the left group
-
-2. Click "Member manager"
-
-3. You can kick or promote user
-
-
-3.4.6 Manage group settings
-
-Learn how to setting group
-1. Click Icon on the left group
-
-2. Click Setting and choose Group Settings
-
-3. Update information you want and save
-
-
-
-
-3.5 Homepage
-3.5.1 Searching
-How to search on page
-1. Click "Search" box on navbar
-
-2. Input what you want to search and press Enter
-3. Choose type of search on left menu to see result of search function
-
-3.5.2 Message
-How to message with each other
-
-3.5.3 Talking with AI
-How to talk with AI 
-1. Click Toad mentor on left menu
-
-2. Chatting with him
-
-3.6 Report
-3.6.1 Report post
-1. Click on the three dots button in the right corner of the post and click "Report"
-
-2. Choose type of report, it will auto send to admin
-
-3.6.2 Report comment
-1. Click three dots on the right side of comment and click Report
-	
-2. Choose type of report and it will auto send for admin
-
-
-3.6.3 Report user
-1. Click three dots on the right side of user you want to report
-
-2. Choose type of report and it will auto send for admin
-
-3.6.4 Report group 
-1. Click three dots on the right side of group you want to report
-
-2. Choose type of report and it will auto send for admin
-
-
-3.7 Admin
-3.7.1 Manage Report User
-Learn how to manage user
-1. Click three stick on the left of header
-
-2. Click Report Manager and choose User Report
-
-3. Click on user who was reported
-
-4. Click on "HANDLE REPORT"
-
-5. Choose option case by case 
-
-
-3.7.2 Manage group report
-Learn how to manage group report
-1. Click three stick on the left of header
-
-
-2. Click Report Manager and choose Group Report
-
-
-3. Click on user who was reported
-
-4. Click on "HANDLE REPORT"
-
-
-5. Choose option case by case 
-
-3.7.3 Manage post report
-1. Click three stick on the left of header
-
-2. Click Report Manager and choose Post Report
-	
-3. Click on post who was reported
-
-
-
-4. Click on "HANDLE REPORT"
-
-
-5. Choose option case by case 
-
-3.7.4 Manage comment report
-1. Click three stick on the left of header
-
-
-2. Click Report Manager and choose Comment Report
-
-
-3. Click on user who was reported
-
-
-4. Click on "HANDLE REPORT"
-
-
-
-
-5. Choose option case by case
-
-
-
-
-

@@ -7,6 +7,7 @@ import {
 import { useState } from "react";
 import ChatWindow from "~/components/ChatPagesComponents/ChatWindow";
 import Sidebar from "~/components/ChatPagesComponents/Sidebar";
+import NavTopBar from '~/components/NavTopBar/NavTopBar';
 
 function ChatPages() {
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -19,44 +20,39 @@ function ChatPages() {
     }));
   };
 
-  return (
-    <div style={{ display: "flex", height: "100vh" }}>
+  return (<>
+    <NavTopBar />
+    <div className='h-[calc(100vh_-_55px)] flex'>
       <Sidebar
         onSelectChat={setSelectedChatId}
         allMessages={allMessages}
       />
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+      <main className='grow flex flex-col h-full justify-between'
       >
-        <AppBar position="static">
+        <div className='border-b-2 shadow-md bg-fbWhite-500'>
           <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            <div className='text-2xl font-bold '>
               Messenger
-            </Typography>
+            </div>
           </Toolbar>
-        </AppBar>
+        </div>
         {selectedChatId ? (
           <ChatWindow
             selectedChatId={selectedChatId}
             onNewMessage={handleNewMessage}
           />
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexGrow: 1,
-            }}
+          <div className='flex justify-center items-center grow h-10 bg-fbWhite'
           >
-            <Typography variant="h4" color="textSecondary">
+            <div >
               Select a chat to start messaging
-            </Typography>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
+      </main>
     </div>
+  </>
+
   );
 }
 

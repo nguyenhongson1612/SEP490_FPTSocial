@@ -17,7 +17,7 @@ import { addListReactType, addListUserStatus } from '~/redux/sideData/sideDataSl
 import SearchNotFound from '../UI/SearchNotFound'
 import { useLocation } from 'react-router-dom'
 
-function ListPost({ getListPostFn, isBan = false }) {
+function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
   const location = useLocation()
   const currentActiveListPost = useSelector(selectCurrentActiveListPost)
   const [page, setPage] = useState(1)
@@ -105,7 +105,7 @@ function ListPost({ getListPostFn, isBan = false }) {
         >
           <div className='flex flex-col items-center gap-5'>
             {currentActiveListPost?.map((post, key) => (
-              <Post key={key} postData={post} isBan={isBan} />
+              <Post key={key} postData={post} isBan={isBan} isAdmin={isAdmin} />
             ))}
           </div>
         </InfiniteScroll>

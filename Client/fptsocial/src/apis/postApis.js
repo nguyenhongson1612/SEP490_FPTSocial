@@ -12,7 +12,7 @@ export const getUserPostByUserId = async ({ page, pageSize = 10 }) => {
 }
 
 
-export const getOtherUserPost = async ({ userId, page, pageSize = 10 }) => {
+export const getOtherUserPost = async ({ userId, page = 1, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserPost/getotheruserpostbyuserid?OtherUserId=${userId}&Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }

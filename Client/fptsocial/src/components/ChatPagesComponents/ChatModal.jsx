@@ -55,18 +55,6 @@ const ChatModal = ({
     fetchChats(); // Re-fetch chats when a new message is received
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    boxShadow: 24,
-    borderRadius: 2,
-    p: 4,
-  };
-
   return (
     <ChatEngineWrapper>
       <Socket
@@ -76,7 +64,7 @@ const ChatModal = ({
         onNewMessage={handleNewMessage}
       />
       <Modal open={open} onClose={onClose}>
-        <Box sx={{ ...modalStyle }}>
+        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] bg-gray-100 rounded-lg p-4'>
           <Typography variant="h6">{fullName}</Typography>
           <TextField
             fullWidth
@@ -87,7 +75,7 @@ const ChatModal = ({
             onChange={(e) => setMessage(e.target.value)}
           />
           <Button onClick={handleSendMessage}>Send</Button>
-        </Box>
+        </div>
       </Modal>
     </ChatEngineWrapper>
   );

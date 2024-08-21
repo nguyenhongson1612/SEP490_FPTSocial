@@ -9,6 +9,7 @@ import {
   CHAT_KEY,
 } from "~/utils/constants";
 import { ChatEngineWrapper, Socket } from "react-chat-engine";
+import UserAvatar from '../UI/UserAvatar';
 
 function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
   const [message, setMessage] = useState("");
@@ -88,38 +89,38 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
         userSecret={USER_ID}
         onNewMessage={handleNewMessage}
       />
-      <Box sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>
+      <div className='h-[450px] grow overflow-y-auto scrollbar-none-track p-3 bg-white' >
         {messages.length > 0 ? (
           messages.map((message, index) => (
-            <Box
+            <div
               key={index}
-              sx={{
-                display: "flex",
-                justifyContent:
-                  message.sender_username === USER_ID
-                    ? "flex-end"
-                    : "flex-start",
-                marginBottom: 2,
-              }}
+              className={`flex ${message.sender_username === USER_ID ? 'justify-end' : 'justify-start'} mb-2`}
             >
-              <Box
-                sx={{
-                  maxWidth: "70%",
-                  padding: 1,
-                  borderRadius: 2,
-                  backgroundColor:
-                    message.sender_username === USER_ID
-                      ? "orange"
-                      : "lightgray",
-                  color:
-                    message.sender_username === USER_ID ? "white" : "black",
-                }}
-              >
-                <Typography variant="body1">
-                  <strong>{message?.sender.first_name + " " + message?.sender.last_name}:</strong> {message.text}
-                </Typography>
-              </Box>
-            </Box>
+              <div className={`flex flex-col flex-gap ${message.sender_username === USER_ID ? 'items-end' : 'items-start'} max-w-[80%]`}>
+                <div className='text-xs capitalize font-light'>{message?.sender.first_name}</div>
+                <div className={`flex gap-1 w-full ${message.sender_username === USER_ID ? 'justify-end' : 'justify-start'}`}>
+                  {message.sender_username !== USER_ID && <div className='relative min-w-8 h-fit'>
+                    <UserAvatar
+                      avatarSrc={message?.sender?.avatar}
+                      size='2'
+                    />
+                    {
+                      message?.sender?.is_online &&
+                      <div className='absolute bottom-0 right-0 size-3 border-2 border-white rounded-full bg-green-500'></div>
+                    }
+                  </div>
+                  }
+                  <div className={`py-2 px-3 rounded-lg ${message.sender_username === USER_ID ? 'bg-orangeFpt text-white' : 'bg-gray-100'} 
+                      shadow-lg`}
+                  >
+                    {message.text}
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
           ))
         ) : (
           <Box
@@ -130,12 +131,12 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
               flexGrow: 1,
             }}
           >
-            <Typography variant="h4" color="textSecondary">
+            <Typography variant="h2" color="textSecondary">
               No messages to display.
             </Typography>
           </Box>
         )}
-      </Box>
+      </div>
       <Box
         sx={{
           display: "flex",
@@ -145,6 +146,7 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
         }}
       >
         <TextField
+          className="bg-white"
           variant="outlined"
           placeholder="Type a message..."
           fullWidth
@@ -152,12 +154,11 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              sendMessage();
+              sendMessage()
             }
           }}
-          sx={{ marginRight: 1 }}
         />
-         {/* <input
+        {/* <input
           type="file"
           multiple
           onChange={handleAttachmentChange}
@@ -170,11 +171,9 @@ function ChatWindow({ selectedChatId, onNewMessage, fetchChats }) {
           </Button>
         </label> */}
         <IconButton
-          color="primary"
-          sx={{ backgroundColor: "orange", color: "white" }}
           onClick={sendMessage}
         >
-          <SendIcon />
+          <SendIcon className='text-orangeFpt' />
         </IconButton>
       </Box>
     </ChatEngineWrapper>
