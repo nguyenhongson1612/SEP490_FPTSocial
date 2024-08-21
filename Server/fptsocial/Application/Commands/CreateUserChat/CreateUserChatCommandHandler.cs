@@ -45,16 +45,6 @@ namespace Application.Commands.CreateUserChat
             {
                 throw new ErrorException(StatusCodeEnum.UC01_User_Chat_Is_Exist);
             }
-
-            var userchat = new Domain.CommandModels.UserChat
-            {
-                UserId = (Guid)request.UserId,
-                UserChatId = int.Parse(id),
-                CreateDate = DateTime.Now,
-            };
-
-            await _context.UserChats.AddAsync(userchat);
-            await _context.SaveChangesAsync();
             var result = new CreateUserChatCommandResult
             {
                 UserName = request.UserId.ToString(),
