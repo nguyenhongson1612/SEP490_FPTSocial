@@ -1953,8 +1953,13 @@ namespace Domain.CommandModels
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.HasOne(d => d.ChatWith)
+                    .WithMany(p => p.UserChatChatWiths)
+                    .HasForeignKey(d => d.ChatWithId)
+                    .HasConstraintName("fk_chat_with_user");
+
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserChats)
+                    .WithMany(p => p.UserChatUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_user_chat");
