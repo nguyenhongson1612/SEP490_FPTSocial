@@ -1,6 +1,8 @@
 ﻿using Application.Commands.CreateChatBox;
 using Application.Commands.CreateUserChat;
 using Application.Commands.CreateUserInterest;
+using Application.Commands.DeleteChat;
+using Application.Commands.UpdateChat;
 using Application.Commands.UpdateUserChat;
 using Application.Queries.GetChatDetails;
 using Application.Queries.GetUserByUserId;
@@ -175,6 +177,57 @@ namespace API.Controllers
             }
             input.UserId = Guid.Parse(uid);
             var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+
+        [HttpDelete]
+        [Route("deletechat")]
+        public async Task<IActionResult> DeleteChatBox(DeleteChatCommand userchat)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            userchat.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(userchat);
+            return Success(res.Value);
+        }
+
+        [HttpPost]
+        [Route("updatechat")]
+        public async Task<IActionResult> UpdateChatBox(UpdateChatCommand userchat)
+        {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            userchat.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(userchat);
             return Success(res.Value);
         }
     }

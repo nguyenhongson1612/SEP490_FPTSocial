@@ -136,5 +136,9 @@ namespace Domain.Enums
         CH01_Can_Not_Chat,
         [Description("Username or Email is existed!")]
         RGT01_Existed,
+        [Description("Can not delete this chat!")]
+        CH02_Can_Not_Delete_Chat,
+        [Description("Can not update this chat!")]
+        CH03_Can_Not_Update_Chat,
     }
 }

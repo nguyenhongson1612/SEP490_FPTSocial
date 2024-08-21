@@ -240,6 +240,48 @@ namespace Application.Services
             return await response.Content.ReadAsStringAsync();
         }
 
+        public async Task<string> DeleteChatAsync(string username, string chatid)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://api.chatengine.io/chats/{chatid}");
+            request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+            request.Headers.Add("User-Name", username);
+            request.Headers.Add("User-Secret", username);
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("Access Forbidden: Ensure your Private Key is correct.");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> UpdateChatAsync(string username, string chatid, string namechat)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.chatengine.io/chats/{chatid}");
+            request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
+            request.Headers.Add("User-Name", username);
+            request.Headers.Add("User-Secret", username);
+            var chat = new
+            {
+                title = namechat,
+                is_direct_chat= false
+            };
+
+            request.Content = new StringContent(JsonConvert.SerializeObject(chat), Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("Access Forbidden: Ensure your Private Key is correct.");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
     }
 
 }
