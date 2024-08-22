@@ -17,7 +17,6 @@ export const interceptorLoadingElements = (calling) => {
 }
 
 export const cleanAndParseHTML = (html, isIncludeMedia = false) => {
-  console.log('🚀 ~ cleanAndParseHTML ~ html:', html);
   if (isIncludeMedia && typeof html === 'string') {
     const mediaRegex = /<!--MEDIA:(video|image):(.+?)-->/g;
     const mediaMatches = Array.from(html.matchAll(mediaRegex));
@@ -39,6 +38,22 @@ export const compareDateTime = (date) => {
   const serverDate = moment(date)
   const timeAgo = serverDate.fromNow()
   return timeAgo
+}
+
+export function formatDate(dateString) {
+  const date = moment(dateString).utcOffset('+07:00'); // Chuyển đổi sang múi giờ Việt Nam
+  const now = moment().utcOffset('+07:00');
+
+  if (date.isSame(now, 'day')) {
+    // Trong ngày
+    return date.format('HH:mm');
+  } else if (date.isSame(now, 'year')) {
+    // Trong năm
+    return date.format('DD/MM HH:mm');
+  } else {
+    // Khác năm
+    return date.format('DD/MM/YYYY HH:mm');
+  }
 }
 
 export const handleCoverImg = (coverUrl) => {

@@ -69,7 +69,6 @@ export const getButtonFriend = async (userId, friendId) => {
   return response.data?.data
 }
 
-
 export const updateFriendStatus = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserRelationship/friendstatus`, data)
   return response.data?.data
@@ -134,8 +133,8 @@ export const getAllFriendRequest = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getallfriendrequest`)
   return response.data?.data
 }
-export const getButtonSendMessage = async () => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getbuttonsendmessage`)
+export const getButtonSendMessage = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getbuttonsendmessage?ViewOtherId=${id}`)
   return response.data?.data
 }
 export const getAllYourFriendRequested = async () => {
