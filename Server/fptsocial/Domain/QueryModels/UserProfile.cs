@@ -10,6 +10,7 @@ namespace Domain.QueryModels
             AvataPhotos = new HashSet<AvataPhoto>();
             BlockUserUserIsBlockeds = new HashSet<BlockUser>();
             BlockUserUsers = new HashSet<BlockUser>();
+            ChatAccounts = new HashSet<ChatAccount>();
             CommentGroupPosts = new HashSet<CommentGroupPost>();
             CommentGroupSharePosts = new HashSet<CommentGroupSharePost>();
             CommentGroupVideoPosts = new HashSet<CommentGroupVideoPost>();
@@ -94,6 +95,7 @@ namespace Domain.QueryModels
         public virtual ICollection<AvataPhoto> AvataPhotos { get; set; }
         public virtual ICollection<BlockUser> BlockUserUserIsBlockeds { get; set; }
         public virtual ICollection<BlockUser> BlockUserUsers { get; set; }
+        public virtual ICollection<ChatAccount> ChatAccounts { get; set; }
         public virtual ICollection<CommentGroupPost> CommentGroupPosts { get; set; }
         public virtual ICollection<CommentGroupSharePost> CommentGroupSharePosts { get; set; }
         public virtual ICollection<CommentGroupVideoPost> CommentGroupVideoPosts { get; set; }

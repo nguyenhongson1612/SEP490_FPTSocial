@@ -21,6 +21,7 @@ namespace Domain.CommandModels
         public virtual DbSet<AvataPhoto> AvataPhotos { get; set; } = null!;
         public virtual DbSet<BlockType> BlockTypes { get; set; } = null!;
         public virtual DbSet<BlockUser> BlockUsers { get; set; } = null!;
+        public virtual DbSet<ChatAccount> ChatAccounts { get; set; } = null!;
         public virtual DbSet<Client> Clients { get; set; } = null!;
         public virtual DbSet<CommentGroupPost> CommentGroupPosts { get; set; } = null!;
         public virtual DbSet<CommentGroupSharePost> CommentGroupSharePosts { get; set; } = null!;
@@ -201,6 +202,23 @@ namespace Domain.CommandModels
                     .HasForeignKey(d => d.UserIsBlockedId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("is_blocked_user_FK");
+            });
+
+            modelBuilder.Entity<ChatAccount>(entity =>
+            {
+                entity.ToTable("ChatAccount");
+
+                entity.Property(e => e.AccountId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ChatAccounts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_user_chat_account");
             });
 
             modelBuilder.Entity<Client>(entity =>
