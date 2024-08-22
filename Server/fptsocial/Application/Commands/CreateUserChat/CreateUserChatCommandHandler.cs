@@ -40,11 +40,19 @@ namespace Application.Commands.CreateUserChat
             var chat = await _chatEngineService.CreateUserAsync(request.UserId.ToString(), request.Email, request.FirstName, request.LastName,request.Avata);
             var getchat = JObject.Parse(chat);
             string id = getchat["id"].ToString();
-            var chatuser = await _querycontext.UserChats.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.UserChatId == int.Parse(id));
+            var chatuser = await _querycontext.ChatAccounts.FirstOrDefaultAsync(x => x.UserId == request.UserId && x.AccountId == id);
             if(chatuser!= null)
             {
                 throw new ErrorException(StatusCodeEnum.UC01_User_Chat_Is_Exist);
             }
+            var newaccount = new Domain.CommandModels.ChatAccount
+            {
+                AccountId = id,
+                UserId = (Guid)request.UserId,
+                CreateAt = DateTime.Now,
+            };
+            await _context.ChatAccounts.AddAsync(newaccount);
+            await _context.SaveChangesAsync();
             var result = new CreateUserChatCommandResult
             {
                 UserName = request.UserId.ToString(),

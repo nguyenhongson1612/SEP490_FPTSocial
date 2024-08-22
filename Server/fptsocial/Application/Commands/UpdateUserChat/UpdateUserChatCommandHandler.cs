@@ -31,12 +31,12 @@ namespace Application.Commands.UpdateUserChat
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var chatuser = await _querycontext.UserChats.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var chatuser = await _querycontext.ChatAccounts.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             if (chatuser == null)
             {
                 throw new ErrorException(StatusCodeEnum.UC02_User_Chat_Is_Not_Exist);
             }
-            var chat = await _chatEngineService.UpdateUserAsync(request.UserId.ToString(), chatuser.UserChatId.ToString(), request.Email, request.FirstName, request.LastName, request.Avata);
+            var chat = await _chatEngineService.UpdateUserAsync(request.UserId.ToString(), chatuser.AccountId.ToString(), request.Email, request.FirstName, request.LastName, request.Avata);
             var result = new UpdateUserChatCommandResult
             {
                 Message = "Update Success!"
