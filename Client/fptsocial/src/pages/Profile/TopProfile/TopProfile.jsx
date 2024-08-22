@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getBlockedUserList, getButtonFriend, sendFriend, updateFriendStatus } from '~/apis'
+import { getBlockedUserList, getButtonFriend, getButtonSendMessage, sendFriend, updateFriendStatus } from '~/apis'
 import { useConfirm } from 'material-ui-confirm'
-import { IconBookmark, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCancel, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react'
+import { IconBookmark, IconBrandMessenger, IconDots, IconDotsVertical, IconEdit, IconMessageReport, IconUser, IconUserCancel, IconUserCheck, IconUserFilled, IconUserPlus, IconUserX } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import connectionSignalR from '~/utils/signalRConnection'
 import { Avatar, Button, Menu, MenuItem, Popover } from '@mui/material'
@@ -24,6 +24,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
   const { t } = useTranslation()
   const isOpenModalBlock = useSelector(selectIsOpenBlock)
   const isOpenModalReport = useSelector(selectIsOpenReport)
+  const [hideButtonMes, setHideButtonMes] = useState(true)
 
   const handlePopoverOpen = (event, friendId) => {
     setAnchorEl(event.currentTarget)
@@ -43,6 +44,15 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
   const handleClose = () => {
     setAnchorEl2(null)
   }
+
+  useEffect(() => {
+    user &&
+      getButtonSendMessage(user?.userId).then(data => {
+        if (currentUser?.userId !== user?.userId && !data?.isHide)
+          setHideButtonMes(false)
+        else setHideButtonMes(true)
+      })
+  }, [user])
 
   const handleAddFriend = async () => {
     try {
@@ -178,7 +188,7 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             </div>
           </div>
 
-          <div className='flex gap-2'>
+          <div className='flex gap-1'>
             {user?.userId == currentUser?.userId ? (
               <div
                 onClick={() => setIsOpenModalUpdateProfile(true)}
@@ -253,6 +263,16 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
                 </div>
               </div>
             )}
+            {
+              !hideButtonMes &&
+              <div className='cursor-pointer'>
+                <Link to={'/chats-page'}
+                  className="rounded-md flex justify-center items-center bg-fbWhite cursor-pointer hover:bg-fbWhite-500"
+                // onClick={handleClick}
+                ><IconBrandMessenger className='text-orangeFpt size-10 p-1' />
+                </Link>
+              </div>
+            }
             {
               user?.userId !== currentUser?.userId &&
               <div className='cursor-pointer'>

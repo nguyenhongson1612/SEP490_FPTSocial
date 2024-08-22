@@ -1,73 +1,50 @@
-import {
-  Autocomplete,
-  Avatar,
-  Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  Toolbar,
-  useMediaQuery,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { useCallback, useEffect, useState, useRef } from "react";
 import debounce from "lodash.debounce";
-import { useCallback, useEffect, useState } from "react";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
 import {
   API_ROOT,
   CHAT_ENGINE_CONFIG_HEADER,
+  CHAT_KEY,
   USER_ID,
 } from "~/utils/constants";
-import ChatModal from "./ChatModal";
 import ChatItem from './ChatItem';
+import { ChatEngineWrapper, Socket } from 'react-chat-engine';
 
-function Sidebar({ onSelectChat, allMessages }) {
+function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
   const [searchResults, setSearchResults] = useState({
     listFriend: [],
     listUserNotFriend: [],
   });
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState([]);
-  console.log('🚀 ~ Sidebar ~ chats:', chats)
-  const [selectedChatId, setSelectedChatId] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [currentSelectedUserId, setCurrentSelectedUserId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessages, setModalMessages] = useState([]);
   const [selectedUsername, setSelectedUsername] = useState("");
   const [selectedUserFullName, setSelectedUserFullName] = useState("");
-
-  const sidebarWidth = isSmallScreen ? 200 : isMediumScreen ? 240 : 300;
+  const [isOpen, setIsOpen] = useState(false);
+  const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     fetchChats();
+    fetchAllUsers();
   }, []);
 
   useEffect(() => {
-    const fetchAllUsers = async () => {
-      try {
-        const response = await authorizedAxiosInstance.get(
-          `${API_ROOT}/api/Chat/searchinchat`
-        );
-        if (response.data.statusCode === "Success") {
-          setAllUsers(response.data.data.otherUser);
-        } else {
-          setAllUsers([]);
-        }
-      } catch (error) {
-        console.error("Error fetching all users:", error);
-        setAllUsers([]);
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !inputRef.current.contains(event.target)) {
+        setIsOpen(false)
       }
-    };
+    }
 
-    fetchAllUsers();
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const fetchChats = async () => {
     try {
@@ -81,24 +58,30 @@ function Sidebar({ onSelectChat, allMessages }) {
     }
   };
 
-  const handleSelectChat = (chatId) => {
-    setSelectedChatId(chatId)
-    onSelectChat(chatId)
+  const fetchAllUsers = async () => {
+    try {
+      const response = await authorizedAxiosInstance.get(
+        `${API_ROOT}/api/Chat/searchinchat`
+      );
+      if (response.data.statusCode === "Success") {
+        setAllUsers(response.data.data.otherUser);
+      } else {
+        setAllUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching all users:", error);
+      setAllUsers([]);
+    }
   };
 
-  const handleUserSelect = (event) => {
-    const userId = event.target.value;
-    const user = allUsers.find((user) => user.id === userId);
-    setSelectedUsername(user.username);
-    setSelectedUserFullName(user.fullName);
-    setCurrentSelectedUserId(userId);
-    setModalOpen(true);
+  const handleSelectChat = (chatId) => {
+    setSelectedChatId(chatId);
   };
 
   const handleSearch = async (searchText) => {
     try {
       const response = await authorizedAxiosInstance.get(
-        `${API_ROOT}/api/Search/searchuserbyname?FindName=${encodeURIComponent(
+        `${API_ROOT}/api/Chat/searchuserforchat?FindName=${encodeURIComponent(
           searchText
         )}`
       );
@@ -118,6 +101,21 @@ function Sidebar({ onSelectChat, allMessages }) {
     []
   );
 
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setSearch(value);
+    debouncedSearch(value);
+    setIsOpen(true);
+  };
+
+  const handleOptionClick = (option) => {
+    setModalOpen(true);
+    setSelectedUsername(option.friendId);
+    setSelectedUserFullName(option.friendName);
+    setCurrentSelectedUserId(option.friendId);
+    setIsOpen(false);
+  };
+
   const flattenedOptions = [
     ...searchResults.listFriend.map((user) => ({ ...user, group: "Friends" })),
     ...searchResults.listUserNotFriend.map((user) => ({
@@ -126,114 +124,102 @@ function Sidebar({ onSelectChat, allMessages }) {
     })),
   ];
 
-  return (
-    <div
-      className='h-[calc(100vh_-_55px)] w-[400px] flex-shrink-0 flex flex-col border-r-2'
-    >
-      <div className='p-2 flex flex-col h-full'>
-        <Autocomplete
-          options={flattenedOptions}
-          groupBy={(option) => option.group}
-          getOptionLabel={(option) => option.friendName}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Search Users"
-              onChange={(event) => {
-                setSearch(event.target.value);
-                debouncedSearch(event.target.value);
-              }}
-            />
-          )}
-          renderOption={(props, option) => (
-            <ListItem
-              {...props}
-              key={option.friendId}
-              onClick={(e) => {
-                setModalOpen(true);
-                setSelectedUsername(option.friendId);
-                setSelectedUserFullName(option.friendName);
-                setCurrentSelectedUserId(option.friendId);
-              }}
-            >
-              <Avatar
-                src={option.avata}
-                alt={option.friendName}
-                sx={{ marginRight: 1 }}
-              />
-              <ListItemText primary={option.friendName} />
-            </ListItem>
-          )}
-          onBlur={() =>
-            setSearchResults({ listFriend: [], listUserNotFriend: [] })
-          }
-          onChange={handleUserSelect}
-        />
+  const handleChoseSearchChat = async (chat) => {
+    // console.log('🚀 ~ handleChoseSearchChat ~ chat:', chat)
+    if (chat?.chatId) {
+      setSelectedChatId(chat?.chatId)
+    }
+    else {
+      const createChatResponse = await authorizedAxiosInstance.post(
+        `${API_ROOT}/api/Chat/createchatbox`,
+        {
+          otherId: chat?.friendId,
+          title: "",
+        }
+      )
 
-        <div className='flex-grow overflow-y-auto p-2 scrollbar-none-track'>
-          <div className='h-full'>
-            {!chats.length && selectedUsers.length === 0 ? (
-              "No chats to display"
-            ) : (
-              <>
-                {chats &&
-                  chats.map((chat) => (
-                    <ChatItem key={chat?.id} chat={chat} inPageChat handleSelectChat={handleSelectChat} />
-                    // <ListItem
-                    //   button
-                    //   key={chat.id}
-                    //   onClick={() => handleSelectChat(chat.id)}
-                    //   selected={chat.id === selectedChatId}
-                    // >
-                    //   <Box sx={{ display: "flex", alignItems: "center" }}>
-                    //     <Avatar
-                    //       src={
-                    //         chat?.people?.find(
-                    //           (person) => person?.person?.username !== USER_ID
-                    //         )?.person?.avatar
-                    //       }
-                    //       alt={chat.fullName}
-                    //       sx={{ marginRight: 1 }}
-                    //     />
-                    //     <ListItemText
-                    //       primary={chat?.people
-                    //         .filter(
-                    //           (person) => person.person.username !== USER_ID
-                    //         )
-                    //         .map(
-                    //           (person) =>
-                    //             `${person.person.first_name} ${person.person.last_name}`
-                    //         )
-                    //         .join(", ")}
-                    //       secondary={
-                    //         allMessages[chat.id]
-                    //           ? allMessages[chat.id][
-                    //             allMessages[chat.id].length - 1
-                    //           ].text
-                    //           : chat?.last_message?.text
-                    //       }
-                    //     />
-                    //   </Box>
-                    // </ListItem>
-                  ))}
-              </>
+      await authorizedAxiosInstance.post(
+        `https://api.chatengine.io/chats/${createChatResponse?.data?.data?.chatId}/messages/`,
+        {
+          text: "Hi",
+        },
+        CHAT_ENGINE_CONFIG_HEADER
+      );
+
+      if (createChatResponse.data.data) {
+        fetchChats()
+      } else {
+        console.error("Error sending message")
+      }
+      setSelectedChatId(createChatResponse?.data?.data?.chatId)
+    }
+
+  }
+
+  return (
+    <ChatEngineWrapper>
+      <Socket
+        projectID={CHAT_KEY.ProjectID}
+        userName={USER_ID}
+        userSecret={USER_ID}
+        onEditChat={(chat) => fetchChats()}
+      />
+      <div className='h-[calc(100vh_-_55px)] w-[400px] flex-shrink-0 flex flex-col border-r-2'>
+        <div className='p-2 flex flex-col h-full'>
+          <div className="relative">
+            <input
+              ref={inputRef}
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search Users"
+              value={search}
+              onChange={handleInputChange}
+              onFocus={() => setIsOpen(true)}
+            />
+            {isOpen && (
+              <div ref={dropdownRef} className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto scrollbar-none-track">
+                {flattenedOptions.map((option, index) => (
+                  <div key={index} >
+                    {index === 0 || option.group !== flattenedOptions[index - 1].group ? (
+                      <div className="px-4 py-2 text-sm font-semibold text-gray-500 bg-gray-100">
+                        {option.group}
+                      </div>
+                    ) : null}
+                    <div
+                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleChoseSearchChat(option)}
+                    >
+                      <img
+                        src={option.avata}
+                        alt={option.friendName}
+                        className="w-8 h-8 mr-2 rounded-full"
+                      />
+                      <span>{option.friendName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
+
+          <div className='flex-grow overflow-y-auto p-2 scrollbar-none-track'>
+            <div className='h-full'>
+              {!chats.length && selectedUsers.length === 0 ? (
+                "No chats to display"
+              ) : (
+                <>
+                  {chats &&
+                    chats.map((chat) => (
+                      <ChatItem key={chat?.id} chat={chat} inPageChat handleSelectChat={handleSelectChat} />
+                    ))}
+                </>
+              )}
+            </div>
+          </div>
         </div>
+      </div >
+    </ChatEngineWrapper>
 
-
-      </div>
-      <ChatModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        username={selectedUsername}
-        fullName={selectedUserFullName}
-        messages={modalMessages}
-        setMessages={setModalMessages}
-        selectedChatId={currentSelectedUserId}
-        fetchChats={fetchChats}
-      />
-    </div>
   );
 }
 

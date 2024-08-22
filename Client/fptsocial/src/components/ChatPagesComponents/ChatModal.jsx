@@ -26,7 +26,6 @@ const ChatModal = ({
           title: "",
         }
       );
-      console.log("Chat created:", createChatResponse.data.data);
       currentChatId = createChatResponse.data.data.chatId;
       setChatId(currentChatId);
 
