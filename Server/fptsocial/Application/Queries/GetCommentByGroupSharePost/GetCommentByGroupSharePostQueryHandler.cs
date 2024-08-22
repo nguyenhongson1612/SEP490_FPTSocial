@@ -37,9 +37,8 @@ namespace Application.Queries.GetCommentByGroupSharePost
 
             var commentsQuery = from c in _context.CommentGroupSharePosts
                                  join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
-                                 join u in _context.UserPosts on c.UserId equals u.UserId
                                  from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                 where c.GroupSharePostId == request.GroupSharePostId && c.IsHide == false && c.IsBanned != true && u.User.IsActive == true
+                                 where c.GroupSharePostId == request.GroupSharePostId && c.IsHide == false && c.IsBanned != true && c.User.IsActive == true
                                  orderby c.CreateDate ascending
                                  select new CommentGroupSharePostDto
                                  {

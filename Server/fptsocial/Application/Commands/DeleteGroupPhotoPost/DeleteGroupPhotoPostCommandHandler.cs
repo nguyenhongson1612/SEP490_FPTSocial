@@ -36,7 +36,7 @@ namespace Application.Commands.DeleteGroupPhotoPost
                                         .Include(x => x.GroupPost)  
                                         .Where(x => x.GroupPostPhotoId == request.GroupPostPhotoId)
                                         .FirstOrDefault();
-            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            var checkAdmin = await _querycontext.AdminProfiles.Where(x => x.AdminId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
             bool isAdmin = false;
             if (checkAdmin == "Societe-admin")
             {

@@ -34,7 +34,7 @@ namespace Application.Commands.DeleteSharePost
             }
 
             var userPost = _querycontext.SharePosts.Where(x => x.SharePostId == request.SharePostId).FirstOrDefault();
-            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            var checkAdmin = await _querycontext.AdminProfiles.Where(x => x.AdminId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
             bool isAdmin = false;
             if (checkAdmin == "Societe-admin")
             {
