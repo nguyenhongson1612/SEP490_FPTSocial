@@ -34,7 +34,7 @@ namespace Application.Commands.DeleteUserPhotoPost
             }
             var result = new DeleteUserPhotoPostCommandResult();
             var photoPost = _querycontext.UserPostPhotos.Include(x => x.UserPost).Where(x => x.UserPostPhotoId == request.UserPostPhotoId).FirstOrDefault();
-            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            var checkAdmin = await _querycontext.AdminProfiles.Where(x => x.AdminId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
             bool isAdmin = false;
             if (checkAdmin == "Societe-admin")
             {

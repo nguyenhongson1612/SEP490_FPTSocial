@@ -38,10 +38,9 @@ namespace Application.Queries.GetCommentByPostId
             }
 
             var commentsQuery = from c in _context.CommentPosts
-                                join u in _context.UserPosts on c.UserId equals u.UserId
                                 join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
                                 from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                where c.UserPostId == request.UserPostId && c.IsHide == false && c.IsBanned != true && u.User.IsActive == true
+                                where c.UserPostId == request.UserPostId && c.IsHide == false && c.IsBanned != true && c.User.IsActive == true
                                 select new CommentDto
                                 {
                                     UserId = c.UserId,

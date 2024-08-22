@@ -34,7 +34,7 @@ namespace Application.Commands.DeleteCommentGroupSharePost
             }
 
             var userComment = _querycontext.CommentGroupSharePosts.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId).FirstOrDefault();
-            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            var checkAdmin = await _querycontext.AdminProfiles.Where(x => x.AdminId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
             bool isAdmin = false;
             if (checkAdmin == "Societe-admin")
             {

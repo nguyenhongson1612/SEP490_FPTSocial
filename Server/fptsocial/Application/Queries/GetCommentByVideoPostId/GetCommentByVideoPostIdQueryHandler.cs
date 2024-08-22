@@ -35,9 +35,8 @@ namespace Application.Queries.GetCommentByVideoPostId
             // Lấy danh sách bình luận, kèm thông tin người dùng, ảnh đại diện (nếu có) và sắp xếp
             var commentsQuery = from c in _context.CommentVideoPosts
                                   join a in _context.AvataPhotos on c.UserId equals a.UserId into ap
-                                  join u in _context.UserPosts on c.UserId equals u.UserId
                                   from a in ap.Where(a => a.IsUsed == true).DefaultIfEmpty()
-                                  where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && c.IsBanned != true && u.User.IsActive == true
+                                  where c.UserPostVideoId == request.UserPostVideoId && c.IsHide == false && c.IsBanned != true && c.User.IsActive == true
                                   orderby c.CreatedDate ascending
                                   select new CommentVideoDto
                                   {

@@ -34,7 +34,7 @@ namespace Application.Commands.DeleteGroupVideoPost
             }
             var result = new DeleteGroupVideoPostCommandResult();
             var VideoPost = _querycontext.GroupPostVideos.Include(x => x.GroupPost).Where(x => x.GroupPostVideoId == request.GroupPostVideoId).FirstOrDefault();
-            var checkAdmin = await _querycontext.UserProfiles.Where(x => x.UserId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
+            var checkAdmin = await _querycontext.AdminProfiles.Where(x => x.AdminId == request.UserId).Select(y => y.Role.NameRole).FirstOrDefaultAsync();
             bool isAdmin = false;
             if (checkAdmin == "Societe-admin")
             {
