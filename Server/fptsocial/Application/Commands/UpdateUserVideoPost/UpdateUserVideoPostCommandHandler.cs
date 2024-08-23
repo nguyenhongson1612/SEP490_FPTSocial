@@ -66,11 +66,11 @@ namespace Application.Commands.UpdateUserVideoPost
                 VideoPost.Content = request.Content;
                 VideoPost.IsBanned = false;
             }
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(VideoPost.Content);
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 VideoPost.IsBanned = true;
-                VideoPost.Content = _checkContent.MarkBannedWordsInContent(VideoPost.Content, haveBadWord);
+                VideoPost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
             var cgp = new Domain.CommandModels.UserPostVideo 
             {

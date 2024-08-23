@@ -46,8 +46,11 @@ namespace Application.Services
 
             foreach (var keyword in bannedKeywords)
             {
-                // Chuyển cả mẫu và văn bản về chữ thường trước khi tìm kiếm
-                if (KMPSearch(keyword.Word.ToLower(), sentence.ToLower()))
+                // Tạo biểu thức Regex để tìm kiếm từ bị cấm với ranh giới từ, không phân biệt chữ hoa, chữ thường
+                string keywordPattern = $@"\b{Regex.Escape(keyword.Word)}\b";
+
+                // Kiểm tra nếu có từ bị cấm trong câu
+                if (Regex.IsMatch(sentence, keywordPattern, RegexOptions.IgnoreCase))
                 {
                     detectedKeywords.Add(keyword);
                 }
@@ -133,41 +136,17 @@ namespace Application.Services
 
         public string MarkBannedWordsInContent(string sentence, List<BannedWord> bannedKeywords)
         {
-            // Tạo một StringBuilder để xây dựng lại câu với các từ bị cấm được đánh dấu
-            var stringBuilder = new StringBuilder();
-
-            // Duyệt qua từng từ trong câu
-            int currentIndex = 0;
-            while (currentIndex < sentence.Length)
+            foreach (var keyword in bannedKeywords)
             {
-                bool foundBannedWord = false;
+                // Tạo biểu thức Regex để tìm kiếm từ bị cấm với ranh giới từ, không phân biệt chữ hoa, chữ thường
+                string keywordPattern = $@"\b{Regex.Escape(keyword.Word)}\b";
 
-                // Kiểm tra từng từ bị cấm
-                foreach (var keyword in bannedKeywords)
-                {
-                    // So sánh không phân biệt hoa thường
-                    string keywordLower = keyword.Word.ToLower();
-                    string currentWord = sentence.Substring(currentIndex, Math.Min(keywordLower.Length, sentence.Length - currentIndex)).ToLower();
-
-                    if (currentWord == keywordLower)
-                    {
-                        // Nếu tìm thấy từ bị cấm, đánh dấu nó và thêm vào StringBuilder
-                        stringBuilder.Append($"<mark>{sentence.Substring(currentIndex, keywordLower.Length)}</mark>");
-                        currentIndex += keywordLower.Length;
-                        foundBannedWord = true;
-                        break;
-                    }
-                }
-
-                // Nếu không tìm thấy từ bị cấm, thêm ký tự hiện tại vào StringBuilder
-                if (!foundBannedWord)
-                {
-                    stringBuilder.Append(sentence[currentIndex]);
-                    currentIndex++;
-                }
+                // Sử dụng Regex để tìm kiếm và bôi vàng từ bị cấm
+                sentence = Regex.Replace(sentence, keywordPattern, match => $"<mark>{match.Value}</mark>", RegexOptions.IgnoreCase);
             }
 
-            return stringBuilder.ToString();
+            return sentence;
         }
+
     }
 }

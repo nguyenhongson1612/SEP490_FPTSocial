@@ -66,11 +66,11 @@ namespace Application.Commands.UpdateGroupSharePost
                 groupSharePost.Content = request.Content;
                 groupSharePost.IsBanned = false;
             }
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(groupSharePost.Content);
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 groupSharePost.IsBanned = true;
-                groupSharePost.Content = _checkContent.MarkBannedWordsInContent(groupSharePost.Content, haveBadWord);
+                groupSharePost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
 
             Domain.CommandModels.GroupSharePost gsp = new Domain.CommandModels.GroupSharePost
