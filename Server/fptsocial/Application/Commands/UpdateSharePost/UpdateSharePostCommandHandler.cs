@@ -67,11 +67,11 @@ namespace Application.Commands.UpdateSharePost
                 photoPost.UserStatusId = request.UserStatusId;
                 photoPost.IsBanned = false;
             }
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(photoPost.Content);
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 photoPost.IsBanned = true;
-                photoPost.Content = _checkContent.MarkBannedWordsInContent(photoPost.Content, haveBadWord);
+                photoPost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
             Domain.CommandModels.SharePost sp = new Domain.CommandModels.SharePost
             {

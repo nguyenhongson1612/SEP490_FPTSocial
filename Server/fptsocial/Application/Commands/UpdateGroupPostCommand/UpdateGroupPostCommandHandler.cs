@@ -317,19 +317,17 @@ namespace Application.Commands.UpdateGroupPostCommand
 
                 await _context.SaveChangesAsync();
             }
-
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(GroupPost.Content);
+            GroupPost.IsBanned = false;
+            GroupPost.Content = request.Content;
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 GroupPost.IsBanned = true;
-                GroupPost.Content = _checkContent.MarkBannedWordsInContent(GroupPost.Content, haveBadWord);
+                GroupPost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
-
-            GroupPost.Content = request.Content;
             GroupPost.GroupStatusId = groupStatusId;
             GroupPost.UpdatedAt = DateTime.Now;
             GroupPost.NumberPost = numberPost;
-            GroupPost.IsBanned = false;
 
             Domain.CommandModels.GroupPost gp1 = new Domain.CommandModels.GroupPost
             {

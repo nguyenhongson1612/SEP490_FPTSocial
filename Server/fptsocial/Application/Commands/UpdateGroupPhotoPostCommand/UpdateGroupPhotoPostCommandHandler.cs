@@ -66,11 +66,11 @@ namespace Application.Commands.UpdateGroupPhotoPostCommand
                 photoPost.Content = request.Content;
                 photoPost.IsBanned = false;
             }
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(photoPost.Content);
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 photoPost.IsBanned = true;
-                photoPost.Content = _checkContent.MarkBannedWordsInContent(photoPost.Content, haveBadWord);
+                photoPost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
 
             var commandModel = new Domain.CommandModels.GroupPostPhoto 

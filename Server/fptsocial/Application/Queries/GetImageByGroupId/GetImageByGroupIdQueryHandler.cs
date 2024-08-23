@@ -36,6 +36,19 @@ namespace Application.Queries.GetImageByGroupId
 
             var result = new GetImageByGroupIdQueryResult();
 
+            string checkGroupStatus = (from g in _context.GroupFpts
+                                       join gs in _context.GroupStatuses on g.GroupStatusId equals gs.GroupStatusId
+                                       where g.GroupId == request.GroupId
+                                       select gs.GroupStatusName
+                                      ).FirstOrDefault();
+
+            bool IsMember = _context.GroupMembers.Where(x => x.UserId ==  request.UserId && x.GroupId == request.GroupId).Any();
+
+            if (checkGroupStatus == "Private" && IsMember != true) 
+            {
+                return Result<GetImageByGroupIdQueryResult>.Success(result);
+            }
+
             var groupPhoto1 = _context.GroupPostPhotos.Where(x => x.GroupPost.GroupId == request.GroupId && x.IsHide != true && x.IsBanned != true)
                                                     .Select(x => new ImageInGroupFPT
                                                     {

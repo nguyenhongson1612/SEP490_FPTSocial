@@ -315,18 +315,17 @@ namespace Application.Commands.UpdateUserPostCommand
                 await _context.SaveChangesAsync();
             }
 
-            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(userPost.Content);
+            userPost.IsBanned = false;
+            userPost.Content = request.Content;
+            List<CheckingBadWord.BannedWord> haveBadWord = _checkContent.Compare2String(request.Content);
             if (haveBadWord.Any())
             {
                 userPost.IsBanned = true;
-                userPost.Content = _checkContent.MarkBannedWordsInContent(userPost.Content, haveBadWord);
+                userPost.Content = _checkContent.MarkBannedWordsInContent(request.Content, haveBadWord);
             }
-
-            userPost.Content = request.Content;
             userPost.UserStatusId = request.UserStatusId;
             userPost.UpdatedAt = DateTime.Now;
             userPost.NumberPost = numberPost;
-            userPost.IsBanned = false;
 
             Domain.CommandModels.UserPost up = new Domain.CommandModels.UserPost
             {
