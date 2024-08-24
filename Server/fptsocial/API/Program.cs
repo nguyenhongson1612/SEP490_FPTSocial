@@ -56,11 +56,12 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<NotificationsHub>();
 builder.Services.AddHostedService<NotificationsHostedService>();
 builder.Services.AddSingleton<SubscribeNotificationsTableDependency>();
+
 builder.Services.AddSingleton<INotificationsHubBackgroundService, NotificationsHubBackgroundService>();
 builder.Services.AddSingleton<ICreateNotifications, CreateNotifications>();
 builder.Services.AddSingleton<IGetNotifications,  GetNotifications>();
 builder.Services.AddSingleton(typeof(ConnectionMapping<>));
-//builder.Services.AddHostedService<NotificationsHubBackgroundService>();
+builder.Services.AddSingleton<NotificationsHubBackgroundService>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });

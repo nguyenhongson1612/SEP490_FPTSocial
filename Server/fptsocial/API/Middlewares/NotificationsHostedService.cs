@@ -24,6 +24,7 @@ namespace API.Middlewares
             {
                 var notificationsTableDependency = scope.ServiceProvider.GetRequiredService<SubscribeNotificationsTableDependency>();
                 notificationsTableDependency.SubscribeTableDependency(connectionString); // Ensure this method exists
+                notificationsTableDependency.SubscribeBlockUserProfileTableDependency(connectionString);
             }
 
             return Task.CompletedTask;

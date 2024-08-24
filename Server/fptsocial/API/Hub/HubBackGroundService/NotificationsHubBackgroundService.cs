@@ -3,6 +3,7 @@ using Application.DTO.NotificationDTO;
 using Application.Hub;
 using Application.Queries.GetNotifications;
 using Core.Helper;
+using Domain.CommandModels;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Extensions;
@@ -10,6 +11,8 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
 
 namespace API.Hub
 {
@@ -23,7 +26,7 @@ namespace API.Hub
     {
         const string SEC = ")s%ec!r_e-t?^(";
         const string NORMAL = "Normal";
-        private static readonly TimeSpan Period = TimeSpan.FromSeconds(3);
+        private static readonly TimeSpan Period = TimeSpan.FromSeconds(300);
         private readonly ConnectionMapping<string> _connections;
         private readonly ICreateNotifications _createNotifications;
         private readonly IGetNotifications _getNotifications;
@@ -32,6 +35,7 @@ namespace API.Hub
         private readonly IConfiguration _configuration;
         private readonly IHubContext<NotificationsHub, INotificationsClient> _hubContext;
         private readonly HubCallerContext _hubCallerContext;
+        private readonly SmtpClient _smtpClient;
         public NotificationsHubBackgroundService(IConfiguration configuration, IHubContext<NotificationsHub, INotificationsClient> hubContext,
             ICreateNotifications createNotifications, IGetNotifications getNotifications, ConnectionMapping<string> connections)
         {
@@ -42,6 +46,13 @@ namespace API.Hub
             _hubContext = hubContext;
             _connections = connections;
             _splitString = new SplitString();
+
+            _smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587, // sử dụng TLS, nếu SSL thì dùng 465
+                Credentials = new NetworkCredential("anhbqhe163864@fpt.edu.vn", "kpgc vtlr ucmn ofkh"),
+                EnableSsl = true // Bật SSL hoặc TLS
+            };
         }
 
         public async Task SendNotifyService(HubCallerContext context, string notice)
@@ -80,7 +91,7 @@ namespace API.Hub
 
                 string senderName = senderInfo.UserProfile.FirstName + " " + senderInfo.UserProfile.LastName;
                 string notificationsMessage = _configuration.GetSection("MessageContents").GetSection(code).Value;
-                if(actionId == null)
+                if (actionId == null)
                 {
                     msgDB = senderName + SEC + notificationsMessage + addMsg;
                     string msg = notificationsMessage + addMsg;
@@ -107,7 +118,7 @@ namespace API.Hub
                 {
                     msgDB = senderName + SEC + actionId + SEC + notificationsMessage + addMsg;
                     bool isExist = _getNotifications.IsNotifyExist(senderId, msgDB);
-                    if (!isExist) 
+                    if (!isExist)
                     {
                         string msg = notificationsMessage + addMsg;
                         NotificationOutDTO notificationOutDTO = new()
@@ -131,7 +142,7 @@ namespace API.Hub
                     }
 
                 }
-                
+
 
             }
         }
@@ -227,7 +238,42 @@ namespace API.Hub
             {
                 await _hubContext.Clients.Client(connectionId).listReceiveNotification(jsonNotice);
             }
-            
+
+        }
+
+        public async Task SendEmailAsync(string toEmail, bool isActive, UserProfile userProfile, bool isCreate)
+        {
+            var mailMessage = new MailMessage();
+            if (!isActive)
+            {
+                mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
+                mailMessage.Subject = "[FUSP] Notifications User Management System";
+                mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been blocked due to policy violations.<br/><br/>Best regards,<br/>Support Team";
+                mailMessage.IsBodyHtml = true;
+            }
+            else
+            {
+                if (isCreate)
+                {
+                    mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
+                    mailMessage.Subject = "[FUSP] Notifications User Management System";
+                    mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been created successfully. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
+                    mailMessage.IsBodyHtml = true;
+                }
+                else
+                {
+                    mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
+                    mailMessage.Subject = "[FUSP] Notifications User Management System";
+                    mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been updated profile successfully or activated by admin. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
+                    mailMessage.IsBodyHtml = true;
+                }
+
+
+            }
+
+                mailMessage.To.Add(toEmail);
+
+            await _smtpClient.SendMailAsync(mailMessage);
         }
 
 
