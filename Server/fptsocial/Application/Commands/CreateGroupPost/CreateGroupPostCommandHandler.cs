@@ -69,6 +69,16 @@ namespace Application.Commands.CreateGroupPost
                 statusGroup = false;
             }
 
+            var groupRoleName = (from gm in _context.GroupMembers
+                                 join gr in _context.GroupRoles
+                                 on gm.GroupRoleId equals gr.GroupRoleId
+                                 where gm.GroupId == request.GroupId && gm.UserId == request.UserId
+                                 select gr.GroupRoleName).FirstOrDefault();
+            if (groupRoleName == "Admin")
+            {
+                statusGroup = false;
+            }
+
             Guid groupStatusId = (Guid)_queryContext.GroupFpts.Where(x => x.GroupId == request.GroupId).Select(x => x.GroupStatusId).FirstOrDefault();
 
             if (photos.Count() == 1 && numberPost == 1)
