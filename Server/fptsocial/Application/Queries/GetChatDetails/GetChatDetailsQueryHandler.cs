@@ -50,10 +50,10 @@ namespace Application.Queries.GetChatDetails
                 var personUsername = Guid.Parse(personObj["person"]["username"].ToString());
                 listPersom.Add(personUsername);
             }
-            if(listPersom.Count == 1)
+            if(listPersom.Count >= 1)
             {
-                var block = await _context.BlockUsers.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.UserIsBlockedId == listPersom[0])
-                                                 || (x.UserId == listPersom[0] && x.UserIsBlockedId == request.UserId));
+                var block = await _context.BlockUsers.FirstOrDefaultAsync(x => (x.UserId == request.UserId && x.UserIsBlockedId == listPersom[1])
+                                                 || (x.UserId == listPersom[1] && x.UserIsBlockedId == request.UserId));
                 if(block != null)
                 {
                     result.IsBloked = true;

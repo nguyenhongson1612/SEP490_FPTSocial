@@ -134,8 +134,10 @@ namespace Domain.Enums
         RP01_Report_Not_Found,
         [Description("Can not send message with user!")]
         CH01_Can_Not_Chat,
-        [Description("Username or Email is existed!")]
+        [Description("Email is existed!")]
         RGT01_Existed,
+        [Description("Email does not existed!")]
+        RGT02_Does_Not_Existed,
         [Description("Can not delete this chat!")]
         CH02_Can_Not_Delete_Chat,
         [Description("Can not update this chat!")]

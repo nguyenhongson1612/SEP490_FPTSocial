@@ -2,12 +2,14 @@
 using Application.Services;
 using Core.CQRS;
 using Core.CQRS.Command;
+using Domain.Exceptions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Application.Commands.ResetPassword
 {
@@ -25,24 +27,25 @@ namespace Application.Commands.ResetPassword
             var result = new ResetPasswordCommandResult();
             string email = "";
             string password = "";
-            try
-            {
-                var user = await _fptAccountServices
-                    .ResetPassAsync(request.Username);
-                var jsonObject = JObject.Parse(user);
-                var getpass = jsonObject["result"];
-                foreach (var item in getpass)
+            bool st = true;
+            var user = await _fptAccountServices
+                .ResetPassAsync(request.Username);
+            var jsonObject = JObject.Parse(user);
+            var getpass = jsonObject["result"];
+            var status = jsonObject["status"];
+            if (status != null) {
+                st = (bool)status;
+                if (st == false)
                 {
-                    email = ((JProperty)item).Name;
-                    password = ((JProperty)item).Value.ToString();
-                }  
-
+                    throw new ErrorException(Domain.Enums.StatusCodeEnum.RGT02_Does_Not_Existed);
+                }
             }
-            catch (Exception)
+            
+            foreach (var item in getpass)
             {
-
-                throw new Exception("API Error!");
-            }
+                email = ((JProperty)item).Name;
+                password = ((JProperty)item).Value.ToString();
+            } 
 
             result.Username = request.Username;
             result.Password = password;

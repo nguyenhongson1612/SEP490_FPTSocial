@@ -206,7 +206,7 @@ namespace Application.Services
 
         public async Task<string> GetChatDetails(string chatid, string uname)
         {
-            var request = new HttpRequestMessage(HttpMethod.Patch, $"https://api.chatengine.io/chats/{chatid}/");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.chatengine.io/chats/{chatid}/");
             request.Headers.Add("Private-Key", _configuration["ChatEngine:PrivateKey"]);
             request.Headers.Add("User-Name", uname);
             request.Headers.Add("User-Secret", uname);
