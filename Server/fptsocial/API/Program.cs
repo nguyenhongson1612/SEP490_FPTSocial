@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
 using TableDependency.SqlClient;
+using Application.DTO.MailDTO;
 
 [assembly: ApiController]
 var builder = WebApplication.CreateBuilder(args);
@@ -140,8 +141,9 @@ builder.Services.AddSingleton<CheckingBadWord>();
 builder.Configuration.AddJsonFile("notificationsMessage.json", optional: false, reloadOnChange: true);
 builder.Services.AddHttpClient<ChatEngineService>();
 builder.Services.AddHttpClient<FptAccountServices>();
+builder.Services.AddSingleton<EmailServices>();
 var app = builder.Build();
-var connectionString = app.Configuration.GetConnectionString("QueryConnection");
+var connectionString = app.Configuration.GetConnectionString("CommandConnection");
 
 // Kích hoạt Middleware để kiểm soát loại dữ liệu làm việc trên SwaggerUI
 app.UseSwagger();
