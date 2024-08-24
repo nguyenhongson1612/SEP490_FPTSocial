@@ -47,7 +47,25 @@ namespace Application.Commands.JoinGroupCommand
 
             if (joined != null)
             {
-                throw new ErrorException(StatusCodeEnum.GR10_Group_Joined);
+                if(joined.InvatedBy != null && joined.IsInvated == false)
+                {
+                    var clearinvate = new Domain.CommandModels.GroupMember
+                    {
+                        GroupId = joined.GroupId,
+                        UserId = joined.UserId,
+                        GroupRoleId = joined.GroupRoleId,
+                        IsInvated = joined.IsInvated,
+                        InvatedBy = joined.InvatedBy,
+                        JoinedDate = joined.JoinedDate,
+                        IsJoined = joined.IsJoined,
+                    };
+                    _context.GroupMembers.Remove(clearinvate);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new ErrorException(StatusCodeEnum.GR10_Group_Joined);
+                }
             }
 
             var result = new RequestJoinGroupCommandResult();

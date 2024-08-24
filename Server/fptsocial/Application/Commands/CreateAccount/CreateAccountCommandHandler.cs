@@ -55,7 +55,7 @@ namespace Application.Commands.CreateAccount
             if (success) 
             {
                 string body = _bodyEmailHelper.Register(request.Email, pass, request.FullName);
-                await _emailServices.SendEmailAsync(request.Email, "Welcome to Our FPT Social", body);
+                await _emailServices.SendEmailAsync(request.Email, "Welcome to FPT Social", body);
             }
             result.UserName = request.Username;
             result.Email = request.Email;
