@@ -26,6 +26,7 @@ import Unauthorization from './pages/404/Unauthorization'
 import Search from './pages/Search'
 import ChatBot from './pages/ChatBot/ChatBot'
 import { JWT_TOKEN } from './utils/constants'
+import Notification from './pages/Notification/Notification'
 
 const jwtToken = JWT_TOKEN
 
@@ -83,7 +84,10 @@ function App() {
         {/* Protected Route */}
         <Route element={<ProtectedRouteByJWT jwtToken={jwtToken} />}>
           <Route path='/checkexist' element={<AccountCheckExist />} />
-          <Route path='/chats-page' element={<ChatsPage />} />
+          <Route>
+            <Route path='/chats-page' element={<ChatsPage />} />
+            <Route path='/chats-page/:chatId' element={<ChatsPage />} />
+          </Route>
           <Route element={<UnCheckUser user={currentUser} />}>
             <Route path='/firstlogin' element={<FirstTimeLogin />} />
             <Route path='/updateadmin' element={<FirstTimeLogin />} />
@@ -103,7 +107,7 @@ function App() {
               <Route path='group' element={<Search />} />
               <Route path='post' element={<Search />} />
             </Route>
-
+            <Route path='/notifications' element={<Notification />} />
             {/* Photo, Video post */}
             <Route path='/photo/:photoId' element={<Media />} />
             <Route path='/media/:postId' element={<Media />} />
@@ -124,6 +128,7 @@ function App() {
             {/* Group page */}
             <Route path='/groups' element={<Groups />}>
               <Route path='feed' element={<Groups />} />
+              <Route path='invites' element={<Groups />} />
               <Route path='discover' element={<Groups />} />
               <Route path='joins' element={<Groups />} />
               <Route path='create' element={<Groups />} />

@@ -24,7 +24,7 @@ i18n
           standard: {
             home: {
               sidebar: {
-                feeds: 'Feeds',
+                feeds: 'Chats',
                 friends: 'Friends',
                 groups: 'Groups',
                 chatbot: 'Toad mentor',
@@ -164,7 +164,7 @@ i18n
           standard: {
             home: {
               sidebar: {
-                feeds: 'Bảng feeds',
+                feeds: 'Chat',
                 friends: 'Bạn bè',
                 groups: 'Nhóm',
                 chatbot: 'Cố vấn Cóc',

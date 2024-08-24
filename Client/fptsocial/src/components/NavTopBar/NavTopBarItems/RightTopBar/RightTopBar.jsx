@@ -1,5 +1,4 @@
 import ProfileTopBar from './RightTopBarItems/ProfileTopBar'
-import { Link } from 'react-router-dom'
 import { IconBell, IconBrandMessenger, IconCategoryFilled } from '@tabler/icons-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { triggerHomeLeftSideBar } from '~/redux/ui/uiSlice'
@@ -13,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import i18n from '~/utils/i18n'
 import { LANGUAGES } from '~/utils/constants'
 import DropdownMessages from '~/components/DropdownMessages'
+import { Link } from 'react-router-dom'
 
 function RightTopBar() {
   const dispatch = useDispatch()
@@ -77,7 +77,10 @@ function RightTopBar() {
           >
             <div className='w-[360px] min-h-[200px]'>
               <div className='p-3'>
-                <div className='font-bold'>Notification</div>
+                <div className='font-bold flex justify-between'>
+                  <span>Notification</span>
+                  <Link to='/notifications' className='text-sm font-semibold text-orangeFpt hover:bg-orange-50/90 rounded-md p-1'>View all</Link>
+                </div>
                 <div className='py-2 flex flex-col gap-2'>
                   {
                     listLatestNotification?.map((notification, i) => (

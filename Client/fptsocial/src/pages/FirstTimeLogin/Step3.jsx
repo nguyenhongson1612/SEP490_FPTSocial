@@ -1,7 +1,6 @@
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
 import { uploadImage } from '~/apis'
-import { DEFAULT_AVATAR } from '~/utils/constants'
 import { handleCoverImg } from '~/utils/formatters'
 import { singleFileValidator } from '~/utils/validators'
 

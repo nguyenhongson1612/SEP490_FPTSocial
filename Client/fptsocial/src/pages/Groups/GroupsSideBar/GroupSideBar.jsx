@@ -2,10 +2,12 @@ import { IconPlus } from '@tabler/icons-react'
 import { Link, useLocation } from 'react-router-dom'
 import compassIcon from '~/assets/img/compass.png'
 import groupIcon from '~/assets/img/group.png'
+import inviteIcon from '~/assets/img/invite.png'
 
 function GroupSideBar({ listPersonalGroup }) {
   const location = useLocation()
   const isCreate = location.pathname === '/groups/create'
+  const isInvites = location.pathname === '/groups/invites'
   const isDiscover = location.pathname === '/groups' || location.pathname === '/groups/discover'
   const isJoin = location.pathname === '/groups/joins'
   return (
@@ -24,6 +26,11 @@ function GroupSideBar({ listPersonalGroup }) {
             className={`flex items-center gap-3 cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt ${isJoin && 'text-white bg-orangeFpt'}`}>
             <img src={groupIcon} className='size-6' />
             <span className="font-semibold">Your Group</span>
+          </Link>
+          <Link to={'/groups/invites'}
+            className={`flex items-center gap-3 cursor-pointer w-full p-2 rounded-md hover:text-white hover:bg-orangeFpt ${isInvites && 'text-white bg-orangeFpt'}`}>
+            <img src={inviteIcon} className='size-6' />
+            <span className="font-semibold">Group invites</span>
           </Link>
           <Link to={'/groups/create'}
             className={`flex items-center gap-1 bg-blue-50 cursor-pointer text-blue-500 bg- p-2 rounded-md w-full hover:text-white hover:bg-orangeFpt ${isCreate && 'text-white bg-orangeFpt'}`}>

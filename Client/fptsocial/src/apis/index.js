@@ -184,3 +184,15 @@ export const updateReadNotification = async (id) => {
   return response.data?.data
 }
 
+
+//chat
+export const getChatDetailById = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Chat/getchatdetailbyid?ChatId=${id}`)
+  return response.data?.data
+}
+
+//noti
+export const getNotificationsListByUserId = async ({ page = 1, pageSize = 10 }) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Notifications/getnotificationslistbyuserid?Page=${page}&PageSize=${pageSize}`)
+  return response.data?.data
+}

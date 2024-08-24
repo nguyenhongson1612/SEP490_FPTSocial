@@ -20,21 +20,19 @@ function ForgotPassword() {
       dispatch(logoutCurrentUser())
   }, [])
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const [accountData, setAccountData] = useState(null)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const registerAccount = (data) => {
-    console.log('🚀 ~ registerAccount ~ data:', data)
     const submitData = {
-      "username": data?.userName,
+      "username": data?.email,
     }
     resetPassword(submitData).then(data => {
       reset()
       handleOpen()
       setAccountData(data)
     })
-    // navigate('/home')
   }
   return (
     // <div className={`bg-gradient-to-r from-orange-100 to-orangeFpt ${''} w-screen h-screen flex flex-col items-center justify-center overflow-hidden`}>
@@ -67,20 +65,20 @@ function ForgotPassword() {
                 <div className="">
                   <TextField
                     variant="standard"
-                    label="Username"
+                    label="Email"
                     color="primary"
                     focused
                     // defaultValue={group?.groupName}
                     fullWidth
-                    {...register('userName', {
+                    {...register('email', {
                       required: FIELD_REQUIRED_MESSAGE,
                       pattern: {
-                        value: WHITESPACE_RULE,
-                        message: WHITESPACE_MESSAGE
+                        value: EMAIL_RULE,
+                        message: EMAIL_MESSAGE
                       }
                     })}
-                    error={!!errors['userName']}
-                    helperText={errors['userName']?.message}
+                    error={!!errors['email']}
+                    helperText={errors['email']?.message}
                   />
                 </div>
               </div>
@@ -107,26 +105,23 @@ function ForgotPassword() {
         aria-describedby="modal-modal-description"
       >
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md '>
-          <span className='flex justify-center text-xl font-bold bg-orangeFpt text-white rounded-t-md py-2'>Your New Password</span>
+          <span className='flex justify-center text-lg font-bold bg-orangeFpt text-white rounded-t-md py-2'>Password Reset Requested</span>
           <div className='flex flex-col py-2 px-3'>
             <div className='flex flex-col gap-2 mt-2 font-semibold '>
-              <div className='flex justify-between'>
-                USERNAME:<span className='text-gray-500'>{accountData?.username}</span>
-                <CopyToClipBoard textToCopy={accountData?.username} />
-              </div>
-              <div className='flex justify-between'>
-                PASSWORD:<span className='text-gray-500'>{accountData?.password}</span>
-                <CopyToClipBoard textToCopy={accountData?.password} />
+              <div className=' '>
+                <span>We&apos;ve sent a password reset link to</span>
+                <span className='text-orangeFpt/90 mx-1'>{accountData?.email}</span>
               </div>
             </div>
-            <span className='mt-4 text-xs'>
-              <div className='text-orangeFpt font-semibold'>Warning: Copy username & password before click to <span className='text-[#1976d2]'>Sign in</span></div>
-            </span>
+            <div className='bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 text-xs mt-2'>
+              <p className='font-bold'>Important:</p>
+              <p>Make sure to check your spam folder if you don&apos;t see the email in your inbox.</p>
+            </div>
             <div
-              className=' py-2 w-full xs:w-1/2 lg:w-full flex justify-center items-center rounded-md '
+              className=' py-2 w-full xs:w-1/2 lg:w-full flex  items-center rounded-md '
             >
-              <span className='text-gray-600 font-semibold'>Did you copy?</span>
-              <Link to={'/'} className='text-[#1976d2] text-lg font-bold cursor-pointer hover:bg-fbWhite px-1 rounded-md' >&nbsp;Sign In</Link>
+              <span className='text-gray-600 font-semibold basis-1/2'>Did you receive?</span>
+              <Link to={'/'} className='text-[#1976d2] text-lg font-bold cursor-pointer hover:bg-fbWhite px-1 rounded-md ' >&nbsp;Sign In</Link>
             </div>
           </div>
         </div>

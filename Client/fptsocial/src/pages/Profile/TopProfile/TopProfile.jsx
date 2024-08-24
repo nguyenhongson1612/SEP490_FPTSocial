@@ -188,88 +188,89 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
             </div>
           </div>
 
-          <div className='flex gap-1'>
+          <div className='flex gap-2 items-center h-10'>
             {user?.userId == currentUser?.userId ? (
               <div
                 onClick={() => setIsOpenModalUpdateProfile(true)}
-                className="flex flex-col justify-end mb-4 cursor-pointer"
+                className="cursor-pointer"
               >
-                <span></span>
-                <span className="font-bold text-lg text-white p-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2">
+                <span className="font-bold text-lg text-white px-3 py-2 rounded-md bg-orangeFpt hover:bg-orange-600 flex items-center gap-2 h-10">
                   <IconEdit />
                   {t('standard.profile.updateProfile')}
                 </span>
               </div>
-            ) : buttonProfile?.friend ? (
-              <div className="flex flex-col justify-end mb-4 cursor-pointer">
-                <span
-                  onClick={openDeleteModal}
-                  className="font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2"
-                >
-                  <IconUserCheck stroke={3} />
-                  {t('standard.profile.friend')}
-                </span>
-              </div>
-            ) : buttonProfile?.request ? (
-              <div
-                onClick={() =>
-                  handleResponse({
-                    confirm: false,
-                    cancle: true,
-                    reject: false
-                  })
-                }
-                className="interceptor-loading flex flex-col justify-end mb-4 cursor-pointer"
-              >
-                <span className="font-bold text-lg text-white p-2 rounded-md  bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
-                  <IconUserX stroke={3} />
-                  {t('standard.profile.cancelRequest')}
-                </span>
-              </div>
-            ) : !buttonProfile?.confirm ? (
-              <div onClick={handleAddFriend} className="flex flex-col justify-end mb-4 cursor-pointer">
-                <span className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2">
-                  <IconUserPlus stroke={3} />
-                  {t('standard.profile.addFriend')}
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col justify-end mb-4 cursor-pointer">
-                <div className="flex gap-2">
+            ) : user?.buttonFriend && (
+              buttonProfile?.friend ? (
+                <div className="cursor-pointer">
                   <span
-                    onClick={() =>
-                      handleResponse({
-                        confirm: true,
-                        cancle: false,
-                        reject: false
-                      })
-                    }
-                    className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700"
+                    onClick={openDeleteModal}
+                    className="font-bold text-lg text-white px-3 py-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2 h-10"
                   >
-                    {t('standard.profile.confirmRequest')}
-                  </span>
-                  <span
-                    onClick={() =>
-                      handleResponse({
-                        confirm: false,
-                        cancle: false,
-                        reject: true
-                      })
-                    }
-                    className="font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500"
-                  >
-                    {t('standard.profile.deleteRequest')}
+                    <IconUserCheck stroke={3} />
+                    {t('standard.profile.friend')}
                   </span>
                 </div>
-              </div>
+              ) : buttonProfile?.request ? (
+                <div
+                  onClick={() =>
+                    handleResponse({
+                      confirm: false,
+                      cancle: true,
+                      reject: false
+                    })
+                  }
+                  className="interceptor-loading cursor-pointer"
+                >
+                  <span className="font-bold text-lg text-white px-3 py-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2 h-10">
+                    <IconUserX stroke={3} />
+                    {t('standard.profile.cancelRequest')}
+                  </span>
+                </div>
+              ) : !buttonProfile?.confirm ? (
+                <div onClick={handleAddFriend} className="cursor-pointer">
+                  <span className="interceptor-loading font-bold text-lg text-white px-3 py-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center gap-2 h-10">
+                    <IconUserPlus stroke={3} />
+                    {t('standard.profile.addFriend')}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center cursor-pointer">
+                  <div className="flex gap-2">
+                    <span
+                      onClick={() =>
+                        handleResponse({
+                          confirm: true,
+                          cancle: false,
+                          reject: false
+                        })
+                      }
+                      className="interceptor-loading font-bold text-lg text-white px-3 py-2 rounded-md bg-blue-500 hover:bg-blue-700 flex items-center h-10"
+                    >
+                      {t('standard.profile.confirmRequest')}
+                    </span>
+                    <span
+                      onClick={() =>
+                        handleResponse({
+                          confirm: false,
+                          cancle: false,
+                          reject: true
+                        })
+                      }
+                      className="font-bold text-lg text-gray-900 px-3 py-2 rounded-md bg-fbWhite hover:bg-fbWhite-500 flex items-center h-10"
+                    >
+                      {t('standard.profile.deleteRequest')}
+                    </span>
+                  </div>
+                </div>
+              )
             )}
             {
               !hideButtonMes &&
               <div className='cursor-pointer'>
                 <Link to={'/chats-page'}
-                  className="rounded-md flex justify-center items-center bg-fbWhite cursor-pointer hover:bg-fbWhite-500"
-                // onClick={handleClick}
-                ><IconBrandMessenger className='text-orangeFpt size-10 p-1' />
+                  className="rounded-md flex justify-center items-center bg-fbWhite cursor-pointer hover:bg-fbWhite-500 h-10 w-10"
+                >
+                  <IconBrandMessenger className='text-orangeFpt size-8' />
                 </Link>
               </div>
             }
@@ -277,9 +278,11 @@ function TopProfile({ setIsOpenModalUpdateProfile, user, currentUser, buttonProf
               user?.userId !== currentUser?.userId &&
               <div className='cursor-pointer'>
                 <div
-                  className="rounded-md size-[40px] flex justify-center items-center bg-fbWhite cursor-pointer p-2"
+                  className="rounded-md flex justify-center items-center bg-fbWhite cursor-pointer h-10 w-10"
                   onClick={handleClick}
-                ><IconDotsVertical /></div>
+                >
+                  <IconDotsVertical />
+                </div>
                 <Menu
                   anchorEl={anchorEl2}
                   id="account-menu"

@@ -4,6 +4,7 @@ let clientId = ""
 // dev environment
 if (process.env.BUILD_MODE === "dev") {
   apiRoot = "https://localhost:44329"
+  // apiRoot = "https://api.fptsocial.com"
   frontendRoot = "http://localhost:3000"
   clientId = "societe-front-end-dev"
 }
@@ -115,4 +116,5 @@ export const CHAT_KEY = {
   PrivateKey: "62e47fdf-0ea8-429d-a68a-af5d0932ffac",
 }
 
-export const DEFAULT_AVATAR = "http://res.cloudinary.com/dqitgxwfl/image/upload/v1722218189/img/null/sy5sr97c29l4jddxkuk0.png"
+// export const DEFAULT_AVATAR = './src/assets/img/avatar_holder.jpg'
+// export const DEFAULT_COVER = '~/assets/img/defaulcover.jpg'

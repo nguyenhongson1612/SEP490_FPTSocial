@@ -87,6 +87,10 @@ export const getGroupRole = async () => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupEntity/getgrouprole`)
   return response.data?.data
 }
+export const getInvitedGroup = async () => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/getinvatedgroup`)
+  return response.data?.data
+}
 export const getGroupPostIdPendingByGroupId = async ({ groupId, page = 1, pageSize = 10 }) => {
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/GroupPost/getGroupPostIdPendingByGroupId?GroupId=${groupId}&Page=${page}&PageSize=${pageSize}`)
   return response.data?.data

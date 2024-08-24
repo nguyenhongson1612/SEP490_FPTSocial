@@ -10,7 +10,7 @@ import friendIcon from '~/assets/img/friend.png'
 // import groupIcon from '~/assets/img/groups.png'
 import groupIcon from '~/assets/img/group.png'
 import frogIcon from '~/assets/img/frog.png'
-import feedIcon from '~/assets/img/activity-feed.png'
+import feedIcon from '~/assets/img/chathome.png'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { useTranslation } from 'react-i18next'
 
@@ -35,10 +35,6 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
             <UserAvatar size='1.75' isOther={false} />
             <span className="capitalize">{user?.firstName + ' ' + user?.lastName}</span>
           </Link>
-          <Link className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer ">
-            <img src={feedIcon} className='size-7' />
-            <span className="">{t('standard.home.sidebar.feeds')}</span>
-          </Link>
           <Link to={'/friends'} className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img src={friendIcon} className='size-7' />
             <span className="">{t('standard.home.sidebar.friends')}</span>
@@ -48,6 +44,10 @@ function HomeLeftSideBar({ user, isShowHomeLeftSideBar }) {
             className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
             <img src={groupIcon} className='size-7' />
             <span className="">{t('standard.home.sidebar.groups')}</span>
+          </Link>
+          <Link to={'/chats-page'} className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer ">
+            <img src={feedIcon} className='size-7' />
+            <span className="">{t('standard.home.sidebar.feeds')}</span>
           </Link>
           <Link to={'/chatbot'}
             className="w-full h-[52px] px-2 rounded-md py-3 hover:bg-orangeFpt hover:text-white flex items-center gap-3 cursor-pointer">
