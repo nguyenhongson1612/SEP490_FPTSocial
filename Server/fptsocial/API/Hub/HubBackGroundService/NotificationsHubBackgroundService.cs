@@ -243,37 +243,64 @@ namespace API.Hub
 
         public async Task SendEmailAsync(string toEmail, bool isActive, UserProfile userProfile, bool isCreate)
         {
-            var mailMessage = new MailMessage();
-            if (!isActive)
+            try
             {
-                mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
-                mailMessage.Subject = "[FUSP] Notifications User Management System";
-                mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been blocked due to policy violations.<br/><br/>Best regards,<br/>Support Team";
-                mailMessage.IsBodyHtml = true;
-            }
-            else
-            {
-                if (isCreate)
+
+                var mailMessage = new MailMessage();
+                if (!isActive)
                 {
-                    mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
+                    string FilePath = Directory.GetCurrentDirectory() + "\\Templates\\UserBlocked.html";
+                    StreamReader str = new StreamReader(FilePath);
+                    string MailText = str.ReadToEnd();
+                    str.Close();
+
+                    mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn", "From FPT Social");
                     mailMessage.Subject = "[FUSP] Notifications User Management System";
-                    mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been created successfully. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
+                    //mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been blocked due to policy violations.<br/><br/>Best regards,<br/>Support Team";
+                    mailMessage.Body = MailText.Replace("[FullName]", userProfile.FirstName + userProfile.LastName);
                     mailMessage.IsBodyHtml = true;
                 }
                 else
                 {
-                    mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn");
-                    mailMessage.Subject = "[FUSP] Notifications User Management System";
-                    mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been updated profile successfully or activated by admin. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
-                    mailMessage.IsBodyHtml = true;
+                    if (isCreate)
+                    {
+                        string FilePath = Directory.GetCurrentDirectory() + "\\Templates\\UserCreated.html";
+                        StreamReader str = new StreamReader(FilePath);
+                        string MailText = str.ReadToEnd();
+                        str.Close();
+
+                        mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn", "From FPT Social");
+                        mailMessage.Subject = "[FUSP] Notifications User Management System";
+                        //mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been created successfully. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
+                        mailMessage.Body = MailText.Replace("[FullName]", userProfile.FirstName + userProfile.LastName);
+                        mailMessage.IsBodyHtml = true;
+                    }
+                    else
+                    {
+                        string FilePath = Directory.GetCurrentDirectory() + "\\Templates\\UserActived.html";
+                        StreamReader str = new StreamReader(FilePath);
+                        string MailText = str.ReadToEnd();
+                        str.Close();
+
+                        mailMessage.From = new MailAddress("anhbqhe163864@fpt.edu.vn", "From FPT Social");
+                        mailMessage.Subject = "[FUSP] Notifications User Management System";
+                        //mailMessage.Body = $"Dear {userProfile.LastName},<br/><br/>Your account has been updated profile successfully or activated by admin. Hope you have a great experience!<br/><br/>Best regards,<br/>Support Team";
+                        mailMessage.Body = MailText.Replace("[FullName]", userProfile.FirstName + userProfile.LastName);
+                        mailMessage.IsBodyHtml = true;
+                    }
+
+
                 }
-
-
-            }
 
                 mailMessage.To.Add(toEmail);
 
-            await _smtpClient.SendMailAsync(mailMessage);
+                await _smtpClient.SendMailAsync(mailMessage);
+
+            }
+            catch
+            {
+                return;
+            }
         }
 
 
