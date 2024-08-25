@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReportPost } from '~/apis/adminApis/reportsApis'
 import blogIcon from '~/assets/img/blog.png'
+import viewDetail from '~/assets/img/viewdetail.png'
 import ActivePost from '~/components/Modal/ActivePost/ActivePost'
 import { selectIsShowModalActivePost } from '~/redux/activePost/activePostSlice'
 import ReportDetailModal from './ReportDetailModal'
@@ -36,63 +37,43 @@ function PostReports() {
       {isOpenActivePost && <ActivePost isReportPost={true} />}
       {open && <ReportDetailModal postReport={postReportDetail} open={open} setOpen={setOpen}
         page={page} setPage={setPage} totalPage={totalPage} />}
-      <table className="w-full text-sm text-left text-gray-500 ">
+      <table className="w-full text-sm text-center text-gray-500">
         <thead className="text-xs text-gray-700 uppercase bg-fbWhite">
           <tr>
-            <th scope="col" className="p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="checkbox-all-search" className="sr-only">
-                  checkbox
-                </label>
-              </div>
+            <th scope="col" className="px-6 py-3">
+              No.
             </th>
-            <th scope="col" className="">
+            <th scope="col" className="px-6 py-3">
               Reported Post
             </th>
-            <th scope="col" className="">
+            <th scope="col" className="px-6 py-3">
               Number of reports
             </th>
-            <th className="">
+            <th className="px-6 py-3">
+              View detail
             </th>
           </tr>
         </thead>
 
-        <tbody className=''>
+        <tbody>
           {
             listPostReport?.map((report, index) => (
               <tr key={index} className="bg-white border-b hover:bg-gray-50 h-[100px]">
-                <td className="w-4 p-4">
-                  <div className="flex items-center">
-                    <input
-                      id="checkbox-table-search-1"
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                      checkbox
-                    </label>
-                  </div>
+                <td className="px-6 py-4">
+                  {index + 1 + (page - 1) * 10}
                 </td>
-
-                <td className="">
-                  <div className='flex flex-col cursor-pointer'
-                    // onClick={() => handleReviewReportedPost(report)}
+                <td className="px-6 py-4">
+                  <div className='flex flex-col items-center cursor-pointer'
                     onClick={() => handleViewDetailReport(report)}
                   >
-                    <img src={blogIcon} className='size-10' />
-                    <span className='font-semibold text-xs capitalize '>Click to view</span>
+                    <img src={blogIcon} className='size-10' alt="Blog Icon" />
+                    <span className='font-semibold text-xs capitalize'>Click to view</span>
                   </div>
                 </td>
-                <td className="">{report?.numberReporter} reports</td>
-                <td className="">
-                  <div className='flex justify-center gap-2'>
-                    <Button variant='contained' color='error' size='small' >Block</Button>
-                    <Button variant='contained' color='primary' size='small'>UnBlock</Button>
+                <td className="px-6 py-4">{report?.numberReporter} reports</td>
+                <td className="px-6 py-4">
+                  <div className='flex justify-center gap-2' onClick={() => handleViewDetailReport(report)}>
+                    <img src={viewDetail} className='w-10 h-10 cursor-pointer hover:scale-105' alt="View Detail" />
                   </div>
                 </td>
               </tr>
@@ -111,7 +92,6 @@ function PostReports() {
         <Pagination count={totalPage} variant="outlined" shape="rounded" page={page} onChange={(e, v) => setPage(v)} />
       </nav>
     </div>
-
   )
 }
 

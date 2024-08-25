@@ -20,7 +20,7 @@ function ForgotPassword() {
       dispatch(logoutCurrentUser())
   }, [])
 
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const [accountData, setAccountData] = useState(null)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -110,7 +110,7 @@ function ForgotPassword() {
             <div className='flex flex-col gap-2 mt-2 font-semibold '>
               <div className=' '>
                 <span>We&apos;ve sent a password reset link to</span>
-                <span className='text-orangeFpt/90 mx-1'>{accountData?.email}</span>
+                <span className='text-orangeFpt/90 mx-1'>{accountData?.username}</span>
               </div>
             </div>
             <div className='bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 text-xs mt-2'>

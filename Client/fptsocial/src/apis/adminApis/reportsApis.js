@@ -43,6 +43,6 @@ export const getReportComment = async ({ page = 1, pageSize = 10 }) => {
   return response.data?.data
 }
 export const deactiveUserByUserId = async (id) => {
-  const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/UserProfile/deactiveUserByUserId?UserId=${id}`)
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/deactiveUserByUserId?UserId=${id}`)
   return response.data?.data
 }
