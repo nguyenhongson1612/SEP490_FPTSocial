@@ -8,6 +8,9 @@ import { useDispatch } from 'react-redux'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import ListUserReported from '../ListUserReported'
 import { POST_TYPES } from '~/utils/constants'
+import { cleanAndParseHTML } from '~/utils/formatters'
+import { deleteCommentSharePost, deleteCommentUserPhotoPost, deleteCommentUserPost, deleteCommentUserVideoPost } from '~/apis/postApis'
+import { deleteCommentGroupPhotoPost, deleteCommentGroupPost, deleteCommentGroupSharePost } from '~/apis/groupPostApis'
 
 function DetailCommentReport({ open, setOpen, reportedComment }) {
   const handleClose = () => setOpen(false)
@@ -18,31 +21,32 @@ function DetailCommentReport({ open, setOpen, reportedComment }) {
   let paramComment = {}
   let commentId = ''
   // let fetchFunction
-  // let removeFunction
+  let removeFunction
 
   if (reportedComment?.commentId) {
     commentId = reportedComment?.commentId
     // fetchFunction = getUserPostById
-    // removeFunction = deleteUserPost
+    removeFunction = deleteCommentUserPost
     paramComment = { commentId: commentId }
   }
   else if (reportedComment?.commentPhotoPostId) {
     // postType = POST_TYPES.PHOTO_POST
     commentId = reportedComment?.commentPhotoPostId
-    // fetchFunction = getChildPostById
+    removeFunction = deleteCommentUserPhotoPost
     paramComment = { commentPhotoPostId: commentId }
   }
   else if (reportedComment?.commentVideoPostId) {
     // postType = POST_TYPES.VIDEO_POST
     commentId = reportedComment?.commentVideoPostId
     // fetchFunction = getChildPostById
+    removeFunction = deleteCommentUserVideoPost
     paramComment = { commentVideoPostId: commentId }
   }
   else if (reportedComment?.commentGroupPostId) {
     // postType = POST_TYPES.GROUP_POST
     commentId = reportedComment?.commentGroupPostId
     // fetchFunction = getGroupPostByGroupPostId
-    // removeFunction = deleteGroupPost
+    removeFunction = deleteCommentGroupPost
     paramComment = { commentGroupPostId: commentId }
   }
   else if (reportedComment?.commentGroupVideoPostId) {
@@ -55,25 +59,23 @@ function DetailCommentReport({ open, setOpen, reportedComment }) {
     // postType = POST_TYPES.GROUP_PHOTO_POST
     commentId = reportedComment?.commentPhotoGroupPostId
     // fetchFunction = getChildGroupPost
+    removeFunction = deleteCommentGroupPhotoPost
     paramComment = { commentPhotoGroupPostId: commentId }
   }
   else if (reportedComment?.commentSharePostId) {
     // postType = POST_TYPES.SHARE_POST
     commentId = reportedComment?.commentSharePostId
     // fetchFunction = getUserPostById
-    // removeFunction = deleteSharePost
+    removeFunction = deleteCommentSharePost
     paramComment = { commentSharePostId: commentId }
   }
   else if (reportedComment?.commentGroupSharePostId) {
     // postType = POST_TYPES.GROUP_SHARE_POST
     commentId = reportedComment?.commentGroupSharePostId
     // fetchFunction = getGroupPostByGroupPostId
-    // removeFunction = deleteGroupSharePost
+    removeFunction = deleteCommentGroupSharePost
     paramComment = { commentGroupSharePostId: commentId }
   }
-  console.log(paramComment, 'abc');
-
-
   useEffect(() => {
     (async () => {
       // await fetchFunction(commentId).then(data => {
@@ -102,7 +104,7 @@ function DetailCommentReport({ open, setOpen, reportedComment }) {
       },
     })
       .then(() => {
-        // handleReport({ 'reportType': 'User', 'isAccepted': true, ...par }).then(() => removeFunction(postId))
+        handleReport({ 'reportType': 'Comment', 'isAccepted': true, ...paramComment }).then(() => removeFunction(commentId))
       })
       .catch(() => {
         handleReport({ 'reportType': 'Comment', 'isAccepted': false, ...paramComment })
@@ -133,7 +135,23 @@ function DetailCommentReport({ open, setOpen, reportedComment }) {
           <div className='border h-full grid grid-cols-12'>
             <div className='col-span-7 border-r  overflow-y-auto scrollbar-none-track '>
               <div className='pointer-events-none mb-20 mt-4 flex justify-center'>
-                {/* <Post postData={reportedObject} /> */}
+                <div className='flex items-center gap-2 cursor-pointer' >
+                  <span className='font-semibold capitalize text-black'>{cleanAndParseHTML(reportedComment?.content)}</span>
+                  <div className='max-w-[300px]'>
+                    {(() => {
+                      const mediaContent = cleanAndParseHTML(reportedComment?.content, true)
+                      if (Array.isArray(mediaContent) && mediaContent.length > 0) {
+                        const firstMedia = mediaContent[0]
+                        if (firstMedia.type === 'image') {
+                          return <img src={firstMedia.url} alt="Report content" />
+                        } else if (firstMedia.type === 'video') {
+                          return <video src={firstMedia.url} controls />
+                        }
+                      }
+                      return null
+                    })()}
+                  </div>
+                </div>
               </div>
             </div>
             <ListUserReported getUserReportedFn={getUserReportedFn} />

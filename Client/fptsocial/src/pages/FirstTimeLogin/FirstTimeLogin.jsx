@@ -8,11 +8,10 @@ import Progress from './Progress'
 import { createAdminProfile, createByLogin, createUserChat, getStatus } from '~/apis'
 import { toast } from 'react-toastify'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { JWT_PROFILE } from '~/utils/constants'
+import { DEFAULT_AVATAR, DEFAULT_COVER, JWT_PROFILE } from '~/utils/constants'
 import AdminUpdate from './AdminUpdate'
 import { createPost } from '~/apis/postApis'
-import corverImg from '~/assets/img/defaulcover.jpg'
-import avatarImg from '~/assets/img/avatar_holder.png'
+
 function FirstTimeLogin() {
   const [step, setStep] = useState(0)
   const [listStatus, setListStatus] = useState([])
@@ -24,8 +23,8 @@ function FirstTimeLogin() {
   const profileFeId = JWT_PROFILE
   const initialGeneralForm = {
     'email': profileFeId?.email,
-    'coverImage': corverImg,
-    'avataphoto': avatarImg,
+    'coverImage': DEFAULT_COVER,
+    'avataphoto': DEFAULT_AVATAR,
   }
 
   const { register, control, getValues, setValue, watch, handleSubmit, trigger, formState: { errors, isValid } } = useForm({ mode: 'all', defaultValues: initialGeneralForm })
@@ -84,9 +83,9 @@ function FirstTimeLogin() {
       },
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
-      'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : corverImg,
+      'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : DEFAULT_COVER,
       'userNumber': profileFeId?.userId,
-      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : avatarImg,
+      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
       'userSetting': [{
         'settingId': null
       }],
@@ -103,7 +102,7 @@ function FirstTimeLogin() {
       "firstName": data?.firstName,
       "lastName": data?.lastName,
       "email": data?.email,
-      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : avatarImg,
+      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
     }
     const submitUpdateAdmin = {
       "adminId": profileFeId?.userId,
@@ -156,7 +155,7 @@ function FirstTimeLogin() {
         })()
       })
       .then(() => {
-        createUserChat(submitData2)
+        !isAdmin && createUserChat(submitData2)
         navigate(isAdmin ? '/dashboard' : '/')
       })
   }

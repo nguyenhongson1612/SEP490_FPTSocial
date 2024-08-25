@@ -73,7 +73,7 @@ function Sidebar({
                               <div className="flex items-center">
                                 <IconLayoutDashboardFilled />
                                 <span className="text-sm font-medium ml-4  2xl:opacity-100 duration-200">
-                                  Dashboard
+                                  Main
                                 </span>
                               </div>
                               <div className="flex shrink-0 ml-2">
@@ -90,7 +90,22 @@ function Sidebar({
                                   }
                                 >
                                   <span className="text-sm 2xl:opacity-100 duration-200">
-                                    Main
+                                    Dashboard
+                                  </span>
+                                </NavLink>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="2xl:block">
+                            <ul className={` mt-1 ${!open && "hidden"}`}>
+                              <li className="mb-1 last:mb-0">
+                                <NavLink end to="/dashboard/settings"
+                                  className={({ isActive }) =>
+                                    "block transition duration-150 truncate p-2 rounded-md font-semibold " + (isActive ? "text-blue-500" : "text-gray-500/90 hover:text-gray-700 ")
+                                  }
+                                >
+                                  <span className="text-sm 2xl:opacity-100 duration-200">
+                                    System settings
                                   </span>
                                 </NavLink>
                               </li>

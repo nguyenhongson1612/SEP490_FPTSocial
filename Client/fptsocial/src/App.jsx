@@ -41,6 +41,7 @@ const ProtectedRouteByUser = ({ user }) => {
   return <Outlet />
 }
 const ProtectedAdminRoute = ({ user }) => {
+  console.log('🚀 ~ ProtectedAdminRoute ~ user:', user)
   if (user?.role !== 'Societe-admin') return <Navigate to='/unauthorization' replace={true} />
   return <Outlet />
 }
@@ -143,6 +144,7 @@ function App() {
           </Route>
           <Route element={<ProtectedAdminRoute user={currentUser} />} >
             <Route path="/dashboard" element={<Dashboard />} >
+              <Route path='settings' element={<Dashboard />} />
               <Route path='users' element={<Dashboard />} />
               <Route path='reports' element={<Dashboard />} >
                 <Route path='users' element={<Dashboard />} />

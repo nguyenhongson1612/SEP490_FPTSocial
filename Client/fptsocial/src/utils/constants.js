@@ -116,5 +116,5 @@ export const CHAT_KEY = {
   PrivateKey: "62e47fdf-0ea8-429d-a68a-af5d0932ffac",
 }
 
-// export const DEFAULT_AVATAR = './src/assets/img/avatar_holder.jpg'
-// export const DEFAULT_COVER = '~/assets/img/defaulcover.jpg'
+export const DEFAULT_AVATAR = 'http://res.cloudinary.com/dqitgxwfl/image/upload/v1724605061/img/null/vwz1hjtvwtl8axvfpezd.png'
+export const DEFAULT_COVER = 'http://res.cloudinary.com/dqitgxwfl/image/upload/v1724605086/img/null/dh7lwsue5cljnb6crjuk.jpg'

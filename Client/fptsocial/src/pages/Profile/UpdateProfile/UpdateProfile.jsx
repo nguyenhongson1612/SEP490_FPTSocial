@@ -15,7 +15,7 @@ import { getUserByUserId } from '~/redux/user/userSlice'
 import { IconX } from '@tabler/icons-react'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import { createPost } from '~/apis/postApis'
-import avatarImg from '~/assets/img/avatar_holder.png'
+import { DEFAULT_AVATAR } from '~/utils/constants'
 
 function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
   const { watch, register, control, setValue, handleSubmit, formState: { errors } } = useForm({
@@ -122,7 +122,7 @@ function UpdateProfile({ setIsOpenModalUpdateProfile, user }) {
       "firstName": data?.firstName,
       "lastName": data?.lastName,
       "email": user?.email,
-      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : avatarImg,
+      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
     }
     // console.log(submitData, 'submitdata')
     toast.promise(

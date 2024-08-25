@@ -16,19 +16,19 @@ import { createGroup, getGroupStatusForCreate, getGroupType } from '~/apis/group
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import { DEFAULT_COVER } from '~/utils/constants'
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE, singleFileValidator } from '~/utils/validators'
-import coverDefaultUrl from '~/assets/img/defaulcover.jpg'
 
 function GroupCreate() {
   const [listStatus, setListStatus] = useState([])
   const [listGroupType, setListGroupType] = useState([])
   const currentUser = useSelector(selectCurrentUser)
-  const [coverImage, setCoverImage] = useState(coverDefaultUrl)
+  const [coverImage, setCoverImage] = useState(DEFAULT_COVER)
   const navigate = useNavigate()
 
   const { register, setValue, clearErrors, control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
-      coverImage: coverDefaultUrl
+      coverImage: DEFAULT_COVER
     }
   })
 
@@ -48,7 +48,7 @@ function GroupCreate() {
     const groupSubmittedData = {
       'groupName': data?.groupName,
       'groupDescription': data?.groupDescription,
-      'coverImage': data?.coverImage || coverDefaultUrl,
+      'coverImage': data?.coverImage || DEFAULT_COVER,
       'userStatusId': data?.groupStatus,
       'groupTypeId': data?.groupType,
       'createdById': currentUser?.userId
