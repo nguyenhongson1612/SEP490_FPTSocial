@@ -1,5 +1,6 @@
 ﻿using Application.Commands.CreateAdminProfile;
 using Application.Commands.GetUserProfile;
+using Application.Queries.GetDataForAdmin;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -44,6 +45,15 @@ namespace API.Controllers
             }
             input.AdminId = Guid.Parse(uid);
             input.RoleName = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "role").Value;
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getDataForAdmin")]
+        public async Task<IActionResult> GetDataForAdmin()
+        {
+            var input = new GetDataForAdmin();
             var res = await _sender.Send(input);
             return Success(res.Value);
         }
