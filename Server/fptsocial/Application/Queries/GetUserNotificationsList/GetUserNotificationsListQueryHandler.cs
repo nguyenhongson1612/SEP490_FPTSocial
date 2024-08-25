@@ -1,4 +1,6 @@
-﻿using Application.DTO.GetUserProfileDTO;
+﻿using Application.DTO.CreateUserDTO;
+using Application.DTO.GetUserProfileDTO;
+using Application.DTO.NotificationDTO;
 using Application.Queries.GetGender;
 using Application.Queries.GetUserPost;
 using Application.Queries.GetUserProfile;
@@ -40,31 +42,41 @@ namespace Application.Queries.GetUserNotificationsList
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var skip = (request.Page - 1) * request.PageSize;
-            List<Domain.QueryModels.Notification> notifys = await _context.Notifications
-                                    .Include(x => x.NotificationType)
-                                    .Where(x => x.UserId.Equals(request.UserId))
-                                    .Skip(skip)
-                                    .Take(request.PageSize)
-                                    .ToListAsync(cancellationToken);
-            List<GetUserNotificationsListQueryResult> result = new();
-            if (notifys == null)
-            {
-                throw new ErrorException(StatusCodeEnum.N01_Not_Found);
-            }
-            else
-            {
-                foreach (var notify in notifys)
-                {
-                    var senderName = _splitString.SplitStringForNotify(notify.NotiMessage).First();
-                    var msg = _splitString.SplitStringForNotify(notify.NotiMessage).Last();
-                    var mapgender = _mapper.Map<GetUserNotificationsListQueryResult>(notify);
-                    mapgender.SenderName = senderName;
-                    mapgender.NotiMessage = msg;
-                    result.Add(mapgender);
-                }
-            }
 
+            var notifications = (from n in _context.Notifications
+                                 join s in _context.UserProfiles on n.SenderId equals s.UserId
+                                 where n.UserId == request.UserId && n.UserId != n.SenderId
+                                 orderby n.CreatedAt descending
+                                 select new
+                                 {
+                                     n.NotificationId,
+                                     n.SenderId,
+                                     SenderName = s.FirstName + " " + s.LastName,
+                                     n.NotiMessage,
+                                     n.IsRead,
+                                     n.NotifiUrl,
+                                     n.CreatedAt,
+                                     SenderAvatar = (from a in _context.AvataPhotos
+                                                     where a.UserId == n.SenderId && a.IsUsed
+                                                     orderby a.CreatedAt descending
+                                                     select a.AvataPhotosUrl).FirstOrDefault()
+                                 })
+                     .Skip((request.Page - 1) * request.PageSize) // Bỏ qua số phần tử của trang trước đó
+                     .Take(request.PageSize) // Lấy số phần tử trong trang hiện tại
+                     .AsEnumerable() // Convert to in-memory collection to allow for nullable string property assignment
+                     .Select(n => new NotificationOutDTO
+                     {
+                         NotificationId = n.NotificationId,
+                         SenderId = n.SenderId.ToString(),
+                         SenderName = n.SenderName,
+                         SenderAvatar = n.SenderAvatar ?? string.Empty,
+                         Message = _splitString.SplitStringForNotify(n.NotiMessage).Last(),
+                         Url = n.NotifiUrl,
+                         IsRead = (bool)n.IsRead,
+                         CreatedAt = (DateTime)n.CreatedAt,
+                     }).ToList();
+
+            var result = _mapper.Map<List<GetUserNotificationsListQueryResult>>(notifications);
             return Result<List<GetUserNotificationsListQueryResult>>.Success(result);
         }
     }

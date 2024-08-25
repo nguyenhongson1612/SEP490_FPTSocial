@@ -111,6 +111,7 @@ using Application.Commands.UpdateCommentGroupVideoPost;
 using Application.Commands.UpdateCommentGroupPhotoPost;
 using Application.Commands.CreateReportPost;
 using Application.Commands.CreateReportProfile;
+using Application.DTO.NotificationDTO;
 
 namespace Application.Mappers
 {
@@ -372,6 +373,7 @@ namespace Application.Mappers
             //Notification
             CreateMap<Query.Notification, GetUserNotificationsListQueryResult>();
             CreateMap<Query.Notification, UpdateNotificationStatusResult>();
+            CreateMap<NotificationOutDTO, GetUserNotificationsListQueryResult>();
 
             //GroupPost
             CreateMap<GroupPhotoDTO, GroupPhoto>().ReverseMap();
