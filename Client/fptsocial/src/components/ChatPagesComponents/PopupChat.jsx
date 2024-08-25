@@ -6,26 +6,20 @@ import { IconX } from "@tabler/icons-react"
 import ChatWindow from "~/components/ChatPagesComponents/ChatWindow"
 import UserTitle from './UserTitle'
 
-function PopupChat({ selectedChatId, handleCloseModal, modalOpen, fetchChats }) {
+function PopupChat({ chatId, handleCloseModal, modalOpen, fetchChats, chats }) {
   return (
     <Modal open={modalOpen} onClose={handleCloseModal}>
-      <div className='fixed bottom-4 right-4 bg-fbWhite shadow-lg rounded-md w-[350px]'>
-        <div className='h-14 border-b py-2 px-3 flex justify-between shadow-md'>
-          {selectedChatId && <UserTitle />}
-          <div className='flex gap-2 items-center'
-          >
-            <IconX onClick={handleCloseModal} className='cursor-pointer hover:bg-fbWhite rounded-full' />
-          </div>
-        </div>
-        <div className='flex flex-col'>
-          {selectedChatId && (
-            <ChatWindow
-              selectedChatId={selectedChatId}
-              onNewMessage={() => { }}
-              fetchChats={fetchChats}
-            />
-          )}
-        </div>
+      <div className='fixed bottom-4 right-4 bg-fbWhite shadow-lg  rounded-md w-[350px] h-[95%] overflow-y-auto no-scrollbar'>
+
+        {chatId && (
+          <ChatWindow
+            handleCloseModal={handleCloseModal}
+            chats={chats}
+            chatId={chatId}
+            onNewMessage={() => { }}
+            fetchChats={fetchChats}
+          />
+        )}
       </div>
     </Modal>
   )

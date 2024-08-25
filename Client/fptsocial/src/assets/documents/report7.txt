@@ -1,12 +1,12 @@
+﻿
 
 
-
-FPT UNIVERSITY Capstone Project Document FPT University Soci�t� Place
-SEP490_G3Group MembersNguy?n Kh?i Ho�n - HE161601
-Nguy?n Anh Qu�n - HE164025
-L� H?i Ho�n - HE161140
-B�i Qu?c Anh - HE163864
-Nguy?n H?ng Son - HE164042SupervisorNguy?n Cu?ng M?nhCapstone Project code FUSP
+FPT UNIVERSITY Capstone Project Document FPT University Société Place
+SEP490_G3Group MembersNguyễn Khải Hoàn - HE161601
+Nguyễn Anh Quân - HE164025
+Lê Hải Hoàn - HE161140
+Bùi Quốc Anh - HE163864
+Nguyễn Hồng Sơn - HE164042SupervisorNguyễn Cường MạnhCapstone Project code FUSP
 - Hanoi, August/2024 -
 
 Table of Contents
@@ -117,21 +117,21 @@ AcronymDefinitionPWMPsychology website AWSAmazon Web ServicesBABusiness A
 I. Project Introduction
 1. Overview
 1.1 Project Information
-� Project name: FPT University Soci�t� Place
-� Project code: FUSP
-� Group name: SEP490_G3
-� Software type: Web Application
+• Project name: FPT University Société Place
+• Project code: FUSP
+• Group name: SEP490_G3
+• Software type: Web Application
 1.2 Project Team
 Supervisor
-Full NameRoleEmail  Mobile Nguy?n Cu?ng M?nhSupervisor ManhNC5@fe.edu.vn 
+Full NameRoleEmail  Mobile Nguyễn Cường MạnhSupervisor ManhNC5@fe.edu.vn 
 Project team
-Full NameRoleEmail  MobileNguy?n Kh?i Ho�nLeaderhoannkhe161601@fpt.edu.vn0967861413B�i Qu?c AnhMemberanhbqhe163864@fpt.edu.vn0582270720 Nguy?n Anh Qu�n Memberquannahe164025@fpt.edu.vn0584133134 Nguy?n H?ng Son Membersonnhhe164042@fpt.edu.vn0367447542 L� H?i Ho�n Memberhoanlhhe161140@fpt.edu.vn0379357029
+Full NameRoleEmail  MobileNguyễn Khải HoànLeaderhoannkhe161601@fpt.edu.vn0967861413Bùi Quốc AnhMemberanhbqhe163864@fpt.edu.vn0582270720 Nguyễn Anh Quân Memberquannahe164025@fpt.edu.vn0584133134 Nguyễn Hồng Sơn Membersonnhhe164042@fpt.edu.vn0367447542 Lê Hải Hoàn Memberhoanlhhe161140@fpt.edu.vn0379357029
 Stakeholders
-Full NameDepartmentEmail  MobilePhan B?o Ch�uDirector - Brand Developmentchaupb2@fe.edu.vnB�i Van Ph�t IT Manager - FEphatbv@fe.edu.vnHoang Phuong Thao  Manager -  Brand Developmentthaohp20@fe.edu.vn0866923864
+Full NameDepartmentEmail  MobilePhan Bảo ChâuDirector - Brand Developmentchaupb2@fe.edu.vnBùi Văn Phát IT Manager - FEphatbv@fe.edu.vnHoang Phuong Thao  Manager -  Brand Developmentthaohp20@fe.edu.vn0866923864
 2. Product Background
-Currently, digital platforms like X, Facebook, Instagram, Threads,... exploit user information without permission for advertising and illegally trade personal user data. These actions violate Decree 13/2023/N�-CP on Personal Data Protection in Vietnam, as well as the General Data Protection Regulation (GDPR) in Europe regarding cross-border data transfer.
+Currently, digital platforms like X, Facebook, Instagram, Threads,... exploit user information without permission for advertising and illegally trade personal user data. These actions violate Decree 13/2023/NĐ-CP on Personal Data Protection in Vietnam, as well as the General Data Protection Regulation (GDPR) in Europe regarding cross-border data transfer.
 Therefore, we aim to build an internal platform to connect current students, alumni, faculty, and staff through FPTU's internal application systems. This platform will facilitate the connection of students from different campuses, enhancing the sharing of knowledge across FPTU campuses.
-FPT University Soci�t� place is a dynamic platform designed to foster a connected and collaborative community among its staff and students. This innovative website allows users to create profiles, connect with peers, and share a wide range of content, from personal updates to academic articles and professional insights. By facilitating the exchange of ideas and information, the platform aims to enhance communication, support academic and professional development, and build a vibrant, engaged university community. Whether it's faculty sharing research findings, students discussing projects, or staff announcing events, the site serves as a central hub for the diverse voices of FPT University, promoting a culture of learning, innovation, and mutual support.
+FPT University Société place is a dynamic platform designed to foster a connected and collaborative community among its staff and students. This innovative website allows users to create profiles, connect with peers, and share a wide range of content, from personal updates to academic articles and professional insights. By facilitating the exchange of ideas and information, the platform aims to enhance communication, support academic and professional development, and build a vibrant, engaged university community. Whether it's faculty sharing research findings, students discussing projects, or staff announcing events, the site serves as a central hub for the diverse voices of FPT University, promoting a culture of learning, innovation, and mutual support.
 
 To encourage and increase interaction on this platform, we hope that FPTU will implement a process or organize events that incentivize students to write articles with monetary rewards (approved by FPTU PR internal). This will enhance the quality and expertise of the content, including articles on professional topics, technical skills, communication, and creative start-up ideas.
 
@@ -145,17 +145,17 @@ To encourage and increase interaction on this platform, we hope that FPTU will i
 The all-in-one business communication platform from Meta that securely combines chat, video, groups and your intranet with the work tools you already use. Think Facebook, but for company.
 Link:Workplace
 Main Feature: 
-? Communication Tools
-? Integration and Compatibility
-? Collaboration Features
+● Communication Tools
+● Integration and Compatibility
+● Collaboration Features
 
-AdvantagesDisadvantages? It's familiar
+AdvantagesDisadvantages● It's familiar
 
-? It's mobile
+● It's mobile
 
-? It's integrated
+● It's integrated
 
-? It's safe? High price (From $4 to $8 per person/month)
+● It's safe● High price (From $4 to $8 per person/month)
 
 3.2 FE forum (FPTU's forum)
 
@@ -164,18 +164,18 @@ AdvantagesDisadvantages? It's familiar
 FE forum is an internal forum of FPT Education Group. Those who have @fpt.edu.vn, @fsb.edu.vn or @arena.edu.vn email accounts automatically become its members. Once the email account is removed, the forum membership will be dismissed. (Students cannot access this forum, despite having one of those email accounts.)
 Link:  FE forum
 Main Feature: 
-? Communication Tools
-? Announcement Tools
+● Communication Tools
+● Announcement Tools
 
-AdvantagesDisadvantages? Easy to operate for users ?	UI,UX are not good for users.
+AdvantagesDisadvantages● Easy to operate for users ●	UI,UX are not good for users.
 
-?	System performance is low.
+●	System performance is low.
 
-?	Features are not enough.
+●	Features are not enough.
 
-        ?     All FPT educational institutions participate in the system.
+        ●     All FPT educational institutions participate in the system.
 
-         ?     Only for staff, students do not have access rights
+         ●     Only for staff, students do not have access rights
 
 
 3.3. NEU Alumni
@@ -185,28 +185,28 @@ AdvantagesDisadvantages? Easy to operate for users ?	UI,UX are not good for u
 NEU Alumni is a forum network for NEU alumni to connect them with the school as well as a place for them to share knowledge and experiences with current generations of students.
 Link: NEU Alumni
 Main Feature: 
-? Communication Tools
-? Announcement Tools
+● Communication Tools
+● Announcement Tools
 
-AdvantagesDisadvantages? Easy to operate for users ?	UI,UX are not good for users.
+AdvantagesDisadvantages● Easy to operate for users ●	UI,UX are not good for users.
 
-?	Features are not enough.
+●	Features are not enough.
 
-?	Last posting in forum was 5 years ago.
+●	Last posting in forum was 5 years ago.
 
 4. Business Opportunity
-The FPT University Soci�t� presents a significant business opportunity by addressing the evolving communication needs of academic institutions. By offering a centralised platform for students and staff to connect, share articles, and collaborate, the website can enhance the university's internal communication infrastructure, making it more efficient and engaging. This platform can be expanded to include features like virtual study groups, professional networking opportunities, and academic resource sharing, creating a comprehensive digital ecosystem. Additionally, the website can serve as a model for other educational institutions seeking similar solutions, opening avenues for partnerships and licensing. With the increasing emphasis on digital transformation in education, this platform positions FPT University as a leader in innovative campus communication, potentially attracting more students and staff who value a connected and supportive academic environment.
+The FPT University Société presents a significant business opportunity by addressing the evolving communication needs of academic institutions. By offering a centralised platform for students and staff to connect, share articles, and collaborate, the website can enhance the university's internal communication infrastructure, making it more efficient and engaging. This platform can be expanded to include features like virtual study groups, professional networking opportunities, and academic resource sharing, creating a comprehensive digital ecosystem. Additionally, the website can serve as a model for other educational institutions seeking similar solutions, opening avenues for partnerships and licensing. With the increasing emphasis on digital transformation in education, this platform positions FPT University as a leader in innovative campus communication, potentially attracting more students and staff who value a connected and supportive academic environment.
 5. Software Product Vision
-Our vision for The FPT University Soci�t� website is to create a vibrant, interactive, and secure digital community that revolutionises the way students and staff connect, communicate, and collaborate. We aim to build a platform that not only enhances academic and professional interactions but also fosters a sense of belonging and engagement within the university. By integrating advanced features such as real-time messaging, personalised content feeds, and collaborative tools, we aspire to support a dynamic exchange of knowledge and ideas. Our ultimate goal is to empower every member of the FPT University community with seamless access to information, resources, and networking opportunities, driving innovation and excellence in education.
+Our vision for The FPT University Société website is to create a vibrant, interactive, and secure digital community that revolutionises the way students and staff connect, communicate, and collaborate. We aim to build a platform that not only enhances academic and professional interactions but also fosters a sense of belonging and engagement within the university. By integrating advanced features such as real-time messaging, personalised content feeds, and collaborative tools, we aspire to support a dynamic exchange of knowledge and ideas. Our ultimate goal is to empower every member of the FPT University community with seamless access to information, resources, and networking opportunities, driving innovation and excellence in education.
 With this system, we propose incorporating the following features:
-? Near/Real-Time Messaging and Notifications.
-? Event Management.
-? Enables open integration via API.
-? Academic Resource Sharing.
-? Discuss groups of majors, classes and fields.
-? User-Friendly Operations.
-? Workflow review, approval reports (post)
-? Security and Privacy Controls.
+● Near/Real-Time Messaging and Notifications.
+● Event Management.
+● Enables open integration via API.
+● Academic Resource Sharing.
+● Discuss groups of majors, classes and fields.
+● User-Friendly Operations.
+● Workflow review, approval reports (post)
+● Security and Privacy Controls.
 
 6. Project Scope & Limitations
 6.1 Major Features
@@ -221,10 +221,10 @@ II. Project Management Plan
 1. Overview
 1.1 Scope & Estimation
 Scope:
-? The project must be completed in August 2024.
-? Only used within FPT University.
-? Develop a comprehensive platform for student interaction including personalized profiles, study groups, messaging, and content management.
-? Enhance the quality of educational content and streamline communication among students and staff.
+● The project must be completed in August 2024.
+● Only used within FPT University.
+● Develop a comprehensive platform for student interaction including personalized profiles, study groups, messaging, and content management.
+● Enhance the quality of educational content and streamline communication among students and staff.
 Estimation:
 This section provides a structured view of a project's scope, breaking it down into manageable Work Breakdown Structure (WBS) items. Each WBS item represents a specific task or User Story within the project. Complexity levels (simple, medium, complex) and the estimated effort in man-days are assigned to these items.
 
@@ -232,9 +232,9 @@ This section provides a structured view of a project's scope, breaking it down i
 (man-days)1Project Initiation: 06/05/2024 - 08/05/20242.51.1Project Ideation1.1.1Kick-off meeting & state common goals5Simple0.51.1.2Meeting to define project scope5Complex22Project Planning: 09/05/2024 - 15/05/202452.1Prepare Project Management Plan	2Complex32.2Define function and non-functional requirements5Medium23Iteration 1: 16/05/2024 - 30/05/2024453.1Documents      173.1.1Report 2: Project Management Plan5Complex103.1.2Prepare Report 3: Software Requirement Specification2Medium73.2Design173.2.1Draw UCD3Medium43.2.2Draw context diagram1Simple13.2.3Draw ERD2Medium43.2.4Design Prototypes2Complex83.3Coding43.3.1Build base source code and code front-end2 Medium43.4Test63.4.1Design Test Plan2Medium63.5Iteration Retrospective14Iteration 2: 31/05/2024 - 14/06/2024444.1Documents174.1.1Update requirements for SRS Document5Simple54.1.2Implement overall system design3Medium64.1.3Prepare Unit Test Report1Simple44.1.4Prepare SDS Document5Simple24.2Design64.2.1Design Database2Medium64.3Coding124.3.1Build base source code for back-end3Complex 124.4Testing84.4.1Write UAT test cases5Simple84.5Iteration Review and Planning15Iteration 3: 15/06/2024 - 29/06/2024725.1Documents10-5.1.1Update requirements for SRS Documents5Simple55.1.2Update SDS Document5Simple55.2Design105.2.1Draw package diagrams2Simple65.2.2Define Screen flow2Simple25.2.3Update database design1Simple25.3Coding405.3.1Implement 11 use cases (function in Home Screen)5Medium405.4Testing115.4.1Write UT test cases1Simple25.4.2Write IT test cases1Simple25.4.3Execute UT5Simple55.4.4Execute IT1Medium25.5Iteration Review and Planning16Iteration 4: 30/06/2024 - 14/07/2024716.1Requirements & Design106.1.1Update requirements for SRS Documents5Simple56.1.2Update SDS Document5Simple56.2 Coding406.2.1Implement 13 use cases (function in Home Screen)5Medium306.3Testing206.3.1Implement Usability Testing2Simple36.3.2Update UT report2Simple36.3.3Write UT test cases2Simple36.3.4Write IT test cases2Simple36.3.5Execute UT5Simple56.3.6Execute IT2Medium36.4 Iteration Review & Planning17Iteration 5: 15/07/2024 - 29/07/2024717.1Requirements & Design107.1.1Update requirements for SRS Documents5Simple57.1.2Update SDS Document5Simple57.2 Coding457.2.1Implement Group screen5Medium457.3Testing157.3.1Implement Usability Testing2Simple27.3.2Update UT report2Simple27.3.3Write UT test cases1Simple27.3.4Write IT test cases1Simple27.3.5Execute UT5Simple57.3.6Execute IT1Medium27.4 Iteration Review & Planning18Iteration 6: 30/07/2024 - 13/08/2024618.1Requirements & Design208.1.1Finish requirements for SRS Documents5Simple58.1.2Finish SDS Document5Simple58.1.3Design Production Server2Complex108.2 Coding258.2.1Implement function Message and Share file5Medium158.2.2Setup Production Server2Complex88.2.3Deploy Code of Iter 5, Iter 6 to server1Medium28.3Testing158.3.1Complete UT report 2Simple28.3.2Complete IT report version 11Simple18.3.3Update ST test cases (web)2Simple48.3.4Execute UT5Simple28.3.5Execute IT1Simple28.3.6Execute ST2Simple48.4Iteration Retrospective19Iteration 7: 14/08/2024 - 20/08/2024299.1Requirements & Design109.1.1Prepare for final Presentation5Simple59.1.2Finish & review UT, IT, ST, UAT documents5Simple59.2 Coding109.2.1Deploy Code of Iter 7, Iter 8 to server1Medium59.2.2Fix web app bugs2Simple59.3Testing89.3.1Execute IT1Simple29.3.2Execute ST1Simple29.3.3Execute UAT1Simple49.4Iteration Retrospective110Project Closing1010.1Closing Stage1010.1.1Prepare and rehearse for capstone presentation5Medium10Total Estimated Effort (man-days)410,51.2 Project Objectives
 
 Objectives:
-? No critical issues impacting key functionalities.
-? Complete all project-related reports.
-? Ensure all deliverables are reviewed and approved by the committee
+● No critical issues impacting key functionalities.
+● Complete all project-related reports.
+● Ensure all deliverables are reviewed and approved by the committee
 #Testing StageTest CoverageNo. of Defects% of DefectNotes1Reviewing100%2010% 2Unit Test90%3015%3Integration Test95%2512%4System Test100%3515%5Acceptance Test100%105%
 1.3 Project Risks
 #Risk DescriptionImpactPossibility Response Plans1Alterations to Initial Project RequirementsHighHigh Reallocate resources to accommodate changes without compromising the timeline.2Delayed Response Times	HighHighEstablish structured communication protocols and regular check-ins.3Inadequate Risk Management	HighMediumProactively identify potential risks and develop mitigation strategies.4High requirements for information securityHighHighWork closely with security teams to address and mitigate security risks.5Constraints with External Tool AvailabilityHighMediumIntegrate alternative tools that are cost-effective and meet project needs.6Misunderstandings Among Team MembersMediumLowEnsure clear communication and detailed explanations.
@@ -267,21 +267,21 @@ Distribute tasksEverydayOnline via Google MeetEmergency MeetingAll membersF
 
 CategoryTools / InfrastructureTechnologyReactJS (FrontEnd), .NET (BackEnd)DatabaseSQL Server 2022IDEs/EditorsVisual Studio Code, Microsoft Visual Studio, SSMS 19APIPostman, SwaggerDiagrammingDraw.ioDocumentationMs Office, Google Docs/Sheets, Canva(Slides)CommunicationFacebook Messenger, Email, Google Meet, ZaloVersion ControlGitLab (Source Codes), Google Drive (Documents)Deployment serverDocker (Dev, Test server environment IT FE)Project managementJira, GitLab (Tasks, Defects)
 6.2 Document Management
-? Project documents are archived on Google Shared Drives with this structure:
-? Root (URL: Root_Link)
-? SEP490_G3
-� Report
+❖ Project documents are archived on Google Shared Drives with this structure:
+● Root (URL: Root_Link)
+○ SEP490_G3
+■ Report
          Report_Test
-� Bi�n b?n h?p
-� Guide l�m vi?c
-� Bug_Report
-� T�i li?u sample
+■ Biên bản họp
+■ Guide làm việc
+■ Bug_Report
+■ Tài liệu sample
 6.3 Source Code Management
-? Source Code is managed with this structure:
-? Schedule will be updated instantly when changes are made.
-? Development team uses the Gitlab repository to archive source code and Git to control versions.
-? Using JIRA, Google Sheet to resolve bugs and issues throughout the entire software development process.
-? Developers have to run the unit test completely before push to remote repository and create merge requests.
+❖ Source Code is managed with this structure:
+➢ Schedule will be updated instantly when changes are made.
+➢ Development team uses the Gitlab repository to archive source code and Git to control versions.
+➢ Using JIRA, Google Sheet to resolve bugs and issues throughout the entire software development process.
+➢ Developers have to run the unit test completely before push to remote repository and create merge requests.
 
 
 III. Software Requirement Specification
@@ -289,7 +289,7 @@ III. Software Requirement Specification
 1.1 Product Overview
 The FPT University Association addresses the growing communication needs of academic institutions. By providing a centralised platform for students and staff to connect, share articles and collaborate, the website can enhance a university's internal communications infrastructure, making it efficient and effective. more attractive. The platform can be expanded to include features such as virtual study groups, professional networking opportunities, and academic resource sharing, creating a comprehensive digital ecosystem. Additionally, the site can serve as a model for other educational institutions looking for similar solutions, opening up avenues for collaboration and licensing. With an increasing emphasis on digital transformation in education, this platform helps FPT University become a leader in innovative communication on campus, capable of attracting more students and staff. values a connected and supportive academic environment.
        
-Figure 3.1. FPT University Soci�t� place context diagram
+Figure 3.1. FPT University Société place context diagram
 URL: ContextDiagram_Link
 
 
@@ -366,7 +366,7 @@ List all notifications of actor Member,
  Group ManagerUser blocks another user to prevent them from interacting with him/herUC48View List User Blocked Member,
  Group ManagerActors view the blocked list which includes users being blockedUC49Unblock User Member,
  Group ManagerActors unblock users to allow them to interact with them againUC50Q&A with AI Member,
- Group ManagerThe user interacts with the AI ??chatbot to ask a question and get an answerUC51Suggest friend Member,
+ Group ManagerThe user interacts with the AI ​​chatbot to ask a question and get an answerUC51Suggest friend Member,
  Group ManagerThe system displays a list of other users that the current user may want to be friends with, based on various criteria such as mutual friends, common interests, etcUC52Suggest group Member,
  Group ManagerThe system displays a list of groups that the current user may want to join, based on various criteria such as the user's interests, groups of friends who have joined, etc
 2.2.3 Business Rules
@@ -653,7 +653,7 @@ Actors have one or more other user in blocked listPostconditionsUsers who unbl
 Normal FlowStepActors ActionsSystem Responses1Actors visit their profile 2 User clicks the "Friend" section.3System displays a list of friends and list users being blocked.4Click "Unblock" beside each user to unblock this user5System will remove this user out of listAlternative FlowsN/AExceptionsEC01If there is a system error, the system displays an error message.PriorityMediumFrequency of UseLowBusiness Rules BR-59Other InformationN/AAssumptionsN/A
 
 Q&A with AI
-UC ID and NameUC50 - Q&A with AICreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to get help or information from the AI ??chatbot.DescriptionThe user interacts with the AI ??chatbot to ask a question and get an answer.PreconditionsThe user must be logged in to the system.PostconditionsThe user receives an answer from the AI ??chatbot or is redirected to a relevant information source.Normal FlowStepActors ActionsSystem Responses1The user accesses the AI ??chatbot interface (which can be a chat window or a chatbot icon). 2 The user enters a question or request.3The AI ??chatbot processes the user's input and generates an answer.4The AI ??chatbot displays the answer to the user.Alternative FlowsAF01If the user enters invalid or unclear input, the AI ??chatbot requests clarification or additional information.ExceptionsEC01If there is a system error while processing the request, the AI ??chatbot displays an error message and suggests trying again later.PriorityMediumFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
+UC ID and NameUC50 - Q&A with AICreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to get help or information from the AI ​​chatbot.DescriptionThe user interacts with the AI ​​chatbot to ask a question and get an answer.PreconditionsThe user must be logged in to the system.PostconditionsThe user receives an answer from the AI ​​chatbot or is redirected to a relevant information source.Normal FlowStepActors ActionsSystem Responses1The user accesses the AI ​​chatbot interface (which can be a chat window or a chatbot icon). 2 The user enters a question or request.3The AI ​​chatbot processes the user's input and generates an answer.4The AI ​​chatbot displays the answer to the user.Alternative FlowsAF01If the user enters invalid or unclear input, the AI ​​chatbot requests clarification or additional information.ExceptionsEC01If there is a system error while processing the request, the AI ​​chatbot displays an error message and suggests trying again later.PriorityMediumFrequency of UseHighBusiness RulesN/AOther InformationN/AAssumptionsN/A
 Suggest friend
 UC ID and NameUC51 - View Friend SuggestionsCreated byHoanNKDate Created25/05/2024Primary ActorMemberSecondary ActorsN/ATriggerThe user wants to view the suggested friend list.DescriptionThe system displays a list of other users that the current user may want to be friends with, based on various criteria such as mutual friends, common interests, etc.PreconditionsThe user must be logged in to the system.PostconditionsThe suggested friend list is displayed to the user.Normal FlowStepActors ActionsSystem Responses1The user navigates to the friends section or another area where friend suggestions are displayed. 2The system retrieves the suggested friend list based on the suggestion algorithm.3The system displays a list, including the name or avatar of each suggested user.4The user can scroll through the list and view the profile details of each suggested user.Alternative FlowsN/AExceptionsN/APriorityMediumFrequency of UseMediumBusiness RulesBR-56Other InformationN/AAssumptionsN/A
 Suggest group
@@ -661,15 +661,15 @@ UC ID and NameUC52 - View Group SuggestionsCreated byHoanNKDate Created25/0
 3. Functional Requirements
 3.1 System Functional Overview
 3.1.1 Screens Flow
-? Screen Flow Overview:
+● Screen Flow Overview:
 
 Figure 6.  Overview Screens Flow diagram
 
-? Screen Flow Of Member
+● Screen Flow Of Member
 
-? Screen Flow Of Group Manager:
+● Screen Flow Of Group Manager:
 
-? Screen Flow Of Admin:
+● Screen Flow Of Admin:
 
 
 3.1.2 Screen Descriptions
@@ -758,35 +758,35 @@ FUSP's System Architecture
 Figure 1.2.  FUSP's Back-end architecture (CQRS Pattern)
 Specific Issues:
 - High Read Load:
-? High read load: A significant number of read requests, especially as users continuously browse posts, view profiles, and search for content.
-? Low latency: Users expect quick and smooth data retrieval.
-? Consistency: Read data must be consistent and accurate, especially when users perform updates or add new content.
+● High read load: A significant number of read requests, especially as users continuously browse posts, view profiles, and search for content.
+● Low latency: Users expect quick and smooth data retrieval.
+● Consistency: Read data must be consistent and accurate, especially when users perform updates or add new content.
 
 - Write Load:
-? Lower but critical write load: Actions like posting, commenting, and liking posts need to be processed accurately and promptly to maintain a good user experience.
-? Consistency: Ensuring newly updated data is consistent and accurately reflected in subsequent read operations.
+● Lower but critical write load: Actions like posting, commenting, and liking posts need to be processed accurately and promptly to maintain a good user experience.
+● Consistency: Ensuring newly updated data is consistent and accurately reflected in subsequent read operations.
 
 - Bottlenecks and Performance:
-? Data bottlenecks: Processing both read and write loads on a single database can lead to bottlenecks and reduced performance.
-? Scalability: The system must be scalable to handle increasing traffic over time.
+● Data bottlenecks: Processing both read and write loads on a single database can lead to bottlenecks and reduced performance.
+● Scalability: The system must be scalable to handle increasing traffic over time.
 
 - Maintenance and Development:
-? Complexity: Maintaining a single database for both read and write operations can be complex and prone to errors.
-? Development flexibility: The system needs to easily integrate new features without impacting performance and data consistency.
+● Complexity: Maintaining a single database for both read and write operations can be complex and prone to errors.
+● Development flexibility: The system needs to easily integrate new features without impacting performance and data consistency.
 
 Solution Approach:
        Using CQRS to separate read and write operations helps optimize and enhance the system's performance.
 - Separate Read and Write Models:
-? Command Model: Data model and write operations such as creating posts, updating profiles, adding comments.
-? Query Model: Data model and read operations such as querying posts, searching for users, viewing profiles.
+● Command Model: Data model and write operations such as creating posts, updating profiles, adding comments.
+● Query Model: Data model and read operations such as querying posts, searching for users, viewing profiles.
 
 - Implement Command Model:
-? Use a database designed for writes, like SQL Server or NoSQL databases.
-? Build APIs to handle commands like creating, updating, deleting data.
+● Use a database designed for writes, like SQL Server or NoSQL databases.
+● Build APIs to handle commands like creating, updating, deleting data.
 
 - Implement Query Model:
-? Use a database optimized for querying and reading data.
-? Build APIs to handle queries, optimized for fast and efficient data retrieval.
+● Use a database optimized for querying and reading data.
+● Build APIs to handle queries, optimized for fast and efficient data retrieval.
 
 Benefits of Implementing CQRS:
 - Improved Performance: Optimizes the handling of read and write requests separately.
@@ -794,19 +794,19 @@ Benefits of Implementing CQRS:
 - Consistency: Use synchronization mechanisms to ensure data consistency across models.
 
 1.1.1.2 Back-end component
-? Chat Engine
+❖ Chat Engine
 
        We use chatengine.io as the core and customize it with project data and logic to develop the chat feature.
        
-? SignalR
+❖ SignalR
 
        We use signalR to develop a real-time notifications system.
        
-? Cloudinary (Cloud)
+❖ Cloudinary (Cloud)
 
 	We use Cloudinary to store large data, media such as: photos, videos,... to serve features such as: posting photos, videos or avatars.
 
-? GeminiAI
+❖ GeminiAI
 
 	We use GeminiAI for FAQ purposes as well as content on the FUSP system.
 
@@ -819,16 +819,16 @@ Benefits of Implementing CQRS:
        
        
 - Specific Issues:
-? High Volume of Content: Users generate a significant amount of content continuously, requiring real-time text analysis.
-? Efficiency and Speed: The algorithm needs to be fast enough to handle large volumes of text without causing delays in content posting.
-? Accuracy: It must accurately identify prohibited words to ensure the safety and compliance of the platform.
-? Scalability: The solution must scale with the growing number of users and the corresponding increase in content volume.
+● High Volume of Content: Users generate a significant amount of content continuously, requiring real-time text analysis.
+● Efficiency and Speed: The algorithm needs to be fast enough to handle large volumes of text without causing delays in content posting.
+● Accuracy: It must accurately identify prohibited words to ensure the safety and compliance of the platform.
+● Scalability: The solution must scale with the growing number of users and the corresponding increase in content volume.
 
 - Solution approach: Use the Knuth-Morris-Pratt (KMP) algorithm for the following reasons:
-? Linear Time Complexity: The KMP algorithm has a time complexity of O(n + m), where n is the length of the text and m is the length of the pattern (prohibited word). This ensures that even for large texts, the search operation remains efficient.
-? Preprocessing Step: KMP preprocesses the pattern to create a partial match table (also known as the "pi" table) which helps in skipping unnecessary comparisons during the search. This preprocessing step runs in O(m) time.
-? Efficient Search: Unlike naive search algorithms that can degrade to O(n*m) in the worst case, KMP efficiently skips over portions of the text that have been matched already, making it much faster.
-? Robustness: The algorithm is well-suited for applications requiring frequent and rapid text searches, ensuring that all instances of prohibited words are detected without repeated scanning.
+● Linear Time Complexity: The KMP algorithm has a time complexity of O(n + m), where n is the length of the text and m is the length of the pattern (prohibited word). This ensures that even for large texts, the search operation remains efficient.
+● Preprocessing Step: KMP preprocesses the pattern to create a partial match table (also known as the "pi" table) which helps in skipping unnecessary comparisons during the search. This preprocessing step runs in O(m) time.
+● Efficient Search: Unlike naive search algorithms that can degrade to O(n*m) in the worst case, KMP efficiently skips over portions of the text that have been matched already, making it much faster.
+● Robustness: The algorithm is well-suited for applications requiring frequent and rapid text searches, ensuring that all instances of prohibited words are detected without repeated scanning.
 
 
 1.1.2.2 The EdgeRank algorithm
@@ -837,16 +837,16 @@ Benefits of Implementing CQRS:
        
        
 - Specific Issues:
-? Content Overload: Users generate a vast amount of content daily, making it challenging to show every post in a user's feed.
-? Relevance: Not all posts are equally relevant to every user. It is crucial to prioritize content that is more likely to engage the user.
-? User Engagement: Displaying relevant posts can increase user engagement and time spent on the platform.
-? Updates: The ranking algorithm needs to work, reflect the latest interactions and activities.
+● Content Overload: Users generate a vast amount of content daily, making it challenging to show every post in a user's feed.
+● Relevance: Not all posts are equally relevant to every user. It is crucial to prioritize content that is more likely to engage the user.
+● User Engagement: Displaying relevant posts can increase user engagement and time spent on the platform.
+● Updates: The ranking algorithm needs to work, reflect the latest interactions and activities.
        
 - Using the EdgeRank Algorithm (simple, lite version)
        EdgeRank determines the relevance of posts in a user's news feed. It scores and ranks posts based on three main factors:
-? Affinity: The relationship between the user and the content creator. Higher interaction frequency between the user and the creator increases the affinity score. (This is the most difficult factor and we have not yet implemented it in the project)
-? Weight: The type of interaction. Different types of interactions (likes, comments, shares) have different weights. Comments and shares generally carry more weight than likes.
-? Time Decay: The age of the post. Newer posts are prioritized over older ones to keep the content fresh and timely.
+● Affinity: The relationship between the user and the content creator. Higher interaction frequency between the user and the creator increases the affinity score. (This is the most difficult factor and we have not yet implemented it in the project)
+● Weight: The type of interaction. Different types of interactions (likes, comments, shares) have different weights. Comments and shares generally carry more weight than likes.
+● Time Decay: The age of the post. Newer posts are prioritized over older ones to keep the content fresh and timely.
        
 1.1.2.3 Fine-tuning in GeminiAI:
 
@@ -1599,12 +1599,12 @@ V. Software Testing Documentation
 - Team members focus on the functions of the actor to be tested and executed.
     1.1.2. Non-Functional Testing
 -          Usability:
-?        Reducing the number of user actions to interact with the screen enhances the system's user-friendliness.
-?        Verify errors during interactions and provide on-screen feedback messages for users.
+●        Reducing the number of user actions to interact with the screen enhances the system's user-friendliness.
+●        Verify errors during interactions and provide on-screen feedback messages for users.
 -          Security:
-?        The user account is authorized, allowing access to features corresponding to their role.
+●        The user account is authorized, allowing access to features corresponding to their role.
 -          Maintainability:
-?        The source code structure is intentionally organized to facilitate maintenance and extensibility.
+●        The source code structure is intentionally organized to facilitate maintenance and extensibility.
 1.2. Testing Scope
             	Scope of testing the FPT eLIS include:
 -          Features: Check each feature of the FUSP application
@@ -1620,11 +1620,11 @@ V. Software Testing Documentation
 2.1 Testing Types
 
        The different types of testing that will be carried out this project are:
-? Functional Testing: We execute functional testing to test functions and check
+● Functional Testing: We execute functional testing to test functions and check
        if each function is correct or not.
-? GUI Testing: We execute user interface testing, including some features such
+● GUI Testing: We execute user interface testing, including some features such
        as colour, spell, background, component, and resolution of screen
-? API Testing: We execute API testing to test the API of back-end services and
+● API Testing: We execute API testing to test the API of back-end services and
        check if the data the Front-end service receive is true or not 
 
 2.2 Test Levels
@@ -1636,23 +1636,23 @@ PurposeToolVendor/In-houseVersionAPI TestingPostman, SwaggerVendor Unit 
 3. Test Plan
 3.1 Human Resources
 
-Worker/DoerRoleSpecific Responsibilities/CommentsHoanNKPM, Test Leader, Developer  ? Create test plan 
-  ? Execute IT test SonNHDeveloper, 
-Test Member   ? Execute IT test QuanNATechlead, 
-Test Member   ? Execute IT test 
-  ? Create test report 
-  ? Fix bugHoanLHDeveloper, 
-Test Member   ? Execute IT test 
-  ? Create test report 
-  ? Fix bugAnhBQDocumentation,
-Test Member   ? Execute IT test 
-  ? Create test report 
+Worker/DoerRoleSpecific Responsibilities/CommentsHoanNKPM, Test Leader, Developer  ● Create test plan 
+  ● Execute IT test SonNHDeveloper, 
+Test Member   ● Execute IT test QuanNATechlead, 
+Test Member   ● Execute IT test 
+  ● Create test report 
+  ● Fix bugHoanLHDeveloper, 
+Test Member   ● Execute IT test 
+  ● Create test report 
+  ● Fix bugAnhBQDocumentation,
+Test Member   ● Execute IT test 
+  ● Create test report 
 3.2 Test Environment
 
-PurposeToolProviderVersionBuild test environment? Visual Studio  MicrosoftCommunity 2022 (64-bit) - Version 17.10.5
+PurposeToolProviderVersionBuild test environment● Visual Studio  MicrosoftCommunity 2022 (64-bit) - Version 17.10.5
   Test API
-? Postman
-? Swagger
+● Postman
+● Swagger
   Postman
     Microsoft  10.24.1
 3.3 Test Milestones
@@ -1744,9 +1744,9 @@ Figure 5. Install Visual Studio 2022
 
 2.2.2 React - Setup Development Environment
 2.2.2.1 Install Node.js and npm
-? Node.js and npm are the runtime and command line tools required to build and run React applications.
-? Node.js is a javascript runtime environment that enables you to run js code outside of a browser, and npm is a package manager used to download javascript packages built to run on Node. They come bundled together when you install Node.js.
-? React is built on top of Node.js and the React library itself is a package available on npm - https://www.npmjs.com/package/react.
+● Node.js and npm are the runtime and command line tools required to build and run React applications.
+● Node.js is a javascript runtime environment that enables you to run js code outside of a browser, and npm is a package manager used to download javascript packages built to run on Node. They come bundled together when you install Node.js.
+● React is built on top of Node.js and the React library itself is a package available on npm - https://www.npmjs.com/package/react.
 a. Download
 Download Node.js and npm from https://nodejs.org.
 
@@ -1770,9 +1770,9 @@ c. Test
 Test that Node.js and npm were installed successfully by running the commands node -v and npm -v.
 Figure 14. Install Node.js and npm(Test)
 2.2.2.2 Install Yarn
-? Yarn is a package manager that doubles down as project manager. 
-? Yarn is an established open-source package manager used to manage dependencies in JavaScript projects. It assists with the process of installing, updating, configuring, and removing packages dependencies, eventually helping you reach your objectives faster with fewer distractions.
-? Resource Domain: https://yarnpkg.com/ 
+● Yarn is a package manager that doubles down as project manager. 
+● Yarn is an established open-source package manager used to manage dependencies in JavaScript projects. It assists with the process of installing, updating, configuring, and removing packages dependencies, eventually helping you reach your objectives faster with fewer distractions.
+● Resource Domain: https://yarnpkg.com/ 
 a. Download
 - We can install Yarn through the npm package manager, which comes bundled with Node.js when you install it on your system.
 b. Install
@@ -1872,7 +1872,7 @@ c. Test
 3.1 Authentication
 
 
-Welcome to FPTU Soci�te Project (FUSP)! This guide will walk you through the steps to login and access the system.
+Welcome to FPTU Sociéte Project (FUSP)! This guide will walk you through the steps to login and access the system.
 Before you continue with the authentication procedure, you need to check whether you have a valid SSO FPT account? If not, contact the related staff to get an account for yourself.
 3.1.1 Login 
 1. Access landing page
@@ -2050,13 +2050,13 @@ How to search on page
 2. Input what you want to search and press Enter
 	
 3. Choose type of search on left menu to see result of search function
-? Optiom "All"
+● Optiom "All"
 
-? Optiom "Post"
+● Optiom "Post"
 
-? Optiom "User"
+● Optiom "User"
 
-? Optiom "Group"
+● Optiom "Group"
 
 
 

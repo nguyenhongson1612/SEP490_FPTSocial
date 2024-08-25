@@ -8,10 +8,11 @@ import Progress from './Progress'
 import { createAdminProfile, createByLogin, createUserChat, getStatus } from '~/apis'
 import { toast } from 'react-toastify'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { DEFAULT_AVATAR, JWT_PROFILE } from '~/utils/constants'
+import { JWT_PROFILE } from '~/utils/constants'
 import AdminUpdate from './AdminUpdate'
 import { createPost } from '~/apis/postApis'
-
+import corverImg from '~/assets/img/defaulcover.jpg'
+import avatarImg from '~/assets/img/avatar_holder.png'
 function FirstTimeLogin() {
   const [step, setStep] = useState(0)
   const [listStatus, setListStatus] = useState([])
@@ -23,8 +24,8 @@ function FirstTimeLogin() {
   const profileFeId = JWT_PROFILE
   const initialGeneralForm = {
     'email': profileFeId?.email,
-    'coverImage': null,
-    'avataphoto': DEFAULT_AVATAR,
+    'coverImage': corverImg,
+    'avataphoto': avatarImg,
   }
 
   const { register, control, getValues, setValue, watch, handleSubmit, trigger, formState: { errors, isValid } } = useForm({ mode: 'all', defaultValues: initialGeneralForm })
@@ -83,9 +84,9 @@ function FirstTimeLogin() {
       },
       'aboutMe': data?.aboutMe,
       'homeTown': data?.homeTown,
-      'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : null,
+      'coverImage': data?.coverImage?.length !== 0 ? data?.coverImage : corverImg,
       'userNumber': profileFeId?.userId,
-      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
+      'avataphoto': data?.avataphoto?.length !== 0 ? data?.avataphoto : avatarImg,
       'userSetting': [{
         'settingId': null
       }],
@@ -102,7 +103,7 @@ function FirstTimeLogin() {
       "firstName": data?.firstName,
       "lastName": data?.lastName,
       "email": data?.email,
-      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : DEFAULT_AVATAR,
+      "avata": data?.avataphoto?.length !== 0 ? data?.avataphoto : avatarImg,
     }
     const submitUpdateAdmin = {
       "adminId": profileFeId?.userId,

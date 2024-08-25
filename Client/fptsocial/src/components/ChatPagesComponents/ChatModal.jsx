@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import axios from "axios";
 import { API_ROOT, CHAT_ENGINE_CONFIG_HEADER, CHAT_KEY, USER_ID } from "~/utils/constants";
 import authorizedAxiosInstance from "~/utils/authorizeAxios";
 import { ChatEngineWrapper, Socket } from "react-chat-engine";

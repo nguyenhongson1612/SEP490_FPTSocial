@@ -29,16 +29,21 @@ function ChatItem({ chat, handleListItemClick, handleSelectChat, inPageChat = fa
             </h3>
             <div className='text-xs flex justify-between'>
               <div className='text-xs flex gap-1'>
-                <span className='font-semibold capitalize'>
-                  {chat?.last_message?.sender?.username == USER_ID ? 'You' : `${chat?.last_message?.sender?.first_name}`}:
-                </span>
-                <span className="text-gray-500/90 w-30 truncate">
-                  {cleanAndParseHTML(chat?.last_message?.text)}
-                  {chat?.last_message?.text?.length == 0 && 'send file'}
-                </span>
+                {
+                  chat?.last_message?.sender_username?.length > 0 ? <>
+                    <span className='font-semibold capitalize'>
+                      {chat?.last_message?.sender?.username == USER_ID ? 'You' : `${chat?.last_message?.sender?.first_name}`}:
+                    </span>
+                    <span className="text-gray-500/90 w-32 truncate">
+                      {cleanAndParseHTML(chat?.last_message?.text)}
+                      {chat?.last_message?.text?.length == 0 && 'send file'}
+                    </span>
+                  </>
+                    : <span className='first-letter:capitalize text-gray-500/90'>let&apos;s chatting!</span>
+                }
               </div>
               <span className='text-gray-500/90'>
-                {compareDateTime(chat?.last_message?.created)}
+                {chat?.last_message?.sender_username?.length > 0 && compareDateTime(chat?.last_message?.created)}
               </span>
             </div>
           </div>

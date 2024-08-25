@@ -7,6 +7,7 @@ import GroupSideBar from './GroupsSideBar/GroupSideBar'
 import GroupCreate from './GroupsCreate/GroupCreate'
 import GroupsDiscover from './GroupsDiscover/GroupDiscover'
 import GroupJoins from './GroupsJoins/GroupJoins'
+import GroupInvites from './GroupInvites/GroupInvites'
 
 
 function Groups() {
@@ -14,6 +15,7 @@ function Groups() {
   const isCreate = location.pathname === '/groups/create'
   const isDiscover = location.pathname === '/groups' || location.pathname === '/groups/discover'
   const isJoin = location.pathname === '/groups/joins'
+  const isInvites = location.pathname === '/groups/invites'
   const [listPost, setListPost] = useState(null)
   const [listPersonalGroup, setListPersonalGroup] = useState({})
 
@@ -29,6 +31,7 @@ function Groups() {
         {isCreate && <GroupCreate />}
         {isDiscover && <GroupsDiscover />}
         {isJoin && <GroupJoins />}
+        {isInvites && <GroupInvites />}
       </div>
     </>
   )

@@ -1,12 +1,13 @@
 import { useState } from "react"
+import { useParams } from 'react-router-dom';
 import ChatWindow from "~/components/ChatPagesComponents/ChatWindow";
 import Sidebar from "~/components/ChatPagesComponents/Sidebar";
-import UserTitle from '~/components/ChatPagesComponents/UserTitle';
 import NavTopBar from '~/components/NavTopBar/NavTopBar';
 
 function ChatPages() {
-  const [selectedChatId, setSelectedChatId] = useState(null)
   const [allMessages, setAllMessages] = useState({})
+  const [chats, setChats] = useState([])
+  const { chatId } = useParams()
 
   const handleNewMessage = (chatId, message) => {
     setAllMessages((prevMessages) => ({
@@ -19,18 +20,19 @@ function ChatPages() {
     <NavTopBar />
     <div className='h-[calc(100vh_-_55px)] flex'>
       <Sidebar
-        setSelectedChatId={setSelectedChatId}
+        chatId={chatId}
         allMessages={allMessages}
+        chats={chats}
+        setChats={setChats}
       />
       <main className='grow flex flex-col h-full justify-between'
       >
-        <div className='border-b shadow-m bg-orange-100 shadow-inner p-2'>
-          {selectedChatId && <UserTitle inChatPage setSelectedChatId={setSelectedChatId} />}
-        </div>
-        {selectedChatId ? (
+        {chatId ? (
           <ChatWindow
-            selectedChatId={selectedChatId}
+            chatId={chatId}
+            inChatPage
             onNewMessage={handleNewMessage}
+            chats={chats}
           />
         ) : (
           <div className='flex justify-center items-center grow h-10'

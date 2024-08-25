@@ -131,11 +131,11 @@ function NewPost({ postType, groupId }) {
         </div>
       </div>
       <Modal open={isShowModalCreatePost} onClose={clearData}>
-        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[800px] max-h-[90%] rounded-md overflow-y-auto scrollbar-none-track'>
-          <div className='bg-white shadow-4edges'>
+        <div className='absolute min-h-[70%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[800px] max-h-[90%] rounded-md overflow-y-auto scrollbar-none-track'>
+          <div className='bg-white min-h-full shadow-4edges'>
             {!isEdit ? (
-              <form onSubmit={handleSubmit(submitPost)}>
-                <div className='flex flex-col'>
+              <form onSubmit={handleSubmit(submitPost)} className='h-full '>
+                <div className='flex flex-col h-full'>
                   <div className='h-[60px] flex justify-between items-center px-2 border-b'>
                     <span></span>
                     <span className='text-2xl font-bold'>{t('standard.newPost.createPost')}</span>

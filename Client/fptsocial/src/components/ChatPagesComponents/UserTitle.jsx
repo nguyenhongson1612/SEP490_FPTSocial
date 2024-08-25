@@ -1,27 +1,27 @@
-import { ChatEngineWrapper, Socket } from 'react-chat-engine';
-import UserAvatar from '../UI/UserAvatar';
-import { API_ROOT, CHAT_KEY, USER_ID } from '~/utils/constants';
-import { useEffect, useState } from 'react';
-import { compareDateTime } from '~/utils/formatters';
-import { Popover } from '@mui/material';
-import { IconCaretDownFilled, IconMessage, IconMessage2, IconTrash, IconUserCircle } from '@tabler/icons-react';
-import { Link } from 'react-router-dom';
-import { useConfirm } from 'material-ui-confirm';
-import authorizedAxiosInstance from '~/utils/authorizeAxios';
+import { ChatEngineWrapper, Socket } from 'react-chat-engine'
+import UserAvatar from '../UI/UserAvatar'
+import { API_ROOT, CHAT_KEY, USER_ID } from '~/utils/constants'
+import { useEffect, useState } from 'react'
+import { compareDateTime } from '~/utils/formatters'
+import { Popover } from '@mui/material'
+import { IconCaretDownFilled, IconMessage2, IconTrash, IconUserCircle } from '@tabler/icons-react'
+import { Link } from 'react-router-dom'
+import { useConfirm } from 'material-ui-confirm'
+import authorizedAxiosInstance from '~/utils/authorizeAxios'
 
 function UserTitle({ inChatPage = false, setSelectedChatId }) {
   const [chatDetail, setChatDetail] = useState(null)
   const [titleUser, setTitleUser] = useState()
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null)
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
   const confirm = useConfirm()
   const handleDeleteChat = () => {
     confirm({
@@ -48,20 +48,16 @@ function UserTitle({ inChatPage = false, setSelectedChatId }) {
         })
       })
       .catch(() => {
-        // Xử lý khi người dùng hủy bỏ
-        // console.log("Hủy xóa hộp chat");
       })
       .finally(() => {
-        // Các hành động cần thực hiện sau cùng, bất kể kết quả
-        handleClose();
+        handleClose()
         setSelectedChatId(null)
-      });
-  };
+      })
+  }
 
+  const open = Boolean(anchorEl)
+  const id = open ? 'simple-popover' : undefined
 
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
   useEffect(() => {
     chatDetail &&
       setTitleUser(chatDetail?.people?.find((person) => person.person.username !== USER_ID))
@@ -115,6 +111,12 @@ function UserTitle({ inChatPage = false, setSelectedChatId }) {
         projectID={CHAT_KEY.ProjectID}
         userName={USER_ID}
         userSecret={USER_ID}
+        onGetMessages={(chatId, messages) => {
+          console.log(chatId, messages)
+        }}
+        onGetChats={(chats) => {
+          console.log(chats);
+        }}
         onEditChat={setChatDetail}
       />
     </ChatEngineWrapper>
@@ -122,4 +124,4 @@ function UserTitle({ inChatPage = false, setSelectedChatId }) {
   )
 }
 
-export default UserTitle;
+export default UserTitle

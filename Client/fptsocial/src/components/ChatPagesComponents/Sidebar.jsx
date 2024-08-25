@@ -1,37 +1,38 @@
-import { useCallback, useEffect, useState, useRef } from "react";
-import debounce from "lodash.debounce";
-import authorizedAxiosInstance from "~/utils/authorizeAxios";
+import { useCallback, useEffect, useState, useRef } from "react"
+import debounce from "lodash.debounce"
+import authorizedAxiosInstance from "~/utils/authorizeAxios"
 import {
   API_ROOT,
   CHAT_ENGINE_CONFIG_HEADER,
   CHAT_KEY,
   USER_ID,
-} from "~/utils/constants";
-import ChatItem from './ChatItem';
-import { ChatEngineWrapper, Socket } from 'react-chat-engine';
+} from "~/utils/constants"
+import ChatItem from './ChatItem'
+import { ChatEngineWrapper, Socket } from 'react-chat-engine'
+import { useNavigate } from 'react-router-dom'
 
-function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
+function Sidebar({ onSelectChat, allMessages, chatId, chats, setChats }) {
+  const navigate = useNavigate()
   const [searchResults, setSearchResults] = useState({
     listFriend: [],
     listUserNotFriend: [],
-  });
-  const [search, setSearch] = useState("");
-  const [chats, setChats] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [currentSelectedUserId, setCurrentSelectedUserId] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMessages, setModalMessages] = useState([]);
-  const [selectedUsername, setSelectedUsername] = useState("");
-  const [selectedUserFullName, setSelectedUserFullName] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const inputRef = useRef(null);
-  const dropdownRef = useRef(null);
+  })
+
+  const [allUsers, setAllUsers] = useState([])
+  const [selectedUsers, setSelectedUsers] = useState([])
+  // const [currentSelectedUserId, setCurrentSelectedUserId] = useState(null)
+  // const [modalOpen, setModalOpen] = useState(false)
+  // const [modalMessages, setModalMessages] = useState([])
+  // const [selectedUsername, setSelectedUsername] = useState("")
+  // const [selectedUserFullName, setSelectedUserFullName] = useState("")
+  const [isOpen, setIsOpen] = useState(false)
+  const inputRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
-    fetchChats();
-    fetchAllUsers();
-  }, []);
+    fetchChats()
+    fetchAllUsers()
+  }, [chatId])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -39,7 +40,6 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
         setIsOpen(false)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
@@ -51,32 +51,32 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
       const response = await authorizedAxiosInstance.get(
         "https://api.chatengine.io/chats/",
         CHAT_ENGINE_CONFIG_HEADER
-      );
-      setChats(response.data);
+      )
+      setChats(response.data)
     } catch (error) {
-      console.error("Error fetching chat list:", error);
+      console.error("Error fetching chat list:", error)
     }
-  };
+  }
 
   const fetchAllUsers = async () => {
     try {
       const response = await authorizedAxiosInstance.get(
         `${API_ROOT}/api/Chat/searchinchat`
-      );
+      )
       if (response.data.statusCode === "Success") {
-        setAllUsers(response.data.data.otherUser);
+        setAllUsers(response.data.data.otherUser)
       } else {
-        setAllUsers([]);
+        setAllUsers([])
       }
     } catch (error) {
-      console.error("Error fetching all users:", error);
-      setAllUsers([]);
+      console.error("Error fetching all users:", error)
+      setAllUsers([])
     }
-  };
+  }
 
   const handleSelectChat = (chatId) => {
-    setSelectedChatId(chatId);
-  };
+    navigate(`/chats-page/${chatId}`)
+  }
 
   const handleSearch = async (searchText) => {
     try {
@@ -84,50 +84,47 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
         `${API_ROOT}/api/Chat/searchuserforchat?FindName=${encodeURIComponent(
           searchText
         )}`
-      );
+      )
       if (response.data.statusCode === "Success") {
-        setSearchResults(response.data.data);
+        setSearchResults(response.data.data)
       } else {
-        setSearchResults({ listFriend: [], listUserNotFriend: [] });
+        setSearchResults({ listFriend: [], listUserNotFriend: [] })
       }
     } catch (error) {
-      console.error("Error searching for users:", error);
-      setSearchResults({ listFriend: [], listUserNotFriend: [] });
+      console.error("Error searching for users:", error)
+      setSearchResults({ listFriend: [], listUserNotFriend: [] })
     }
-  };
+  }
 
   const debouncedSearch = useCallback(
     debounce((searchText) => handleSearch(searchText), 1000),
     []
-  );
+  )
 
   const handleInputChange = (event) => {
-    const value = event.target.value;
-    setSearch(value);
-    debouncedSearch(value);
-    setIsOpen(true);
-  };
-
-  const handleOptionClick = (option) => {
-    setModalOpen(true);
-    setSelectedUsername(option.friendId);
-    setSelectedUserFullName(option.friendName);
-    setCurrentSelectedUserId(option.friendId);
-    setIsOpen(false);
-  };
+    const value = event.target.value
+    if (!value) return
+    debouncedSearch(value)
+    setIsOpen(true)
+  }
 
   const flattenedOptions = [
     ...searchResults.listFriend.map((user) => ({ ...user, group: "Friends" })),
     ...searchResults.listUserNotFriend.map((user) => ({
       ...user,
       group: "Others",
-    })),
-  ];
+    })).filter(user => user?.friendId !== USER_ID),
+  ]
 
   const handleChoseSearchChat = async (chat) => {
-    // console.log('🚀 ~ handleChoseSearchChat ~ chat:', chat)
+    inputRef.current.value = ''
+    setSearchResults({
+      listFriend: [],
+      listUserNotFriend: [],
+    })
+    setIsOpen(false)
     if (chat?.chatId) {
-      setSelectedChatId(chat?.chatId)
+      navigate(`/chats-page/${chat?.chatId}`)
     }
     else {
       const createChatResponse = await authorizedAxiosInstance.post(
@@ -137,23 +134,8 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
           title: "",
         }
       )
-
-      await authorizedAxiosInstance.post(
-        `https://api.chatengine.io/chats/${createChatResponse?.data?.data?.chatId}/messages/`,
-        {
-          text: "Hi",
-        },
-        CHAT_ENGINE_CONFIG_HEADER
-      );
-
-      if (createChatResponse.data.data) {
-        fetchChats()
-      } else {
-        console.error("Error sending message")
-      }
-      setSelectedChatId(createChatResponse?.data?.data?.chatId)
+      navigate(`/chats-page/${createChatResponse?.data?.data?.chatId}`)
     }
-
   }
 
   return (
@@ -162,7 +144,7 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
         projectID={CHAT_KEY.ProjectID}
         userName={USER_ID}
         userSecret={USER_ID}
-        onEditChat={(chat) => fetchChats()}
+        onEditChat={fetchChats}
       />
       <div className='h-[calc(100vh_-_55px)] w-[400px] flex-shrink-0 flex flex-col border-r-2'>
         <div className='p-2 flex flex-col h-full'>
@@ -170,23 +152,23 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
             <input
               ref={inputRef}
               type="text"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orangeFpt"
               placeholder="Search Users"
-              value={search}
+              // value={search}
               onChange={handleInputChange}
               onFocus={() => setIsOpen(true)}
             />
             {isOpen && (
-              <div ref={dropdownRef} className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto scrollbar-none-track">
-                {flattenedOptions.map((option, index) => (
-                  <div key={index} >
+              <div ref={dropdownRef} className="absolute z-10 w-full mt-1 bg-white border p-1 border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto scrollbar-none-track">
+                {flattenedOptions?.map((option, index) => (
+                  <div key={index} className='flex flex-col gap-1'>
                     {index === 0 || option.group !== flattenedOptions[index - 1].group ? (
-                      <div className="px-4 py-2 text-sm font-semibold text-gray-500 bg-gray-100">
+                      <div className="px-4 py-2 text-sm font-semibold text-gray-500 bg-gray-100 rounded-md mt-1">
                         {option.group}
                       </div>
                     ) : null}
                     <div
-                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-100"
+                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-orangeFpt hover:text-white rounded-md interceptor-loading"
                       onClick={() => handleChoseSearchChat(option)}
                     >
                       <img
@@ -194,7 +176,7 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
                         alt={option.friendName}
                         className="w-8 h-8 mr-2 rounded-full"
                       />
-                      <span>{option.friendName}</span>
+                      <span className='capitalize'>{option.friendName}</span>
                     </div>
                   </div>
                 ))}
@@ -202,7 +184,7 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
             )}
           </div>
 
-          <div className='flex-grow overflow-y-auto p-2 scrollbar-none-track'>
+          <div className='flex-grow overflow-y-auto p-2 scrollbar-none-track '>
             <div className='h-full'>
               {!chats.length && selectedUsers.length === 0 ? (
                 "No chats to display"
@@ -220,7 +202,7 @@ function Sidebar({ onSelectChat, allMessages, setSelectedChatId }) {
       </div >
     </ChatEngineWrapper>
 
-  );
+  )
 }
 
-export default Sidebar;
+export default Sidebar

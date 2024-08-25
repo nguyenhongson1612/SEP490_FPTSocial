@@ -17,7 +17,7 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE, singleFileValidator } from '~/utils/validators'
-import coverDefaultUrl from '~/assets/img/groupsdefaultcoverphoto.png'
+import coverDefaultUrl from '~/assets/img/defaulcover.jpg'
 
 function GroupCreate() {
   const [listStatus, setListStatus] = useState([])
