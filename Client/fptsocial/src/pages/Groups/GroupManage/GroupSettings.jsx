@@ -23,6 +23,7 @@ function GroupSetting({ group }) {
   const privateStatus = settingStatus.find(status => status.groupStatusName?.toLowerCase() === PRIVATE)?.groupStatusId
   const isReload = useSelector(selectIsReload)
   const dispatch = useDispatch()
+  const [coverImage, setCoverImage] = useState(group?.coverImage)
 
   useEffect(() => {
     getGroupSettingByGroupId(group?.groupId).then(data => setListGroupSetting(data))
@@ -78,7 +79,17 @@ function GroupSetting({ group }) {
       ]
 
     }
-    updateGroupSetting(submitData).then(() => dispatch(triggerReload()))
+    updateGroupSetting(submitData).then(() => {
+      updateGroupInformation({
+        'userId': currentUser?.userId,
+        'groupId': group?.groupId,
+        'groupName': group?.groupName,
+        'description': group?.groupDescription,
+        'groupTypeId': group?.groupTypeId,
+        'coverImage': coverImage,
+        'groupStatusId': currentStatusId == publicStatus ? privateStatus : publicStatus
+      })
+    }).then(() => dispatch(triggerReload()))
   }
 
   const updateGroup = (data) => {
@@ -96,7 +107,6 @@ function GroupSetting({ group }) {
   }
 
 
-  const [coverImage, setCoverImage] = useState(group?.coverImage)
   const backgroundStyle = !!coverImage && coverImage.length !== 0
     ? { backgroundImage: `url(${coverImage})`, backgroundPosition: 'center' }
     : {

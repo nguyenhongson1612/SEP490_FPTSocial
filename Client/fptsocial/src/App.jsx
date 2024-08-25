@@ -1,4 +1,3 @@
-import { useConfirm } from 'material-ui-confirm'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from 'oidc-react'
 import { useSelector } from 'react-redux'
@@ -41,7 +40,6 @@ const ProtectedRouteByUser = ({ user }) => {
   return <Outlet />
 }
 const ProtectedAdminRoute = ({ user }) => {
-  console.log('🚀 ~ ProtectedAdminRoute ~ user:', user)
   if (user?.role !== 'Societe-admin') return <Navigate to='/unauthorization' replace={true} />
   return <Outlet />
 }
@@ -145,7 +143,8 @@ function App() {
           <Route element={<ProtectedAdminRoute user={currentUser} />} >
             <Route path="/dashboard" element={<Dashboard />} >
               <Route path='settings' element={<Dashboard />} />
-              <Route path='users' element={<Dashboard />} />
+              <Route path='manage/users' element={<Dashboard />} />
+              <Route path='manage/groups' element={<Dashboard />} />
               <Route path='reports' element={<Dashboard />} >
                 <Route path='users' element={<Dashboard />} />
                 <Route path='groups' element={<Dashboard />} />

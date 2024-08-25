@@ -117,7 +117,7 @@ const Tiptap = ({ setContent, content, listMedia, setListMedia, postType, action
 
   return (
     <div className="w-full px-3">
-      <div className='max-h-72 overflow-y-auto scrollbar-none-track mb-2'>
+      <div className={` ${(postType === POST_TYPES.SHARE_POST || postType === POST_TYPES.GROUP_SHARE_POST) ? 'max-h-20' : 'max-h-72'}  overflow-y-auto scrollbar-none-track mb-2`}>
         <EditorContent editor={editor} />
         {(isChoseFile || listMedia?.length > 0) && (
           <div className={`relative border border-gray-300 rounded-md`}>

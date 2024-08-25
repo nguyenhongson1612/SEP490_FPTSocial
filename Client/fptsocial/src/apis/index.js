@@ -196,3 +196,17 @@ export const getNotificationsListByUserId = async ({ page = 1, pageSize = 10 }) 
   const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/Notifications/getnotificationslistbyuserid?Page=${page}&PageSize=${pageSize}`)
   return response.data?.data
 }
+
+export const createGender = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserEntitiesDetail/creategender`, data)
+  return response.data?.data
+}
+export const createInterest = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserEntitiesDetail/createinterest`, data)
+  return response.data?.data
+}
+export const createGroupType = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/GroupEntity/creategrouptype`, data)
+  return response.data?.data
+}
+

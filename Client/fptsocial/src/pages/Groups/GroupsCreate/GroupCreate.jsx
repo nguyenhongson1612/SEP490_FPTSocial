@@ -49,7 +49,7 @@ function GroupCreate() {
       'groupName': data?.groupName,
       'groupDescription': data?.groupDescription,
       'coverImage': data?.coverImage || DEFAULT_COVER,
-      'userStatusId': data?.groupStatus,
+      'userStatusId': listStatus[0]?.groupStatusId,
       'groupTypeId': data?.groupType,
       'createdById': currentUser?.userId
     }
@@ -143,7 +143,7 @@ function GroupCreate() {
               </div>
 
 
-              <FormControl fullWidth className="col-span-12" error={!!errors.groupStatus}>
+              {/* <FormControl fullWidth className="col-span-12" error={!!errors.groupStatus}>
                 <InputLabel id="labelPrivacy">Chose privacy</InputLabel>
                 <Controller
                   name="groupStatus"
@@ -165,7 +165,7 @@ function GroupCreate() {
                   )}
                 />
                 <FieldErrorAlert errors={errors} fieldName="groupStatus" />
-              </FormControl>
+              </FormControl> */}
 
               <FormControl fullWidth className="col-span-12" error={!!errors.groupType}>
                 <InputLabel id="labelGroupType">Chose group type</InputLabel>

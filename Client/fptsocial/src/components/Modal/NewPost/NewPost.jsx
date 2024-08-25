@@ -14,9 +14,9 @@ import { createGroupPost } from '~/apis/groupPostApis'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import { FormControl, FormControlLabel, Modal, Popover, Radio, RadioGroup } from '@mui/material'
 import { clearAndHireCurrentActivePost, selectIsShowModalCreatePost, showModalCreatePost } from '~/redux/activePost/activePostSlice'
-import { selectCurrentActiveGroup } from '~/redux/activeGroup/activeGroupSlice'
 import { useTranslation } from 'react-i18next'
 import EditMedia from '../EditMedia'
+import { getGroupByGroupId } from '~/apis/groupApis'
 
 function NewPost({ postType, groupId }) {
 
@@ -26,9 +26,7 @@ function NewPost({ postType, groupId }) {
   const [listMedia, setListMedia] = useState([])
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState()
-
   const currentUser = useSelector(selectCurrentUser)
-  const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const isShowModalCreatePost = useSelector(selectIsShowModalCreatePost)
   const isProfile = postType === POST_TYPES.PROFILE_POST
   const isGroup = postType === POST_TYPES.GROUP_POST
@@ -53,9 +51,10 @@ function NewPost({ postType, groupId }) {
     if (isProfile) {
       getStatus().then(data => setListStatus(data))
     } else if (isGroup) {
-      setChoseStatus(currentActiveGroup?.groupSettings?.find(e => e?.groupSettingName === 'Group Status'))
+      getGroupByGroupId(groupId).then(data => setChoseStatus(data?.groupSettings?.find(e => e?.groupSettingName == 'Group Status')))
+      // setChoseStatus(currentActiveGroup?.groupSettings?.find(e => e?.groupSettingName === 'Group Status'))
     }
-  }, [currentActiveGroup, postType])
+  }, [postType])
 
   useEffect(() => {
     if (isProfile) {
@@ -131,7 +130,7 @@ function NewPost({ postType, groupId }) {
         </div>
       </div>
       <Modal open={isShowModalCreatePost} onClose={clearData}>
-        <div className='absolute min-h-[70%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[800px] max-h-[90%] rounded-md overflow-y-auto scrollbar-none-track'>
+        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[800px] max-h-[90%] rounded-md overflow-y-auto scrollbar-none-track'>
           <div className='bg-white min-h-full shadow-4edges'>
             {!isEdit ? (
               <form onSubmit={handleSubmit(submitPost)} className='h-full '>

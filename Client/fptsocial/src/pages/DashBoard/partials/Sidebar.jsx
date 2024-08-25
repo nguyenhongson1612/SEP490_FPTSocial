@@ -117,12 +117,12 @@ function Sidebar({
                   </SidebarLinkGroup>
 
                   {/* User */}
-                  <SidebarLinkGroup activeCondition={pathname.includes("dashboard/users")}>
+                  <SidebarLinkGroup activeCondition={pathname.includes("dashboard/manage")}>
                     {(handleClick, open) => {
                       return (
                         <>
                           <Link
-                            className={`transition duration-150 ${pathname.includes("users") ? "" : ""}`}
+                            className={`transition duration-150 ${pathname.includes("dashboard/manage") ? "" : ""}`}
                             onClick={(e) => {
                               handleClick()
                             }}
@@ -131,7 +131,7 @@ function Sidebar({
                               <div className="flex items-center">
                                 <IconUsers />
                                 <span className="text-sm font-medium ml-4  2xl:opacity-100 duration-200">
-                                  Users Manager
+                                  Manager Users/Groups
                                 </span>
                               </div>
                               <div className="flex shrink-0 ml-2">
@@ -143,13 +143,29 @@ function Sidebar({
                             <ul className={` mt-1 ${!open && "hidden"}`}>
                               <li className="mb-1 last:mb-0">
                                 <NavLink
-                                  to="/dashboard/users"
+                                  to="/dashboard/manage/users"
                                   className={({ isActive }) =>
                                     "block transition duration-150 truncate p-2 rounded-md font-semibold " + (isActive ? "bg-orangeFpt text-white" : "text-gray-500/90 hover:text-gray-700 ")
                                   }
                                 >
                                   <span className="text-sm 2xl:opacity-100 duration-200">
                                     List users
+                                  </span>
+                                </NavLink>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="">
+                            <ul className={` mt-1 ${!open && "hidden"}`}>
+                              <li className="mb-1 last:mb-0">
+                                <NavLink
+                                  to="/dashboard/manage/groups"
+                                  className={({ isActive }) =>
+                                    "block transition duration-150 truncate p-2 rounded-md font-semibold " + (isActive ? "bg-orangeFpt text-white" : "text-gray-500/90 hover:text-gray-700 ")
+                                  }
+                                >
+                                  <span className="text-sm 2xl:opacity-100 duration-200">
+                                    List groups
                                   </span>
                                 </NavLink>
                               </li>

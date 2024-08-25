@@ -7,6 +7,7 @@ import { getGroupPostIdPendingByGroupId, getRequestJoin, memberJoinStatus } from
 import { approveGroupPost } from '~/apis/groupPostApis'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
+import SearchNotFound from '~/components/UI/SearchNotFound'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { selectIsReload, triggerReload } from '~/redux/ui/uiSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -35,7 +36,10 @@ function GroupPostApproval({ group }) {
 
   return (
     <div className='bg-fbWhite w-full '>
-      <div className='h-[100px] p-6 bg-white'>
+      <div className='h-[50px] p-6 bg-white flex justify-center items-center'>
+        <h1 className='text-2xl font-semibold text-orangeFpt'>
+          Post approve
+        </h1>
       </div>
       <div className='flex h-[calc(100vh_-_100px-_60px)] flex-col items-center overflow-y-auto scrollbar-none-track'>
         <div className='flex flex-col gap-4 w-[90%] md:w-[500px] my-8'>
@@ -78,6 +82,9 @@ function GroupPostApproval({ group }) {
               </div>
 
             ))
+          }
+          {
+            listPendingPost?.length == 0 && <SearchNotFound isNoneData />
           }
         </div>
       </div>

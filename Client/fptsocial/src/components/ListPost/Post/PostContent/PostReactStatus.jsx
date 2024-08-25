@@ -289,7 +289,7 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
           <span className="text-sm text-gray-500">{t('standard.react.comment')}</span>
         </div>
         {
-          (!isYourPost || isShare || isGroupShare) && isCanShare &&
+          isCanShare &&
           <div className="flex items-center justify-center hover:bg-fbWhite cursor-pointer py-1 rounded-md  basis-1/3"
             onClick={() => {
               dispatch(showModalSharePost())

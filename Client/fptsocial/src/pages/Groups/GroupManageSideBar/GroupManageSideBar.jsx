@@ -29,8 +29,8 @@ function GroupManageSideBar({ group }) {
 
   return (
     <>
-      <div className='absolute top-2 left-2 z-[500]'>
-        <IconAppsFilled className='size-12 p-2 bg-orangeFpt text-white cursor-pointer rounded-full' onClick={toggleDrawer(true)} />
+      <div className='absolute top-2 left-2 z-[500]  '>
+        <IconAppsFilled className='size-12 p-2 bg-orangeFpt border-3 border-white shadow-lg text-white cursor-pointer rounded-full' onClick={toggleDrawer(true)} />
       </div>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         <div className="min-w-[360px] flex flex-col overflow-y-auto scrollbar-none-track border-r-2 bg-white">
@@ -63,7 +63,7 @@ function GroupManageSideBar({ group }) {
               <TabContext value={manageTab}>
                 <div>
                   <TabList onChange={(e, v) => setManageTab(v)} >
-                    <Tab iconPosition="start" label="Chat" value="chat" />
+                    {/* <Tab iconPosition="start" label="Chat" value="chat" /> */}
                     <Tab iconPosition="start" label="Manage" value="manage" />
                   </TabList>
                 </div>
