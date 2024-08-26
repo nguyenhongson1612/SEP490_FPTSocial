@@ -34,6 +34,16 @@ namespace Application.Queries.GetVideoByUserId
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
+
+            var result = new GetVideoByUserIdQueryResult();
+
+            bool isBlock = _context.BlockUsers.Where(x => (request.UserId == x.UserIsBlockedId && request.StrangerId == x.UserId) ||
+                                                          (request.UserId == x.UserId && request.StrangerId == x.UserIsBlockedId)).Any();
+            if (isBlock)
+            {
+                return Result<GetVideoByUserIdQueryResult>.Success(result);
+            }
+
             string checkRelationship = "Stranger";
             if (request.UserId == request.StrangerId)
             {
@@ -53,7 +63,6 @@ namespace Application.Queries.GetVideoByUserId
                     checkRelationship = "Stranger";
                 }
             }
-            var result = new GetVideoByUserIdQueryResult();
             var userVideos = _context.UserPostVideos.Where(x => x.UserPost.UserId == request.StrangerId && x.IsHide != true && x.IsBanned != true
                                                             && (checkRelationship == "Owner" ||
                                                                 (checkRelationship == "Friend" && (x.UserPost.UserStatus.StatusName == "Friend" || x.UserPost.UserStatus.StatusName == "Public")) ||

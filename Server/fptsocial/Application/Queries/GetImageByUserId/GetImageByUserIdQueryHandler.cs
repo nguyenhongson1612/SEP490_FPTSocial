@@ -38,6 +38,13 @@ namespace Application.Queries.GetImageByUserId
             }
 
             var result = new GetImageByUserIdQueryResult();
+            bool isBlock = _context.BlockUsers.Where(x => (request.UserId == x.UserIsBlockedId && request.StrangerId == x.UserId) ||
+                                                          (request.UserId == x.UserId && request.StrangerId == x.UserIsBlockedId)).Any();
+            if (isBlock) 
+            {
+                return Result<GetImageByUserIdQueryResult>.Success(result);
+            }
+
             string checkRelationship = "Stranger";
             if (request.UserId == request.StrangerId)
             {
