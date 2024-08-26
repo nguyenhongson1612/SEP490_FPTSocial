@@ -372,7 +372,7 @@ function Comment({ comment, postType }) {
                     vertical: 'bottom',
                     horizontal: 'left',
                   }}
-                  disablePortal
+                // disablePortal
                 >
                   <form onSubmit={handleSubmit(handleRelyComment)} className='px-2 flex gap-1 py-1 w-[400px]'>
                     <UserAvatar isOther={false} />
