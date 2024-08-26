@@ -32,7 +32,7 @@ namespace Application.Commands.CreateAccount
         {
             var result = new CreateAccountCommandResult();
             string pass = "";
-            bool success = true;
+            bool success = false;
             try
             {
                 var user = await _fptAccountServices
@@ -47,10 +47,14 @@ namespace Application.Commands.CreateAccount
 
                 throw new Exception("API Error!");
             }
-            if (pass == "")
+            if (string.IsNullOrEmpty(pass))
             {
-                success = false;
+                
                 throw new ErrorException(Domain.Enums.StatusCodeEnum.RGT01_Existed);
+            }
+            else
+            {
+                success = true;
             }
             if (success) 
             {

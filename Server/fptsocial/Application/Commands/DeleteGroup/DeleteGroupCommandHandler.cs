@@ -40,34 +40,67 @@ namespace Application.Commands.DeleteGroup
                .FirstOrDefaultAsync(x => x.UserId == request.UserId
                                     && x.GroupId == request.GroupId);
             var group = await _querycontext.GroupFpts.FirstOrDefaultAsync(x => x.GroupId == request.GroupId);
-
-            if (grouprole.GroupRole.GroupRoleName.Equals("Admin") || user.RoleId == adminrole.RoleId)
+            if (grouprole != null)
             {
-
-                if (group != null)
+                if (grouprole.GroupRole.GroupRoleName.Equals("Admin"))
                 {
-                    if (group.IsDelete == true)
+
+                    if (group != null)
                     {
-                        throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
+                        if (group.IsDelete == true)
+                        {
+                            throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
+                        }
+                        var newgroup = new Domain.CommandModels.GroupFpt
+                        {
+                            GroupId = request.GroupId,
+                            GroupNumber = group.GroupNumber,
+                            GroupName = group.GroupName,
+                            GroupDescription = group.GroupDescription,
+                            GroupTypeId = group.GroupTypeId,
+                            CreatedById = group.CreatedById,
+                            CoverImage = group.CoverImage,
+                            GroupStatusId = group.GroupStatusId,
+                            CreatedDate = group.CreatedDate,
+                            UpdateAt = group.UpdateAt,
+                            IsDelete = true
+                        };
+                        _context.GroupFpts.Update(newgroup);
+                        result.Message = "Delete Group Success!";
+                        result.IsDelete = true;
+                        await _context.SaveChangesAsync();
                     }
-                    var newgroup = new Domain.CommandModels.GroupFpt
+                }
+            }else if(user != null)
+            {
+                if (user.RoleId == adminrole.RoleId)
+                {
+
+                    if (group != null)
                     {
-                        GroupId = request.GroupId,
-                        GroupNumber = group.GroupNumber,
-                        GroupName = group.GroupName,
-                        GroupDescription = group.GroupDescription,
-                        GroupTypeId = group.GroupTypeId,
-                        CreatedById = group.CreatedById,
-                        CoverImage = group.CoverImage,
-                        GroupStatusId = group.GroupStatusId,
-                        CreatedDate = group.CreatedDate,
-                        UpdateAt = group.UpdateAt,
-                        IsDelete = true
-                    };
-                    _context.GroupFpts.Update(newgroup);
-                    result.Message = "Delete Group Success!";
-                    result.IsDelete = true;
-                    await _context.SaveChangesAsync();
+                        if (group.IsDelete == true)
+                        {
+                            throw new ErrorException(StatusCodeEnum.GR08_Group_Is_Not_Exist);
+                        }
+                        var newgroup = new Domain.CommandModels.GroupFpt
+                        {
+                            GroupId = request.GroupId,
+                            GroupNumber = group.GroupNumber,
+                            GroupName = group.GroupName,
+                            GroupDescription = group.GroupDescription,
+                            GroupTypeId = group.GroupTypeId,
+                            CreatedById = group.CreatedById,
+                            CoverImage = group.CoverImage,
+                            GroupStatusId = group.GroupStatusId,
+                            CreatedDate = group.CreatedDate,
+                            UpdateAt = group.UpdateAt,
+                            IsDelete = true
+                        };
+                        _context.GroupFpts.Update(newgroup);
+                        result.Message = "Delete Group Success!";
+                        result.IsDelete = true;
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
             else

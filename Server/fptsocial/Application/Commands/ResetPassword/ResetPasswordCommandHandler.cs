@@ -39,6 +39,8 @@ namespace Application.Commands.ResetPassword
             string email = "";
             string password = "";
             bool st = true;
+            string username = "";
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(x => x.Email == email);
             var user = await _fptAccountServices
                 .ResetPassAsync(request.Username);
             var jsonObject = JObject.Parse(user);
@@ -51,17 +53,24 @@ namespace Application.Commands.ResetPassword
                     throw new ErrorException(Domain.Enums.StatusCodeEnum.RGT02_Does_Not_Existed);
                 }
             }
-            
+             if(profile == null)
+             {
+                username = request.Username;
+             }
+            else
+            {
+               username = profile.FirstName + " " + profile.LastName;
+            }
             foreach (var item in getpass)
             {
                 email = ((JProperty)item).Name;
                 password = ((JProperty)item).Value.ToString();
             }
-            var profile = await _context.UserProfiles.FirstOrDefaultAsync(x=>x.Email == email);
-            string body = _bodyEmailHelper.ResetPass(password, profile.FirstName +" "+ profile.LastName);
+            
+            string body = _bodyEmailHelper.ResetPass(password, username);
             await _emailServices.SendEmailAsync(request.Username, "Reset Password", body);
 
-            result.Username = request.Username;
+            result.Username = username;
             result.Password = password;
             return Result<ResetPasswordCommandResult>.Success(result);
         }
