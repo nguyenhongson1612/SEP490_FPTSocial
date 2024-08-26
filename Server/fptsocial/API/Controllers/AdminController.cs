@@ -1,5 +1,7 @@
 ﻿using Application.Commands.CreateAdminProfile;
 using Application.Commands.GetUserProfile;
+using Application.Queries.GetAllGroupForAdmin;
+using Application.Queries.GetAllUserForAdmin;
 using Application.Queries.GetDataForAdmin;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,5 +60,20 @@ namespace API.Controllers
             return Success(res.Value);
         }
 
+        [HttpGet]
+        [Route("getAllUserForAdmin")]
+        public async Task<IActionResult> GetAllUserForAdmin([FromQuery] GetAllUserForAdmin input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getAllGroupForAdmin")]
+        public async Task<IActionResult> GetAllGroupForAdmin([FromQuery] GetAllGroupForAdmin input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
     }
 }
