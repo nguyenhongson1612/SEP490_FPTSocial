@@ -75,18 +75,52 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("createGroupPost")]
-        public async Task<IActionResult> CreateGroupPost(CreateGroupPostCommand command)
+        public async Task<IActionResult> CreateGroupPost(CreateGroupPostCommand input)
         {
-            var res = await _sender.Send(command);
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }
 
         [HttpPost]
         [Route("commentGroupPost")]
-        public async Task<IActionResult> CreateGroupPostComment(CreateUserCommentGroupPostCommand command)
+        public async Task<IActionResult> CreateGroupPostComment(CreateUserCommentGroupPostCommand input)
         {
-            var res = await _sender.Send(command);
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }
@@ -94,18 +128,52 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("commentGroupVideoPost")]
-        public async Task<IActionResult> CreateGroupVideoComment(CreateUserCommentGroupVideoPostCommand command)
+        public async Task<IActionResult> CreateGroupVideoComment(CreateUserCommentGroupVideoPostCommand input)
         {
-            var res = await _sender.Send(command);
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }
 
         [HttpPost]
         [Route("commentGroupPhotoPost")]
-        public async Task<IActionResult> CreateGroupPhotoComment(CreateUserCommentGroupPhotoPostCommand command)
+        public async Task<IActionResult> CreateGroupPhotoComment(CreateUserCommentGroupPhotoPostCommand input)
         {
-            var res = await _sender.Send(command);
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }
@@ -116,7 +184,6 @@ namespace API.Controllers
         {
             var res = await _sender.Send(command);
             return Success(res.Value);
-
         }
 
         [HttpGet]
@@ -426,9 +493,26 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("commentGroupSharePost")]
-        public async Task<IActionResult> CommentGroupSharePost(CreateCommentForGroupSharePostCommand command)
+        public async Task<IActionResult> CommentGroupSharePost(CreateCommentForGroupSharePostCommand input)
         {
-            var res = await _sender.Send(command);
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            input.UserId = Guid.Parse(uid);
+            var res = await _sender.Send(input);
             return Success(res.Value);
 
         }
