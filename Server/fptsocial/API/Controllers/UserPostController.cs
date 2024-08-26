@@ -139,6 +139,23 @@ namespace API.Controllers
         [Route("commentPost")]
         public async Task<IActionResult> CreateComment(CreateUserCommentPostCommand command)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(uid);
             var res = await _sender.Send(command);
             return Success(res.Value);
 
@@ -157,6 +174,23 @@ namespace API.Controllers
         [Route("commentVideoPost")]
         public async Task<IActionResult> CreateVideoComment(CreateUserCommentVideoPostCommand command)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(uid);
             var res = await _sender.Send(command);
             return Success(res.Value);
 
@@ -166,6 +200,23 @@ namespace API.Controllers
         [Route("commentPhotoPost")]
         public async Task<IActionResult> CreatePhotoComment(CreateUserCommentPhotoPostCommand command)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(uid);
             var res = await _sender.Send(command);
             return Success(res.Value);
 
@@ -193,6 +244,23 @@ namespace API.Controllers
         [Route("updateUserPost")]
         public async Task<IActionResult> UpdateUserPost(UpdateUserPostCommand command)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(uid);
             var res = await _sender.Send(command);
             return Success(res.Value);
 
@@ -560,6 +628,23 @@ namespace API.Controllers
         [Route("createCommentSharePost")]
         public async Task<IActionResult> CreateSharePostComment(CreateCommentForSharePostCommand command)
         {
+            var rawToken = HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(rawToken))
+            {
+                return BadRequest();
+            }
+            var handle = new JwtSecurityTokenHandler();
+            var jsontoken = handle.ReadToken(rawToken) as JwtSecurityToken;
+            if (jsontoken == null)
+            {
+                return BadRequest();
+            }
+            var uid = jsontoken.Claims.FirstOrDefault(claim => claim.Type == "userId").Value;
+            if (string.IsNullOrEmpty(uid))
+            {
+                return BadRequest();
+            }
+            command.UserId = Guid.Parse(uid);
             var res = await _sender.Send(command);
             return Success(res.Value);
 
