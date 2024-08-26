@@ -44,7 +44,13 @@ namespace Application.Queries.GetImageByUserId
             {
                 return Result<GetImageByUserIdQueryResult>.Success(result);
             }
+            string checkUserStatus = _context.UserSettings.Where(x => x.UserId == request.UserId && 
+                                                                    x.Setting.SettingName == "Profile Status").Select(x => x.UserStatus.StatusName).FirstOrDefault();
 
+            if (checkUserStatus != "Public" && (request.UserId != request.StrangerId))
+            {
+                return Result<GetImageByUserIdQueryResult>.Success(result);
+            }
             string checkRelationship = "Stranger";
             if (request.UserId == request.StrangerId)
             {

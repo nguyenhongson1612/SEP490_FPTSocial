@@ -43,7 +43,13 @@ namespace Application.Queries.GetVideoByUserId
             {
                 return Result<GetVideoByUserIdQueryResult>.Success(result);
             }
+            string checkUserStatus = _context.UserSettings.Where(x => x.UserId == request.UserId &&
+                                                                    x.Setting.SettingName == "Profile Status").Select(x => x.UserStatus.StatusName).FirstOrDefault();
 
+            if (checkUserStatus != "Public" && (request.UserId != request.StrangerId))
+            {
+                return Result<GetVideoByUserIdQueryResult>.Success(result);
+            }
             string checkRelationship = "Stranger";
             if (request.UserId == request.StrangerId)
             {
