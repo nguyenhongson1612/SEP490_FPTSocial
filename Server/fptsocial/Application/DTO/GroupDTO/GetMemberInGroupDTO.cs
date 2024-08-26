@@ -15,6 +15,7 @@ namespace Application.DTO.GroupDTO
         public Guid GroupRoleId { get; set; }
         public string GroupRoleName { get; set; }
         public bool IsFriend { get; set; }
+        public bool IsRequested { get; set; }
         public bool SendFriendRequest { get; set; }
     }
 }

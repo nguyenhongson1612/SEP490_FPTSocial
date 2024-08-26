@@ -57,7 +57,7 @@ namespace Application.Queries.GetMemberInGroup
                 {
                     var friend = await _context.Friends.FirstOrDefaultAsync(x =>
                                         ((x.UserId == request.UserId && x.FriendId == item.UserId) ||
-                                        (x.UserId == item.UserId && x.FriendId == request.UserId)) && x.Confirm == true);
+                                        (x.UserId == item.UserId && x.FriendId == request.UserId)));
                     var listSetting = await _context.UserSettings.Include(x => x.Setting)
                                         .Include(x => x.UserStatus).Where(x => x.UserId == item.UserId).ToListAsync();
 
@@ -72,12 +72,24 @@ namespace Application.Queries.GetMemberInGroup
                     };
                     if(friend != null)
                     {
-                        mem.IsFriend = true;
-                        mem.SendFriendRequest = false;
+                        if(friend.Confirm == true)
+                        {
+                            mem.IsFriend = true;
+                            mem.IsRequested = false;
+                            mem.SendFriendRequest = false;
+                        }
+                        else
+                        {
+                            mem.IsFriend = false;
+                            mem.IsRequested = true;
+                            mem.SendFriendRequest = false;
+                        }
+                        
                     }
                     else
                     {
                         mem.IsFriend = false;
+                        mem.IsRequested = false;
                         mem.SendFriendRequest = true;
                         if (listSetting.FirstOrDefault(x => x.Setting.SettingName.Equals("Profile Status")).UserStatus.StatusName.Equals("Private"))
                         {
