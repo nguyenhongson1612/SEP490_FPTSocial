@@ -37,6 +37,7 @@ namespace Application.Queries.GetAllUserForAdmin
             foreach(var profile in userList)
             {
                 var user = new GetAllUser();
+                user.UserId = profile.UserId;
                 user.Email = profile.Email;
                 user.Name = profile.FullName;
                 var avt = await _context.AvataPhotos

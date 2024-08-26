@@ -38,6 +38,7 @@ namespace Application.Queries.GetAllGroupForAdmin
             foreach (var groups in groupList)
             {
                 var group = new GetAllGroup();
+                group.GroupId = groups.GroupId;
                 group.GroupName = groups.GroupName;
                 group.CoverImage = groups.CoverImage;
                 group.NumberOfMember = await _context.GroupMembers.CountAsync(x => x.GroupId == groups.GroupId);
