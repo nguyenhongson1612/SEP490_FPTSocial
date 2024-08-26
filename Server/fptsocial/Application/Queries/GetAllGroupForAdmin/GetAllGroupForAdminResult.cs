@@ -14,6 +14,7 @@ namespace Application.Queries.GetAllGroupForAdmin
     
     public class GetAllGroup
     {
+        public Guid GroupId { get; set; }
         public string? GroupName {  get; set; }
         public string? CoverImage { get; set; }
         public int? NumberOfMember {  get; set; }
