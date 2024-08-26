@@ -46,3 +46,7 @@ export const deactiveUserByUserId = async (id) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/deactiveUserByUserId?UserId=${id}`)
   return response.data?.data
 }
+export const activeUserByUserId = async (id) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/UserProfile/activeUserByUserId?UserId=${id}`)
+  return response.data?.data
+}

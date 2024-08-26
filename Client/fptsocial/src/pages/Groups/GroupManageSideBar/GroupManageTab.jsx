@@ -21,10 +21,10 @@ function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
           <IconHomeFilled />
           Group home
         </Link>
-        <div className='w-full flex items-center gap-2 font-semibold py-3 px-2 rounded-lg hover:bg-fbWhite'>
+        {/* <div className='w-full flex items-center gap-2 font-semibold py-3 px-2 rounded-lg hover:bg-fbWhite'>
           <IconStack />
           Overview
-        </div>
+        </div> */}
       </div>
       <div className='text-gray-500'>
         <div className='flex flex-col'>
@@ -42,7 +42,7 @@ function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
                 <IconUserShare stroke={1} />
                 <div className='flex flex-col gap-1'>
                   <span className='font-semibold'>Member join requests</span>
-                  <span className=''>{listRequestJoins?.length} request</span>
+                  <span className='text-gray-500/90'>{listRequestJoins?.length} request</span>
                 </div>
               </Link>
               <Link to={`/groups/${group?.groupId}/pending-posts`}
@@ -51,7 +51,7 @@ function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
                 <IconReport stroke={1} />
                 <div className='flex flex-col gap-1'>
                   <span className='font-semibold'>Pending post</span>
-                  <span className=''>{listPendingPost?.length} posts</span>
+                  <span className='text-gray-500/90'>{listPendingPost?.length} posts</span>
                 </div>
               </Link>
               <Link to={`/groups/${group?.groupId}/member-manage`}
@@ -82,17 +82,17 @@ function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
                   <IconUserShare stroke={1} />
                   <div className='flex flex-col gap-1'>
                     <span className='font-semibold'>Group settings</span>
-                    <span className=''>Manage group information and more</span>
+                    <span className='text-gray-500/90'>Manage group information and more</span>
                   </div>
                 </Link>
-                <div className='w-full flex items-center gap-2 font-bold py-3 px-2 rounded-lg hover:bg-fbWhite'>
+                {/* <div className='w-full flex items-center gap-2 font-bold py-3 px-2 rounded-lg hover:bg-fbWhite'>
                   <IconStack />
                   Overview
                 </div>
                 <div className='w-full flex items-center gap-2 font-bold py-3 px-2 rounded-lg hover:bg-fbWhite'>
                   <IconStack />
                   Overview
-                </div>
+                </div> */}
               </div>
             )
           }

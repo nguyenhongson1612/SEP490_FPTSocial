@@ -3,22 +3,24 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsReload, triggerReload } from '~/redux/ui/uiSlice';
 import SearchNotFound from '~/components/UI/SearchNotFound';
-import { getAllUserForAdmin } from '~/apis/adminApis/manageApis';
+import { getAllGroupForAdmin, getAllUserForAdmin } from '~/apis/adminApis/manageApis';
 import moment from 'moment';
 import { useConfirm } from 'material-ui-confirm';
 import { activeUserByUserId, deactiveUserByUserId } from '~/apis/adminApis/reportsApis';
 import UserAvatar from '~/components/UI/UserAvatar';
+import GroupAvatar from '~/components/UI/GroupAvatar';
+import { deleteGroup } from '~/apis/groupApis';
 
-function UserManage() {
-  const [userList, setUserList] = useState([])
+function GroupManage() {
+  const [groupList, setGroupList] = useState([])
   const [page, setPage] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
   const isReload = useSelector(selectIsReload)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    getAllUserForAdmin({ page: page }).then(data => {
-      setUserList(data?.result)
+    getAllGroupForAdmin({ page: page }).then(data => {
+      setGroupList(data?.result)
       setTotalPage(data?.totalPage)
     })
   }, [page, isReload])
@@ -28,24 +30,22 @@ function UserManage() {
   }
 
   const confirm = useConfirm()
-  const handleStatusUser = (isActive, user) => {
+  const handleDeleteGroup = (group) => {
     confirm({
-      title: <div className={`uppercase font-bold ${isActive ? 'text-red-600' : 'text-green-600'} p-1 flex gap-2 items-center`}>
-        {isActive ? 'Ban Account' : 'Activate Account'}
+      title: <div className="uppercase font-bold text-red-600 p-1 flex gap-2 items-center">
+        Delete Group
         <div className='flex gap-2 items-center'>
-          <UserAvatar avatarSrc={user?.avatarUrl} />
-          <span className='font-semibold capitalize text-gray-500/90 text-base'>{user?.name}</span>
+          <GroupAvatar avatarSrc={group?.coverImage} />
+          <span className='font-semibold capitalize text-gray-500/90 text-base'>{group?.groupName}</span>
         </div>
       </div>,
       allowClose: true,
-      description: isActive
-        ? `Are you sure you want to ban the user account ? This account will not be able to log in or use any services until it is reactivated.`
-        : `Are you sure you want to activate the user account ? This account will be able to log in and use services normally.`,
-      confirmationText: isActive ? 'Ban' : 'Active',
+      description: `Are you sure you want to delete this group? This action cannot be undone. All members will be removed from this group.`,
+      confirmationText: 'Delete',
       cancellationText: "Cancel",
       confirmationButtonProps: {
         variant: "contained",
-        color: isActive ? "error" : "success"
+        color: "warning"
       },
       cancellationButtonProps: {
         variant: "outlined",
@@ -53,63 +53,60 @@ function UserManage() {
       },
     })
       .then(() => {
-        isActive ? deactiveUserByUserId(user?.userId).then(() => dispatch(triggerReload()))
-          : activeUserByUserId(user?.userId).then(() => dispatch(triggerReload()))
+        deleteGroup({ "groupId": group?.groupId })
+          .then(() => dispatch(triggerReload()))
       })
       .catch(() => {
-      })
-      .finally(() => {
-      })
-  }
-
+        // User cancelled the action
+      });
+  };
 
   return (
     <div className="relative overflow-y-auto shadow-md sm:rounded-lg h-full flex flex-col  p-4">
       {/* {open && <userProfileDetailModal userId={profileuseredDetail} open={open} setOpen={setOpen} />} */}
-      <h3 className='text-xl font-bold text-orangeFpt mb-4'>Users Management</h3>
+      <h3 className='text-xl font-bold text-orangeFpt mb-4'>Groups Management</h3>
       <table className="w-full text-sm text-center text-gray-500">
         <thead className="text-xs text-gray-700 uppercase bg-fbWhite">
           <tr>
             <th scope="col" className="px-6 py-3"></th>
             <th scope="col" className="px-6 py-3">
-              User
+              Group
             </th>
             <th scope="col" className="px-6 py-3">
-              Email
+              Number of members
             </th>
             <th className="px-6 py-3">
-              Status
+              Action
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {userList?.map((user, index) => (
+          {groupList?.map((group, index) => (
             <tr key={index} className="bg-white border-b hover:bg-gray-50">
               <td className="px-6 py-4 font-medium">
                 {getOrderNumber(index)}
               </td>
               <td className="px-6 py-4">
                 <div className='flex items-center gap-3 cursor-pointer hover:shadow-lg p-4 rounded-md' >
-                  <Avatar src={user?.avatarUrl} />
+                  <GroupAvatar avatarSrc={group?.coverImage} />
                   <div className='flex flex-col gap-1 items-start'>
-                    <span className='font-semibold capitalize text-black'>{user?.name}</span>
-                    <span className='font-semibold text-xs'>Join : {moment(user?.createdAt).format('LLL')}</span>
-                    {user?.isActive
-                      ? <span className='font-bold text-xs text-green-600'>Active</span>
-                      : <span className='font-bold text-xs text-red-600'>Ban</span>}
+                    <span className='font-semibold capitalize text-black'>{group?.groupName}</span>
+                    <span className='font-semibold text-xs'>Created : {moment(group?.createdAt).format('LLL')}</span>
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4">{user?.email}</td>
+              <td className="px-6 py-4">
+                <span className='font-bold text-xs'>{group?.numberOfMember} members</span>
+              </td>
               <td className="px-6 py-4">
                 <div className='flex justify-center gap-2' >
-                  <Button variant='contained' color={!user?.isActive ? 'error' : 'success'}
+                  <Button variant='contained' color='warning'
                     onClick={() => {
-                      handleStatusUser(user?.isActive, user)
+                      handleDeleteGroup(group)
                     }}
                   >
-                    {!user?.isActive ? 'Disable' : 'Active'}
+                    Delete
                   </Button>
                 </div>
               </td>
@@ -118,7 +115,7 @@ function UserManage() {
         </tbody>
       </table>
 
-      {userList?.length === 0 && <SearchNotFound isNoneData={true} />}
+      {groupList?.length === 0 && <SearchNotFound isNoneData={true} />}
 
       <nav
         className="flex items-center justify-center flex-column flex-wrap md:flex-row pt-4"
@@ -130,4 +127,4 @@ function UserManage() {
   )
 }
 
-export default UserManage;
+export default GroupManage;

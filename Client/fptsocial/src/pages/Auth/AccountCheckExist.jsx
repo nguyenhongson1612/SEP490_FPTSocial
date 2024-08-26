@@ -1,3 +1,4 @@
+import { useAuth } from 'oidc-react'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +9,17 @@ import { addUser, getUserByUserId } from '~/redux/user/userSlice'
 import { JWT_PROFILE } from '~/utils/constants'
 
 function AccountCheckExist() {
+
+  const { signOutRedirect } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await signOutRedirect()
+    } catch (error) {
+      toast.error('Error during logout')
+    }
+  }
+
   const profileFeId = JWT_PROFILE
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -40,6 +52,9 @@ function AccountCheckExist() {
             })
         }
       }
+    }).catch((error) => {
+      if (error?.response?.data?.statusCode == 'U06')
+        handleLogout()
     })
   }, [])
   return (

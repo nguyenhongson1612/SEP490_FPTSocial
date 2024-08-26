@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DashboardCard01 from './partials/dashboard/DashboardCard01'
 import DashboardCard02 from './partials/dashboard/DashboardCard02'
 import DashboardCard03 from './partials/dashboard/DashboardCard03'
@@ -10,12 +10,23 @@ import { useLocation } from 'react-router-dom'
 import UsersManage from './partials/Pages/UserMange/UsersManage'
 import ReportManage from './partials/Pages/ReportManage/ReportManage'
 import SystemSetting from './partials/Pages/SystemSetting/SystemSetting'
+import { getDataForAdmin } from '~/apis/adminApis/manageApis'
+import friendImg from '~/assets/img/friend.png'
+import groupImg from '~/assets/img/groups.png'
+import postImg from '~/assets/img/chat.png'
+import banImg from '~/assets/img/banUser.png'
+import GroupManage from './partials/Pages/GroupManage/GroupManage'
 
 function Dashboard() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const { pathname } = location
+  const [adminData, setAdminData] = useState({})
+
+  useEffect(() => {
+    getDataForAdmin().then(data => setAdminData(data))
+  }, [])
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -58,6 +69,29 @@ function Dashboard() {
 
               </div>
 
+              <div className='flex justify-center'>
+                <div className='flex gap-8 items-center'>
+                  <div className='flex gap-2 items-center'>
+                    <img src={friendImg} className='size-14' />
+                    <span className='text-gray-500/90'>{adminData?.numberOfUser} users</span>
+                  </div>
+                  <div className='flex gap-2 items-center'>
+                    <img src={groupImg} className='size-14' />
+                    <span className='text-gray-500/90'>{adminData?.numberOfGroup} groups</span>
+                  </div>
+                  <div className='flex gap-2 items-center'>
+                    <img src={postImg} className='size-14' />
+                    <span className='text-gray-500/90'>{adminData?.numberOfPost} posts</span>
+                  </div>
+                  <div className='flex gap-2 items-center'>
+                    <img src={banImg} className='size-14' />
+                    <span className='text-gray-500/90'>{adminData?.numberOfInactiveUser} banned users</span>
+                  </div>
+
+                </div>
+              </div>
+
+
               {/* Cards */}
               <div className="grid grid-cols-12 gap-6">
                 <DashboardCard01 />
@@ -72,7 +106,10 @@ function Dashboard() {
             pathname.includes('settings') && <SystemSetting />
           }
           {
-            pathname == ('users') && <UsersManage />
+            pathname.includes('/dashboard/manage/users') && <UsersManage />
+          }
+          {
+            pathname.includes('/dashboard/manage/groups') && <GroupManage />
           }
           {
             pathname.includes('/reports/') && <ReportManage />

@@ -18,17 +18,14 @@ import { CREATE, EDITOR_TYPE, POST_TYPES, PUBLIC } from '~/utils/constants'
 import PostTitle from '~/components/ListPost/Post/PostContent/PostTitle'
 import PostContents from '~/components/ListPost/Post/PostContent/PostContents'
 import PostMedia from '~/components/ListPost/Post/PostContent/PostMedia'
-import { getGroupByUserId, getGroupStatusForCreate } from '~/apis/groupApis'
+import { getGroupByGroupId, getGroupByUserId, getGroupStatusForCreate } from '~/apis/groupApis'
 import GroupAvatar from '~/components/UI/GroupAvatar'
-import { shareGroupPost } from '~/apis/groupPostApis'
-import { getGroupByGroupId, selectCurrentActiveGroup } from '~/redux/activeGroup/activeGroupSlice'
+import { getGroupPostByGroupId, shareGroupPost } from '~/apis/groupPostApis'
 
 
 function SharePost() {
   const isShowModalSharePost = useSelector(selectIsShowModalSharePost)
   const currentActivePost = useSelector(selectCurrentActivePost)
-  console.log('🚀 ~ SharePost ~ currentActivePost:', currentActivePost)
-  const currentActiveGroup = useSelector(selectCurrentActiveGroup)
   const postType = currentActivePost?.postType
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
@@ -43,6 +40,7 @@ function SharePost() {
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState({})
   const [chooseGroup, setChooseGroup] = useState(null)
+  console.log('🚀 ~ SharePost ~ chooseGroup:', chooseGroup)
 
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isPhoto = postType == POST_TYPES.PHOTO_POST
@@ -63,12 +61,9 @@ function SharePost() {
     if (shareType == EDITOR_TYPE.STORY)
       setChoseStatus(listStatus?.find(e => (e?.statusName?.toLowerCase() || e?.groupStatusName?.toLowerCase()) == PUBLIC))
     else if (shareType == EDITOR_TYPE.GROUP) {
-      if (!currentActiveGroup) {
-        dispatch(getGroupByGroupId(chooseGroup?.groupId))
-      }
-      setChoseStatus(currentActiveGroup?.groupSettings?.find(e => e?.groupSettingName == 'Group Status'))
+      getGroupByGroupId(chooseGroup?.groupId).then(data => setChoseStatus(data?.groupSettings?.find(e => e?.groupSettingName == 'Group Status')))
     }
-  }, [listStatus, chooseGroup, currentActiveGroup])
+  }, [listStatus, chooseGroup])
 
   const submitPost = () => {
     const submitData = {
@@ -191,7 +186,7 @@ function SharePost() {
                     </div>
                   </div>
                 </div>
-                <div className='pb-1 text-2xl' >
+                <div className='pb-1 text-2xl  ' >
                   <Tiptap setContent={setContent} content={content} postType={POST_TYPES.SHARE_POST} actionType={CREATE} />
                 </div >
 
@@ -231,13 +226,6 @@ function SharePost() {
                   </div>
                 </div>
                 <div className='border-t-2 mb-2'>
-                  <div className='px-4 pt-2 text-lg font-semibold'>Share in chat</div>
-                  <div className='flex gap px-2'>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
-                    <div className='h-[100px] flex flex-col items-center py-2 px-3'><UserAvatar size='3.75' isOther={false} />AB</div>
-                  </div>
                   <div className='px-4 pt-2 text-lg font-semibold'>Share to</div>
                   <div className='flex gap px-2'>
                     <div

@@ -1,13 +1,14 @@
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import ActivePost from '../Modal/ActivePost/ActivePost'
 import Post from './Post/Post'
-import { useEffect, useRef, useState } from 'react'
 import UpdatePost from '../Modal/ActivePost/UpdatePost'
-import { selectIsShowModalActivePost, selectIsShowModalSharePost, selectIsShowModalUpdatePost } from '~/redux/activePost/activePostSlice'
 import SharePost from '../Modal/ActivePost/SharePost'
 import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
 import InfiniteScroll from '../IntersectionObserver/InfiniteScroll'
-import { addCurrentActiveListPost, clearCurrentActiveListPost, selectCurrentActiveListPost, selectTotalPage, updateCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice'
+import { addCurrentActiveListPost, clearCurrentActiveListPost, selectCurrentActiveListPost, selectTotalPage } from '~/redux/activeListPost/activeListPostSlice'
+import { selectIsShowModalActivePost, selectIsShowModalSharePost, selectIsShowModalUpdatePost } from '~/redux/activePost/activePostSlice'
 import Report from '../Modal/Report/Report'
 import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { selectIsReload } from '~/redux/ui/uiSlice'
@@ -15,7 +16,6 @@ import { getStatus } from '~/apis'
 import { getAllReactType } from '~/apis/reactApis'
 import { addListReactType, addListUserStatus } from '~/redux/sideData/sideDataSlice'
 import SearchNotFound from '../UI/SearchNotFound'
-import { useLocation } from 'react-router-dom'
 
 function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
   const location = useLocation()
@@ -26,6 +26,7 @@ function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
   const isReload = useSelector(selectIsReload)
   const [isLoading, setIsLoading] = useState(true)
   const latestRequestIdRef = useRef(0)
+  const isMountedRef = useRef(true)
 
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
   const isShowUpdatePost = useSelector(selectIsShowModalUpdatePost)
@@ -33,9 +34,15 @@ function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
   const isShowModalReport = useSelector(selectIsOpenReport)
 
   useEffect(() => {
+    isMountedRef.current = true
+
     getStatus().then(data => dispatch(addListUserStatus(data)))
     getAllReactType().then(data => dispatch(addListReactType(data)))
-  }, [])
+
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [dispatch])
 
   useEffect(() => {
     setPage(1)
@@ -49,12 +56,12 @@ function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
         const currentRequestId = ++latestRequestIdRef.current
         try {
           const res = await getListPostFn({ page: 1 })
-          if (currentRequestId === latestRequestIdRef.current) {
+          if (isMountedRef.current && currentRequestId === latestRequestIdRef.current) {
             dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage }))
             setIsLoading(false)
           }
         } catch (error) {
-          if (currentRequestId === latestRequestIdRef.current) {
+          if (isMountedRef.current && currentRequestId === latestRequestIdRef.current) {
             console.error('Error fetching data:', error)
             setIsLoading(false)
           }
@@ -70,11 +77,11 @@ function ListPost({ getListPostFn, isBan = false, isAdmin = false }) {
         const currentRequestId = ++latestRequestIdRef.current
         try {
           const res = await getListPostFn({ page })
-          if (currentRequestId === latestRequestIdRef.current) {
+          if (isMountedRef.current && currentRequestId === latestRequestIdRef.current) {
             dispatch(addCurrentActiveListPost({ result: res?.result || res.userPosts, totalPage: res?.totalPage }))
           }
         } catch (error) {
-          if (currentRequestId === latestRequestIdRef.current) {
+          if (isMountedRef.current && currentRequestId === latestRequestIdRef.current) {
             console.error('Error fetching more data:', error)
           }
         }
