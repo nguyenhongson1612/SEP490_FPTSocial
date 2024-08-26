@@ -33,7 +33,7 @@ namespace Application.Commands.DeleteGroup
             {
                 throw new ErrorException(StatusCodeEnum.Context_Not_Found);
             }
-            var user = await _context.UserProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var user = await _context.AdminProfiles.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var adminrole = await _context.Roles.FirstOrDefaultAsync(x => x.NameRole.Equals("Societe-admin"));
             var result = new DeleteGroupCommandResult();
             var grouprole = await _querycontext.GroupMembers.Include(x => x.GroupRole)
