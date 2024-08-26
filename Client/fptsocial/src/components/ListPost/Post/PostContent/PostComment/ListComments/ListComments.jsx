@@ -36,7 +36,7 @@ function ListComments({ comment, postType }) {
       fetchMore={loadMoreComments}
       hasMore={hasMore}
       // endMessage={t('standard.comment.noMoreComments')}
-      className='my-4 flex flex-col gap-3 min-h-[350px] max-h-[500px] overflow-y-auto scrollbar-none-track'
+      className='my-4 flex flex-col w-full gap-3 min-h-[350px] max-h-[500px] overflow-y-auto scrollbar-none-track'
     >
       {displayedComments.length === 0 && (
         <div className='flex flex-col items-center gap-2 text-gray-500'>
