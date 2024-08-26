@@ -9,7 +9,7 @@ namespace Application.Queries.GetReactByCommentId
 {
     public class GetReactByCommentIdQuery : IQuery<GetReactByCommentIdQueryResult>
     {
-        public int PageNumber { get; set; }
+        public int PageNumber { get; set; } = 1;
         public Guid CommentId { get; set; }
         public Guid UserId { get; set; }
     }
