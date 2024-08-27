@@ -19,6 +19,7 @@ import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redu
 import { clearAndHireCurrentActivePost, reLoadComment, selectCommentFilterType, selectCurrentActivePost, selectIsShowModalActivePost, selectPostReactStatus, showModalActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
+import connectionSignalR from '~/utils/signalRConnection'
 
 function ActivePost({ isReportPost = false }) {
   const isShowActivePost = useSelector(selectIsShowModalActivePost)
@@ -37,10 +38,25 @@ function ActivePost({ isReportPost = false }) {
   const isYourPost = currentActivePost?.userId == currentUser?.userId
   const { handleSubmit } = useForm()
   const [content, setContent] = useState('')
-  const user = useSelector(selectCurrentUser)
   const [listMedia, setListMedia] = useState([])
   const [listComment, setListComment] = useState([])
   const reloadComment = useSelector(reLoadComment)
+
+  let postId = ''
+  let url = ''
+  if (isProfile) {
+    postId = currentActivePost?.userPostId || currentActivePost?.postId
+    url = `/post/${postId}?share=0`
+  } else if (isShare) {
+    postId = currentActivePost?.sharePostId || currentActivePost?.postId
+    url = `/post/${postId}?share=1`
+  } else if (isGroup) {
+    postId = currentActivePost?.groupPostId || currentActivePost?.postId
+    url = `/groups/${currentActivePost?.groupId}/post/${postId}?share=0`
+  } else if (isGroupShare) {
+    postId = currentActivePost?.groupSharePostId || currentActivePost?.postId
+    url = `/groups/${currentActivePost?.groupId}/post/${postId}?share=1`
+  }
 
   let postShareType = ''
   let postShareData = ''
@@ -99,6 +115,14 @@ function ActivePost({ isReportPost = false }) {
             : isGroupShare && commentGroupSharePost(submitData)),
       { pending: 'Posting...' }
     ).then(() => {
+      const signalRData = {
+        MsgCode: 'User-007',
+        Receiver: `${currentActivePost?.userId}`,
+        Url: url,
+        AdditionsMsd: '',
+        ActionId: 'spam'
+      }
+      connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
       toast.success('Commented')
     }).then(() => { dispatch(triggerReloadComment()), setContent(''), setListMedia([]) })
       .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber + 1 } })))

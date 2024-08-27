@@ -159,6 +159,7 @@ function Comment({ comment, postType }) {
       replyCommentFn(submitData),
       { pending: 'Posting...' }
     ).then(() => {
+
       toast.success('Commented')
     }).then(() => { dispatch(triggerReloadComment()); setAnchorEl(null); setContentReply(null) })
       .then(() => dispatch(updateCurrentActivePost({ ...currentActivePost, reactCount: { ...currentActivePost?.reactCount, commentNumber: currentActivePost?.reactCount?.commentNumber + 1 } })))

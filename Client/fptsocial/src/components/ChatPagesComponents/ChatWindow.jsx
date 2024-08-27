@@ -270,7 +270,7 @@ function ChatWindow({ chatId, onNewMessage, fetchChats, inChatPage = false, chat
                       <div className={`flex ${message.sender_username === USER_ID ? 'justify-end' : 'justify-start'}`}>
                         {
                           message?.text?.length > 0 &&
-                          <div className={`py-2 px-3 w-fit rounded-lg ${message.sender_username === USER_ID ? 'bg-orangeFpt text-white' : 'bg-gray-100'} 
+                          <div className={`py-2 px-3 w-fit rounded-lg ${message.sender_username === USER_ID ? 'bg-orange-50 text-orangeFpt' : 'bg-gray-100'} 
                     shadow-lg`}>
                             {cleanAndParseHTML(message?.text)}
                           </div>

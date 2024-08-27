@@ -11,6 +11,7 @@ import { POST_TYPES } from '~/utils/constants'
 import { cleanAndParseHTML } from '~/utils/formatters'
 import { deleteCommentSharePost, deleteCommentUserPhotoPost, deleteCommentUserPost, deleteCommentUserVideoPost } from '~/apis/postApis'
 import { deleteCommentGroupPhotoPost, deleteCommentGroupPost, deleteCommentGroupSharePost } from '~/apis/groupPostApis'
+import UserAvatar from '~/components/UI/UserAvatar'
 
 function DetailCommentReport({ open, setOpen, reportedComment }) {
   const handleClose = () => setOpen(false)
@@ -135,6 +136,9 @@ function DetailCommentReport({ open, setOpen, reportedComment }) {
           <div className='border h-full grid grid-cols-12'>
             <div className='col-span-7 border-r  overflow-y-auto scrollbar-none-track '>
               <div className='pointer-events-none mb-20 mt-4 flex justify-center'>
+                <div>
+                  <UserAvatar avatarSrc={reportedComment?.reportedAvatarUrl} />
+                </div>
                 <div className='flex items-center gap-2 cursor-pointer' >
                   <span className='font-semibold capitalize text-black'>{cleanAndParseHTML(reportedComment?.content)}</span>
                   <div className='max-w-[300px]'>

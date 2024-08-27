@@ -22,6 +22,7 @@ import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
+import connectionSignalR from '~/utils/signalRConnection'
 
 function PostGroupDetail() {
   const { postId } = useParams()
@@ -44,6 +45,7 @@ function PostGroupDetail() {
 
   const postType = isShare == 0 ? POST_TYPES.GROUP_POST : POST_TYPES.GROUP_SHARE_POST
 
+  let url = ''
   let getCommentFn
   let commentFn
   let postIdParam = {}
@@ -51,12 +53,15 @@ function PostGroupDetail() {
     getCommentFn = getGroupSharePostComment
     commentFn = commentGroupSharePost
     postIdParam = { groupSharePostId: postId }
+    url = `/groups/${currentActivePost?.groupId}/post/${postId}?share=1`
   }
   else if (isShare == 0) {
     commentFn = commentGroupPost
     getCommentFn = getGroupPostComment
     postIdParam = { groupPostId: postId }
+    url = `/groups/${currentActivePost?.groupId}/post/${postId}?share=0`
   }
+
 
   useEffect(() => {
     (async () => {
@@ -115,6 +120,14 @@ function PostGroupDetail() {
       commentFn(submitData),
       { pending: 'Updating is in progress...' }
     ).then(() => {
+      const signalRData = {
+        MsgCode: 'User-007',
+        Receiver: `${currentActivePost?.userId}`,
+        Url: url,
+        AdditionsMsd: '',
+        ActionId: 'spam'
+      }
+      connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
       setListMedia([])
       setContent(null)
       dispatch(triggerReloadComment())

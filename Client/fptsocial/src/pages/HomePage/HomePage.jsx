@@ -18,7 +18,7 @@ function HomePage() {
   return (
     <>
       <NavTopBar />
-      <div className={`flex bg-fbWhite ${!isShowHomeLeftSideBar && 'justify-center'} h-[calc(100vh_-_55px)] overflow-hidden`}>
+      <div className={`flex bg-fbWhite ${!isShowHomeLeftSideBar && 'justify-center'} lg:justify-between h-[calc(100vh_-_55px)] overflow-hidden`}>
         <HomeLeftSideBar isShowHomeLeftSideBar={isShowHomeLeftSideBar} user={user} />
         {
           !isShowHomeLeftSideBar && <>

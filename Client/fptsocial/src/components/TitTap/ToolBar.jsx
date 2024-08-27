@@ -125,7 +125,7 @@ const Toolbar = ({ editor, handleOpenChoseFile, postType, isChooseFile }) => {
                 // autoFocusSearch={false}
                 // allowExpandReactions={false}
                 // reactionsDefaultOpen={true}
-                className='!absolute !bottom-20 md:!bottom-10 !-right-8 md:!-right-40 lg:!-right-56 shadow-4edges'
+                className='!absolute bottom-10 shadow-4edges'
               />
             </div>
             <button
@@ -203,7 +203,7 @@ const Toolbar = ({ editor, handleOpenChoseFile, postType, isChooseFile }) => {
                   // autoFocusSearch={false}
                   // allowExpandReactions={false}
                   // reactionsDefaultOpen={true}
-                  className='!absolute !bottom-20 md:!bottom-10 !-right-8 md:!-right-40 lg:!-right-56 shadow-4edges'
+                  className='!absolute shadow-4edges'
                 />
               </div>
             </div>

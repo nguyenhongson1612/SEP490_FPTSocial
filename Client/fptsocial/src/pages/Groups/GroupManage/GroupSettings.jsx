@@ -103,7 +103,10 @@ function GroupSetting({ group }) {
       'groupStatusId': listGroupSetting?.find(e => e?.groupSettingName?.toLowerCase().includes('group status'))?.groupStatusId
     }
     // console.log('🚀 ~ updateGroupInformation ~ data:', submitData)
-    updateGroupInformation(submitData).then(() => dispatch(triggerReload()))
+    updateGroupInformation(submitData).then(() => {
+      toast.success('Group updated successfully!')
+      dispatch(triggerReload())
+    })
   }
 
 
