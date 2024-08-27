@@ -21,6 +21,7 @@ import { selectIsOpenReport } from '~/redux/report/reportSlice'
 import { addListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { EDITOR_TYPE, POST_TYPES } from '~/utils/constants'
+import connectionSignalR from '~/utils/signalRConnection'
 
 function Post() {
   const { postId } = useParams()
@@ -52,6 +53,13 @@ function Post() {
     commentFn = commentPost
     getCommentFn = getComment
     postIdParam = { userPostId: postId }
+  }
+
+  let url = ''
+  if (isShare == 0) {
+    url = `/post/${postId}?share=0`
+  } else if (isShare == 1) {
+    url = `/post/${postId}?share=1`
   }
 
   useEffect(() => {
@@ -106,6 +114,15 @@ function Post() {
       commentFn(submitData),
       { pending: 'Updating is in progress...' }
     ).then(() => {
+      const signalRData = {
+        MsgCode: 'User-007',
+        Receiver: `${currentActivePost?.userId}`,
+        Url: url,
+        AdditionsMsd: '',
+        ActionId: 'spam'
+      }
+      connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+
       setListMedia([])
       setContent(null)
       dispatch(triggerReloadComment())

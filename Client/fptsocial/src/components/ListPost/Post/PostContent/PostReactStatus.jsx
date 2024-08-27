@@ -50,6 +50,33 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
   const isGroupShare = postType == POST_TYPES.GROUP_SHARE_POST
   const isGroupPhoto = postType == POST_TYPES.GROUP_PHOTO_POST
   const isGroupVideo = postType == POST_TYPES.GROUP_VIDEO_POST
+  let postId = ''
+  let url = ''
+  if (isProfile) {
+    postId = postData?.userPostId || postData?.postId
+    url = `/post/${postId}?share=0`
+  } else if (isPhoto) {
+    postId = postData?.userPostMediaId
+    url = `/photo/${postId}?type=${POST_TYPES.PHOTO_POST}`
+  } else if (isVideo) {
+    postId = postData?.userPostMediaId
+    url = `/video/${postId}?type=${POST_TYPES.VIDEO_POST}`
+  } else if (isShare) {
+    postId = postData?.sharePostId || postData?.postId
+    url = `/post/${postId}?share=1`
+  } else if (isGroup) {
+    postId = postData?.groupPostId || postData?.postId
+    url = `/groups/${postData?.postId}/post/${postId}?share=0`
+  } else if (isGroupShare) {
+    postId = postData?.groupSharePostId || postData?.postId
+    url = `/groups/${postData?.postId}/post/${postId}?share=1`
+  } else if (isGroupPhoto) {
+    postId = postData?.groupPostMediaId
+    url = `/photo/${postId}?type=${POST_TYPES.GROUP_PHOTO_POST}`
+  } else if (isGroupVideo) {
+    postId = postData?.groupPostMediaId
+    url = `/video/${postId}?type=${POST_TYPES.GROUP_VIDEO_POST}`
+  }
 
   const handleOpenCurrenPostModal = () => {
     dispatch(showModalActivePost())
@@ -110,15 +137,16 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
                       : isGroupPhoto ? createReactGroupPhotoPost(reactData)
                         : isGroupVideo && createReactGroupVideoPost(reactData)
         )
-        // if (data) {
-        //   const signalRData = {
-        //     MsgCode: 'User-003',
-        //     Receiver: `${postData?.userId}`,
-        //     Url:(isProfile||isShare)? `/post/${currentUser?.userId}`:`/profile?id=${currentUser?.userId}`,
-        //     AdditionsMsd: 'spam'
-        //   }
-        //   connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
-        // }
+        if (data) {
+          const signalRData = {
+            MsgCode: 'User-003',
+            Receiver: `${postData?.userId}`,
+            Url: url,
+            AdditionsMsd: '',
+            ActionId: 'spam'
+          }
+          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+        }
       }),
       { pending: '' }
     ).then(

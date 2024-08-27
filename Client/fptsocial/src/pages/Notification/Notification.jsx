@@ -53,7 +53,7 @@ function Notification() {
               {
                 listNotification?.map((notification, i) => {
                   if ((unRead && !notification?.isRead) || (!unRead))
-                    return <Link to={notification?.notifiUrl} onClick={() => handleCheckReadNotification(notification?.notificationId)} key={i} className='flex items-center gap-2 min-h-12 hover:bg-fbWhite-500 rounded-md p-1 w-full'>
+                    return <Link to={notification?.url} onClick={() => handleCheckReadNotification(notification?.notificationId)} key={i} className='flex items-center gap-2 min-h-12 hover:bg-fbWhite-500 rounded-md p-1 w-full'>
                       <UserAvatar avatarSrc={notification?.senderAvatar} size='2' isOther='true' />
                       <div className='flex flex-col w-full'>
                         <div className='flex gap-1 text-xs justify-between items-center'>
