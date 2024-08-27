@@ -249,7 +249,7 @@ function Media() {
               !postId &&
               <div className="flex flex-wrap items-center justify-between border-b px-4 pt-4 pb-3">
                 <span className="text-sm text-gray-500 flex items-center gap-1"><IconArticle />{t('standard.media.from')}</span>
-                <Link to={currentActivePost?.groupPostId ? `/groups/${currentActivePost?.groupId}/post/${currentActivePost?.groupPostId}` : `/post/${currentActivePost?.userPostId}`} className="font-semibold text-sm hover:bg-fbWhite p-1 rounded-md">{t('standard.media.view')}</Link>
+                <Link to={currentActivePost?.groupPostId ? `/groups/${currentActivePost?.groupId}/post/${currentActivePost?.groupPostId}?share=0` : `/post/${currentActivePost?.userPostId}?share=0`} className="font-semibold text-sm hover:bg-fbWhite p-1 rounded-md">{t('standard.media.view')}</Link>
               </div>
             }
             <PostTitle postData={currentActivePost} isYourPost={isYourPost} postType={postType} />

@@ -12,7 +12,7 @@ import InfiniteScroll from '~/components/IntersectionObserver/InfiniteScroll'
 function GroupSearch() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [page, setPage] = useState(1)
-  const [totalPage, setTotalPage] = useState(1)
+  const [totalPage, setTotalPage] = useState(2)
   const [searchResults, setSearchResults] = useState([])
   const query = searchParams.get('q')
   const { t } = useTranslation()
@@ -39,7 +39,9 @@ function GroupSearch() {
                   <Link to={`/groups/${group?.groupId}`} className='capitalize hover:underline'>{group?.groupName}</Link>
                   <div className='first-letter:uppercase text-sm font-light'>{group?.groupDescription}</div>
                 </div>
-                <div className='flex item-center justify-start bg-blue-50 hover:bg-blue-100 text-blue-500 p-2 rounded-md cursor-pointer'>Join</div>
+                <Link to={`/groups/${group?.groupId}`} className=' h-fit bg-blue-50 hover:bg-blue-100 text-blue-500 p-2 rounded-md cursor-pointer'>
+                  View
+                </Link>
               </div>
             ))
           }
