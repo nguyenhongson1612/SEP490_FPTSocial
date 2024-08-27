@@ -64,7 +64,7 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
         var friendsInGroups = (from gm in _queryContext.GroupMembers
                                join g in _queryContext.GroupFpts on gm.GroupId equals g.GroupId
                                join gs in _queryContext.GroupStatuses on g.GroupStatusId equals gs.GroupStatusId
-                               where gm.UserId == request.UserId && gm.IsJoined
+                               where gm.UserId == request.UserId && gm.IsJoined && g.IsDelete != true
                                select new
                                {
                                    Group = g,
@@ -79,6 +79,7 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
                                 .Where(g => !userJoinedGroupIds.Contains(g.Group.GroupId) || _queryContext.GroupMembers
                                        .Where(gm => gm.UserId == request.UserId && gm.GroupId == g.Group.GroupId)
                                        .All(gm => gm.IsJoined == false))
+                                .Where(x => x.Group.IsDelete != true)
                                 .Select(g => g.Group)
                                 .ToList();
 
