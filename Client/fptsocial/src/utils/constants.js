@@ -3,8 +3,8 @@ let frontendRoot = ""
 let clientId = ""
 // dev environment
 if (process.env.BUILD_MODE === "dev") {
-  apiRoot = "https://localhost:44329"
-  // apiRoot = "https://api.fptsocial.com"
+  // apiRoot = "https://localhost:44329"
+  apiRoot = "https://api.fptsocial.com"
   frontendRoot = "http://localhost:3000"
   clientId = "societe-front-end-dev"
 }

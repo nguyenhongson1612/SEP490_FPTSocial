@@ -7,7 +7,7 @@ import { commentPhotoPost, commentPost, commentSharePost, commentVideoPost, dele
 import { createReactCommentSharePost, createReactCommentUserPhotoPost, createReactCommentUserPost, createReactCommentUserVideoPost, getAllReactByCommentId, getAllReactByCommentPhotoId, getAllReactByCommentSharePostId, getAllReactByCommentVideoId } from '~/apis/reactApis'
 import Tiptap from '~/components/TitTap/TitTap'
 import UserAvatar from '~/components/UI/UserAvatar'
-import { selectCurrentActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
+import { clearAndHireCurrentActivePost, selectCurrentActivePost, triggerReloadComment, updateCurrentActivePost } from '~/redux/activePost/activePostSlice'
 import { selectListReactType } from '~/redux/sideData/sideDataSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { cleanAndParseHTML, compareDateTime } from '~/utils/formatters'
@@ -21,6 +21,7 @@ import { selectCurrentActiveListPost, updateCurrentActiveListPost } from '~/redu
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { useTranslation } from 'react-i18next'
 import CommentReactDetail from './CommentReactDetail'
+import { Link } from 'react-router-dom'
 
 function Comment({ comment, postType }) {
   const currentActivePost = useSelector(selectCurrentActivePost)
@@ -278,14 +279,15 @@ function Comment({ comment, postType }) {
   return (
     <div className={`${comment?.level !== 1 && 'pl-[15%] mt-3'} `}>
       <div className='flex gap-1'>
-        <UserAvatar avatarSrc={comment?.url} size={2} />
+        <Link to={`/profile?id=${comment?.userId}`} onClick={() => dispatch(clearAndHireCurrentActivePost())}><UserAvatar avatarSrc={comment?.url} size={2} /></Link>
         <div className='flex flex-col gap-[2px] '>
           {
             !isEditContent &&
             <>
               <div className='bg-gray-100 flex flex-col py-1 px-2 gap-[2px] rounded-lg w-full text-sm'>
                 <div>
-                  <span className='font-bold capitalize'>{comment?.userName}</span>
+                  <Link to={`/profile?id=${comment?.userId}`} onClick={() => dispatch(clearAndHireCurrentActivePost())}
+                    className='font-bold capitalize hover:underline'>{comment?.userName}</Link>
                   {
                     currentActivePost?.userId == comment?.userId &&
                     <span className='font-medium text-xs text-white bg-orangeFpt ml-1 px-1 py-[2px] rounded-md'>{t('standard.comment.author')}</span>

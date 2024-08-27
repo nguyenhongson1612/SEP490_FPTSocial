@@ -13,6 +13,8 @@ import GroupManageMember from './GroupManage/GroupManageMember/GroupManageMember
 import GroupPostApproval from './GroupManage/GroupPostApproval.jsx'
 import { clearCurrentActiveListPost } from '~/redux/activeListPost/activeListPostSlice.js'
 import { getGroupByGroupId } from '~/apis/groupApis.js'
+import Report from '~/components/Modal/Report/Report.jsx'
+import { selectIsOpenReport } from '~/redux/report/reportSlice.js'
 
 
 function Group() {
@@ -27,6 +29,7 @@ function Group() {
   // const { register, watch, getValues, setValue, control, handleSubmit, formState: { errors } } = useForm()
 
   const isReload = useSelector(selectIsReload)
+  const isOpenReport = useSelector(selectIsOpenReport)
   const dispatch = useDispatch()
   const { groupId } = useParams()
   // const group = useSelector(selectCurrentActiveGroup)
@@ -44,18 +47,18 @@ function Group() {
   return (
     <>
       <NavTopBar />
-      <div className='flex h-[calc(100vh_-_55px)] overflow-clip relative'>
-        {
-          (group?.isAdmin || group?.isCensor) && (
-            <>
-              <GroupManageSideBar group={group} />
-              {isMemberRequest && <GroupRequest group={group} />}
-              {isPendingPost && <GroupPostApproval group={group} />}
-              {isMemberManage && <GroupManageMember group={group} />}
-              {isSetting && <GroupSetting group={group} />}
-            </>
-          )
-        }
+      {isOpenReport && <Report />}
+      <div className='flex h-[calc(100vh_-_55px)] overflow-clip relative'>        {
+        (group?.isAdmin || group?.isCensor) && (
+          <>
+            <GroupManageSideBar group={group} />
+            {isMemberRequest && <GroupRequest group={group} />}
+            {isPendingPost && <GroupPostApproval group={group} />}
+            {isMemberManage && <GroupManageMember group={group} />}
+            {isSetting && <GroupSetting group={group} />}
+          </>
+        )
+      }
         {(isHomeGroup || isPostDetail) && <GroupHome group={group} />}
       </div>
 

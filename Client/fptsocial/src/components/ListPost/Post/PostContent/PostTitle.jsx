@@ -110,9 +110,9 @@ function PostTitle({ postData, isYourPost, postType, isBan, isAdmin = false }) {
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex gap-2 ">
-            <span className="flex gap-2 font-bold font-sans capitalize">
+            <Link to={`/groups/${postData?.groupId}`} className="flex gap-2 font-bold font-sans capitalize hover:underline">
               {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
-            </span>
+            </Link>
             {
               postData?.isAvataPost ? <span className='text-gray-500 font-normal text-tr'>{t('sideText.avatarPost')}</span>
                 : postData?.isCoverPhotoPost && <span className='text-gray-500 font-normal text-tr'>{t('sideText.coverPost')}</span>
@@ -121,7 +121,7 @@ function PostTitle({ postData, isYourPost, postType, isBan, isAdmin = false }) {
           <div className="flex justify-start gap-1 text-gray-500 text-sm">
             {((isGroup || isGroupShare) && !isInGroupPath &&
               <>
-                <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className='font-semibold capitalize'>
+                <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className='font-semibold capitalize hover:underline'>
                   {postData?.userName}
                 </Link>
                 <span className='font-semibold'>.</span>

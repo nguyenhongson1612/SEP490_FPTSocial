@@ -78,7 +78,7 @@ function UserManage() {
               Email
             </th>
             <th className="px-6 py-3">
-              Status
+              Action
             </th>
           </tr>
         </thead>
@@ -104,12 +104,12 @@ function UserManage() {
               <td className="px-6 py-4">{user?.email}</td>
               <td className="px-6 py-4">
                 <div className='flex justify-center gap-2' >
-                  <Button variant='contained' color={!user?.isActive ? 'error' : 'success'}
+                  <Button variant='contained' color={user?.isActive ? 'error' : 'success'}
                     onClick={() => {
                       handleStatusUser(user?.isActive, user)
                     }}
                   >
-                    {!user?.isActive ? 'Disable' : 'Active'}
+                    {user?.isActive ? 'Disable' : 'Active'}
                   </Button>
                 </div>
               </td>

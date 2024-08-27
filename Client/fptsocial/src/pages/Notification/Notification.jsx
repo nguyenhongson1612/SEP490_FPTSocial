@@ -59,7 +59,7 @@ function Notification() {
                         <div className='flex gap-1 text-xs justify-between items-center'>
                           <span>
                             <span className='font-bold capitalize'>{notification?.senderName}</span>
-                            {notification?.notiMessage}
+                            {notification?.message}
                           </span>
                           {!notification?.isRead && <div className='size-2 min-w-2 bg-blue-500 rounded-full'></div>}
                         </div>

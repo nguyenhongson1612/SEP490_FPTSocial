@@ -1,8 +1,15 @@
 import { TextField } from '@mui/material'
+import moment from 'moment';
 import { FIELD_REQUIRED_MESSAGE, WHITESPACE_MESSAGE, WHITESPACE_RULE } from '~/utils/validators'
 
 function Information({ register, user, errors }) {
-  const yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)).toISOString().split('T')[0]
+  const getYesterday = () => {
+    return moment().subtract(1, 'days').format('YYYY-MM-DD');
+  };
+
+  const formatBirthday = (birthday) => {
+    return birthday ? moment(birthday).format('YYYY-MM-DD') : '';
+  };
 
   return (
     <div className='grid grid-cols-1 xs:grid-cols-2 gap-3 border-2 border-blue-500 p-2 rounded-md'>
@@ -58,8 +65,10 @@ function Information({ register, user, errors }) {
       <TextField
         label="Birthday"
         type="date"
-        max={yesterday}
-        defaultValue={new Date(user?.birthDay).toISOString().split('T')[0]}
+        inputProps={{
+          max: getYesterday(),
+        }}
+        defaultValue={formatBirthday(user?.birthDay)}
         placeholder="Birthday"
         {...register('birthDay', {})}
       />
