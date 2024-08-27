@@ -102,13 +102,13 @@ namespace Application.Queries.GetOtherUser
                 {
                     result.ContactInfo = null;
                 }
-                if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                if (getuser.UserGender.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                 {
                     result.UserGender = null;
                 }
                 if(getuser.UserRelationship != null)
                 {
-                    if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
+                    if (getuser.UserRelationship.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Private").UserStatusId)
                     {
                         result.UserRelationship = null;
                     }
@@ -143,13 +143,13 @@ namespace Application.Queries.GetOtherUser
                     {
                         result.ContactInfo = null;
                     }
-                    if (getuser.UserGender.UserGenderId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                    if (getuser.UserGender.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                     {
                         result.UserGender = null;
                     }
                     if (getuser.UserRelationship != null)
                     {
-                        if (getuser.UserRelationship.UserRelationshipId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
+                        if (getuser.UserRelationship.UserStatusId == getstatus.FirstOrDefault(x => x.StatusName == "Friend").UserStatusId)
                         {
                             result.UserRelationship = null;
                         }
