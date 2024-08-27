@@ -35,7 +35,9 @@ function SearchAll() {
               </Link>
 
               <span className='grow capitalize'>{user?.userName}</span>
-              <div className='flex item-center justify-start bg-blue-50 text-blue-500 p-2 rounded-md cursor-pointer'><IconMessage />Message</div>
+              <Link to={`/profile?id=${user?.userId}`} className='flex item-center justify-start bg-blue-50 text-blue-500 p-2 rounded-md cursor-pointer'>
+                View profile
+              </Link>
             </div>
           ))
         }
@@ -50,7 +52,9 @@ function SearchAll() {
                 <div className='first-letter:uppercase text-sm font-light'>{group?.groupDescription}</div>
               </div>
 
-              <div className='flex item-center justify-start bg-blue-50 hover:bg-blue-100 text-blue-500 p-2 rounded-md cursor-pointer'>Join</div>
+              <Link to={`/groups/${group?.groupId}`} className=' h-fit bg-blue-50 hover:bg-blue-100 text-blue-500 p-2 rounded-md cursor-pointer'>
+                View
+              </Link>
             </div>
           ))
         }
