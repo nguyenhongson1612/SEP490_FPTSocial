@@ -163,9 +163,9 @@ namespace Application.Mappers
             CreateMap<UpdateUserCommand, Query.UserProfile>();
             CreateMap<Query.UserPost, GetUserPostResult>();
             CreateMap<Query.UserPost, UpdateUserPostCommandResult>();
-            CreateMap<UserPostPhoto, UserPostPhotoDTO>();
+            CreateMap<UserPostPhoto, UserPostPhotoDTO>().ReverseMap();
             CreateMap<Photo, PhotoDTO>().ReverseMap();
-            CreateMap<UserPostVideo, UserPostVideoDTO>();
+            CreateMap<UserPostVideo, UserPostVideoDTO>().ReverseMap();
             CreateMap<Command.Video, VideoDTO>().ReverseMap();
             CreateMap<Query.Video, VideoDTO>().ReverseMap();
 
@@ -377,9 +377,9 @@ namespace Application.Mappers
 
             //GroupPost
             CreateMap<GroupPhotoDTO, GroupPhoto>().ReverseMap();
-            CreateMap<GroupPostPhotoDTO, GroupPostPhoto>();
+            CreateMap<GroupPostPhotoDTO, GroupPostPhoto>().ReverseMap();
             CreateMap<GroupVideoDTO, GroupVideo>().ReverseMap();
-            CreateMap<GroupPostVideoDTO, GroupPostVideo>();
+            CreateMap<GroupPostVideoDTO, GroupPostVideo>().ReverseMap();
             CreateMap<GroupFPTDTO, GroupFpt>();
             CreateMap<GetGroupStatusDTO, GroupStatus>();
             CreateMap<GroupPostDTO, GroupPost>().ReverseMap();
