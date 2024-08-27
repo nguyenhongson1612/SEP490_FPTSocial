@@ -3,6 +3,7 @@ using Application.Commands.GetUserProfile;
 using Application.Queries.GetAllGroupForAdmin;
 using Application.Queries.GetAllUserForAdmin;
 using Application.Queries.GetDataForAdmin;
+using Application.Queries.GetNumberUserByDayForAdmin;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +72,14 @@ namespace API.Controllers
         [HttpGet]
         [Route("getAllGroupForAdmin")]
         public async Task<IActionResult> GetAllGroupForAdmin([FromQuery] GetAllGroupForAdmin input)
+        {
+            var res = await _sender.Send(input);
+            return Success(res.Value);
+        }
+
+        [HttpGet]
+        [Route("getNumberUserByDayForAdmin")]
+        public async Task<IActionResult> GetNumberUserByDayForAdmin([FromQuery] GetNumberUserByDayForAdmin input)
         {
             var res = await _sender.Send(input);
             return Success(res.Value);
