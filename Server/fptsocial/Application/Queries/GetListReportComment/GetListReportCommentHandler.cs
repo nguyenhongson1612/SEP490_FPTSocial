@@ -1,4 +1,5 @@
-﻿using Application.Queries.GetListReportGroup;
+﻿using Application.DTO.CreateUserDTO;
+using Application.Queries.GetListReportGroup;
 using Core.CQRS;
 using Core.CQRS.Query;
 using Domain.CommandModels;
@@ -40,39 +41,86 @@ namespace Application.Queries.GetListReportComment
                 .Include(x => x.ReportBy)
                 .Where(x => x.Processing == true);
 
+            Guid userId = Guid.NewGuid();
             // Áp dụng các điều kiện where tùy theo giá trị trong request
             if (request.CommentId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentId == request.CommentId);
+                 userId = await _context.CommentPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentId == request.CommentId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentPhotoPostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId);
+                 userId = await _context.CommentPhotoPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentPhotoPostId == request.CommentPhotoPostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentVideoPostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentVideoPostId == request.CommentVideoPostId);
+                 userId = await _context.CommentVideoPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentVideoPostId == request.CommentVideoPostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentGroupPostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentGroupPostId == request.CommentGroupPostId);
+                 userId = await _context.CommentGroupPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentGroupPostId == request.CommentGroupPostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentGroupVideoPostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId);
+                 userId = await _context.CommentGroupVideoPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentGroupVideoPostId == request.CommentGroupVideoPostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentPhotoGroupPostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId);
+                 userId = await _context.CommentPhotoGroupPosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentPhotoGroupPostId == request.CommentPhotoGroupPostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentSharePostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentSharePostId == request.CommentSharePostId);
+                 userId = await _context.CommentSharePosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentSharePostId == request.CommentSharePostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
             else if (request.CommentGroupSharePostId != null)
             {
                 reportListQuery = reportListQuery.Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId);
+                 userId = await _context.CommentGroupSharePosts
+                    .AsNoTracking()
+                    .Where(x => x.CommentGroupSharePostId == request.CommentGroupSharePostId)
+                    .Select(x => x.UserId)
+                    .FirstOrDefaultAsync();
             }
+
+            var reportedUser = await _context.UserProfiles
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.FullName)
+            .FirstOrDefaultAsync();
 
             var reportList = reportListQuery.Select(x => new GetReportComment {
                 ReportCommentId = x.ReportCommentId,
@@ -89,6 +137,9 @@ namespace Application.Queries.GetListReportComment
                 UserId = x.ReportById,
                 UserName = x.ReportBy.FullName,
                 AvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == x.ReportById && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
+                ReportedUserId = userId,
+                ReportedUserName = reportedUser,
+                ReportedAvatarUrl = _context.AvataPhotos.Where(ap => ap.UserId == userId && ap.IsUsed == true).Select(ap => ap.AvataPhotosUrl).FirstOrDefault(),
                 CreatedDate = x.CreatedDate,  
             }).ToList();
 

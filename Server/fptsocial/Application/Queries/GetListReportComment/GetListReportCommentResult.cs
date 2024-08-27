@@ -27,6 +27,9 @@ namespace Application.Queries.GetListReportComment
         public Guid UserId { get; set; }
         public string? UserName { get; set; }
         public string? AvatarUrl { get; set; }
+        public Guid ReportedUserId { get; set; }
+        public string? ReportedUserName { get; set; }
+        public string? ReportedAvatarUrl { get; set; }
         public DateTime? CreatedDate { get; set; }
     }
 }
