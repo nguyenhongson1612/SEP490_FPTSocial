@@ -68,14 +68,18 @@ function GroupManageTab({ group, listRequestJoins, listPendingPost }) {
 
         <div className='flex flex-col'>
           <div className='w-full flex justify-between items-center gap-2 font-bold py-3 px-2 rounded-lg cursor-pointer hover:bg-fbWhite'
-            onClick={() => setIsOpenSetting(!isOpenSetting)}
+            onClick={() => setIsOpenSetting(!isOpenSetting)
+            }
           >
             <span className=''>Settings</span>
             {isOpenSetting ? <IconChevronUp /> : <IconChevronDown />}
           </div>
           {
             isOpenSetting && (
-              <div>
+              <div style={{
+                pointerEvents: group?.isAdmin ? 'initial' : 'none'
+              }}
+              >
                 <Link to={`/groups/${group?.groupId}/settings`}
                   className={`w-full flex items-center gap-2 py-3 px-2 rounded-lg 
                 ${isSetting ? 'bg-blue-100 text-blue-500' : 'hover:bg-fbWhite text-black'}`}>

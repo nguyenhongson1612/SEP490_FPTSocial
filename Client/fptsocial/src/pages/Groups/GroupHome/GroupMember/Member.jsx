@@ -12,18 +12,10 @@ import { selectCurrentUser } from '~/redux/user/userSlice';
 import { ADMIN, CENSOR, FRONTEND_ROOT } from '~/utils/constants'
 import connectionSignalR from '~/utils/signalRConnection';
 
-function Member({ listMember, roleType }) {
+function Member({ listMember, roleType, setReload }) {
   const dispatch = useDispatch()
   const { t } = useTranslation()
   const currentUser = useSelector(selectCurrentUser)
-  const [anchorEl2, setAnchorEl2] = useState(null)
-  const open = Boolean(anchorEl2)
-  const handleClick = (event) => {
-    setAnchorEl2(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl2(null)
-  }
 
   const handleAddFriend = async (reviverId) => {
     try {
@@ -36,7 +28,6 @@ function Member({ listMember, roleType }) {
           AdditionsMsd: '',
           ActionId: 'true'
         }
-        console.log(signalRData)
         await connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
       }
       dispatch(triggerReload())
@@ -51,18 +42,7 @@ function Member({ listMember, roleType }) {
       ...data_
     }
     updateFriendStatus(data)
-      .then((data) => {
-        if (data?.confirm) {
-          const signalRData = {
-            MsgCode: 'User-002',
-            Receiver: `${data?.friendId}`,
-            Url: `${FRONTEND_ROOT}/profile?id=${currentUser?.userId}`,
-            AdditionsMsd: 'aa'
-          }
-          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
-        }
-      })
-      .then()
+      .then(() => setReload(prev => !prev))
   }
 
   const confirmUnfriend = useConfirm()
@@ -75,12 +55,11 @@ function Member({ listMember, roleType }) {
     }).then(() =>
       handleResponse({
         confirm: false,
-        cancle: false,
+        cancel: false,
         reject: true
       })
     )
       .catch(() => { })
-
 
   return (
     <div className='flex flex-col w-[90%] md:w-[70%] bg-white rounded-lg border-b-2'>
@@ -88,68 +67,41 @@ function Member({ listMember, roleType }) {
         {roleType}
       </div>
       <div className='flex flex-col gap-4'>
-        {listMember?.length == 0 && <span className='p-4'>The group does not have {roleType}</span>}
+        {listMember?.length === 0 && <span className='p-4'>The group does not have {roleType}</span>}
         {
           listMember?.map(member => (
             <div key={member?.userId} className='flex justify-between items-center bg-white p-4 rounded-lg'>
               <Link to={`/profile?id=${member?.userId}`} className='flex gap-2 items-center'>
                 <UserAvatar avatarSrc={member?.avata} isOther={true} />
                 <div className='flex flex-col'>
-                  <span className='font-semibold capitalize'>{member?.memberName}</span>
+                  <span className={`font-semibold capitalize hover:underline ${member?.userId === currentUser?.userId ? 'text-orangeFpt' : ''}`}>{member?.memberName}</span>
                   <span
-                    className={`font-semibold text-sm 
-                      ${member?.groupRoleName?.toLowerCase() == 'admin' ? 'text-blue-700' : 'text-gray-500'}`}>
+                    className={`font-semibold text-xs
+                      ${member?.groupRoleName?.toLowerCase() === 'admin' ? 'text-red-700' : 'text-gray-500/90 '}`}>
                     {member?.groupRoleName}</span>
                 </div>
               </Link>
               <div className='flex items-center gap-2'>
-                {member?.userId == currentUser?.userId ? (
+                {member?.userId === currentUser?.userId ? (
                   <div className="flex flex-col justify-end mb-4 cursor-pointer"></div>
                 ) : member?.isFriend ? (
-                  <Button size='small' className="interceptor-loading !text-xs" variant='contained'
-                    startIcon={<IconUserCheck stroke={3} onClick={openDeleteModal} />}>
+                  <Button size='small' variant='contained' className="interceptor-loading !text-xs"
+                    startIcon={<IconUserCheck stroke={3} />} onClick={openDeleteModal}>
                     {t('standard.profile.friend')}
                   </Button>
                 ) : member?.sendFriendRequest ? (
-                  <Button color='warning' size='small' className="interceptor-loading !text-xs"
-                    onClick={() => handleResponse({ friendId: member?.userId, confirm: false, cancle: true, reject: false })}
-                  >{t('standard.profile.cancelRequest')}
-                  </Button>
-                ) : !member?.confirm ? (
                   <Button size='small' className="interceptor-loading !text-xs"
                     onClick={() => handleAddFriend(member?.userId)} >
                     {t('standard.profile.addFriend')}
                   </Button>
                 ) : (
-                  <div className="flex flex-col justify-end mb-4 cursor-pointer">
-                    <div className="flex gap-2">
-                      <span
-                        onClick={() =>
-                          handleResponse({
-                            confirm: true,
-                            cancle: false,
-                            reject: false
-                          })
-                        }
-                        className="interceptor-loading font-bold text-lg text-white p-2 rounded-md bg-blue-500 hover:bg-blue-700"
-                      >
-                        {t('standard.profile.confirmRequest')}
-                      </span>
-                      <span
-                        onClick={() =>
-                          handleResponse({
-                            confirm: false,
-                            cancle: false,
-                            reject: true
-                          })
-                        }
-                        className="font-bold text-lg text-gray-900 p-2 rounded-md bg-fbWhite hover:bg-fbWhite-500"
-                      >
-                        {t('standard.profile.deleteRequest')}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                  <Button size='small' color='warning' className="interceptor-loading !text-xs"
+                    onClick={() => handleResponse({ friendId: member?.userId, confirm: false, cancle: true, reject: false })}
+                  >
+                    {t('standard.profile.cancelRequest')}
+                  </Button>
+                )
+                }
               </div>
             </div>
           ))

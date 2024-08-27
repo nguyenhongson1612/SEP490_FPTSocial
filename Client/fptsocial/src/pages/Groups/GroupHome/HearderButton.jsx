@@ -3,7 +3,7 @@ import { IconDoorExit, IconDotsVertical, IconMessageReport, IconPlus, IconSearch
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { cancelRequestJoin, getListFriendInvited, invitesFriend, leftGroup, requestJoinGroup } from '~/apis/groupApis'
+import { cancelRequestJoin, deleteGroup, getListFriendInvited, invitesFriend, leftGroup, requestJoinGroup } from '~/apis/groupApis'
 import UserAvatar from '~/components/UI/UserAvatar'
 import { triggerReload } from '~/redux/ui/uiSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
@@ -11,12 +11,15 @@ import { useConfirm } from 'material-ui-confirm'
 import { addReport, openModalReport } from '~/redux/report/reportSlice'
 import { REPORT_TYPES } from '~/utils/constants'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import connectionSignalR from '~/utils/signalRConnection'
 
 function HeaderButton({ group }) {
   const { t } = useTranslation()
   const currentUser = useSelector(selectCurrentUser)
   const [listFriend, setListFriend] = useState([])
-
+  const navigate = useNavigate()
 
   const { watch, getValues, setValue, control, handleSubmit } = useForm()
 
@@ -46,22 +49,25 @@ function HeaderButton({ group }) {
       'groupId': group?.groupId
     }
     invitesFriend(submitData).then(() => {
-      dispatch(triggerReload())
-      handleClose()
-    })
-    // .then((data) => {
-    //   if (data) {
-    //     data?.inviteFriends?.map(friend => {
-    //       const signalRData = {
-    //         MsgCode: 'User-001',
-    //         Receiver: `${friend?.friendId}`,
-    //         Url: `/groups/${groupId}`,
-    //         AdditionsMsd: ''
-    //       }
-    //       connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
-    //     })
-    //   }
-    // })
+      if (data) {
+        data?.inviteFriends?.map(friend => {
+          const signalRData = {
+            MsgCode: 'User-008',
+            Receiver: `${friend?.userId}`,
+            Url: `/groups/${group?.groupId}`,
+            AdditionsMsd: ''
+          }
+          connectionSignalR.invoke('SendNotify', JSON.stringify(signalRData))
+        })
+      }
+    }).then(
+      () => {
+        dispatch(triggerReload())
+        handleClose()
+        setValue('inviteFriends', [])
+        toast.success('Friends invited!')
+      }
+    )
   }
 
   const handleRequestJointGroup = () => {
@@ -80,28 +86,86 @@ function HeaderButton({ group }) {
   }
   const confirmFile = useConfirm()
   const handleLeaveGroup = () => {
-    confirmFile({
-      title: (
-        <div className='flex flex-col gap-2'>
-          <div className='font-bold text-[#d22e2e]'>Warning: Leaving Group?</div>
-          <div className='text-sm'>
-            All content, settings, and members associated with this group will be permanently removed. This includes any posts, files, calendar events, and other data created within the group.<br />
-            Once the group is deleted, there is no way to recover it or its contents<br />
-            <span className='text-[#d22e2e] font-bold'>Do you still want to permanently leave the group?</span>
+    const adminCount = group?.groupMember?.reduce((count, member) => {
+      return member?.groupRoleName === "Admin" ? count + 1 : count
+    }, 0)
+    if (adminCount == 1 && group?.isAdmin && group?.memberCount > 1) {
+      confirmFile({
+        title: (
+          <div className="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+            <div className="font-bold text-xl text-red-600 border-b-2 border-red-200 pb-2">
+              Warning
+            </div>
+            <div className="text-sm text-gray-700 space-y-2">
+              <p>
+                You are the last admin in the group. Before proceeding, please take the following action:
+              </p>
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded-r-md">
+                <p className="font-semibold">Important:</p>
+                <p>Promote other users to become admins before making any changes.</p>
+              </div>
+              <p className="italic text-gray-600">
+                This ensures continued management and prevents accidental loss of admin control.
+              </p>
+            </div>
           </div>
-        </div>
-      ),
-      description: (''),
-      confirmationButtonProps: { color: 'error', variant: 'contained' },
-      confirmationText: 'Leave',
-      cancellationText: 'Cancel'
-    }).then(() => {
-      const submitData = {
-        'userId': currentUser?.userId,
-        'groupId': group?.groupId,
-      }
-      leftGroup(submitData).then(() => dispatch(triggerReload()))
-    }).catch(() => { })
+        ),
+        description: (''),
+        confirmationButtonProps: { color: 'warning', variant: 'contained' },
+        confirmationText: 'Understand',
+        cancellationText: 'Cancel'
+      }).then(() => {
+        navigate(`/groups/${group?.groupId}/member-manage`)
+      })
+    }
+    else
+      confirmFile({
+        title: (
+          <div className="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+            <div className="font-bold text-xl text-red-600 border-b-2 border-red-200 pb-2">
+              Warning: Leaving Group?
+            </div>
+            <div className="text-sm text-gray-700 space-y-2">
+              <p>
+                All content, settings, and members associated with this group will be permanently removed. This includes:
+              </p>
+              <ul className="list-disc list-inside ml-4 space-y-1">
+                <li>Posts</li>
+                <li>Files</li>
+                <li>Calendar events</li>
+                <li>Other group data</li>
+              </ul>
+              {group?.memberCount === 1 && (
+                <p className="mt-4 text-red-600 font-semibold bg-red-100 p-3 rounded-md">
+                  You are the last member. Leaving the group also means deleting the group!
+                </p>
+              )}
+            </div>
+          </div>
+        ),
+        description: (''),
+        confirmationButtonProps: { color: 'error', variant: 'contained' },
+        confirmationText: 'Leave',
+        cancellationText: 'Cancel'
+      }).then(() => {
+        const submitData = {
+          'userId': currentUser?.userId,
+          'groupId': group?.groupId,
+        }
+        if (group?.memberCount == 1) {
+          const submitData = {
+            'userId': currentUser?.userId,
+            'groupId': group?.groupId,
+          }
+          deleteGroup(submitData).then(() => toast.success('Group deleted!')).then(() => navigate('/groups'))
+        }
+        else {
+          leftGroup(submitData).then(() => toast.success(' Leave group successfully!')).then(() => {
+            navigate(`/groups`)
+            dispatch(triggerReload())
+          })
+        }
+      }).catch(() => { })
   }
 
 
@@ -173,11 +237,11 @@ function HeaderButton({ group }) {
             <div className='md:max-h-[350px] flex overflow-y-auto scrollbar-none-track'>
               <div className='flex items-center h-[40] py-2 gap-2 basis-8/12'>
                 <div className='flex flex-col gap-2 w-full px-2'>
-                  <div className="relative text-gray-600" >
+                  {/* <div className="relative text-gray-600" >
                     <input className="w-full bg-fbWhite h-10 px-5 pr-16 rounded-xl text-sm font-light focus:outline-none"
                       type="search" placeholder="Search friend" />
                     <span className='absolute right-2 top-1/2 -translate-y-1/2'><IconSearch /></span>
-                  </div>
+                  </div> */}
                   <Controller
                     name="inviteFriends"
                     control={control}

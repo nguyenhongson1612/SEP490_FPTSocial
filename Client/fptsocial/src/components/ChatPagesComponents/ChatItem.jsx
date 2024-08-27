@@ -6,7 +6,7 @@ function ChatItem({ chat, handleListItemClick, handleSelectChat, inPageChat = fa
   const titleUser = chat?.people?.find(e => e?.person?.username != USER_ID)
   return (
     <div
-      className='p-2 hover:bg-fbWhite rounded-md cursor-pointer'
+      className='p-2 hover:bg-fbWhite rounded-md cursor-pointer interceptor-loading'
       key={chat?.id}
       onClick={() => (inPageChat ? handleSelectChat(chat?.id) : handleListItemClick(chat?.id))}
     >

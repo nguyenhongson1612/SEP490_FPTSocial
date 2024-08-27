@@ -43,15 +43,15 @@ function GroupsDiscover() {
   }
 
   return (
-    <div className='w-full'>
+    <div className='w-full h-full overflow-y-auto scrollbar-none-track'>
       <div className='p-4'>
         <div className='mb-4'>
           <span className='text-xl font-bold'>Group suggestions</span>
         </div>
-        <div className='grid grid-cols-12 gap-x-2'>
+        <div className='grid grid-cols-12 gap-3'>
           {
             listSuggestionGroup?.map((suggestion, i) => (
-              <div key={suggestion?.groupId} className='bg-white col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 h-[300px] rounded-md flex flex-col'>
+              <div key={suggestion?.groupId} className='bg-white col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3  rounded-md flex flex-col'>
                 <Link to={`/groups/${suggestion?.groupId}`}>
                   <img
                     className='w-full h-[200px] object-cover rounded-t-md'

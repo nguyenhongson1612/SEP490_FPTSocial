@@ -98,32 +98,33 @@ function Report() {
         open={isOpenModalReport}
         onClose={() => dispatch(clearReport())}
       >
-        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
-          <div className='w-full xs:w-[420px] md:w-[500px] bg-white shadow-4edges rounded-lg '>
-            <div className='h-[60px] py-2 px-3 font-bold flex justify-between items-center border-b text-xl'>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="w-full max-w-[500px] bg-white shadow-lg rounded-lg overflow-hidden transform transition-all">
+            <div className="h-16 px-4 flex justify-between items-center border-b border-gray-200">
               <span></span>
-              <span className='font-bold font-sans text-xl capitalize'>
+              <span className="font-bold text-xl capitalize text-gray-800">
                 Report
               </span>
-              <div className='cursor-pointer' onClick={() => dispatch(clearReport())}>
-                <IconX className='text-white bg-orangeFpt rounded-full' />
-              </div>
+              <button
+                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                onClick={() => dispatch(clearReport())}
+              >
+                <IconX className="text-gray-600 hover:text-red-600" />
+              </button>
             </div>
-            <div className='flex flex-col gap-1 py-2 px-2'>
-              {
-                listReportType?.map(report => (
-                  <div
-                    key={report?.reportTypeId}
-                    className=' py-3 cursor-pointer rounded-lg bg-fbWhite hover:text-white hover:bg-orangeFpt hover:scale-[1.03]'
-                    onClick={() => handleReport(report?.reportTypeId)}
-                  >
-                    <div className='px-2 first-letter:uppercase'>{report?.reportTypeName}</div>
-                  </div>
-                ))
-              }
+            <div className="p-4 max-h-[70vh] overflow-y-auto">
+              {listReportType?.map(report => (
+                <div
+                  key={report?.reportTypeId}
+                  className="py-3 px-4 mb-2 cursor-pointer rounded-lg bg-gray-50 hover:bg-orangeFpt hover:text-white transition-all duration-200 ease-in-out transform hover:scale-[1.02]"
+                  onClick={() => handleReport(report?.reportTypeId)}
+                >
+                  <div className="first-letter:uppercase">{report?.reportTypeName}</div>
+                </div>
+              ))}
             </div>
-          </div >
-        </div >
+          </div>
+        </div>
       </Modal>
     </div>
   )

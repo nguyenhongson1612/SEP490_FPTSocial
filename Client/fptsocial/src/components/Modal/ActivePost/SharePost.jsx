@@ -40,7 +40,6 @@ function SharePost() {
   const [listStatus, setListStatus] = useState([])
   const [choseStatus, setChoseStatus] = useState({})
   const [chooseGroup, setChooseGroup] = useState(null)
-  console.log('🚀 ~ SharePost ~ chooseGroup:', chooseGroup)
 
   const isProfile = postType == POST_TYPES.PROFILE_POST
   const isPhoto = postType == POST_TYPES.PHOTO_POST
