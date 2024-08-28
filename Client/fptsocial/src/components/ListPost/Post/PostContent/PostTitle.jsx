@@ -110,9 +110,14 @@ function PostTitle({ postData, isYourPost, postType, isBan, isAdmin = false }) {
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex gap-2 ">
-            <Link to={`/groups/${postData?.groupId}`} className="flex gap-2 font-bold font-sans capitalize hover:underline">
-              {(isGroup || isGroupShare) && !isInGroupPath ? (postData?.groupName) : (postData?.fullName || postData?.userName)}
-            </Link>
+            {(isGroup || isGroupShare) && !isInGroupPath
+              ? <Link to={`/groups/${postData?.groupId}`} className="flex gap-2 font-bold font-sans capitalize hover:underline">
+                {postData?.groupName}
+              </Link>
+              : <Link to={`/profile?id=${postData?.userId || postData?.photo?.userId}`} className="flex gap-2 font-bold font-sans capitalize hover:underline">
+                {postData?.fullName || postData?.userName}
+              </Link>
+            }
             {
               postData?.isAvataPost ? <span className='text-gray-500 font-normal text-tr'>{t('sideText.avatarPost')}</span>
                 : postData?.isCoverPhotoPost && <span className='text-gray-500 font-normal text-tr'>{t('sideText.coverPost')}</span>
