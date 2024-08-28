@@ -44,14 +44,14 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
 
         // Lấy danh sách nhóm mà người dùng đã tham gia
         var userJoinedGroupIds = await _queryContext.GroupMembers
-            .Where(gm => gm.UserId == request.UserId)
+            .Where(gm => gm.UserId == request.UserId && gm.Group.IsDelete != true)
             .Select(gm => gm.GroupId)
             .ToListAsync(cancellationToken);
 
         // Đếm số lượng nhóm theo từng group type
         var groupTypeGroupCount = (from gm in _queryContext.GroupMembers
                                    join g in _queryContext.GroupFpts on gm.GroupId equals g.GroupId
-                                   where gm.UserId == request.UserId && gm.IsJoined
+                                   where gm.UserId == request.UserId && gm.IsJoined && gm.Group.IsDelete != true
                                    group g by g.GroupTypeId into grouped
                                    orderby grouped.Count() descending
                                    select new
@@ -90,6 +90,7 @@ public class SuggestionGroupQueryHandler : IQueryHandler<SuggestionGroupQuery, S
                 .Include(g => g.GroupStatus)
                 .Where(g => g.GroupStatus != null && g.GroupStatus.GroupStatusName.Equals("Public"))
                 .Where(g => !userJoinedGroupIds.Contains(g.GroupId))
+                .Where(g => g.IsDelete != true)
                 .ToList();
         }
 
