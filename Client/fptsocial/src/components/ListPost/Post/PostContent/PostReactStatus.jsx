@@ -66,10 +66,10 @@ function PostReactStatus({ postData, postType, postShareData, postShareType, isC
     url = `/post/${postId}?share=1`
   } else if (isGroup) {
     postId = postData?.groupPostId || postData?.postId
-    url = `/groups/${postData?.postId}/post/${postId}?share=0`
+    url = `/groups/${postData?.groupId}/post/${postId}?share=0`
   } else if (isGroupShare) {
     postId = postData?.groupSharePostId || postData?.postId
-    url = `/groups/${postData?.postId}/post/${postId}?share=1`
+    url = `/groups/${postData?.groupId}/post/${postId}?share=1`
   } else if (isGroupPhoto) {
     postId = postData?.groupPostMediaId
     url = `/photo/${postId}?type=${POST_TYPES.GROUP_PHOTO_POST}`
